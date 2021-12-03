@@ -1,0 +1,38 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: vaultwarden
+      version: 0.4.0
+      sourceRef:
+        kind: HelmRepository
+        name: vaultwarden-charts
+        namespace: flux-system
+  values:
+    vaultwarden:
+      allowSignups: false
+      allowInvitation: false
+      admin:
+        service:
+        enabed: true
+      enableWebSockets: true
+    persistence:
+      enabled: true
+      storageClass: nfs
+    ingress:
+      enabled: true
+      className: "traefik"
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+      host: "bw.${SECRET_DOMAIN}"
+      tls:
+        secretName: bitwarden-tls
+        hosts:
+          - "bw.${SECRET_DOMAIN}"
