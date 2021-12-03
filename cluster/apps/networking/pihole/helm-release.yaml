@@ -1,0 +1,52 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: pihole
+  namespace: networking
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: traefik
+      version: 2.5.3
+      sourceRef:
+        kind: HelmRepository
+        name: pihole-charts
+        namespace: flux-system
+      interval: 5m
+  dependsOn:
+    - name: nfs-subdir-external-provisioner
+      namespace: storage
+  values:
+    virtualHost: pi.hole
+    extraEnvVars:
+      TZ: "${TIMEZONE}"
+
+    persistentVolumeClaim:
+      enabled: true
+      storageClass: nfs
+
+    adminPassword: "${SECRET_PIHOLE_PASSWORD}"
+
+    podDnsConfig:
+      enabled: false
+
+    doh:
+      enabled: true
+
+    serviceDns:
+      type: LoadBalancer
+      loadBalancerIP: "${PIHOLE_ADDR}"
+      annotations:
+        metallb.universe.tf/allow-shared-ip: pihole-svc
+
+    serviceWeb:
+      type: LoadBalancer
+      loadBalancerIP: "${PIHOLE_ADDR}"
+      annotations:
+        metallb.universe.tf/allow-shared-ip: pihole-svc
+
+    dnsmasq:
+      customDnsEntries:
+        - "address=/${TRANSMISSION_HOST}/${TRANSMISSION_ADDR}"
