@@ -8,7 +8,7 @@ spec:
   interval: 5m
   chart:
     spec:
-      chart: traefik
+      chart: pihole
       version: 2.5.3
       sourceRef:
         kind: HelmRepository
