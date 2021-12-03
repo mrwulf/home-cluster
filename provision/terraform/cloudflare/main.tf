@@ -92,20 +92,20 @@ resource "cloudflare_zone_settings_override" "cloudflare_settings" {
 # }
 
 resource "cloudflare_record" "root" {
-  name    = data.sops_file.cloudflare_secrets.data["cloudflare_domain"]
+  name    = "@" # data.sops_file.cloudflare_secrets.data["cloudflare_domain"]
   zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
   # value   = "ipv4.${data.sops_file.cloudflare_secrets.data["cloudflare_domain"]}"
-  value = "dynamic.webwulf.net"
+  value = data.sops_file.cloudflare_secrets.data["target_record"]
   proxied = true
   type    = "CNAME"
   ttl     = 1
 }
 
-resource "cloudflare_record" "hajimari" {
-  name    = "hajimari"
+resource "cloudflare_record" "bw" {
+  name    = "bw"
   zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
   # value   = "ipv4.${data.sops_file.cloudflare_secrets.data["cloudflare_domain"]}"
-  value = "dynamic.webwulf.net"
+  value = data.sops_file.cloudflare_secrets.data["target_record"]
   proxied = true
   type    = "CNAME"
   ttl     = 1
