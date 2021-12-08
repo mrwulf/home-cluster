@@ -40,5 +40,6 @@ spec:
       host: "bw.${SECRET_DOMAIN}"
       tls:
         - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+          namespace: networking
           hosts:
             - "bw.${SECRET_DOMAIN}"
