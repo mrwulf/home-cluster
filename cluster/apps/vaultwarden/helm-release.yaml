@@ -35,11 +35,10 @@ spec:
       enabled: true
       className: "traefik"
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
+        # cert-manager.io/cluster-issuer: "letsencrypt-production"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
       host: "bw.${SECRET_DOMAIN}"
       tls:
-        - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-          namespace: networking
+        - secretName: "bw-${SECRET_DOMAIN/./-}-tls"
           hosts:
             - "bw.${SECRET_DOMAIN}"
