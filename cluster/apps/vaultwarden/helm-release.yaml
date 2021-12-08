@@ -39,6 +39,6 @@ spec:
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
       host: "bw.${SECRET_DOMAIN}"
       tls:
-        - secretName: bitwarden-tls
+        - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
           hosts:
             - "bw.${SECRET_DOMAIN}"
