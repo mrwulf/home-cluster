@@ -59,6 +59,8 @@ spec:
       postgresqlUsername: joplin-server
       postgresqlPassword: ${SECRET_JOPLIN_POSTGRES_PASSWORD}
       postgresqlDatabase: joplin
+      image:
+        tag:  13.1.0
       enabled: true
       persistence:
         enabled: true
