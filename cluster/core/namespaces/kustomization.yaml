@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - cert-manager.yaml
   - joplin.yaml
+  - mdeia.yaml
   - metallb-system.yaml
   - networking.yaml
   - storage.yaml
