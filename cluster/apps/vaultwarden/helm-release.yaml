@@ -31,6 +31,7 @@ spec:
     persistence:
       enabled: true
       storageClass: nfs
+      existingClaim: vaultwarden-storage
     ingress:
       enabled: true
       className: "traefik"
