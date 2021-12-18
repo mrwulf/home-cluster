@@ -64,4 +64,4 @@ spec:
       enabled: true
       persistence:
         enabled: true
-        existingClaim: joplin-database
+        existingClaim: joplin-database-pvc
