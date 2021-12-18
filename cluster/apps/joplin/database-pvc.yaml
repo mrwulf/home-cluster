@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: joplin-database-pvc
+  name: joplin-database
   namespace: joplin
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: nfs
+  storageClassName: flux-managed-storage-class
   resources:
     requests:
       storage: 1Gi
