@@ -15,9 +15,16 @@ spec:
         kind: HelmRepository
         name: rook-ceph-charts
         namespace: flux-system
-  dependsOn:
-    - name: rook-ceph
   values:
+    crds:
+      enabled: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 1000m
+        memory: 256Mi
     toolbox:
       enabled: true
     monitoring:
