@@ -14,3 +14,17 @@ spec:
   nfs:
     server: ourbackup.home
     path: /volume1/k8s-storage/active/joplin-database
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: joplin-database
+  namespace: joplin
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: flux-managed-storage-class
+  resources:
+    requests:
+      storage: 1Gi
