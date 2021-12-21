@@ -6,4 +6,6 @@ tasks:
     desc: Sync flux-system with the Git Repository
     cmds:
       - flux reconcile source git flux-system
+      - flux reconcile kustomization core
+      - flux reconcile kustomization apps
     silent: true
