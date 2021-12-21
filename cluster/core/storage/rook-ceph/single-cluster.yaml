@@ -10,29 +10,19 @@ spec:
     spec:
       # renovate: registryUrl=https://charts.rook.io/release
       chart: rook-ceph-cluster
-      version: v1.7.9
+      version: v1.8.1
       sourceRef:
         kind: HelmRepository
         name: rook-ceph-charts
         namespace: flux-system
+  dependsOn:
+    - name: rook-ceph
   values:
+    operatorNamespace: storage
     toolbox:
       enabled: true
     monitoring:
       enabled: true
-    cephClusterSpec:
-      dataDirHostPath: /var/lib/rook
-      dashboard:
-        enabled: true
-        urlPrefix: /
-      mon:
-        count: 3
-        allowMultiplePerNode: true
-      mgr:
-        count: 1
-        modules:
-          - name: pg_autoscaler
-            enabled: true
     ingress:
       dashboard:
         annotations:
@@ -46,18 +36,23 @@ spec:
           - hosts:
               - "rook.${SECRET_DOMAIN}"
             secretName: "rook-${SECRET_DOMAIN/./-}-tls"
+    cephClusterSpec:
+      dataDirHostPath: /var/lib/rook
+      dashboard:
+        enabled: true
+        urlPrefix: /
       storage:
-        useAllNodes: false
+        useAllNodes: true
         useAllDevices: false
         directories:
           - path: "/rook-storage"
-        nodes:
-          - name: "alpha"
-        #     devices:
-        #       - name: "sdb"
-          - name: "beta"
-        #     devices:
-        #       - name: "sda"
-          - name: "gamma"
-        #     devices:
-        #       - name: "sda"
+        # nodes:
+        #   - name: "alpha"
+        # #     devices:
+        # #       - name: "sdb"
+        #   - name: "beta"
+        # #     devices:
+        # #       - name: "sda"
+        #   - name: "gamma"
+        # #     devices:
+        # #       - name: "sda"
