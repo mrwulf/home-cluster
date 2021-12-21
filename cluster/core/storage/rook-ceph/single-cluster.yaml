@@ -22,7 +22,7 @@ spec:
     toolbox:
       enabled: true
     monitoring:
-      enabled: true
+      enabled: false
     ingress:
       dashboard:
         annotations:
@@ -35,12 +35,14 @@ spec:
         tls:
           - hosts:
               - "rook.${SECRET_DOMAIN}"
-            secretName: "rook-${SECRET_DOMAIN/./-}-tls"
+            secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+    cephObjectStores: []
     cephClusterSpec:
       dataDirHostPath: /var/lib/rook
       dashboard:
         enabled: true
         urlPrefix: /
+        ssl: false
       storage:
         useAllNodes: true
         useAllDevices: false
