@@ -37,6 +37,7 @@ spec:
               - "rook.${SECRET_DOMAIN}"
             secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
     cephObjectStores: []
+    cephFileSystems: []
     cephClusterSpec:
       dataDirHostPath: /var/lib/rook
       dashboard:
