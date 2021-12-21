@@ -51,13 +51,13 @@ spec:
         useAllDevices: false
         directories:
           - path: "/rook-storage"
-        # nodes:
-        #   - name: "k8s-0"
+        nodes:
+          - name: "alpha"
         #     devices:
         #       - name: "sdb"
-        #   - name: "k8s-1"
+          - name: "beta"
         #     devices:
         #       - name: "sda"
-        #   - name: "k8s-2"
+          - name: "gamma"
         #     devices:
         #       - name: "sda"
