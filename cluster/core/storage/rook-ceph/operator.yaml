@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://charts.rook.io/release
       chart: rook-ceph
-      version: v1.7.9
+      version: v1.8.1
       sourceRef:
         kind: HelmRepository
         name: rook-ceph-charts
@@ -18,10 +18,10 @@ spec:
   values:
     crds:
       enabled: false
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 1000m
-        memory: 256Mi
+    # resources:
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   limits:
+    #     cpu: 1000m
+    #     memory: 256Mi
