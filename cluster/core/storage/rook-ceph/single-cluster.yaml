@@ -44,18 +44,31 @@ spec:
         enabled: true
         urlPrefix: /
         ssl: false
+      mon:
+        count: 3
+        allowMultiplePerNode: false
+        volumeClaimTemplate:
+          spec:
+            storageClassName: local-storage
+            resources:
+              requests:
+                storage: 10Gi
       storage:
-        useAllNodes: true
-        useAllDevices: false
-        directories:
-          - path: "/rook-storage"
-        # nodes:
-        #   - name: "alpha"
-        # #     devices:
-        # #       - name: "sdb"
-        #   - name: "beta"
-        # #     devices:
-        # #       - name: "sda"
-        #   - name: "gamma"
-        # #     devices:
-        # #       - name: "sda"
+        storageClassDeviceSets:
+          - name: set1
+            count: 3
+            portable: false
+            encrypted: false
+            volumeClaimTemplates:
+              - metadata:
+                  name: data
+                spec:
+                  resources:
+                    requests:
+                      storage: 10Gi
+                  # IMPORTANT: Change the storage class depending on your environment (e.g. local-storage, gp2)
+                  storageClassName: local-storage
+                  volumeMode: Block
+                  accessModes:
+                    - ReadWriteOnce
+        onlyApplyOSDPlacement: false
