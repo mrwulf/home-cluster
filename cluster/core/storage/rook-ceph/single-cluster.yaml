@@ -49,7 +49,7 @@ spec:
         allowMultiplePerNode: false
         volumeClaimTemplate:
           spec:
-            storageClassName: local-storage
+            storageClassName: local-path
             resources:
               requests:
                 storage: 10Gi
@@ -67,7 +67,7 @@ spec:
                     requests:
                       storage: 10Gi
                   # IMPORTANT: Change the storage class depending on your environment (e.g. local-storage, gp2)
-                  storageClassName: local-storage
+                  storageClassName: local-path
                   volumeMode: Block
                   accessModes:
                     - ReadWriteOnce
