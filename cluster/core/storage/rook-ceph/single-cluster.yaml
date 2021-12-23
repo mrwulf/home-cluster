@@ -51,13 +51,13 @@ spec:
         useAllNodes: true
         useAllDevices: false
         onlyApplyOSDPlacement: false
-      nodes:
-        - name: "alpha"
-          devices:
-            - name: "sda4"
-        - name: "beta"
-          devices:
-            - name: "sda4"
-        - name: "gamma"
-          devices:
-            - name: "sda4"
+        nodes:
+          - name: "alpha"
+            devices:
+              - name: "sda4"
+          - name: "beta"
+            devices:
+              - name: "sda4"
+          - name: "gamma"
+            devices:
+              - name: "sda4"
