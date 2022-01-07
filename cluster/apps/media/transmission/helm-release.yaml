@@ -1,0 +1,100 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: transmission
+  namespace: media
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://bananaspliff.github.io/geek-charts
+      chart: transmission-openvpn
+      version: 0.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: bananaspliff-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    replicaCount: 1
+
+    image:
+      repository: "haugene/transmission-openvpn"
+      tag: "latest"
+      pullPolicy: "IfNotPresent"
+
+    ingress:
+      enabled: false
+
+    env:
+      - name: OPENVPN_PROVIDER
+        value: "PIA" # VPN provider. List of supported providers: https://haugene.github.io/docker-transmission-openvpn/supported-providers/
+      - name: OPENVPN_CONFIG
+        value: "ca_montreal"
+      - name: OPENVPN_USERNAME
+        valueFrom: # Reference to the secret | openvpn.username
+          secretKeyRef:
+            name: "openvpn"
+            key: "username"
+      - name: OPENVPN_PASSWORD
+        valueFrom: # Reference to the secret | openvpn.password
+          secretKeyRef:
+            name: "openvpn"
+            key: "password"
+      - name: LOCAL_NETWORK
+        value: "${LOCAL_NETWORK}"
+      # - name: TRANSMISSION_PEER_PORT
+      #   value: "47444"
+      - name: TRANSMISSION_DOWNLOAD_DIR
+        value: "/downloads"
+      - name: TRANSMISSION_SCRAPE_PAUSED_TORRENTS_ENABLED
+        value: "false"
+      - name: PUID
+        value: "985"
+      - name: PGID
+        value: "977"
+      - name: TRANSMISSION_WEB_UI
+        value: transmission-web-control
+
+    # service:
+    #   type: LoadBalancer
+    #   port: 80
+    podSecurityContext:
+      fsGroup: 977
+      runAsUser: 0
+      runAsGroup: 0
+    volumes:
+      - name: "dev-tun" # Needed for VPN
+        hostPath:
+          path: "/dev/net/tun"
+      - name: "transmission-config"
+        persistentVolumeClaim:
+          claimName: "transmission-config"
+      - name: "transmission-incomplete"
+        persistentVolumeClaim:
+          claimName: "transmission-incomplete"
+      - name: "transmission-downloads"
+        persistentVolumeClaim:
+          claimName: "transmission-downloaded"
+      # - name: "transmission-other"
+      #   hostPath:
+      #     path: "/mnt/OurShare/Other"
+
+    volumeMounts:
+      - name: "transmission-config"
+        mountPath: "/data"
+        subPath: "configs/transmission-home"
+      - name: "transmission-incomplete"
+        mountPath: "/incomplete"
+      - name: "transmission-downloads"
+        mountPath: "/downloads"
+      # - name: "transmission-other"
+      #   mountPath: "/other"
+      - name: "dev-tun"
+        mountPath: "/dev/net/tun" # Needed for VPN
+
+    securityContext:
+      capabilities: # Needed for VPN
+        add:
+          - NET_ADMIN

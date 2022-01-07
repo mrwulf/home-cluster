@@ -30,16 +30,14 @@ spec:
       enableWebSockets: true
     persistence:
       enabled: true
-      storageClass: nfs
       existingClaim: vaultwarden-storage
     ingress:
       enabled: true
       className: "traefik"
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
       host: "bw.${SECRET_DOMAIN}"
       tls:
-        - secretName: "bw-${SECRET_DOMAIN/./-}-tls"
+        - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
           hosts:
             - "bw.${SECRET_DOMAIN}"
