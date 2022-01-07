@@ -22,7 +22,7 @@ spec:
     toolbox:
       enabled: true
     monitoring:
-      enabled: false
+      enabled: true
     ingress:
       dashboard:
         annotations:
