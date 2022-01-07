@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: pihole
+  name: pihole-2
   namespace: networking
 spec:
   interval: 5m
@@ -20,15 +20,14 @@ spec:
     - name: rook-ceph
       namespace: storage
   values:
-    replicaCount: 2
-    virtualHost: pi.hole
+    replicaCount: 1
     extraEnvVars:
       TZ: "${TIMEZONE}"
 
     persistentVolumeClaim:
       enabled: true
       storageClass: ceph-block
-      existingClaim: pihole-config
+      existingClaim: pihole-secondary-config
 
     adminPassword: "${SECRET_PIHOLE_PASSWORD}"
 
@@ -43,16 +42,12 @@ spec:
 
     serviceDns:
       type: LoadBalancer
-      loadBalancerIP: "${PIHOLE_ADDR}"
+      loadBalancerIP: "${PIHOLE_2_ADDR}"
       annotations:
         metallb.universe.tf/allow-shared-ip: pihole-svc
 
     serviceWeb:
       type: LoadBalancer
-      loadBalancerIP: "${PIHOLE_ADDR}"
+      loadBalancerIP: "${PIHOLE_2_ADDR}"
       annotations:
         metallb.universe.tf/allow-shared-ip: pihole-svc
-
-    dnsmasq:
-      customDnsEntries:
-        - "address=/${TRANSMISSION_HOST}/${TRANSMISSION_ADDR}"
