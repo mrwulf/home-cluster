@@ -34,6 +34,8 @@ spec:
     podDnsConfig:
       enabled: false
 
+    maxUnavailable: 0
+
     antiaff:
       enabled: true
       avoidRelease: pihole-2
