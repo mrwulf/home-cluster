@@ -48,6 +48,8 @@ spec:
       #   value: "47444"
       - name: TRANSMISSION_DOWNLOAD_DIR
         value: "/downloads"
+      - name: TRANSMISSION_INCOMPLETE_DIR
+        value: "/incomplete"
       - name: TRANSMISSION_SCRAPE_PAUSED_TORRENTS_ENABLED
         value: "false"
       - name: PUID
