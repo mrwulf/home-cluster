@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - joplin
   - kube-system
+  - media
   - networking
   - system-upgrade
   - vaultwarden
