@@ -70,17 +70,30 @@ For provisioning the following tools will be used:
 | [helm](https://helm.sh/)                               | Manage Kubernetes applications                           |
 | [kustomize](https://kustomize.io/)                     | Template-free way to customize application configuration |
 | [pre-commit](https://github.com/pre-commit/pre-commit) | Runs checks pre `git commit`                             |
+| [gitleaks](https://github.com/zricethezav/gitleaks)    | Scan git repos (or files) for secrets                    |
 | [prettier](https://github.com/prettier/prettier)       | Prettier is an opinionated code formatter.               |
 
 ### :warning:&nbsp; pre-commit
 
 It is advisable to install [pre-commit](https://pre-commit.com/) and the pre-commit hooks that come with this repository.
-[sops-pre-commit](https://github.com/k8s-at-home/sops-pre-commit) will check to make sure you are not by accident committing your secrets un-encrypted.
+[sops-pre-commit](https://github.com/k8s-at-home/sops-pre-commit) and [gitleaks](https://github.com/zricethezav/gitleaks) will check to make sure you are not by accident committing your secrets un-encrypted.
 
 After pre-commit is installed on your machine run:
 
 ```sh
-pre-commit install-hooks
+task pre-commit:init
+```
+**Remember to run this on each new clone of the repository for it to have effect.**
+
+Commands are of interest, for learning purposes:
+
+This command makes it so pre-commit runs on `git commit`, and also installs environments per the config file.
+```
+pre-commit install --install-hooks
+```
+This command checks for new versions of hooks, though it will occasionally make mistakes, so verify its results.
+```
+pre-commit autoupdate
 ```
 
 ## :open_file_folder:&nbsp; Repository structure
@@ -155,7 +168,9 @@ In order to use Terraform and `cert-manager` with the Cloudflare DNS challenge y
 
 ### :page_facing_up:&nbsp; Configuration
 
-:round_pushpin: The `.config.env` file contains necessary configuration files that are needed by Ansible, Terraform and Flux.
+:round_pushpin: The `.config.env` file contains necessary configuration that is needed by Ansible, Terraform and Flux.
+
+:round_pushpin: It is suggested to use **three control plane nodes**. If you **only need a single control plane node**, make sure **you update** `./provision/ansible/inventory/group_vars/kubernetes/k3s.yml` and set `k3s_use_unsupported_config` to `true`
 
 1. Copy the `.config.sample.env` to `.config.env` and start filling out all the environment variables. **All are required** and read the comments they will explain further what is required.
 
@@ -182,6 +197,8 @@ In order to use Terraform and `cert-manager` with the Cloudflare DNS challenge y
 ### :sailboat:&nbsp; Installing k3s with Ansible
 
 :round_pushpin: Here we will be running a Ansible Playbook to install [k3s](https://k3s.io/) with [this](https://galaxy.ansible.com/xanmanning/k3s) wonderful k3s Ansible galaxy role. After completion, Ansible will drop a `kubeconfig` in `./provision/kubeconfig` for use with interacting with your cluster with `kubectl`.
+
+:round_pushpin: Once more over, it is suggested to use **three control plane nodes**. If you **only need a single control plane node**, make sure **you update** `./provision/ansible/inventory/group_vars/kubernetes/k3s.yml` and set `k3s_use_unsupported_config` to `true`
 
 1. Verify Ansible can view your config by running `task ansible:list`
 
@@ -224,13 +241,14 @@ kubectl --kubeconfig=./provision/kubeconfig create namespace flux-system --dry-r
 
 ```sh
 cat ~/.config/sops/age/keys.txt |
-    kubectl --kubeconfig=./provision/kubeconfig -n flux-system create secret generic sops-age \
+    kubectl --kubeconfig=./provision/kubeconfig \
+    -n flux-system create secret generic sops-age \
     --from-file=age.agekey=/dev/stdin
 ```
 
-:round_pushpin: Variables defined in `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/base/cluster-settings.sops.yaml` will be usable anywhere in your YAML manifests under `./cluster`
+:round_pushpin: Variables defined in `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/base/cluster-settings.yaml` will be usable anywhere in your YAML manifests under `./cluster`
 
-4. **Verify** all the above files are **encrypted** with SOPS
+4. **Verify** the `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/core/cert-manager/secret.sops.yaml` files are **encrypted** with SOPS
 
 5. If you verified all the secrets are encrypted, you can delete the `tmpl` directory now
 
@@ -282,13 +300,13 @@ kubectl --kubeconfig=./provision/kubeconfig get pods -n flux-system
 
 3. Finally have Terraform execute the task by running `task terraform:apply:cloudflare`
 
-If Terraform was ran successfully head over to your browser and you _should_ be able to access `https://hajimari.${BOOTSTRAP_CLOUDFLARE_DOMAIN}`
+If Terraform was ran successfully and you have port forwarded `80` and `443` in your router to the `${BOOTSTRAP_METALLB_TRAEFIK_ADDR}` IP, head over to your browser and you _should_ be able to access `https://hajimari.${BOOTSTRAP_CLOUDFLARE_DOMAIN}`!
 
 ## :mega:&nbsp; Post installation
 
 ### :point_right:&nbsp; Troubleshooting
 
-Our [wiki](https://github.com/k8s-at-home/template-cluster-k3s/wiki) is a good place to start troubleshooting issues. If that doesn't cover your issue, start a new thread in the #support channel on our [Discord](https://digcord.gg/k8s-at-home).
+Our [wiki](https://github.com/k8s-at-home/template-cluster-k3s/wiki) is a good place to start troubleshooting issues. If that doesn't cover your issue, start a new thread in the #support channel on our [Discord](https://discord.gg/k8s-at-home).
 
 ### :robot:&nbsp; Integrations
 
