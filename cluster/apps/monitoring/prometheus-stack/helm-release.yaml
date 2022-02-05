@@ -1,0 +1,114 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      version: 30.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    # kubeControllerManager:
+    #   enabled: true
+    #   endpoints:
+    #   - 10.0.1.50
+    #   - 10.0.1.55
+    #   - 10.0.1.60
+    #   service:
+    #     enabled: true
+    #     ## If null or unset, the value is determined dynamically based on target Kubernetes version due to change
+    #     ## of default port in Kubernetes 1.22.
+    #     ##
+    #     port: null
+    #     targetPort: null
+    kubeEtcd:
+      enabled: true
+      endpoints:
+        - 10.0.1.50
+        - 10.0.1.55
+        - 10.0.1.60
+      service:
+        enabled: true
+        port: 2379
+        targetPort: 2379
+    # kubeScheduler:
+    #   enabled: true
+    #   endpoints:
+    #   - 10.0.1.50
+    #   - 10.0.1.55
+    #   - 10.0.1.60
+    #   service:
+    #     enabled: true
+    #     ## If null or unset, the value is determined dynamically based on target Kubernetes version due to change
+    #     ## of default port in Kubernetes 1.23.
+    #     ##
+    #     port: null
+    #     targetPort: null
+    # kubeProxy:
+    #   enabled: true
+    #   endpoints:
+    #   - 10.0.1.50
+    #   - 10.0.1.55
+    #   - 10.0.1.60
+    #   service:
+    #     enabled: true
+    #     port: 10249
+    #     targetPort: 10249
+    grafana:
+      adminPassword: ${GRAFANA_PASS}
+      persistence:
+        type: pvc
+        enabled: true
+        storageClassName: ceph-ecblock
+        accessModes:
+          - ReadWriteOnce
+        size: 10Gi
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+        hosts:
+          - "grafana.${SECRET_DOMAIN}"
+        tls:
+          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - "grafana.${SECRET_DOMAIN}"
+      grafana.ini:
+        server:
+          root_url: "https://grafana.${SECRET_DOMAIN}"
+        # auth.generic_oauth:
+        #   enabled: true
+        #   name: "Login Keycloak"
+        #   client_id: "grafana.yourdomain.dev"
+        #   client_secret: "<keep-it-secret-keep-it-safe>"
+        #   auth_url: "https://key.yourdomain.dev/auth/realms/development/protocol/openid-connect/auth"
+        #   token_url: "https://key.yourdomain.dev/auth/realms/development/protocol/openid-connect/token"
+        #   api_url: "https://key.yourdomain.dev/auth/realms/development/protocol/openid-connect/userinfo"
+        #   allow_sign_up: true
+        #   role_attribute_path: "contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'"
+        #   email_attribute_name: email
+        #   scopes: "openid profile email"
+    prometheus:
+      prometheusSpec:
+        retentionSize: "9GiB"
+        serviceMonitorSelectorNilUsesHelmValues: false
+        serviceMonitorSelector: {}
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: ceph-ecblock
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 10Gi
