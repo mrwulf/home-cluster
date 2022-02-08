@@ -1,0 +1,61 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: auth
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://charts.goauthentik.io/
+      chart: authentik
+      version: 5.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: authentik-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    authentik:
+      secret_key: "${AUTHENTIK_KEY}"
+      # This sends anonymous usage-data, stack traces on errors and
+      # performance data to sentry.beryju.org, and is fully opt-in
+      error_reporting:
+        enabled: false
+      postgresql:
+        password: "${AUTHENTIK_DB_PASS}"
+
+    ingress:
+      enabled: true
+      ingressClassName: "traefik"
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+      hosts:
+        - host: "auth.${SECRET_DOMAIN}"
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - "auth.${SECRET_DOMAIN}"
+          secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+
+    prometheus:
+      rules:
+        create: true
+      serviceMonitor:
+        create: true
+
+
+    postgresql:
+      enabled: true
+      persistence:
+        existingClaim: authentik-pgsql-db
+      postgresqlPassword: "${AUTHENTIK_DB_PASS}"
+    redis:
+      enabled: true
+      master:
+        persistence:
+          existingClaim: authentik-redis-db
