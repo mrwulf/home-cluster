@@ -33,17 +33,20 @@ spec:
       - name: OPENVPN_CONFIG
         value: "ca_montreal"
       - name: OPENVPN_USERNAME
-        valueFrom: # Reference to the secret | openvpn.username
+        valueFrom:
           secretKeyRef:
             name: "openvpn"
-            key: "username"
+            key: "OVPN_USER"
       - name: OPENVPN_PASSWORD
-        valueFrom: # Reference to the secret | openvpn.password
+        valueFrom:
           secretKeyRef:
             name: "openvpn"
-            key: "password"
+            key: "OVPN_PASS"
       - name: LOCAL_NETWORK
-        value: "${LOCAL_NETWORK}"
+        valueFrom:
+          secretKeyRef:
+            name: "openvpn"
+            key: "LOCAL_NETWORK"
       # - name: TRANSMISSION_PEER_PORT
       #   value: "47444"
       - name: TRANSMISSION_DOWNLOAD_DIR
