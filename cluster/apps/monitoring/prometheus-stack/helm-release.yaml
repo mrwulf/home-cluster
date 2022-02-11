@@ -89,6 +89,7 @@ spec:
           root_url: "https://grafana.${SECRET_DOMAIN}"
         auth:
           signout_redirect_url: "https://auth.${SECRET_DOMAIN}/application/o/grafana/end-session/"
+          # Switch off auto_login to be able to log in as admin to solve https://github.com/grafana/grafana/issues/29211
           oauth_auto_login: true
         auth.generic_oauth:
           enabled: true
@@ -99,8 +100,8 @@ spec:
           auth_url: "https://auth.${SECRET_DOMAIN}/application/o/authorize/"
           token_url: "https://auth.${SECRET_DOMAIN}/application/o/token/"
           api_url: "https://auth.${SECRET_DOMAIN}/application/o/userinfo/"
-          allow_sign_up: false
-          role_attribute_path: "contains(roles[*], 'grafana admin') && 'Admin' || contains(roles[*], 'grafana editor') && 'Editor' || 'Viewer'"
+          allow_sign_up: true
+          role_attribute_path: "contains(groups[*], 'grafana admin') && 'Admin' || contains(groups[*], 'grafana editor') && 'Editor' || 'Viewer'"
           email_attribute_name: email
     prometheus:
       prometheusSpec:
