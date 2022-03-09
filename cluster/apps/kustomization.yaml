@@ -7,4 +7,5 @@ resources:
   - monitoring
   - networking
   - system-upgrade
+  - unifi
   - vaultwarden

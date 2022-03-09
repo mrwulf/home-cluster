@@ -1,0 +1,62 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: unifi
+  namespace: networking
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: unifi
+      version: 4.6.1
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: jacobalberty/unifi
+      tag: v7.0.23
+
+    env:
+      TZ: "${TIMEZONE}"
+
+    service:
+      main:
+        type: LoadBalancer
+        annotations:
+          coredns.io/hostname: unifi
+          metallb.universe.tf/loadBalancerIPs: "${UNIFI_ADDR}"
+        externalTrafficPolicy: Local
+
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+          traefik.ingress.kubernetes.io/router.middlewares: networking-rfc1918-ips@kubernetescrd
+
+        hosts:
+          - host: &host "unifi.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+
+        tls:
+          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+
+    persistence:
+      data:
+        enabled: true
+        existingClaim: unifi-data
+
+    resources:
+      requests:
+        cpu: "0.02"
+        memory: "1024M"
+      limits:
+        memory: "1536M"
