@@ -10,3 +10,4 @@ data:
   PIHOLE_1_ADDR: 10.0.0.110
   PIHOLE_2_ADDR: 10.0.0.111
   TIMEZONE: "America/Los_Angeles"
+  UNIFI_ADDR: 10.0.0.101
