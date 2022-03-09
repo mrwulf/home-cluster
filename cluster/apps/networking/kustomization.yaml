@@ -5,3 +5,4 @@ resources:
   - secrets-reflector
   - traefik
   - pihole
+  - unifi
