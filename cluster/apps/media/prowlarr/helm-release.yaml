@@ -1,0 +1,67 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: radarr
+  namespace: media
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: prowlarr
+      version: 4.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    env:
+      TZ: "${TIMEZONE}"
+
+    image:
+      repository: ghcr.io/k8s-at-home/prowlarr
+      tag: v0.2.0.1572
+      pullPolicy: IfNotPresent
+
+    hostname: prowlarr
+
+    persistence:
+      config:
+        enabled: true
+        existingClaim: prowlarr-config
+      shared:
+        enabled: true
+        type: emptyDir
+        mountPath: /shared
+      # backup:
+      #   enabled: true
+      #   type: custom
+      #   volumeSpec:
+      #     nfs:
+      #       server: "${NAS_ADDRESS}"
+      #       path: /volume1/Backup/Kubernetes/Applications/prowlarr
+      #   mountPath: /config/Backups
+
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+          traefik.ingress.kubernetes.io/router.middlewares: network-rfc1918-ips@kubernetescrd
+        hosts:
+          - host: "prowlarr.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+        tls:
+          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - "prowlarr.${SECRET_DOMAIN}"
+
+    resources:
+      requests:
+        memory: "256M"
+      limits:
+        memory: "384M"
