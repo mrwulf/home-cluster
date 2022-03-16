@@ -7,5 +7,6 @@ resources:
   - metallb-system.yaml
   - monitoring.yaml
   - networking.yaml
+  - node-system.yaml
   - storage.yaml
   - vaultwarden.yaml
