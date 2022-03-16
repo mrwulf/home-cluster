@@ -25,4 +25,3 @@ resources:
   - traefik-charts.yaml
   - vaultwarden-charts.yaml
   - weaveworks-kured-charts.yaml
-  - kubernetes-sigs-nfd-charts.yaml
