@@ -9,4 +9,5 @@ resources:
   - networking.yaml
   - node-system.yaml
   - storage.yaml
+  - system.yaml
   - vaultwarden.yaml
