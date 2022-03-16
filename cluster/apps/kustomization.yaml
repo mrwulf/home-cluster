@@ -6,5 +6,6 @@ resources:
   - media
   - monitoring
   - networking
+  - system
   - system-upgrade
   - vaultwarden
