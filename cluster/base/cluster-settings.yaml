@@ -6,8 +6,9 @@ metadata:
   namespace: flux-system
 data:
   METALLB_LB_RANGE: 10.0.0.100-10.0.0.120
-  METALLB_TRAEFIK_ADDR: 10.0.0.100
+  TIMEZONE: "America/Los_Angeles"
   PIHOLE_1_ADDR: 10.0.0.110
   PIHOLE_2_ADDR: 10.0.0.111
-  TIMEZONE: "America/Los_Angeles"
-  UNIFI_ADDR: 10.0.0.101
+  PLEX_ADDR: 10.0.0.112
+  UNIFI_ADDR: 10.0.0.113
+  TRAEFIK_ADDR: 10.0.0.120
