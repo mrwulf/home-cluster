@@ -28,8 +28,8 @@ spec:
         type: LoadBalancer
         annotations:
           coredns.io/hostname: unifi
+          metallb.universe.tf/allow-shared-ip: unifi-svc
           metallb.universe.tf/loadBalancerIPs: "${UNIFI_ADDR}"
-        loadBalancerIP: ${UNIFI_ADDR}
         externalTrafficPolicy: Local
 
     ingress:
