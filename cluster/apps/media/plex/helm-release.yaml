@@ -59,7 +59,7 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: plex-config-nfs
+        existingClaim: plex-config
 
       transcode:
         enabled: true
