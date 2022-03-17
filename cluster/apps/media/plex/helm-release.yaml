@@ -25,20 +25,16 @@ spec:
       runAsGroup: 977
       supplementalGroups:
         - 65534 # nfsnobody
-        - 985 # plex user id
-        - 977 # plex group id
 
     env:
       TZ: "${TIMEZONE}"
-      PUID: 985
-      PGID: 977
 
     service:
       main:
         type: LoadBalancer
         annotations:
           traefik.ingress.kubernetes.io/service.serversscheme: https
-        # loadBalancerIP: ${LB_PLEX}
+        loadBalancerIP: ${PLEX_ADDR}
         externalTrafficPolicy: Local
 
     ingress:
