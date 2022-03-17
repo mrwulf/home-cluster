@@ -21,6 +21,8 @@ spec:
       tag: v1.25.7.5604-980a13e02
 
     podSecurityContext:
+      runAsUser: 985
+      runAsGroup: 977
       supplementalGroups:
         - 65534 # nfsnobody
         - 985 # plex user id
