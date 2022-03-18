@@ -37,6 +37,7 @@ spec:
           coredns.io/hostname: unifi
           metallb.universe.tf/allow-shared-ip: unifi-svc
           metallb.universe.tf/loadBalancerIPs: "${UNIFI_ADDR}"
+          traefik.ingress.kubernetes.io/service.serversscheme: https
         externalTrafficPolicy: Local
 
     ingress:
