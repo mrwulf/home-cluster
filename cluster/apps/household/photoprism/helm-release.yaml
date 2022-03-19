@@ -1,0 +1,115 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: photoprism
+  namespace: household
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
+      chart: photoprism
+      version: 6.4.0
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home-charts
+        namespace: flux-system
+      interval: 5m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: photoprism/photoprism
+      tag: "220302-bullseye"
+
+    env:
+      PHOTOPRISM_STORAGE_PATH: /photoprism/storage
+      PHOTOPRISM_ORIGINALS_PATH: /photoprism/originals
+      PHOTOPRISM_BACKUP_PATH: /photoprism/backups
+      ## See other config options from PhotoPrism documentation: https://docs.photoprism.org/getting-started/config-options/
+      PHOTOPRISM_ADMIN_PASSWORD: "${SECRET_PHOTOPRISM_PASSWORD}"     # Initial admin password: PLEASE CHANGE!
+      # PHOTOPRISM_DEBUG: "false"                      # Run in debug mode (shows additional log messages)
+      PHOTOPRISM_PUBLIC: "false"                     # No authentication required (disables password protection)
+      # PHOTOPRISM_READONLY: "false"                   # Don't modify originals directory (reduced functionality)
+      # PHOTOPRISM_EXPERIMENTAL: "false"               # Enable experimental features
+      PHOTOPRISM_SITE_URL: "https://photos.${SECRET_DOMAIN}/"  # Canonical / public site URL
+      # PHOTOPRISM_SITE_TITLE: ""
+      # PHOTOPRISM_SITE_CAPTION: ""
+      # PHOTOPRISM_SITE_DESCRIPTION: ""
+      # PHOTOPRISM_SITE_AUTHOR: ""
+      PHOTOPRISM_DATABASE_DRIVER: mysql
+      PHOTOPRISM_DATABASE_PASSWORD: "${SECRET_PHOTOPRISM_PASSWORD}"
+      # # You may optionally set user, group and/or file permissions using environment variables:
+      # UID: 1000
+      # GID: 1000
+      # UMASK: 0000
+      PHOTOPRISM_ORIGINALS_LIMIT: 10000 # in MB (default 1000)
+      PHOTOPRISM_DETECT_NSFW: "true"
+      TZ: "${TIMEZONE}"
+
+    persistence:
+      config:
+        enabled: true
+        mountPath: /photoprism/storage
+        existingClaim: photoprism-config
+        # type: custom
+        # volumeSpec:
+        #   nfs:
+        #     server: "${NFS_SERVER}"
+        #     path: "${NFS_KUBERNETES}/photoprism/storage"
+
+      originals:
+        enabled: true
+        mountPath: "/photoprism/originals"
+        type: custom
+        volumeSpec:
+          nfs:
+            server: "ourshare.home"
+            path: "/volume1/Shared Pictures/Emma"
+
+      backups:
+        enabled: true
+        mountPath: "/photoprism/backups"
+        existingClaim: photoprism-backups
+        # type: custom
+        # volumeSpec:
+        #   nfs:
+        #     server: "${NFS_SERVER}"
+        #     path: "${NFS_KUBERNETES}/photoprism/originals"
+
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        hosts:
+          - host: "photos.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - "photos.${SECRET_DOMAIN}"
+            secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+
+    # -- Enable and configure mariadb database subchart under this key.
+    #    For more options see [mariadb chart documentation](https://github.com/bitnami/charts/tree/master/bitnami/mariadb)
+    # @default -- See values.yaml
+    mariadb:
+      enabled: true
+      architecture: standalone
+      auth:
+        database: photoprism
+        username: photoprism
+        password: "${SECRET_PHOTOPRISM_PASSWORD}"
+        rootPassword: "${SECRET_PHOTOPRISM_PASSWORD}"
+      primary:
+        persistence:
+          enabled: true
+          existingClaim: photoprism-db
