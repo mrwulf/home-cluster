@@ -23,7 +23,7 @@ spec:
                   value: "networking"
                 # space delimited namespace where to reflect the secrets to
                 - name: NAMESPACE_DESTINATION
-                  value: "auth joplin media monitoring storage vaultwarden flux-system kube-system"
+                  value: "auth household joplin media monitoring storage vaultwarden flux-system kube-system"
               command:
                 - "/bin/sh"
                 - "-ec"
