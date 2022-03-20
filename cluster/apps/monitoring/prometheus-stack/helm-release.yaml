@@ -123,3 +123,9 @@ spec:
               resources:
                 requests:
                   storage: 10Gi
+        additionalScrapeConfigs:
+          - job_name: node-exporter
+            honor_timestamps: true
+            static_configs:
+              - targets:
+                  - "firewall.home:9100"
