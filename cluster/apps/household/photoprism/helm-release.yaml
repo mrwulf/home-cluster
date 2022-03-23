@@ -113,3 +113,12 @@ spec:
         persistence:
           enabled: true
           existingClaim: photoprism-db
+
+    resources:
+      requests:
+        cpu: 4
+        memory: 1500Mi
+        gpu.intel.com/i915: 1
+      limits:
+        gpu.intel.com/i915: 1
+        memory: 8000Mi
