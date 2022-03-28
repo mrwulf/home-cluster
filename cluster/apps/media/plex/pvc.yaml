@@ -27,7 +27,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   nfs:
-    server: ourbackup.home
+    server: 10.0.1.20
     path: /volume1/k8s-storage/backups/plex-database-backups
 
 ---
