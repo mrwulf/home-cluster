@@ -73,9 +73,9 @@ spec:
         type: emptyDir
         medium: Memory
 
-      plex-backups:
-        enabled: true
-        existingClaim: plex-database-backups
+      # plex-backups:
+      #   enabled: true
+      #   existingClaim: plex-database-backups
 
       # nfs-nas-media:
       #   enabled: true
