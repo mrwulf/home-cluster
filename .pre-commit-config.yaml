@@ -30,6 +30,6 @@ repos:
       - id: forbid-secrets
         exclude: ^tmpl/
   - repo: https://github.com/zricethezav/gitleaks
-    rev: v8.5.0
+    rev: v8.5.3
     hooks:
       - id: gitleaks
