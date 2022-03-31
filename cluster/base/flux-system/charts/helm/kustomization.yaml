@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - authentik-charts.yaml
   - bitnami-charts.yaml
-  - christian-schlichtherle-charts.yaml
+  - dcardellino-charts.yaml
   - deliveryhero-charts.yaml
   - descheduler-charts.yaml
   - emberstack-charts.yaml
