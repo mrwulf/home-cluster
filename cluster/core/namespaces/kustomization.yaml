@@ -9,6 +9,7 @@ resources:
   - monitoring.yaml
   - networking.yaml
   - node-system.yaml
+  - other.yaml
   - storage.yaml
   - system.yaml
   - vaultwarden.yaml
