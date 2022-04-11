@@ -69,17 +69,8 @@ spec:
         type: custom
         volumeSpec:
           nfs:
-            server: "ourshare.home"
-            path: "/volume1/Shared Pictures/Emma"
-
-      originals-unsorted:
-        enabled: true
-        mountPath: "/photoprism/originals/unsorted"
-        type: custom
-        volumeSpec:
-          nfs:
             server: "ourbackup.home"
-            path: "/volume2/Photo Storage"
+            path: "/volume3/Pictures"
 
       backups:
         enabled: true
