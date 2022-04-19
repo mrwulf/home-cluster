@@ -31,6 +31,14 @@ spec:
         enabled: true
         existingClaim: homeassistant-config
 
+    http:
+      server_host: 0.0.0.0
+      ip_ban_enabled: true
+      login_attempts_threshold: 5
+      use_x_forwarded_for: true
+      trusted_proxies:
+        - 10.0.0.0/23
+
     ingress:
       main:
         enabled: true
