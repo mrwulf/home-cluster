@@ -3,5 +3,4 @@ kind: Kustomization
 resources:
   - operator.yaml
   - single-cluster.yaml
-  - block-pools.yaml
-  - storage-classes.yaml
+  - role-for-servicemonitors.yaml
