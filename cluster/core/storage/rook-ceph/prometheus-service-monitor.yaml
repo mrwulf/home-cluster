@@ -3,7 +3,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: rook-ceph-mgr
-  namespace: monitoring
+  namespace: storage
   labels:
     team: rook
 spec:
@@ -25,7 +25,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: csi-metrics
-  namespace: monitoring
+  namespace: storage
   labels:
     team: rook
 spec:
