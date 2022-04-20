@@ -13,7 +13,7 @@ spec:
           serviceAccountName: sa-secret-reflector
           containers:
             - name: secret-reflector
-              image: ghcr.io/k8s-at-home/kubectl:v1.23.5
+              image: ghcr.io/k8s-at-home/kubectl:v1.23.6
               env:
                 # space delimited secrets to copy
                 - name: SECRET_LIST
