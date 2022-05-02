@@ -78,57 +78,32 @@ spec:
       #   enabled: true
       #   existingClaim: plex-database-backups
 
-      # nfs-nas-media:
-      #   enabled: true
-      #   type: custom
-      #   volumeSpec:
-      #     nfs:
-      #       server: "${NAS_ADDRESS}"
-      #       path: /volume1/Media
-      #   mountPath: /storage/media
-      #   readOnly: true
-
       movies:
         enabled: true
         mountPath: /mnt/OurShare/Movies
-        type: hostPath
-        hostPath: /mnt/OurShare/Movies
-        # volumeSpec:
-        #   nfs:
-        #     server: ourshare.home
-        #     path: /volume1/Shared Videos/Movies
-
-      movies2:
-        enabled: true
-        mountPath: /mnt/OurBackup/MOVIES2
-        type: hostPath
-        hostPath: /mnt/OurBackup/MOVIES2
-        # volumeSpec:
-        #   nfs:
-        #     server: ourbackup.home
-        #     path: /volume2/MOVIES2
+        type: custom
+        volumeSpec:
+          nfs:
+            server: ourshare.home
+            path: /volume1/Shared Videos/Movies
 
       tv:
         enabled: true
         mountPath: /mnt/OurBackup/TV
-        type: hostPath
-        hostPath: /mnt/OurBackup/TV
-        # type: custom
-        # volumeSpec:
-        #   nfs:
-        #     server: ourbackup.home
-        #     path: /volume1/Shared Videos/TV
+        type: custom
+        volumeSpec:
+          nfs:
+            server: ourbackup.home
+            path: /volume1/Shared Videos/TV
 
       tv1:
         enabled: true
         mountPath: /mnt/OurBackup/TV1
-        type: hostPath
-        hostPath: /mnt/OurBackup/TV1
-        # type: custom
-        # volumeSpec:
-        #   nfs:
-        #     server: ourbackup.home
-        #     path: /volume2/TV1
+        type: custom
+        volumeSpec:
+          nfs:
+            server: ourbackup.home
+            path: /volume2/TV1
 
     resources:
       requests:
