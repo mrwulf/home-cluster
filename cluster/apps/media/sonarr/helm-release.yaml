@@ -66,20 +66,17 @@ spec:
       tv:
         enabled: true
         mountPath: /TV
-        type: hostPath
-        hostPath: /mnt/OurBackup/TV
-        # type: custom
-        # volumeSpec:
-        #   nfs:
-        #     server: ourbackup.home
-        #     path: /volume1/Shared Videos/TV
+        type: custom
+        volumeSpec:
+          nfs:
+            server: ourbackup.home
+            path: /volume1/Shared Videos/TV
+
       tv1:
         enabled: true
         mountPath: /TV1
-        type: hostPath
-        hostPath: /mnt/OurBackup/TV1
-        # type: custom
-        # volumeSpec:
-        #   nfs:
-        #     server: ourbackup.home
-        #     path: /volume2/TV1
+        type: custom
+        volumeSpec:
+          nfs:
+            server: ourbackup.home
+            path: /volume2/TV1
