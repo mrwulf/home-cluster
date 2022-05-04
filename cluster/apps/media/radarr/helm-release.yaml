@@ -66,18 +66,7 @@ spec:
       movies:
         enabled: true
         mountPath: /Movies
-        type: hostPath
-        hostPath: /mnt/OurShare/Movies
-        # volumeSpec:
-        #   nfs:
-        #     server: ourshare.home
-        #     path: /volume1/Shared Videos/Movies
-      movies2:
-        enabled: true
-        mountPath: /MOVIES2
-        type: hostPath
-        hostPath: /mnt/OurBackup/MOVIES2
-        # volumeSpec:
-        #   nfs:
-        #     server: ourbackup.home
-        #     path: /volume2/MOVIES2
+        volumeSpec:
+          nfs:
+            server: ourshare.home
+            path: /volume1/Shared Videos/Movies
