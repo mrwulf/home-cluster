@@ -26,22 +26,22 @@ spec:
     vpa:
       enabled: true
     dashboard:
+      replicaCount: 1
       ingress:
-        main:
-          enabled: true
-          ingressClassName: "traefik"
-          annotations:
-            traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-            traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          hosts:
-            - host: "goldilocks.${SECRET_DOMAIN}"
-              paths:
-                - path: /
-                  pathType: Prefix
-          tls:
-            - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-              hosts:
-                - "goldilocks.${SECRET_DOMAIN}"
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+        hosts:
+          - host: "goldilocks.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - "goldilocks.${SECRET_DOMAIN}"
     resources:
       request:
         cpu: 15m
