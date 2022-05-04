@@ -62,13 +62,13 @@ spec:
             secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
 
     postgresql:
-      postgresqlPostgresPassword: ${SECRET_JOPLIN_POSTGRES_ADMIN_PASSWORD}
-      postgresqlUsername: joplin-server
-      postgresqlPassword: ${SECRET_JOPLIN_POSTGRES_PASSWORD}
-      postgresqlDatabase: joplin
-      image:
-        tag: 13.1.0
       enabled: true
-      persistence:
-        enabled: true
-        existingClaim: joplin-database
+      auth:
+        postgresPassword: ${SECRET_JOPLIN_POSTGRES_ADMIN_PASSWORD}
+        username: joplin-server
+        password: ${SECRET_JOPLIN_POSTGRES_PASSWORD}
+        database: joplin
+      primary:
+        persistence:
+          enabled: true
+          existingClaim: joplin-database
