@@ -66,6 +66,7 @@ spec:
       movies:
         enabled: true
         mountPath: /Movies
+        type: custom
         volumeSpec:
           nfs:
             server: ourshare.home
