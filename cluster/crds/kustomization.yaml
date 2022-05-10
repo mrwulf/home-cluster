@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
   - cert-manager
   - rook-ceph
+  - snapshot-controller/crds.yaml
   - traefik
