@@ -8,7 +8,7 @@ metadata:
 spec:
   storageClassName: flux-managed-storage-class
   capacity:
-    storage: 100Gi
+    storage: 50Gi
   accessModes:
     - ReadWriteMany
   nfs:
@@ -27,4 +27,4 @@ spec:
   storageClassName: flux-managed-storage-class
   resources:
     requests:
-      storage: 100Gi
+      storage: 50Gi
