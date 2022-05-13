@@ -71,4 +71,4 @@ spec:
       primary:
         persistence:
           enabled: true
-          existingClaim: joplin-database
+          existingClaim: joplin-postgres-db
