@@ -19,12 +19,12 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: joplin-database
+  name: joplin-postgres-db
   namespace: joplin
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: flux-managed-storage-class
+  storageClassName: ceph-block
   resources:
     requests:
       storage: 1Gi
