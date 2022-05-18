@@ -35,7 +35,7 @@ spec:
 
     global:
       persistence:
-        storageClass: ceph-ecblock
+        storageClass: ceph-block
 
     auth:
       tokenAuth:
