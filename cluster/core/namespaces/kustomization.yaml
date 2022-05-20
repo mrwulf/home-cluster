@@ -12,6 +12,7 @@ resources:
   - networking.yaml
   - node-system.yaml
   - other.yaml
+  - security.yaml
   - storage.yaml
   - system.yaml
   - vaultwarden.yaml
