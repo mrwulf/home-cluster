@@ -25,7 +25,7 @@ spec:
   values:
     image:
       repository: photoprism/photoprism
-      tag: "220302-bullseye"
+      tag: "220517-bullseye"
 
     env:
       PHOTOPRISM_STORAGE_PATH: /photoprism/storage
