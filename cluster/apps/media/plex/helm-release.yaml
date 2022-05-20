@@ -74,9 +74,14 @@ spec:
         type: emptyDir
         medium: Memory
 
-      # plex-backups:
-      #   enabled: true
-      #   existingClaim: plex-database-backups
+      backups:
+        enabled: true
+        mountPath: /plex-backups
+        type: custom
+        volumeSpec:
+          nfs:
+            server: "${NFS_SERVER}"
+            path: "${NFS_KUBERNETES_PATH}/backups/plex-database-backups"
 
       movies:
         enabled: true
