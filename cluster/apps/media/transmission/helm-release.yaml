@@ -87,8 +87,9 @@ spec:
         persistentVolumeClaim:
           claimName: "transmission-incomplete"
       - name: "transmission-downloads"
-        persistentVolumeClaim:
-          claimName: "transmission-downloaded"
+        nfs:
+          server: "${NFS_SERVER}"
+          path: "${NFS_KUBERNETES_PATH}/active/media-downloaded"
       # - name: "transmission-other"
       #   hostPath:
       #     path: "/mnt/OurShare/Other"
