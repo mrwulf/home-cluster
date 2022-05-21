@@ -13,33 +13,3 @@ spec:
       storage: 80Gi
 
   storageClassName: ceph-ecblock
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: plex-database-backups
-  labels:
-    type: nfs
-spec:
-  storageClassName: flux-managed-storage-class
-  capacity:
-    storage: 100Gi
-  accessModes:
-    - ReadWriteOnce
-  nfs:
-    server: 10.0.1.20
-    path: /volume1/k8s-storage/backups/plex-database-backups
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: plex-database-backups
-  namespace: media
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: flux-managed-storage-class
-  resources:
-    requests:
-      storage: 100Gi

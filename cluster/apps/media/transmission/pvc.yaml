@@ -27,18 +27,3 @@ spec:
       storage: 200Gi
   storageClassName: ceph-ecblock
   volumeMode: Filesystem
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: transmission-downloaded
-  namespace: media
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 200Gi
-  storageClassName: flux-managed-storage-class
-  volumeName: media-ourbackup-downloaded
