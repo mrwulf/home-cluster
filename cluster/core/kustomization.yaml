@@ -7,5 +7,5 @@ resources:
   - metallb-system
   - node-system
   # - security
-  # - storage
+  - storage
   # - system-upgrade
