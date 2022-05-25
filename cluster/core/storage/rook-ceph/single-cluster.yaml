@@ -73,7 +73,7 @@ spec:
         urlPrefix: /
         ssl: false
       mon:
-        count: 2
+        count: 1
         allowMultiplePerNode: false
       storage:
         useAllNodes: false
