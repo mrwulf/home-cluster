@@ -4,5 +4,5 @@ resources:
   - wildcard-cert.yaml
   - secrets-reflector
   - traefik
-  - pihole
-  - unifi
+  # - pihole
+  # - unifi
