@@ -67,7 +67,11 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: plex-config
+        type: custom
+        volumeSpec:
+          nfs:
+            server: "${NFS_SERVER}"
+            path: "${NFS_KUBERNETES_PATH}/active/plex-database"
 
       transcode:
         enabled: true
