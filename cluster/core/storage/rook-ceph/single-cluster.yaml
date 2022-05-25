@@ -56,32 +56,29 @@ spec:
         urlPrefix: /
         ssl: false
       mon:
-        count: 3
+        count: 2
         allowMultiplePerNode: false
       storage:
         useAllNodes: false
         useAllDevices: false
         onlyApplyOSDPlacement: false
         nodes:
-          - name: "alpha"
+          - name: "delta"
             devices:
-              - name: "sda4"
-          - name: "beta"
+              - name: "sda2"
+          - name: "epsilon"
             devices:
-              - name: "sda4"
-          - name: "gamma"
-            devices:
-              - name: "sda4"
+              - name: "sda"
     cephBlockPools:
-      - name: ceph-blockpool
+      - name: ceph-mirrored
         # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
         spec:
           failureDomain: host
           replicated:
-            size: 3
+            size: 2
         storageClass:
           enabled: true
-          name: ceph-block
+          name: ceph-mirrored
           isDefault: true
           reclaimPolicy: Retain
           allowVolumeExpansion: true
@@ -97,34 +94,34 @@ spec:
             csi.storage.k8s.io/provisioner-secret-namespace: storage
             imageFeatures: layering
             imageFormat: "2"
-      - name: ceph-ecpool
-        # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
-        spec:
-          failureDomain: host
-          erasureCoded:
-            dataChunks: 2
-            codingChunks: 1
-          # Set any property on a given pool
-          # see https://docs.ceph.com/docs/master/rados/operations/pools/#set-pool-values
-          parameters:
-            # Inline compression mode for the data pool
-            compression_mode: aggressive
-        storageClass:
-          enabled: true
-          name: ceph-ecblock
-          isDefault: false
-          reclaimPolicy: Retain
-          allowVolumeExpansion: true
-          mountOptions: []
-          # see https://github.com/rook/rook/blob/master/Documentation/ceph-block.md#provision-storage for available configuration
-          parameters:
-            csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
-            csi.storage.k8s.io/controller-expand-secret-namespace: storage
-            csi.storage.k8s.io/fstype: ext4
-            csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
-            csi.storage.k8s.io/node-stage-secret-namespace: storage
-            csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
-            csi.storage.k8s.io/provisioner-secret-namespace: storage
-            dataPool: ceph-ecpool
-            imageFeatures: layering
-            imageFormat: "2"
+      # - name: ceph-ecpool
+      #   # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
+      #   spec:
+      #     failureDomain: host
+      #     erasureCoded:
+      #       dataChunks: 2
+      #       codingChunks: 1
+      #     # Set any property on a given pool
+      #     # see https://docs.ceph.com/docs/master/rados/operations/pools/#set-pool-values
+      #     parameters:
+      #       # Inline compression mode for the data pool
+      #       compression_mode: aggressive
+      #   storageClass:
+      #     enabled: true
+      #     name: ceph-ecblock
+      #     isDefault: false
+      #     reclaimPolicy: Retain
+      #     allowVolumeExpansion: true
+      #     mountOptions: []
+      #     # see https://github.com/rook/rook/blob/master/Documentation/ceph-block.md#provision-storage for available configuration
+      #     parameters:
+      #       csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
+      #       csi.storage.k8s.io/controller-expand-secret-namespace: storage
+      #       csi.storage.k8s.io/fstype: ext4
+      #       csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
+      #       csi.storage.k8s.io/node-stage-secret-namespace: storage
+      #       csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
+      #       csi.storage.k8s.io/provisioner-secret-namespace: storage
+      #       dataPool: ceph-ecpool
+      #       imageFeatures: layering
+      #       imageFormat: "2"
