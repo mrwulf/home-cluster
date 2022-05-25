@@ -6,6 +6,6 @@ resources:
   # - kube-system
   - metallb-system
   - node-system
-  # - security
+  - security
   - storage
   # - system-upgrade
