@@ -5,7 +5,7 @@ resources:
   # - household
   # - joplin
   # - kube-system
-  # - media
+  - media
   # - monitoring
   - networking
   # - system
