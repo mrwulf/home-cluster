@@ -36,6 +36,7 @@ spec:
 
     env:
       TZ: "${TIMEZONE}"
+      # CLAIM_TOKEN: ''
 
     service:
       main:
