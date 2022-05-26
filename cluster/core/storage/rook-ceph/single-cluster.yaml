@@ -30,23 +30,6 @@ spec:
       bdev_enable_discard = true
       bdev_async_discard = true
     operatorNamespace: storage
-    resources:
-      api:
-        requests:
-          cpu: "100m"
-          memory: "100Mi"
-      mgr:
-        requests:
-          cpu: "100m"
-          memory: "100Mi"
-      mon:
-        requests:
-          cpu: "100m"
-          memory: "100Mi"
-      osd:
-        requests:
-          cpu: "100m"
-          memory: "1Gi"
     toolbox:
       enabled: true
     monitoring:
@@ -77,6 +60,23 @@ spec:
         allowMultiplePerNode: false
       mgr:
         count: 1
+      resources:
+        api:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+        mgr:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+        mon:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+        osd:
+          requests:
+            cpu: "100m"
+            memory: "1000Mi"
       storage:
         useAllNodes: false
         useAllDevices: false
