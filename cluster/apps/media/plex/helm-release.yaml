@@ -42,6 +42,7 @@ spec:
         type: LoadBalancer
         annotations:
           traefik.ingress.kubernetes.io/service.serversscheme: https
+          metallb.universe.tf/allow-shared-ip: plexserver
         loadBalancerIP: ${PLEX_ADDR}
         externalTrafficPolicy: Local
 
@@ -67,11 +68,7 @@ spec:
     persistence:
       config:
         enabled: true
-        type: custom
-        volumeSpec:
-          nfs:
-            server: "${NFS_SERVER}"
-            path: "${NFS_KUBERNETES_PATH}/active/plex-database"
+        existingClaim: plex-config
 
       transcode:
         enabled: true

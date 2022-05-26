@@ -23,6 +23,20 @@ spec:
     remediation:
       retries: 3
   values:
+    csi:
+      enableCephfsDriver: false
+      enableSnapshotter: true
+      csiRBDProvisionerResource:
+        - name: csi-provisioner
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+        - name: csi-resizer
+          resource:
+            requests:
+              memory: 128Mi
+              cpu: 100m
     crds:
       enabled: true
     resources:
@@ -32,14 +46,3 @@ spec:
     #   limits:
     #     cpu: 1000m
     #     memory: 256Mi
-    csiRBDProvisionerResource: |
-      - name : csi-provisioner
-        resource:
-          requests:
-            memory: 128Mi
-            cpu: 100m
-      - name : csi-resizer
-        resource:
-          requests:
-            memory: 128Mi
-            cpu: 100m
