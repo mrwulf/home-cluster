@@ -84,7 +84,7 @@ spec:
         nodes:
           - name: "delta"
             devices:
-              - name: "sda2"
+              - name: "sda"
           - name: "epsilon"
             devices:
               - name: "sda"

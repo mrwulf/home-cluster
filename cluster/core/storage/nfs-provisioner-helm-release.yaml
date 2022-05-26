@@ -18,7 +18,8 @@ spec:
   values:
     nfs:
       server: ourbackup.home
-      path: /volume1/k8s-storage
+      path: /volume1/k8s-storage/migration
     storageClass:
       name: nfs
       reclaimPolicy: Retain
+      pathPattern: '${.PVC.namespace}-${.PVC.name}'
