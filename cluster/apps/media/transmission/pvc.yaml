@@ -25,5 +25,5 @@ spec:
   resources:
     requests:
       storage: 200Gi
-  storageClassName: ceph-ecblock
+  storageClassName: nfs
   volumeMode: Filesystem
