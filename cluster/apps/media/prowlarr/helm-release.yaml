@@ -29,7 +29,7 @@ spec:
 
     image:
       repository: ghcr.io/k8s-at-home/prowlarr
-      tag: v0.3.0.1710
+      tag: v0.4.0.1793
       pullPolicy: IfNotPresent
 
     hostname: prowlarr
@@ -42,14 +42,14 @@ spec:
         enabled: true
         type: emptyDir
         mountPath: /shared
-      # backup:
-      #   enabled: true
-      #   type: custom
-      #   volumeSpec:
-      #     nfs:
-      #       server: "${NAS_ADDRESS}"
-      #       path: /volume1/Backup/Kubernetes/Applications/prowlarr
-      #   mountPath: /config/Backups
+      backup:
+        enabled: true
+        type: custom
+        volumeSpec:
+        nfs:
+          server: "${NFS_SERVER}"
+          path: "${NFS_KUBERNETES_PATH}/backups/prowlarr-config"
+        mountPath: /config/Backups
 
     ingress:
       main:
