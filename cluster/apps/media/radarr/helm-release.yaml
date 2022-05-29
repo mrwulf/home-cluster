@@ -25,9 +25,9 @@ spec:
       retries: 3
   values:
     podSecurityContext:
-      runAsUser: 985
-      runAsGroup: 977
-      fsGroup: 977
+      runAsUser: 0
+      runAsGroup: 0
+      # fsGroup: 977
 
     env:
       TZ: "${TIMEZONE}"
