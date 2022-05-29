@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - plex
   - prowlarr
-  # - radarr
-  # - sonarr
+  - radarr
+  - sonarr
   - tautulli
   - transmission
