@@ -6,8 +6,8 @@ resources:
   # - joplin
   # - kube-system
   - media
-  # - monitoring
+  - monitoring
   - networking
-  # - system
+  - system
   # - system-upgrade
   # - vaultwarden
