@@ -24,61 +24,52 @@ spec:
     remediation:
       retries: 3
   values:
-    # kubeControllerManager:
-    #   enabled: true
-    #   endpoints:
-    #   - 10.0.1.50
-    #   - 10.0.1.55
-    #   - 10.0.1.60
-    #   service:
-    #     enabled: true
-    #     ## If null or unset, the value is determined dynamically based on target Kubernetes version due to change
-    #     ## of default port in Kubernetes 1.22.
-    #     ##
-    #     port: null
-    #     targetPort: null
+    kubeControllerManager:
+      enabled: true
+      endpoints: &nodes
+        - 10.0.1.44
+        - 10.0.1.45
+        - 10.0.1.162
+      service:
+        enabled: true
+        ## If null or unset, the value is determined dynamically based on target Kubernetes version due to change
+        ## of default port in Kubernetes 1.22.
+        ##
+        port: null
+        targetPort: null
     kubeEtcd:
       enabled: true
-      endpoints:
-        - 10.0.1.50
-        - 10.0.1.55
-        - 10.0.1.60
+      endpoints: *nodes
       service:
         enabled: true
         port: 2379
         targetPort: 2379
-    # kubeScheduler:
-    #   enabled: true
-    #   endpoints:
-    #   - 10.0.1.50
-    #   - 10.0.1.55
-    #   - 10.0.1.60
-    #   service:
-    #     enabled: true
-    #     ## If null or unset, the value is determined dynamically based on target Kubernetes version due to change
-    #     ## of default port in Kubernetes 1.23.
-    #     ##
-    #     port: null
-    #     targetPort: null
-    # kubeProxy:
-    #   enabled: true
-    #   endpoints:
-    #   - 10.0.1.50
-    #   - 10.0.1.55
-    #   - 10.0.1.60
-    #   service:
-    #     enabled: true
-    #     port: 10249
-    #     targetPort: 10249
+    kubeScheduler:
+      enabled: true
+      endpoints: *nodes
+      service:
+        enabled: true
+        ## If null or unset, the value is determined dynamically based on target Kubernetes version due to change
+        ## of default port in Kubernetes 1.23.
+        ##
+        port: null
+        targetPort: null
+    kubeProxy:
+      enabled: true
+      endpoints: *nodes
+      service:
+        enabled: true
+        port: 10249
+        targetPort: 10249
     grafana:
       adminPassword: ${GRAFANA_PASS}
       persistence:
         type: pvc
         enabled: true
-        storageClassName: ceph-ecblock
+        storageClassName: ceph-block
         accessModes:
           - ReadWriteOnce
-        size: 10Gi
+        size: 2Gi
       ingress:
         enabled: true
         ingressClassName: traefik
@@ -118,7 +109,7 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: ceph-ecblock
+              storageClassName: ceph-block
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
