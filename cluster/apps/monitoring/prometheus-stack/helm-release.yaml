@@ -82,7 +82,7 @@ spec:
         auth:
           signout_redirect_url: "https://auth.${SECRET_DOMAIN}/application/o/grafana/end-session/"
           # Switch off auto_login to be able to log in as admin to solve https://github.com/grafana/grafana/issues/29211
-          oauth_auto_login: true
+          oauth_auto_login: false
         auth.generic_oauth:
           enabled: true
           name: "Authentik"
