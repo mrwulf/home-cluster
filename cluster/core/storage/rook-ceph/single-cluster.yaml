@@ -91,6 +91,9 @@ spec:
           - name: "talos-10-0-1-162"
             devices:
               - name: "sdb"
+          - name: "zeta"
+            devices:
+              - name: "sda"
     cephBlockPools:
       - name: ceph-block
         # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
