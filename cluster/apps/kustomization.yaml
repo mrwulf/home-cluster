@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   # - backups/k10
   - household
-  # - joplin
+  - joplin
   - media
   - monitoring
   - networking
