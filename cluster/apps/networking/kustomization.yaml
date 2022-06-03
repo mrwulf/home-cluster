@@ -4,4 +4,4 @@ resources:
   - wildcard-cert.yaml
   - traefik
   - pihole
-  # - unifi
+  - unifi
