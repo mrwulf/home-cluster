@@ -26,6 +26,9 @@ spec:
     env:
       TZ: "${TIMEZONE}"
 
+    image:
+      tag: 2022.6.1
+
     persistence:
       config:
         enabled: true
