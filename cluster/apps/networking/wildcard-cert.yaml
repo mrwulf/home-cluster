@@ -6,6 +6,10 @@ metadata:
   namespace: networking
 spec:
   secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+  secretTemplate:
+    annotations:
+      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "auth,household,joplin,media,monitoring,storage,vaultwarden,flux-system,kube-system,other"
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
