@@ -10,7 +10,7 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  storageClassName: ceph-ecblock
+  storageClassName: ceph-block
   volumeMode: Filesystem
 
 ---
@@ -25,5 +25,5 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: ceph-ecblock
+  storageClassName: ceph-block
   volumeMode: Filesystem
