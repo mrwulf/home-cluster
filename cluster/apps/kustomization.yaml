@@ -4,7 +4,6 @@ resources:
   # - backups/k10
   # - household
   # - joplin
-  # - kube-system
   - media
   - monitoring
   - networking
