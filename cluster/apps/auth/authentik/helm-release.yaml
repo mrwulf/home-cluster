@@ -24,6 +24,11 @@ spec:
     remediation:
       retries: 3
   values:
+    replicas: 2
+
+    image:
+      tag: 2022.5.3
+
     authentik:
       secret_key: "${AUTHENTIK_KEY}"
       # This sends anonymous usage-data, stack traces on errors and
