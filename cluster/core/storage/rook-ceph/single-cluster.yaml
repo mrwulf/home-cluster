@@ -91,6 +91,9 @@ spec:
           - name: "zeta"
             devices:
               - name: "sda"
+          - name: "eta"
+            devices:
+              - name: "sda"
     cephBlockPools:
       - name: ceph-block
         # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
