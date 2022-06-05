@@ -5,16 +5,13 @@ vars:
   PROJECT_DIR:
     sh: "git rev-parse --show-toplevel"
   CLUSTER_DIR: "{{.PROJECT_DIR}}/cluster"
-  ANSIBLE_DIR: "{{.PROJECT_DIR}}/provision/ansible"
-  TERRAFORM_DIR: "{{.PROJECT_DIR}}/provision/terraform"
-
-# env:
-#   KUBECONFIG: "{{.PROJECT_DIR}}/provision/kubeconfig"
+  NAS_ADDRESS:
+    sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_SERVER'"
 
 includes:
-  ansible: .taskfiles/ansible.yml
+  cluster: .taskfiles/cluster.yml
   flux: .taskfiles/flux.yml
+
   format: .taskfiles/format.yml
   lint: .taskfiles/lint.yml
   pre-commit: .taskfiles/pre-commit.yml
-  terraform: .taskfiles/terraform.yml
