@@ -12,4 +12,4 @@ spec:
     requests:
       storage: 20Gi
 
-  storageClassName: ceph-ecblock
+  storageClassName: ceph-block

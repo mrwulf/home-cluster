@@ -7,7 +7,7 @@ metadata:
 spec:
   interval: 1m0s
   ref:
-    branch: talos
+    branch: main
   url: https://github.com/mrwulf/home-cluster
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
