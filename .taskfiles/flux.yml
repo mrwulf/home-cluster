@@ -9,3 +9,7 @@ tasks:
       - flux reconcile kustomization core
       - flux reconcile kustomization apps
     silent: true
+
+  diff:
+    cmds:
+      - flux diff kustomization --path `git rev-parse --show-toplevel`/cluster/base flux-system
