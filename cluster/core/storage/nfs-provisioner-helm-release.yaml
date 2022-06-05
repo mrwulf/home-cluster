@@ -18,7 +18,9 @@ spec:
   values:
     nfs:
       server: ourbackup.home
-      path: /volume1/k8s-storage
+      path: /volume1/k8s-storage/migration
     storageClass:
       name: nfs
       reclaimPolicy: Retain
+      # https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
+      pathPattern: '$${.PVC.namespace}-$${.PVC.name}'

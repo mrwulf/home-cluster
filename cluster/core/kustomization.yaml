@@ -3,9 +3,7 @@ kind: Kustomization
 resources:
   - namespaces
   - cert-manager
-  - kube-system
   - metallb-system
   - node-system
   - security
   - storage
-  - system-upgrade

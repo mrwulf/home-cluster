@@ -29,10 +29,16 @@ spec:
 
     image:
       repository: ghcr.io/k8s-at-home/prowlarr
-      tag: v0.3.0.1710
+      tag: v0.4.0.1793
       pullPolicy: IfNotPresent
 
     hostname: prowlarr
+
+    podSecurityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      # supplementalGroups:
+        # - 0 # nfsnobody
 
     persistence:
       config:
@@ -44,12 +50,13 @@ spec:
         mountPath: /shared
       # backup:
       #   enabled: true
+      #   mountPath: /config/Backups
+      #   # mountOptions: nolock
       #   type: custom
       #   volumeSpec:
       #     nfs:
-      #       server: "${NAS_ADDRESS}"
-      #       path: /volume1/Backup/Kubernetes/Applications/prowlarr
-      #   mountPath: /config/Backups
+      #       server: "${NFS_SERVER}"
+      #       path: "${NFS_KUBERNETES_PATH}/backups/prowlarr-config"
 
     ingress:
       main:

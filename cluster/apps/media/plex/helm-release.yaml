@@ -36,12 +36,14 @@ spec:
 
     env:
       TZ: "${TIMEZONE}"
+      # CLAIM_TOKEN: ''
 
     service:
       main:
         type: LoadBalancer
         annotations:
           traefik.ingress.kubernetes.io/service.serversscheme: https
+          metallb.universe.tf/allow-shared-ip: plexserver
         loadBalancerIP: ${PLEX_ADDR}
         externalTrafficPolicy: Local
 
