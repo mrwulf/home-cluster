@@ -1,13 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - backups/k10
+  # - backups/k10
+  - auth
   - household
   - joplin
-  - kube-system
   - media
   - monitoring
   - networking
   - system
-  - system-upgrade
   - vaultwarden

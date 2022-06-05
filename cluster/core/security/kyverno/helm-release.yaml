@@ -29,7 +29,7 @@ spec:
   #     namespace: monitoring
   values:
     # TODO: change this to "mode: ha" when the new version gets released
-    replicaCount: 3
+    replicaCount: 2
 
     topologySpreadConstraints:
       - maxSkew: 1

@@ -10,13 +10,13 @@ metadata:
     hajimari.io/enable: "true"
     hajimari.io/icon: "web"
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-    traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd,networking-authentik@kubernetescrd"
+    traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd" # ,networking-authentik@kubernetescrd
 spec:
   ingressClassName: "traefik"
   tls:
     - hosts:
         - "traefik.${SECRET_DOMAIN}"
-      secretName: "traefik-dashboard-tls"
+      secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
   rules:
     - host: "traefik.${SECRET_DOMAIN}"
       http:

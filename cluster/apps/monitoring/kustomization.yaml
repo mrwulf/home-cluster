@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - goldilocks
   - prometheus-stack
-  - podmonitor.yaml
+  # - podmonitor.yaml
