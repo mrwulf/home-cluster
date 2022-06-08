@@ -42,10 +42,18 @@ spec:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - "goldilocks.${SECRET_DOMAIN}"
+
     resources:
-      request:
-        cpu: 15m
+      limits:
         memory: 32Mi
-      limit:
-        cpu: 200m
-        memory: 128Mi
+      requests:
+        cpu: 25m
+        memory: 32Mi
+
+    controller:
+      resources:
+        requests:
+          cpu: 15m
+          memory: 32Mi
+        limits:
+          memory: 128Mi
