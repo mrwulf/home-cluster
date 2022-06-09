@@ -32,7 +32,7 @@ spec:
       enableWebSockets: true
     persistence:
       enabled: true
-      existingClaim: vaultwarden-storage
+      existingClaim: vaultwarden-db
     ingress:
       enabled: true
       className: "traefik"
