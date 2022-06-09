@@ -21,6 +21,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: vaultwarden-storage
   namespace: vaultwarden
+  labels:
+    kasten.io/backup-volume: disabled
 spec:
   accessModes:
     - ReadWriteOnce
