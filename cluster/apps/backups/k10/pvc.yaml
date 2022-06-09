@@ -6,6 +6,7 @@ metadata:
   labels:
     type: nfs-backups
 spec:
+  storageClassName: k10-backup-nfs
   capacity:
     storage: 500Gi
   accessModes:
@@ -13,7 +14,11 @@ spec:
   nfs:
     server: ourbackup.home
     path: /volume1/k8s-storage/backups/kasten-k10
-
+  mountOptions:
+    - nfsvers=4.1
+    - nconnect=8
+    - hard
+    - noatime
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -21,8 +26,10 @@ metadata:
   name: k10-backups
   namespace: backups
 spec:
+  storageClassName: k10-backup-nfs
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 500Gi
+  volumeName: k10-backups

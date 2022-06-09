@@ -19,6 +19,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: transmission-incomplete
   namespace: media
+  labels:
+    kasten.io/backup-volume: disabled
 spec:
   accessModes:
     - ReadWriteOnce
