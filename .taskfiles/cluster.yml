@@ -8,6 +8,12 @@ tasks:
       - kubectl -n storage exec -it $(kubectl -n storage get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') -- bash
     silent: true
 
+  k10-password:
+    desc: Retrieve the grafana admin password
+    silent: true
+    cmds:
+      - kubectl -n backups get secret $(kubectl -n backups get serviceaccount k10-k10 -o jsonpath="{.secrets[0].name}") -ojsonpath="{.data.token}" | base64 --decode && echo
+
   rook-password:
     desc: Retrieve the rook-ceph password
     silent: true
