@@ -4,11 +4,10 @@ kind: PersistentVolume
 metadata:
   name: k10-backups
   labels:
-    type: nfs
+    type: nfs-backups
 spec:
-  storageClassName: flux-managed-storage-class
   capacity:
-    storage: 50Gi
+    storage: 500Gi
   accessModes:
     - ReadWriteMany
   nfs:
@@ -24,7 +23,6 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: flux-managed-storage-class
   resources:
     requests:
-      storage: 50Gi
+      storage: 500Gi
