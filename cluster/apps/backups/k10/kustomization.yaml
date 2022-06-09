@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - pvc.yaml
   - helm-release.yaml
-  - flux-storage-class.yaml
+  - dr-secret.sops.yaml
