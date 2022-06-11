@@ -17,3 +17,4 @@ xanmanning.k3s*
 terraform.tfstate*
 # Working
 cluster/apps/other/
+talos/
