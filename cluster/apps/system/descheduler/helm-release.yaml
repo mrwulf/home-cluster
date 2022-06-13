@@ -34,7 +34,7 @@ spec:
           enabled: true
           params:
             podsHavingTooManyRestarts:
-              podRestartThreshold: 100
+              podRestartThreshold: 10
               includingInitContainers: true
         RemovePodsViolatingNodeAffinity:
           enabled: true
@@ -46,7 +46,18 @@ spec:
         RemovePodsViolatingNodeTaints:
           enabled: true
         LowNodeUtilization:
-          enabled: false
+          enabled: true
+          params:
+            nodeFit: true
+            nodeResourceUtilizationThresholds:
+              targetThresholds:
+                cpu: 40
+                memory: 50
+                pods: 50
+              thresholds:
+                cpu: 25
+                memory: 25
+                pods: 25
 
   postRenderers:
     - kustomize:
