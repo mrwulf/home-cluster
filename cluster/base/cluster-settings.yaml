@@ -10,5 +10,5 @@ data:
   PIHOLE_1_ADDR: 10.0.0.210
   PIHOLE_2_ADDR: 10.0.0.211
   PLEX_ADDR: 10.0.0.212
-  UNIFI_ADDR: 10.0.0.213
+  UNIFI_ADDR: 10.0.0.213 # there is a DCHP reservation for unifi on this IP
   TRAEFIK_ADDR: 10.0.0.220

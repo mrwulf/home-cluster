@@ -98,12 +98,13 @@ tasks:
     interactive: true
     silent: true
     cmds:
+      - kubectl get node '{{.CLI_ARGS}}' || (echo 'Node {{.CLI_ARGS}} is invalid!' && exit -1)
       - |
-        kubectl run debug-{{.NODE}} -i --tty --rm --image="fedora:36" --privileged --overrides='
+        kubectl run debug-{{.CLI_ARGS}} -i --tty --rm --image="fedora:36" --privileged --overrides='
           {
             "spec": {
               "nodeSelector": {
-                "kubernetes.io/hostname": "{{.NODE}}"
+                "kubernetes.io/hostname": "{{.CLI_ARGS}}"
               },
               "restartPolicy": "Never"
             }
