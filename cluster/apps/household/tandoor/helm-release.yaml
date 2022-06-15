@@ -29,7 +29,7 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: tandoor-config
+        existingClaim: tandoor-db
 
     ingress:
       main:
