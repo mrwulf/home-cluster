@@ -79,6 +79,8 @@ spec:
       grafana.ini:
         server:
           root_url: "https://grafana.${SECRET_DOMAIN}"
+        security:
+          allow_embedding: true
         auth:
           signout_redirect_url: "https://auth.${SECRET_DOMAIN}/application/o/grafana/end-session/"
           # Switch off auto_login to be able to log in as admin to solve https://github.com/grafana/grafana/issues/29211
