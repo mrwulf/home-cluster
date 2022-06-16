@@ -51,12 +51,12 @@ spec:
             nodeFit: true
             nodeResourceUtilizationThresholds:
               targetThresholds:
-                cpu: 40
-                memory: 50
+                cpu: 35
+                memory: 30
                 pods: 50
               thresholds:
                 cpu: 25
-                memory: 25
+                memory: 20
                 pods: 25
 
   postRenderers:
