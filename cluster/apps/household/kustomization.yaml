@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - photoprism
   - home-assistant
-  - tandoor
+  - mealie
