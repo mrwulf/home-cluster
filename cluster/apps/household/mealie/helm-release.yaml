@@ -18,18 +18,19 @@ spec:
   values:
     image:
       repository: &repo hkotel/mealie
-      tag: &tag v0.5.6
+      tag: &tag frontend-v1.0.0beta-3
       pullPolicy: IfNotPresent
+
+    env: &env
+      TZ: "${TIMEZONE}"
+      DEFAULT_EMAIL: "${SECRET_CLOUDFLARE_EMAIL}"
+      BASE_URL: https://meals.${SECRET_DOMAIN}
 
     api:
       image:
         repository: *repo
-        tag: *tag
-
-    env:
-      TZ: "${TIMEZONE}"
-      DEFAULT_EMAIL: "${SECRET_CLOUDFLARE_EMAIL}"
-      BASE_URL: https://meals.${SECRET_DOMAIN}
+        tag: api-v1.0.0beta-3
+      env: *env
 
     ingress:
       main:
@@ -56,3 +57,6 @@ spec:
       config:
         enabled: true
         existingClaim: mealie-db
+      api-data:
+        enabled: true
+        existingClaim: mealie-api-data
