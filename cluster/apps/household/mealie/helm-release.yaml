@@ -17,9 +17,14 @@ spec:
       interval: 5m
   values:
     image:
-      repository: hkotel/mealie
-      tag: v0.5.6
+      repository: &repo hkotel/mealie
+      tag: &tag v0.5.6
       pullPolicy: IfNotPresent
+
+    api:
+      image:
+        repository: *repo
+        tag: *tag
 
     env:
       TZ: "${TIMEZONE}"
