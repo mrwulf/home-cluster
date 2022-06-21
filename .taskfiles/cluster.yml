@@ -57,7 +57,7 @@ tasks:
                         "command": [
                           "/bin/sh",
                           "-c",
-                          "apk add --no-cache curl vim"
+                          "apk add --no-cache curl vim rsync &"
                         ]
                       }
                     }
@@ -79,7 +79,7 @@ tasks:
                   "name": "backups",
                   "nfs": {
                     "server": "{{.NAS_ADDRESS}}",
-                    "path": "/volume1/Backup/Kubernetes"
+                    "path": "/volume1/k8s-storage/backups"
                   }
                 },
                 {
@@ -98,14 +98,37 @@ tasks:
     interactive: true
     silent: true
     cmds:
-      - kubectl get node '{{.CLI_ARGS}}' || (echo 'Node {{.CLI_ARGS}} is invalid!' && exit -1)
+      - kubectl get node -owide '{{.CLI_ARGS}}' || (echo 'Node {{.CLI_ARGS}} is invalid!' && exit -1)
       - |
-        kubectl run debug-{{.CLI_ARGS}} -i --tty --rm --image="fedora:36" --privileged --overrides='
+        kubectl run debug-{{.CLI_ARGS}} -i --tty --rm --image=null --privileged --overrides='
           {
             "spec": {
               "nodeSelector": {
                 "kubernetes.io/hostname": "{{.CLI_ARGS}}"
               },
+              "containers": [
+                {
+                  "name": "debug",
+                  "image": "fedora:36",
+                  "command": [
+                    "/bin/bash"
+                  ],
+                  "stdin": true,
+                  "stdinOnce": true,
+                  "tty": true,
+                  "lifecycle": {
+                    "postStart": {
+                      "exec": {
+                        "command": [
+                          "/bin/sh",
+                          "-c",
+                          "dnf install -y util-linux htop procps gdisk &"
+                        ]
+                      }
+                    }
+                  }
+                }
+              ],
               "restartPolicy": "Never"
             }
           }'
