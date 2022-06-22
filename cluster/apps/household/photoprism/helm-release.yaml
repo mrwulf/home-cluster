@@ -23,9 +23,9 @@ spec:
     remediation:
       retries: 3
   values:
-    image:
-      repository: photoprism/photoprism
-      tag: "220617-bullseye"
+    # image:
+    #   repository: photoprism/photoprism
+    #   tag: "220617-bullseye"
 
     env:
       PHOTOPRISM_STORAGE_PATH: /photoprism/storage
