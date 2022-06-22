@@ -93,46 +93,6 @@ tasks:
             }
           }'
 
-  debug-node:
-    desc: Create a privileged container on a node for debugging, ex. NODE=anvil task debug-node
-    interactive: true
-    silent: true
-    cmds:
-      - kubectl get node -owide '{{.CLI_ARGS}}' || (echo 'Node {{.CLI_ARGS}} is invalid!' && exit -1)
-      - |
-        kubectl run debug-{{.CLI_ARGS}} -i --tty --rm --image=null --privileged --overrides='
-          {
-            "spec": {
-              "nodeSelector": {
-                "kubernetes.io/hostname": "{{.CLI_ARGS}}"
-              },
-              "containers": [
-                {
-                  "name": "debug",
-                  "image": "fedora:36",
-                  "command": [
-                    "/bin/bash"
-                  ],
-                  "stdin": true,
-                  "stdinOnce": true,
-                  "tty": true,
-                  "lifecycle": {
-                    "postStart": {
-                      "exec": {
-                        "command": [
-                          "/bin/sh",
-                          "-c",
-                          "dnf install -y util-linux htop procps gdisk &"
-                        ]
-                      }
-                    }
-                  }
-                }
-              ],
-              "restartPolicy": "Never"
-            }
-          }'
-
   delete-failed-pods:
     desc: Deletes failed pods
     cmds:
