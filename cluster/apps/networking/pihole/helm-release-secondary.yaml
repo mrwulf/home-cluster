@@ -19,6 +19,8 @@ spec:
   dependsOn:
     - name: rook-ceph
       namespace: storage
+    - name: pihole-1
+      namespace: networking
   install:
     createNamespace: true
     remediation:
@@ -44,8 +46,6 @@ spec:
 
     podDnsConfig:
       enabled: false
-
-    maxUnavailable: 0
 
     antiaff:
       enabled: true
