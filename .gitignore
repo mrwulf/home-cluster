@@ -18,3 +18,4 @@ terraform.tfstate*
 # Working
 cluster/apps/other/
 talos/
+testing.sops.yaml
