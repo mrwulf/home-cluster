@@ -1,0 +1,146 @@
+---
+apiVersion: config.kio.kasten.io/v1alpha1
+kind: Policy
+metadata:
+  name: backup-everything
+  namespace: backups
+spec:
+  actions:
+    - action: backup
+      backupParameters:
+        filters:
+          excludeClusterResources:
+            - name: flux-managed-storage-class
+              resource: storageclasses
+            - matchExpressions:
+                - key: kasten.io/backup-volume
+                  operator: In
+                  values:
+                    - disabled
+              resource: persistentvolumeclaims
+            - name: nfs
+              resource: storageclasses
+        profile:
+          name: synology-backups
+          namespace: backups
+    - action: export
+      exportParameters:
+        exportData:
+          enabled: true
+          exporterStorageClassName: ceph-block-delete
+          overrides:
+            - enabled: false
+              storageClassName: nfs
+            - enabled: false
+              storageClassName: flux-managed-storage-class
+        frequency: '@daily'
+        migrationToken:
+          name: backup-everything-migration-token-m5mtn
+          namespace: backups
+        profile:
+          name: synology-backups
+          namespace: backups
+        receiveString: bIzAPpoanmEFyDJrpT1GhcdRTTImPlGV5yyhp0EjQ7MpMr4FsW22W7meZtGttqAQIkrCzKuNGU+u7zELhTr9wQoAtT45bbu+QoC82uKniIaYoaxCzEdNIzGJ2of0IoNHSK0dvHx15Ml9jbOQ7NzFw0uxB/viwUNs4yzyLEqf8OejlokNKmuFlj3PlW7ZCDVg+6ZSYNmJpCdu00o3MTiL9929XXSzHSjrpihO/IrbWJdep4bOOnTYbsUDs6SuidqyZJbfIPjMK9NzS3Dooksp7mDI4OOZKrOO1lXSTmF1GWcrASeR9jFlrCH25IaWoYQ1lxlwZY8Z0SYPkposzG7LQK9D/7NTagkK5ZlripKqtbLnzBvQjMrOpnByzgS/zDJ7uYSwP9sJj9ikHTlO2YK7PQj03/4FFPbErlqhiNASfGlQnO5DJNKYfCh5IlfdjuL0KEbJuusVQt29/V+QuK4UQKhA7Zit
+      retention: {}
+  createdBy: backups:k10-k10
+  frequency: '@daily'
+  retention:
+    daily: 3
+  selector:
+    matchExpressions:
+      - key: k10.kasten.io/appNamespace
+        operator: In
+        values:
+          - auth
+          - cert-manager
+          - household
+          - joplin
+          - media
+          - monitoring
+          - storage
+          - system
+          - networking
+          - vaultwarden
+          - kasten-io-cluster
+  subFrequency:
+    days:
+      - 1
+    hours:
+      - 12
+    minutes:
+      - 0
+    months:
+      - 1
+    weekdays:
+      - 0
+---
+apiVersion: config.kio.kasten.io/v1alpha1
+kind: Policy
+metadata:
+  name: do-not-backup
+  namespace: backups
+spec:
+  actions:
+    - action: backup
+      backupParameters:
+        filters:
+          excludeResources:
+            - resource: persistentvolumeclaims
+        ignoreExceptions: true
+        profile:
+          name: synology-backups
+          namespace: backups
+  createdBy: backups:k10-k10
+  frequency: '@monthly'
+  retention:
+    monthly: 1
+  selector:
+    matchExpressions:
+      - key: k10.kasten.io/appNamespace
+        operator: In
+        values:
+          - default
+          - flux-system
+          - metallb-system
+          - node-system
+          - other
+          - security
+---
+apiVersion: config.kio.kasten.io/v1alpha1
+kind: Policy
+metadata:
+  name: k10-disaster-recovery-policy
+  namespace: backups
+spec:
+  actions:
+    - action: backup
+      backupParameters:
+        filters: {}
+        profile:
+          name: synology-backups
+          namespace: backups
+  createdBy: backups:k10-k10
+  frequency: '@daily'
+  retention:
+    daily: 3
+  selector:
+    matchExpressions:
+      - key: k10.kasten.io/appNamespace
+        operator: In
+        values:
+          - backups
+---
+apiVersion: config.kio.kasten.io/v1alpha1
+kind: Policy
+metadata:
+  name: k10-system-reports-policy
+  namespace: backups
+spec:
+  actions:
+    - action: report
+      reportParameters:
+        statsIntervalDays: 1
+  comment: The policy for enabling auto-generated reports.
+  createdBy: backups:k10-k10
+  frequency: '@daily'
+  selector: {}
