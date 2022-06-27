@@ -1,0 +1,84 @@
+---
+version: "3"
+
+tasks:
+  rook-ceph-toolbox:
+    desc: Exec into the Rook Ceph toolbox
+    cmds:
+      - kubectl -n storage exec -it $(kubectl -n storage get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') -- bash
+    silent: true
+
+  rook-password:
+    desc: Retrieve the rook-ceph password
+    silent: true
+    cmds:
+      - kubectl -n storage get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+
+  clean-up-pv:
+    cmds:
+      - |
+        PV={{.CLI_ARGS}}
+        IMG=$(kubectl describe pv {{.CLI_ARGS}} | grep imageName | awk -F= '{print $2}')
+        kubectl delete pv $PV
+        kubectl exec -it rook-ceph-tools-65749f87d-c44cl -- rbd rm -p ceph-block $IMG
+
+  debug-volume:
+    desc: Attach a volume to a container for debugging, ex. VOLUME=zigbee2mqtt-config-v1 NAMESPACE=home task debug-volume
+    interactive: true
+    silent: true
+    cmds:
+      - |
+        kubectl run debug-{{.VOLUME}} -n {{.NAMESPACE}} -i --tty --rm --image=null --overrides='
+          {
+            "spec": {
+              "containers": [
+                {
+                  "name": "debug",
+                  "image": "docker.io/library/alpine:3.15",
+                  "command": [
+                    "/bin/sh"
+                  ],
+                  "stdin": true,
+                  "stdinOnce": true,
+                  "tty": true,
+                  "lifecycle": {
+                    "postStart": {
+                      "exec": {
+                        "command": [
+                          "/bin/sh",
+                          "-c",
+                          "apk add --no-cache curl vim rsync &"
+                        ]
+                      }
+                    }
+                  },
+                  "volumeMounts": [
+                    {
+                      "name": "backups",
+                      "mountPath": "/mnt/backups/"
+                    },
+                    {
+                      "name": "debug-volume",
+                      "mountPath": "/mnt/volume/"
+                    }
+                  ]
+                }
+              ],
+              "volumes": [
+                {
+                  "name": "backups",
+                  "nfs": {
+                    "server": "{{.NAS_ADDRESS}}",
+                    "path": "/volume1/k8s-storage/backups"
+                  }
+                },
+                {
+                  "name": "debug-volume",
+                  "persistentVolumeClaim": {
+                    "claimName": "{{.VOLUME}}"
+                  }
+                }
+              ],
+              "restartPolicy": "Never"
+            }
+          }'

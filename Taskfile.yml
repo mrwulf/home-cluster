@@ -13,7 +13,7 @@ vars:
 includes:
   cluster: .taskfiles/cluster.yml
   flux: .taskfiles/flux.yml
-
+  rook: .taskfiles/rook.yml
   format: .taskfiles/format.yml
   lint: .taskfiles/lint.yml
   node: .taskfiles/node.yml
