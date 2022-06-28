@@ -46,8 +46,12 @@ tasks:
       - flux reconcile source git flux-system {{.CLI_ARGS | default "-n flux-system"}}
 
   create-secret:
+    silent: true
     cmds:
-      - kubectl create secret generic testing --dry-run=client --from-literal=test=value -oyaml > temp-testing.yaml && sops -e temp-testing.yaml > testing.sops.yaml && rm temp-testing.yaml
+      - kubectl create secret generic testing --dry-run=client --from-literal=test=value -oyaml > temp-testing.yaml
+      - sed -i 's/data/stringData/g' temp-testing.yaml
+      - sops -e temp-testing.yaml > testing.sops.yaml
+      - rm temp-testing.yaml
     preconditions:
       - sh: test ! -f testing.sops.yaml
         msg: |
