@@ -41,14 +41,16 @@ spec:
         ingressClassName: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
+          external-dns/is-public: "true"
         hosts:
-          - host: "home-assistant.${SECRET_DOMAIN}"
+          - host: &host "home-assistant.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - hosts:
-              - "home-assistant.${SECRET_DOMAIN}"
+              - *host
             secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
 
     metrics:
