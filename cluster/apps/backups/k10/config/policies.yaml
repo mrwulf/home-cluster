@@ -27,6 +27,7 @@ spec:
       exportParameters:
         exportData:
           enabled: true
+          # Use a delete storage class so things don't stick around - https://community.veeam.com/kasten-k10-support-92/prevent-kanister-pvc-buildup-when-using-reclaimpolicy-retain-2201
           exporterStorageClassName: ceph-block-delete
           overrides:
             - enabled: false
