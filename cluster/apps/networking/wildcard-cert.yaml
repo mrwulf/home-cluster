@@ -18,3 +18,4 @@ spec:
   dnsNames:
     - "${SECRET_DOMAIN}"
     - "*.${SECRET_DOMAIN}"
+    - "*.home.${SECRET_DOMAIN}"
