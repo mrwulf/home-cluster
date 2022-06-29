@@ -48,7 +48,7 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: networking-rfc1918-ips@kubernetescrd
 
         hosts:
-          - host: &host "unifi.${SECRET_DOMAIN}"
+          - host: &host "unifi.home.${SECRET_DOMAIN}"
             paths:
               - path: /
 

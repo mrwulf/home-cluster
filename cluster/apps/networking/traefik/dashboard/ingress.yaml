@@ -15,10 +15,10 @@ spec:
   ingressClassName: "traefik"
   tls:
     - hosts:
-        - "traefik.${SECRET_DOMAIN}"
+        - &host "traefik.home.${SECRET_DOMAIN}"
       secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
   rules:
-    - host: "traefik.${SECRET_DOMAIN}"
+    - host: *host
       http:
         paths:
           - path: /

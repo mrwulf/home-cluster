@@ -34,14 +34,14 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
         hosts:
-          - host: "goldilocks.${SECRET_DOMAIN}"
+          - host: &host "goldilocks.home.${SECRET_DOMAIN}"
             paths:
               - path: /
                 type: Prefix
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
             hosts:
-              - "goldilocks.${SECRET_DOMAIN}"
+              - *host
 
     resources:
       limits:

@@ -42,11 +42,11 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
         host:
-          name: "rook.${SECRET_DOMAIN}"
+          name: &host "rook.home.${SECRET_DOMAIN}"
           path: "/"
         tls:
           - hosts:
-              - "rook.${SECRET_DOMAIN}"
+              - *host
             secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
     cephObjectStores: []
     cephFileSystems: []

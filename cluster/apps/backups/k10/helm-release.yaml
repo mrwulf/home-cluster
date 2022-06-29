@@ -45,12 +45,12 @@ spec:
 
     ingress:
       create: true
-      host: k10.${SECRET_DOMAIN}
+      host: &host k10.home.${SECRET_DOMAIN}
       annotations:
         kubernetes.io/ingress.class: "traefik"
       urlPath: "k10"
       hosts:
-        - "k10.${SECRET_DOMAIN}"
+        - *host
       tls:
         enabled: true
         secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"

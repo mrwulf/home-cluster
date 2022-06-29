@@ -37,6 +37,8 @@ spec:
       spec:
         loadBalancerIP: "${TRAEFIK_ADDR}"
         externalTrafficPolicy: Local
+      annotations:
+        metallb.universe.tf/allow-shared-ip: 'traefik-svc'
     logs:
       general:
         format: json

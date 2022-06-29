@@ -72,18 +72,18 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
         hosts:
-          - "grafana.${SECRET_DOMAIN}"
+          - &host "grafana.home.${SECRET_DOMAIN}"
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
             hosts:
-              - "grafana.${SECRET_DOMAIN}"
+              - *host
       grafana.ini:
         server:
-          root_url: "https://grafana.${SECRET_DOMAIN}"
+          root_url: "https://grafana.home.${SECRET_DOMAIN}"
         security:
           allow_embedding: true
         auth:
-          signout_redirect_url: "https://auth.${SECRET_DOMAIN}/application/o/grafana/end-session/"
+          signout_redirect_url: "https://auth.home.${SECRET_DOMAIN}/application/o/grafana/end-session/"
           # Switch off auto_login to be able to log in as admin to solve https://github.com/grafana/grafana/issues/29211
           oauth_auto_login: false
         auth.generic_oauth:
@@ -92,9 +92,9 @@ spec:
           client_id: "${GRAFANA_OAUTH_CLIENTID}"
           client_secret: "${GRAFANA_OAUTH_SECRET}"
           scopes: "openid profile email"
-          auth_url: "https://auth.${SECRET_DOMAIN}/application/o/authorize/"
-          token_url: "https://auth.${SECRET_DOMAIN}/application/o/token/"
-          api_url: "https://auth.${SECRET_DOMAIN}/application/o/userinfo/"
+          auth_url: "https://auth.home.${SECRET_DOMAIN}/application/o/authorize/"
+          token_url: "https://auth.home.${SECRET_DOMAIN}/application/o/token/"
+          api_url: "https://auth.home.${SECRET_DOMAIN}/application/o/userinfo/"
           allow_sign_up: true
           role_attribute_path: "contains(groups[*], 'grafana admin') && 'Admin' || contains(groups[*], 'grafana editor') && 'Editor' || 'Viewer'"
           email_attribute_name: email
