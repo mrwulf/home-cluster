@@ -42,14 +42,14 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
         hosts:
-          - host: "radarr.${SECRET_DOMAIN}"
+          - host: &host "radarr.home.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
             hosts:
-              - "radarr.${SECRET_DOMAIN}"
+              - *host
 
     persistence:
       config:

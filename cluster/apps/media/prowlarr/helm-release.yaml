@@ -66,13 +66,13 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: websecure
           traefik.ingress.kubernetes.io/router.middlewares: networking-rfc1918-ips@kubernetescrd
         hosts:
-          - host: "prowlarr.${SECRET_DOMAIN}"
+          - host: &host "prowlarr.home.${SECRET_DOMAIN}"
             paths:
               - path: /
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
             hosts:
-              - "prowlarr.${SECRET_DOMAIN}"
+              - *host
 
     resources:
       requests:
