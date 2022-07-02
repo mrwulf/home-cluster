@@ -47,7 +47,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+            secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
     cephObjectStores: []
     cephFileSystems: []
     cephClusterSpec:

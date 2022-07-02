@@ -2,10 +2,10 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: "wildcard-${SECRET_DOMAIN/./-}-tls"
+  name: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
   namespace: networking
 spec:
-  secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+  secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
   secretTemplate:
     annotations:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
@@ -16,5 +16,4 @@ spec:
     kind: ClusterIssuer
   commonName: "${SECRET_DOMAIN}"
   dnsNames:
-    - "${SECRET_DOMAIN}"
-    - "*.${SECRET_DOMAIN}"
+    - "*.home.${SECRET_DOMAIN}"
