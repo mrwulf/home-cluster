@@ -23,9 +23,9 @@ spec:
     remediation:
       retries: 3
   values:
-    # image:
-    #   repository: photoprism/photoprism
-    #   tag: "220617-bullseye"
+    image:
+      repository: photoprism/photoprism
+      tag: "220629-jammy"
 
     env:
       PHOTOPRISM_STORAGE_PATH: /photoprism/storage
@@ -37,7 +37,7 @@ spec:
       PHOTOPRISM_PUBLIC: "false"                     # No authentication required (disables password protection)
       # PHOTOPRISM_READONLY: "false"                   # Don't modify originals directory (reduced functionality)
       # PHOTOPRISM_EXPERIMENTAL: "false"               # Enable experimental features
-      PHOTOPRISM_SITE_URL: "https://photos.${SECRET_DOMAIN}/"  # Canonical / public site URL
+      PHOTOPRISM_SITE_URL: "https://photos.home.${SECRET_DOMAIN}/"  # Canonical / public site URL
       # PHOTOPRISM_SITE_TITLE: ""
       # PHOTOPRISM_SITE_CAPTION: ""
       # PHOTOPRISM_SITE_DESCRIPTION: ""
