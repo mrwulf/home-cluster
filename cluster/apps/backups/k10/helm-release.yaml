@@ -53,7 +53,7 @@ spec:
         - *host
       tls:
         enabled: true
-        secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+        secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
 
     grafana:
       enabled: false

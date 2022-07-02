@@ -16,7 +16,7 @@ spec:
   tls:
     - hosts:
         - &host "traefik.home.${SECRET_DOMAIN}"
-      secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+      secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
   rules:
     - host: *host
       http:

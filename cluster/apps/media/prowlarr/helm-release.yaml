@@ -70,7 +70,7 @@ spec:
             paths:
               - path: /
         tls:
-          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
 
