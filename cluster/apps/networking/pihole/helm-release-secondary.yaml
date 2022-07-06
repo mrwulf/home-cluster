@@ -34,9 +34,6 @@ spec:
       DNSMASQ_USER: "root"
       TZ: "${TIMEZONE}"
 
-    image:
-      tag: 2022.04.3
-
     persistentVolumeClaim:
       enabled: true
       storageClass: ceph-block
