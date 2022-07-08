@@ -34,3 +34,15 @@ tasks:
         DATE=$(date +'%Y%m%d-%H%M%S')
         talosctl -n delta etcd snapshot {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.$DATE
         ls -tr {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.* | head -n -3 | xargs rm -f
+
+  scale-nfs-deployments-down:
+    desc: Scale all deployments with NFS volumes down to zero
+    silent: true
+    cmds:
+      - kubectl get deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale deployments --replicas=0 -n
+
+  scale-nfs-deployments-up:
+    desc: Scale all deployments with NFS volumes to one
+    silent: true
+    cmds:
+      - kubectl get deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale deployments --replicas=1 -n
