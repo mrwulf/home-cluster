@@ -8,7 +8,8 @@ vars:
   NAS_ADDRESS:
     sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_SERVER'"
   HOSTS_LIST:
-    sh: "kubectl get node -ojsonpath='{.items[*].status.addresses[?(.type == \"Hostname\")].address}' | tr ' ' ','"
+    sh: talosctl get hostname --output=json | jq '.spec.hostname' | sed -z 's/\n$//' | tr -s '\n' ','
+    # sh: "kubectl get node -ojsonpath='{.items[*].status.addresses[?(.type == \"Hostname\")].address}' | tr ' ' ','"
 
 includes:
   cluster: .taskfiles/cluster.yml
