@@ -20,7 +20,7 @@ tasks:
         PV={{.CLI_ARGS}}
         IMG=$(kubectl describe pv {{.CLI_ARGS}} | grep imageName | awk -F= '{print $2}')
         kubectl delete pv $PV
-        kubectl exec -it rook-ceph-tools-65749f87d-c44cl -- rbd rm -p ceph-block $IMG
+        kubectl exec -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block $IMG
 
   debug-volume:
     desc: Attach a volume to a container for debugging, ex. VOLUME=zigbee2mqtt-config-v1 NAMESPACE=home task debug-volume

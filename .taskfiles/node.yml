@@ -48,6 +48,7 @@ tasks:
               "restartPolicy": "Never"
             }
           }'
+
   dashboard:
     desc: Show the Talos dashboard with all the hosts
     silent: true
