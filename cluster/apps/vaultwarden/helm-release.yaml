@@ -45,3 +45,10 @@ spec:
         - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
           hosts:
             - *host
+
+    resources:
+      requests:
+        cpu: 15m
+        memory: 145M
+      limits:
+        memory: 256M

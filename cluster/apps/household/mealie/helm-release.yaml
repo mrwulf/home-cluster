@@ -26,6 +26,13 @@ spec:
       DEFAULT_EMAIL: "${SECRET_CLOUDFLARE_EMAIL}"
       BASE_URL: https://meals.${SECRET_DOMAIN}
 
+    resources:
+      requests:
+        cpu: 10m
+        memory: 226M
+      limits:
+        memory: 284M
+
     api:
       image:
         repository: *repo
