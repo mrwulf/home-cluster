@@ -34,6 +34,12 @@ spec:
         enabled: true
         existingClaim: homeassistant-config
 
+    resources:
+      requests:
+        cpu: 34m
+        memory: 381M
+      limits:
+        memory: 512M
 
     ingress:
       main:

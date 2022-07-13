@@ -63,6 +63,13 @@ spec:
               - *host
             secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
 
+    resources:
+      requests:
+        cpu: 15m
+        memory: 164M
+      limits:
+        memory: 512M
+
     postgresql:
       enabled: true
       auth:
@@ -74,3 +81,9 @@ spec:
         persistence:
           enabled: true
           existingClaim: joplin-postgres-db
+      resources:
+        requests:
+          cpu: 15m
+          memory: 105M
+        limits:
+          memory: 256M

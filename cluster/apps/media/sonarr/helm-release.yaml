@@ -51,6 +51,13 @@ spec:
             hosts:
               - *host
 
+    resources:
+      requests:
+        cpu: 22m
+        memory: 4065M
+      limits:
+        memory: 5162M
+
     persistence:
       config:
         enabled: true
