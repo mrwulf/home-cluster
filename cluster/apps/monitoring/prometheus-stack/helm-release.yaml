@@ -113,6 +113,19 @@ spec:
           role_attribute_path: "contains(groups[*], 'grafana admin') && 'Admin' || contains(groups[*], 'grafana editor') && 'Editor' || 'Viewer'"
           email_attribute_name: email
     prometheus:
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+        hosts:
+          - &host "prom.home.${SECRET_DOMAIN}"
+        tls:
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+
       prometheusSpec:
         retentionSize: "9GiB"
         serviceMonitorSelectorNilUsesHelmValues: false
@@ -131,3 +144,17 @@ spec:
             static_configs:
               - targets:
                   - "firewall.home:9100"
+
+    alertmanager:
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+        hosts:
+          - &host "alerts.home.${SECRET_DOMAIN}"
+        tls:
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
