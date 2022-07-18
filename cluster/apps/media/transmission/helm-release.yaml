@@ -54,8 +54,6 @@ spec:
           secretKeyRef:
             name: "openvpn"
             key: "LOCAL_NETWORK"
-      # - name: TRANSMISSION_PEER_PORT
-      #   value: "47444"
       - name: TRANSMISSION_DOWNLOAD_DIR
         value: "/downloads"
       - name: TRANSMISSION_INCOMPLETE_DIR
@@ -69,9 +67,6 @@ spec:
       - name: TRANSMISSION_WEB_UI
         value: transmission-web-control
 
-    # service:
-    #   type: LoadBalancer
-    #   port: 80
     podSecurityContext:
       fsGroup: 977
       runAsUser: 0
@@ -87,15 +82,14 @@ spec:
         nfs:
           server: "${NFS_SERVER}"
           path: "${NFS_KUBERNETES_PATH}/active/transmission-incomplete"
-        # persistentVolumeClaim:
-        #   claimName: "transmission-incomplete"
       - name: "transmission-downloads"
         nfs:
           server: "${NFS_SERVER}"
           path: "${NFS_KUBERNETES_PATH}/active/media-downloaded"
-      # - name: "transmission-other"
-      #   hostPath:
-      #     path: "/mnt/OurShare/Other"
+      - name: "transmission-other"
+        nfs:
+          server: "ourshare.home"
+          path: "/volume1/OtherStorage"
 
     volumeMounts:
       - name: "transmission-config"
@@ -105,8 +99,8 @@ spec:
         mountPath: "/incomplete"
       - name: "transmission-downloads"
         mountPath: "/downloads"
-      # - name: "transmission-other"
-      #   mountPath: "/other"
+      - name: "transmission-other"
+        mountPath: "/other"
       - name: "dev-tun"
         mountPath: "/dev/net/tun" # Needed for VPN
 
