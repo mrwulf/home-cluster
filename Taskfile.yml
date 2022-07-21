@@ -10,6 +10,9 @@ vars:
   HOSTS_LIST:
     sh: talosctl get hostname --output=json | jq '.spec.hostname' | sed -z 's/\n$//' | tr -s '\n' ','
     # sh: "kubectl get node -ojsonpath='{.items[*].status.addresses[?(.type == \"Hostname\")].address}' | tr ' ' ','"
+  ONE_ETCD_MASTER:
+    sh: talosctl get etcdsecret --output=json | jq '.node' | head -n1
+
 
 includes:
   cluster: .taskfiles/cluster.yml
