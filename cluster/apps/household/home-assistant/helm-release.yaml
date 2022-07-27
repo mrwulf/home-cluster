@@ -27,7 +27,7 @@ spec:
       TZ: "${TIMEZONE}"
 
     image:
-      tag: 2022.7
+      tag: "2022.7"
 
     persistence:
       config:
