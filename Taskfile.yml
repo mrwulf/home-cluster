@@ -22,3 +22,4 @@ includes:
   lint: .taskfiles/lint.yml
   node: .taskfiles/node.yml
   pre-commit: .taskfiles/pre-commit.yml
+  sops: .taskfiles/sops.yml

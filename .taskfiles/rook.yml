@@ -14,13 +14,19 @@ tasks:
     cmds:
       - kubectl -n storage get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
+# Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
   clean-up-pv:
     cmds:
       - |
         PV={{.CLI_ARGS}}
         IMG=$(kubectl describe pv {{.CLI_ARGS}} | grep imageName | awk -F= '{print $2}')
+        echo -e "PV: $PV\nIMG: $IMG"
         kubectl delete pv $PV
         kubectl exec -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block $IMG
+    preconditions:
+      - sh: kubectl get po -n storage -lapp=rook-ceph-tools | grep -q Running
+        msg: |
+          Rook tools pod isn't running.
 
   debug-volume:
     desc: Attach a volume to a container for debugging, ex. VOLUME=zigbee2mqtt-config-v1 NAMESPACE=home task debug-volume
