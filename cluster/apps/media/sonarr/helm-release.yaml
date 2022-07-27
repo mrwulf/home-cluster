@@ -87,3 +87,12 @@ spec:
           nfs:
             server: ourbackup.home
             path: /volume2/TV1
+
+      backups:
+        enabled: true
+        mountPath: /config/Backups
+        type: custom
+        volumeSpec:
+          nfs:
+            server: "${NFS_SERVER}"
+            path: "${NFS_KUBERNETES_PATH}/backups/sonarr"

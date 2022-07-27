@@ -78,3 +78,12 @@ spec:
           nfs:
             server: ourshare.home
             path: /volume1/Shared Videos/Movies
+
+      backups:
+        enabled: true
+        mountPath: /config/Backups
+        type: custom
+        volumeSpec:
+          nfs:
+            server: "${NFS_SERVER}"
+            path: "${NFS_KUBERNETES_PATH}/backups/radarr"
