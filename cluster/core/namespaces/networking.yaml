@@ -4,4 +4,4 @@ kind: Namespace
 metadata:
   name: networking
   labels:
-    goldilocks.fairwinds.com/enabled: "false"
+    goldilocks.fairwinds.com/enabled: "true"
