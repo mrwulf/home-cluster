@@ -120,6 +120,15 @@
       "matchPackageNames": [
         "ghcr.io/k8s-at-home/plex"
       ]
+    },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "versioning": "loose",
+      "matchPackageNames": [
+        "photoprism/photoprism"
+      ]
     }
   ]
 }
