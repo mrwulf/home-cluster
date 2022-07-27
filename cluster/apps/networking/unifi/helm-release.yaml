@@ -61,6 +61,14 @@ spec:
       data:
         enabled: true
         existingClaim: unifi-data
+      backups:
+        enabled: true
+        mountPath: /unifi/data/backup
+        type: custom
+        volumeSpec:
+          nfs:
+            server: "${NFS_SERVER}"
+            path: "${NFS_KUBERNETES_PATH}/backups/unifi"
 
     resources:
       requests:
