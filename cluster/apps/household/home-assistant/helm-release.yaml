@@ -33,6 +33,14 @@ spec:
       config:
         enabled: true
         existingClaim: homeassistant-config
+      backups:
+        enabled: true
+        mountPath: /config/backups
+        type: custom
+        volumeSpec:
+          nfs:
+            server: "${NFS_SERVER}"
+            path: "${NFS_KUBERNETES_PATH}/backups/homeassistant"
 
     resources:
       requests:
