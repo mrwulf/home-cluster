@@ -4,4 +4,4 @@ kind: Kustomization
 resources:
   - cloudflare-secret.sops.yaml
   - helm-release.yaml
-  # - internal-domain.yaml
+  - internal-domain.yaml
