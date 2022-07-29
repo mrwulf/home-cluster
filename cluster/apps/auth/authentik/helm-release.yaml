@@ -26,8 +26,8 @@ spec:
   values:
     replicas: 2
 
-    image:
-      tag: 2022.5.3
+    # image:
+    #   tag: 2022.5.3
 
     authentik:
       secret_key: "${AUTHENTIK_KEY}"
@@ -42,17 +42,18 @@ spec:
       enabled: true
       ingressClassName: "traefik"
       annotations:
+        external-dns/is-public: "true"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
       hosts:
-        - host: &host "auth.home.${SECRET_DOMAIN}"
+        - host: &host "auth.${SECRET_DOMAIN}"
           paths:
             - path: /
               pathType: Prefix
       tls:
         - hosts:
             - *host
-          secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+          secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
 
     prometheus:
       rules:
