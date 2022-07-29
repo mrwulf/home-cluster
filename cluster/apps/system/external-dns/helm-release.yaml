@@ -29,6 +29,7 @@ spec:
 
     sources:
       - ingress
+      - service
 
     provider: cloudflare
 
