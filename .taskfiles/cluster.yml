@@ -25,16 +25,6 @@ tasks:
     cmds:
       - kubectl delete pods --field-selector status.phase=Failed -A --ignore-not-found=true
 
-  backup-etcd:
-    desc: Backup etcd to local file
-    silent: true
-    cmds:
-      - |
-        mkdir -p {{.PROJECT_DIR}}/talos/backups
-        DATE=$(date +'%Y%m%d-%H%M%S')
-        talosctl -n {{.ONE_ETCD_MASTER}} etcd snapshot {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.$DATE
-        ls -tr {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.* | head -n -3 | xargs rm -f
-
   scale-nfs-deployments-down:
     desc: Scale all deployments with NFS volumes down to zero
     silent: true

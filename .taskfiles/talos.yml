@@ -1,6 +1,13 @@
 ---
 version: "3"
 
+vars:
+  HOSTS_LIST:
+    sh: "kubectl get node -ojsonpath='{.items[*].status.addresses[?(.type == \"Hostname\")].address}' | tr ' ' ','"
+    # sh: talosctl get hostname --output=json | jq '.spec.hostname' | sed -z 's/\n$//' | tr -s '\n' ','
+  ONE_ETCD_MASTER:
+    sh: talosctl -n {{.HOSTS_LIST}} get etcdsecret --output=json | jq '.node' | head -n1
+
 tasks:
   list:
     desc: List all the hosts
@@ -8,6 +15,16 @@ tasks:
     cmds:
       - |
         echo {{.HOSTS_LIST}}
+
+  backup-etcd:
+    desc: Backup etcd to local file
+    silent: true
+    cmds:
+      - |
+        mkdir -p {{.PROJECT_DIR}}/talos/backups
+        DATE=$(date +'%Y%m%d-%H%M%S')
+        talosctl -n {{.ONE_ETCD_MASTER}} etcd snapshot {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.$DATE
+        ls -tr {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.* | head -n -3 | xargs rm -f
 
   debug:
     desc: Create a privileged container on a node for debugging, ex. NODE=anvil task debug-node
@@ -56,9 +73,18 @@ tasks:
       - |
         talosctl -n {{.HOSTS_LIST}} dashboard
 
-  talosctl:
+  ctl:
     desc: Talosctl with all the hosts
     silent: true
     cmds:
       - |
-        talosctl -n {{.HOSTS_LIST}} {{.CLI_ARGS}}
+        talosctl -n {{.HOSTS_LIST}} {{.CLI_ARGS | default "--help"}}
+
+  theila:
+    desc: Show the Theila web-ui dashboard with all the hosts
+    silent: true
+    cmds:
+      - |
+        docker pull ghcr.io/siderolabs/theila:latest
+        xdg-open http://localhost:8080/
+        docker run --rm -it --volume ${HOME}/.talos/config:/opt/talosconfig:ro --env TALOSCONFIG=/opt/talosconfig --publish 8080:8080 ghcr.io/siderolabs/theila:latest --address 0.0.0.0
