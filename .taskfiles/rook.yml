@@ -1,18 +1,22 @@
 ---
 version: "3"
 
+vars:
+  NAMESPACE: storage
+  POOL: ceph-block
+
 tasks:
   rook-ceph-toolbox:
     desc: Exec into the Rook Ceph toolbox
     cmds:
-      - kubectl -n storage exec -it $(kubectl -n storage get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') -- bash
+      - kubectl -n {{NAMESPACE}} exec -it $(kubectl -n {{NAMESPACE}} get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') -- bash
     silent: true
 
   rook-password:
     desc: Retrieve the rook-ceph password
     silent: true
     cmds:
-      - kubectl -n storage get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+      - kubectl -n {{NAMESPACE}} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
 # Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
   clean-up-pv:
@@ -22,11 +26,31 @@ tasks:
         IMG=$(kubectl describe pv {{.CLI_ARGS}} | grep imageName | awk -F= '{print $2}')
         echo -e "PV: $PV\nIMG: $IMG"
         kubectl delete pv $PV
-        kubectl exec -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block $IMG
+        kubectl exec -n {{NAMESPACE}} -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block $IMG
     preconditions:
-      - sh: kubectl get po -n storage -lapp=rook-ceph-tools | grep -q Running
+      - sh: kubectl get po -n {{NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
         msg: |
           Rook tools pod isn't running.
+
+# Purge retained volumesnapshots & volumesnapshotcontents from backups NS (k10)
+# for SN in $(k get volumesnapshotcontents.snapshot.storage.k8s.io | grep Retain | awk '{print $1}'); do echo $SN; VS=$(kubectl get volumesnapshotcontents.snapshot.storage.k8s.io $SN -ojsonpath='{.spec.volumeSnapshotRef.name}'); echo $VS; kubectl delete volumesnapshot $VS -n backups;  kubectl delete volumesnapshotcontents $SN; done
+
+# still have snapshots:
+# csi-vol-677a4f42-f91a-11ec-bc39-0ed6f0913b1b
+# csi-vol-677b530e-f91a-11ec-bc39-0ed6f0913b1b
+
+  get-unused-images:
+    cmds:
+      - |
+        kubectl exec -n {{.NAMESPACE}} -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd -p {{.POOL}} ls | grep 'csi-vol-' > image_list.txt
+        for PV in $(kubectl get pv | grep ceph-block | awk '{print $1}'); do
+          IMG=$(kubectl describe pv $PV | grep imageName | awk -F= '{print $2}')
+          if (! grep -q $IMG image_list.txt); then
+            echo "$IMG not in image_list.txt"
+          fi
+          sed -i "/${IMG}/d" image_list.txt
+        done
+
 
   debug-volume:
     desc: Attach a volume to a container for debugging, ex. VOLUME=zigbee2mqtt-config-v1 NAMESPACE=home task debug-volume
