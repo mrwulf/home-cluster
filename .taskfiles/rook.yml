@@ -6,17 +6,18 @@ vars:
   POOL: ceph-block
 
 tasks:
-  rook-ceph-toolbox:
+  toolbox:
     desc: Exec into the Rook Ceph toolbox
+    interactive: true
     cmds:
-      - kubectl -n {{NAMESPACE}} exec -it $(kubectl -n {{NAMESPACE}} get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') -- bash
+      - kubectl -n {{.NAMESPACE}} exec -it $(kubectl -n {{.NAMESPACE}} get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') -- bash
     silent: true
 
   rook-password:
     desc: Retrieve the rook-ceph password
     silent: true
     cmds:
-      - kubectl -n {{NAMESPACE}} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+      - kubectl -n {{.NAMESPACE}} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
 # Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
   clean-up-pv:
@@ -26,9 +27,9 @@ tasks:
         IMG=$(kubectl describe pv {{.CLI_ARGS}} | grep imageName | awk -F= '{print $2}')
         echo -e "PV: $PV\nIMG: $IMG"
         kubectl delete pv $PV
-        kubectl exec -n {{NAMESPACE}} -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block $IMG
+        kubectl exec -n {{.NAMESPACE}} -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block $IMG
     preconditions:
-      - sh: kubectl get po -n {{NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
+      - sh: kubectl get po -n {{.NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
         msg: |
           Rook tools pod isn't running.
 

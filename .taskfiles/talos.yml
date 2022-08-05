@@ -6,7 +6,7 @@ vars:
     sh: "kubectl get node -ojsonpath='{.items[*].status.addresses[?(.type == \"Hostname\")].address}' | tr ' ' ','"
     # sh: talosctl get hostname --output=json | jq '.spec.hostname' | sed -z 's/\n$//' | tr -s '\n' ','
   ONE_ETCD_MASTER:
-    sh: talosctl -n {{.HOSTS_LIST}} get etcdsecret --output=json | jq '.node' | head -n1
+    sh: talosctl -n {{.HOSTS_LIST}} get etcdsecret --output=json | jq '.node' | head -n1 | tr -d '"'
 
 tasks:
   list:
@@ -26,45 +26,14 @@ tasks:
         talosctl -n {{.ONE_ETCD_MASTER}} etcd snapshot {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.$DATE
         ls -tr {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.* | head -n -3 | xargs rm -f
 
-  debug:
-    desc: Create a privileged container on a node for debugging, ex. NODE=anvil task debug-node
+  debug-node:
+    desc: Create a privileged container on a node for debugging, ex. task talos:debug-node -- <node-name>
     interactive: true
     silent: true
+    vars:
+      NODE: '{{.CLI_ARGS | default .ONE_ETCD_MASTER}}'
     cmds:
-      - kubectl get node -owide '{{.CLI_ARGS}}' || (echo 'Node {{.CLI_ARGS}} is invalid!' && exit -1)
-      - |
-        kubectl run debug-{{.CLI_ARGS}} -i --tty --rm --image=null --privileged --overrides='
-          {
-            "spec": {
-              "nodeSelector": {
-                "kubernetes.io/hostname": "{{.CLI_ARGS}}"
-              },
-              "containers": [
-                {
-                  "name": "debug",
-                  "image": "fedora:36",
-                  "command": [
-                    "/bin/bash"
-                  ],
-                  "stdin": true,
-                  "stdinOnce": true,
-                  "tty": true,
-                  "lifecycle": {
-                    "postStart": {
-                      "exec": {
-                        "command": [
-                          "/bin/sh",
-                          "-c",
-                          "dnf install -y util-linux htop procps gdisk &"
-                        ]
-                      }
-                    }
-                  }
-                }
-              ],
-              "restartPolicy": "Never"
-            }
-          }'
+      - kubectl debug node/{{.NODE}} -it --image=fedora:36 -- bash
 
   dashboard:
     desc: Show the Talos dashboard with all the hosts
