@@ -36,7 +36,7 @@ spec:
     api:
       image:
         repository: *repo
-        tag: api-v1.0.0beta-3
+        tag: api-v1.0.0beta-4
       env: *env
 
     ingress:
