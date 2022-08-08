@@ -36,3 +36,9 @@ tasks:
     silent: true
     cmds:
       - kubectl get deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale deployments --replicas=1 -n
+
+  rebalance:
+    desc: Run the descheduler to rebalance pods
+    silent: true
+    cmds:
+      - kubectl -n system create job rebalance --from=cronjob/descheduler
