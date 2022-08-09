@@ -18,7 +18,7 @@ spec:
   values:
     image:
       repository: &repo hkotel/mealie
-      tag: &tag frontend-v1.0.0beta-3
+      tag: &tag frontend-v1.0.0beta-4
       pullPolicy: IfNotPresent
 
     env: &env
