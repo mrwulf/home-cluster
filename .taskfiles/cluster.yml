@@ -41,4 +41,4 @@ tasks:
     desc: Run the descheduler to rebalance pods
     silent: true
     cmds:
-      - kubectl -n system create job rebalance --from=cronjob/descheduler
+      - kubectl -n system create job rebalance-`date '+%H%M%d'` --from=cronjob/descheduler
