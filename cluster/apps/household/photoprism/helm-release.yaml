@@ -25,7 +25,7 @@ spec:
   values:
     image:
       repository: photoprism/photoprism
-      tag: "220629-jammy"
+      tag: "220730-jammy"
 
     env:
       PHOTOPRISM_STORAGE_PATH: /photoprism/storage
