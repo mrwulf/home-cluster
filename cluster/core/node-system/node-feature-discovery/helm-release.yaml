@@ -70,7 +70,7 @@ spec:
               - "class"
               - "vendor"
               - "device"
-
+# https://kubernetes-sigs.github.io/node-feature-discovery/master/advanced/customization-guide.html#custom-feature-source
           custom:
             - name: "cpu-6700t"
               labels:
