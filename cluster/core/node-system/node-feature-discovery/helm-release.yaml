@@ -42,7 +42,7 @@ spec:
 
     worker:
       annotations:
-        configmap.reloader.stakater.com/reload: "nfd-worker-conf"
+        configmap.reloader.stakater.com/reload: "node-feature-discovery-worker-conf"
 
       tolerations:
         - effect: "NoExecute"
@@ -72,6 +72,24 @@ spec:
               - "device"
 
           custom:
+            - name: "cpu-6700t"
+              labels:
+                "cpu-6700t": "true"
+              matchFeatures:
+                - feature: cpu.model
+                  matchExpressions:
+                    family: {op: In, value: ["6"]}
+                    id: {op: In, value: ["94"]}
+                    vendor_id: {op: In, value: ["Intel"]}
+            - name: "cpu-8500t"
+              labels:
+                "cpu-8500t": "true"
+              matchFeatures:
+                - feature: cpu.model
+                  matchExpressions:
+                    family: {op: In, value: ["6"]}
+                    id: {op: In, value: ["158"]}
+                    vendor_id: {op: In, value: ["Intel"]}
             - name: "intel-gpu"
               matchOn:
                 - pciId:
