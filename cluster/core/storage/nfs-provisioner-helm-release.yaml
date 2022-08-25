@@ -18,7 +18,7 @@ spec:
   values:
     nfs:
       server: ourbackup.home
-      path: /volume1/k8s-storage/migration
+      path: /volume1/k8s-storage/active
     storageClass:
       name: nfs
       reclaimPolicy: Retain
