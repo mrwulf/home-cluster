@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - descheduler
   - external-dns
+  - k8s-dns-gateway
   - metrics-server
   - reflector
   - reloader
