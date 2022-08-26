@@ -25,10 +25,12 @@ spec:
       retries: 3
   values:
     fullnameOverride: metallb
+    crds:
+      enabled: false
     prometheus:
       namespace: monitoring
-      podMonitor:
-        enabled: true
+      # serviceMonitor:
+      #   enabled: true
     # configInline:
     #   address-pools:
     #     - name: default
