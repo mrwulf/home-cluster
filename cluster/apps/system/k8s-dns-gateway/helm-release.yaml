@@ -1,0 +1,54 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: k8s-dns-gateway
+  namespace: system
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://ori-edge.github.io/k8s_gateway/
+      chart: k8s-gateway
+      version: 1.1.12
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-gateway-charts
+        namespace: flux-system
+      interval: 5m
+  install:
+    timeout: 10m
+    remediation:
+      retries: 3
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  rollback:
+    timeout: 10m
+    recreate: true
+    cleanupOnFail: true
+  values:
+    domain: "home.${SECRET_DOMAIN}"
+    ttl: 1
+    service:
+      type: LoadBalancer
+      externalIPs:
+        - "${LOCAL_DNS_ADDR}"
+      externalTrafficPolicy: Local
+
+    replicaCount: 2
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - k8s-dns-gateway
+              topologyKey: kubernetes.io/hostname
