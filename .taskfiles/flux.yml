@@ -12,7 +12,7 @@ tasks:
 
   diff:
     cmds:
-      - flux diff kustomization --path `git rev-parse --show-toplevel`/cluster/base flux-system
+      - flux diff kustomization --path {{.PROJECT_DIR}}/cluster/base flux-system
 
   install:verify:
     desc: Verify flux meets the prerequisites
