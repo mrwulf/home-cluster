@@ -14,7 +14,6 @@ spec:
         kind: HelmRepository
         name: metallb-charts
         namespace: flux-system
-  targetNamespace: metallb-system
   install:
     createNamespace: true
     crds: CreateReplace
