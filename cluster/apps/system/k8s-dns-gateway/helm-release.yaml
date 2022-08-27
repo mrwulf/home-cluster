@@ -35,8 +35,8 @@ spec:
     ttl: 1
     service:
       type: LoadBalancer
-      externalIPs:
-        - "${LOCAL_DNS_ADDR}"
+      annotations:
+        metallb.universe.tf/loadBalancerIPs: "${LOCAL_DNS_ADDR}"
       externalTrafficPolicy: Local
 
     replicaCount: 2
