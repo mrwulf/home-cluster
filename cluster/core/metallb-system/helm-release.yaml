@@ -24,13 +24,14 @@ spec:
     remediation:
       retries: 3
   values:
-    fullnameOverride: metallb
+    fullnameOverride: 'metallb'
     crds:
       enabled: false
     prometheus:
       namespace: monitoring
-      # serviceMonitor:
-      #   enabled: true
+      serviceAccount: kube-prometheus-stack-prometheus
+      serviceMonitor:
+        enabled: true
     # configInline:
     #   address-pools:
     #     - name: default
