@@ -7,6 +7,8 @@ vars:
   CLUSTER_DIR: "{{.PROJECT_DIR}}/cluster"
   NAS_ADDRESS:
     sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_SERVER'"
+  CURRENT_NAMESPACE:
+    sh: "kubectl config get-contexts | grep '^*' | awk '{print $5}'"
 
 includes:
   cluster: .taskfiles/cluster.yml

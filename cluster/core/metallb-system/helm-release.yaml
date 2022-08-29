@@ -26,7 +26,7 @@ spec:
   values:
     fullnameOverride: 'metallb'
     crds:
-      enabled: false
+      enabled: true
     prometheus:
       namespace: monitoring
       serviceAccount: kube-prometheus-stack-prometheus
