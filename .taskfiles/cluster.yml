@@ -25,6 +25,11 @@ tasks:
     cmds:
       - kubectl delete pods --field-selector status.phase=Failed -A --ignore-not-found=true
 
+  delete-completed-pods:
+    desc: Deletes completed pods
+    cmds:
+      - kubectl delete pods --field-selector status.phase=Succeeded -A --ignore-not-found=true
+
   scale-nfs-deployments-down:
     desc: Scale all deployments with NFS volumes down to zero
     silent: true

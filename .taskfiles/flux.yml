@@ -12,7 +12,10 @@ tasks:
 
   diff:
     cmds:
-      - flux diff kustomization --path {{.PROJECT_DIR}}/cluster/base flux-system
+      - flux diff kustomization flux-system --path {{.PROJECT_DIR}}/cluster/base
+      # - flux diff kustomization crds --path {{.CLUSTER_DIR}}/crds
+      - flux diff kustomization core --path {{.CLUSTER_DIR}}/core
+      - flux diff kustomization apps --path {{.CLUSTER_DIR}}/apps
 
   install:verify:
     desc: Verify flux meets the prerequisites
