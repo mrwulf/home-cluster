@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
   - cert-manager
   # - rook-ceph
-  - metallb
+  # - metallb
   - snapshot-controller/crds.yaml
   - traefik
