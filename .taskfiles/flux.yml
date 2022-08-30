@@ -5,15 +5,31 @@ tasks:
   sync:
     desc: Sync flux-system with the Git Repository
     cmds:
-      - flux reconcile source git flux-system
-      - flux reconcile kustomization core
-      - flux reconcile kustomization apps
+      - flux -n flux-system reconcile source git flux-system
+      - flux -n flux-system reconcile kustomization core
+      - flux -n flux-system reconcile kustomization apps
     silent: true
+
+  pause:
+    cmds:
+      - flux -n flux-system suspend source git flux-system
+    silent: true
+
+  resume:
+    cmds:
+      - flux -n flux-system resume source git flux-system
+    silent: true
+
+  ns:
+    desc: Run flux in the current namespace
+    silent: true
+    cmds:
+      - flux -n {{.CURRENT_NAMESPACE}} {{.CLI_ARGS | default "get all"}}
 
   diff:
     cmds:
       - flux diff kustomization flux-system --path {{.PROJECT_DIR}}/cluster/base
-      # - flux diff kustomization crds --path {{.CLUSTER_DIR}}/crds
+      - flux diff kustomization crds --path {{.CLUSTER_DIR}}/crds
       - flux diff kustomization core --path {{.CLUSTER_DIR}}/core
       - flux diff kustomization apps --path {{.CLUSTER_DIR}}/apps
 
