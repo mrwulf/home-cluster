@@ -129,4 +129,12 @@ spec:
                 - key: feature.node.kubernetes.io/custom-intel-gpu
                   operator: In
                   values:
-                    - "true"
+                    - 'true'
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+                - key: feature.node.kubernetes.io/cpu-8500t
+                  operator: In
+                  values:
+                    - 'true'
+            weight: 100
