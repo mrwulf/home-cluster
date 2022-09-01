@@ -146,6 +146,10 @@ spec:
               resources:
                 requests:
                   storage: 10Gi
+        podMonitorNamespaceSelector: {}
+        podMonitorSelector:
+          matchLabels:
+            app.kubernetes.io/component: monitoring
         additionalScrapeConfigs:
           - job_name: node-exporter
             honor_timestamps: true
