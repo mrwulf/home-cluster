@@ -27,6 +27,7 @@ tasks:
       - flux -n {{.CURRENT_NAMESPACE}} {{.CLI_ARGS | default "get all"}}
 
   diff:
+    ignore_error: true
     cmds:
       - flux diff kustomization flux-system --path {{.PROJECT_DIR}}/cluster/base
       - flux diff kustomization crds --path {{.CLUSTER_DIR}}/crds
