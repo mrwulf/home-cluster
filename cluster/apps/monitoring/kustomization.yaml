@@ -4,4 +4,6 @@ resources:
   - goldilocks
   - loki-stack
   - prometheus-stack
-  # - podmonitor.yaml
+  - grafana-dashboards-flux.yaml
+  - grafana-dashboards-ceph.yaml
+  - podmonitor.yaml
