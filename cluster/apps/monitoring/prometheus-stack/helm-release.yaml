@@ -26,54 +26,50 @@ spec:
   values:
     kubeEtcd:
       enabled: true
-      endpoints: &nodes
-        - 10.0.1.44
-        - 10.0.1.45
+      endpoints:
         - 10.0.1.41
         - 10.0.1.42
+        # - 10.0.1.44
+        - 10.0.1.45
       service:
         enabled: true
         port: 2379
         targetPort: 2379
     kubeControllerManager:
       enabled: true
-      endpoints: []
-    #   endpoints: *nodes
-    #   service:
-    #     enabled: true
-    #     port: 10257
-    #     targetPort: 10257
+      service:
+        enabled: true
+        selector:
+          k8s-app: kube-controller-manager
     kubeScheduler:
       enabled: true
-      endpoints: []
-    #   endpoints: *nodes
-    #   service:
-    #     enabled: true
-    #     port: 10259
-    #     targetPort: 10259
+      service:
+        enabled: true
+        selector:
+          k8s-app: kube-scheduler
     kubeProxy:
       enabled: true
-      endpoints: []
-    #   endpoints: *nodes
-    #   service:
-    #     enabled: true
-    #     port: 10249
-    #     targetPort: 10249
+      service:
+        enabled: true
+        selector:
+          k8s-app: kube-proxy
     coreDns:
       enabled: true
-      endpoints: []
-    #   endpoints: *nodes
-    #   service:
-    #     enabled: true
-    #     port: 9153
-    #     targetPort: 9153
-    # kubelet:
-    #   enabled: true
-    #   endpoints: *nodes
-    #   service:
-    #     enabled: true
-    #     port: 10250
-    #     targetPort: 10250
+      service:
+        enabled: true
+        selector:
+          k8s-app: kube-dns
+    kubelet:
+      enabled: true
+      endpoints:
+        - 10.0.1.41
+        - 10.0.1.42
+        - 10.0.1.44
+        - 10.0.1.45
+      service:
+        enabled: true
+        port: 10250
+        targetPort: 10250
     grafana:
       adminPassword: ${GRAFANA_PASS}
       persistence:
