@@ -7,3 +7,4 @@ resources:
   - grafana-dashboards-flux.yaml
   - grafana-dashboards-ceph.yaml
   - podmonitor.yaml
+  - speedtest-exporter
