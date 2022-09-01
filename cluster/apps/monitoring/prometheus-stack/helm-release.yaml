@@ -35,24 +35,32 @@ spec:
         enabled: true
         port: 2379
         targetPort: 2379
+      serviceMonitor:
+        scheme: https
     kubeControllerManager:
       enabled: true
       service:
         enabled: true
         selector:
           k8s-app: kube-controller-manager
+      serviceMonitor:
+        scheme: https
     kubeScheduler:
       enabled: true
       service:
         enabled: true
         selector:
           k8s-app: kube-scheduler
+      serviceMonitor:
+        scheme: https
     kubeProxy:
       enabled: true
       service:
         enabled: true
         selector:
           k8s-app: kube-proxy
+      serviceMonitor:
+        scheme: https
     coreDns:
       enabled: true
       service:
