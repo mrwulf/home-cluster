@@ -4,6 +4,7 @@ resources:
   - authentik-charts.yaml
   - bananaspliff-charts.yaml
   - bitnami-charts.yaml
+  - bjw-s-charts.yaml
   - dcardellino-charts.yaml
   - deliveryhero-charts.yaml
   - descheduler-charts.yaml
