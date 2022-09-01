@@ -5,6 +5,7 @@ metadata:
   name: kube-prometheus-stack
   namespace: monitoring
 spec:
+  ipFamilyPolicy:
   interval: 5m
   chart:
     spec:
@@ -35,29 +36,33 @@ spec:
         enabled: true
         port: 2379
         targetPort: 2379
-    # kubeControllerManager:
-    #   enabled: true
+    kubeControllerManager:
+      enabled: true
+      endpoints: []
     #   endpoints: *nodes
     #   service:
     #     enabled: true
     #     port: 10257
     #     targetPort: 10257
-    # kubeScheduler:
-    #   enabled: true
+    kubeScheduler:
+      enabled: true
+      endpoints: []
     #   endpoints: *nodes
     #   service:
     #     enabled: true
     #     port: 10259
     #     targetPort: 10259
-    # kubeProxy:
-    #   enabled: true
+    kubeProxy:
+      enabled: true
+      endpoints: []
     #   endpoints: *nodes
     #   service:
     #     enabled: true
     #     port: 10249
     #     targetPort: 10249
-    # coreDns:
-    #   enabled: true
+    coreDns:
+      enabled: true
+      endpoints: []
     #   endpoints: *nodes
     #   service:
     #     enabled: true
