@@ -25,6 +25,7 @@ spec:
   values:
     loki:
       enabled: true
+      isDefault: false
       persistence:
         enabled: true
         existingClaim: loki-data
