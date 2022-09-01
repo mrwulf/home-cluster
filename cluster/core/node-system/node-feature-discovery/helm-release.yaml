@@ -39,6 +39,9 @@ spec:
                   - key: "node-role.kubernetes.io/master"
                     operator: In
                     values: [""]
+                  - key: "node-role.kubernetes.io/control-plane"
+                    operator: In
+                    values: [""]
 
     worker:
       annotations:
