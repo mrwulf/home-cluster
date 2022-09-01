@@ -13,6 +13,6 @@ spec:
       <<: *labels
   endpoints:
     - port: metrics
-      interval: 60m
+      interval: 30m
       scrapeTimeout: 1m
       path: /metrics
