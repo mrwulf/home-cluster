@@ -1,0 +1,174 @@
+clusterName: talos-v1
+talosVersion: v1.1.2
+kubernetesVersion: v1.24.3
+endpoint: https://10.0.0.200:6443
+domain: cluster.local
+clusterPodNets:
+  - 10.244.0.0/16
+clusterSvcNets:
+  - 10.96.0.0/12
+# cniConfig:
+#   name: custom
+#   urls:
+#     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/cilium.yaml
+#     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/configmap.yaml
+nodes:
+  - hostname: delta
+    ipAddress: 10.0.1.44
+    controlPlane: true
+    installDisk: deleteme
+    networkInterfaces:
+      - interface: eth0
+        dhcp: true
+        vip:
+          ip: 10.0.0.200
+    inlinePatch:
+      machine:
+        install:
+          diskSelector:
+            model: "SanDisk*"
+  - hostname: epsilon
+    ipAddress: 10.0.1.45
+    controlPlane: false
+    installDisk: deleteme
+    networkInterfaces:
+      - interface: eth0
+        dhcp: true
+    inlinePatch:
+      machine:
+        install:
+          diskSelector:
+            model: "SanDisk*"
+    # configPatches:
+    #   - op: add
+    #     path: /machine/install/extraKernelArgs
+    #     value:
+    #       - nvme_core.default_ps_max_latency_us=0
+  - hostname: zeta
+    ipAddress: 10.0.1.41
+    installDisk: deleteme
+    controlPlane: true
+    networkInterfaces:
+      - interface: eth0
+        dhcp: true
+        vip:
+          ip: 10.0.0.200
+    inlinePatch:
+      machine:
+        install:
+          diskSelector:
+            model: '*KIOXIA*'
+  - hostname: eta
+    ipAddress: 10.0.1.42
+    controlPlane: true
+    installDisk: deleteme
+    networkInterfaces:
+      - interface: eth0
+        dhcp: true
+        vip:
+          ip: 10.0.0.200
+    inlinePatch:
+      machine:
+        install:
+          diskSelector:
+            model: '*KIOXIA*'
+controlPlane:
+  configPatches:
+    - op: remove
+      path: /machine/install/disk
+    - op: remove
+      path: /cluster/apiServer/admissionControl
+    - op: add
+      path: /machine/kubelet/extraArgs
+      value:
+        rotate-server-certificates: true
+        feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true,EphemeralContainers=True
+    # - op: add
+    #   path: /machine/kubelet/defaultRuntimeSeccompProfileEnabled
+    #   value: true
+    - op: add
+      path: /cluster/apiServer/extraArgs
+      value:
+        feature-gates: MixedProtocolLBService=true,EphemeralContainers=True
+    - op: add
+      path: /cluster/controllerManager/extraArgs
+      value:
+        bind-address: 0.0.0.0
+        feature-gates: MixedProtocolLBService=true,EphemeralContainers=True
+    - op: add
+      path: /cluster/scheduler/extraArgs
+      value:
+        bind-address: 0.0.0.0
+        feature-gates: MixedProtocolLBService=true,EphemeralContainers=True
+    - op: add
+      path: /cluster/proxy/extraArgs
+      value:
+        bind-address: 0.0.0.0
+        feature-gates: MixedProtocolLBService=true,EphemeralContainers=True
+    - op: add
+      path: /machine/sysctls
+      value:
+        fs.inotify.max_user_watches: "1048576"
+        fs.inotify.max_user_instances: "8192"
+    - op: add
+      path: /cluster/apiServer/certSANs
+      value:
+        - 10.0.0.200
+        - kubernetes.home
+  inlinePatch:
+    cluster:
+      # allowSchedulingOnControlPlanes: true
+      allowSchedulingOnMasters: true
+    #   extraManifests:
+    #     - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
+    #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+    machine:
+      certSANs:
+        - kubernetes.home
+      time:
+        disabled: false
+        servers:
+          - 10.0.0.1
+      # registries:
+      # │ mirrors:
+      # │ │ k8s.gcr.io:
+      # │ │ │ endpoints:
+      #   │ │ │ - "https://registry.k8s.io"
+      #   │ │ │ - "https://k8s.gcr.io"
+
+worker:
+  configPatches:
+    - op: remove
+      path: /machine/install/disk
+    - op: add
+      path: /machine/kubelet/extraArgs
+      value:
+        rotate-server-certificates: true
+        feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true,EphemeralContainers=True
+    # - op: add
+    #   path: /machine/kubelet/defaultRuntimeSeccompProfileEnabled
+    #   value: true
+    - op: add
+      path: /machine/sysctls
+      value:
+        fs.inotify.max_user_watches: "1048576"
+        fs.inotify.max_user_instances: "8192"
+  inlinePatch:
+    # cluster:
+    #   extraManifests:
+    #     - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
+    #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+    machine:
+      certSANs:
+        - kubernetes.home
+      time:
+        disabled: false
+        servers:
+          - 10.0.0.1
+      # registries:
+      # │ mirrors:
+      # │ │ k8s.gcr.io:
+      # │ │ │ endpoints:
+      #   │ │ │ - "https://registry.k8s.io"
+      #   │ │ │ - "https://k8s.gcr.io"
