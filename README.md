@@ -1,3 +1,25 @@
+# Basic Startup
+```
+# Install dependencies
+## Install go-task on your own (https://taskfile.dev/installation/)
+## Install all the other dependencies (reference just the install taskfile so VARS don't need the dependencies)
+task --taskfile .taskfiles/install.yml all
+
+# Configure your cluster
+task talos:generate-secrets
+## Edit ./talos/talconfig
+
+# Boot nodes to talos
+
+# Apply configuration to each node
+task talos:apply-config -- <node>
+
+# Configure flux base repo
+
+# Install flux
+
+```
+
 # Tools
 * [talhelper](https://github.com/budimanjojo/talhelper) -
 

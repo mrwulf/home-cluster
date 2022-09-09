@@ -7,6 +7,8 @@ vars:
     # sh: talosctl get hostname --output=json | jq '.spec.hostname' | sed -z 's/\n$//' | tr -s '\n' ','
   ONE_ETCD_MASTER:
     sh: talosctl -n {{.HOSTS_LIST}} get etcdsecret --output=json 2>/dev/null | jq '.node' | head -n1 | tr -d '"'
+  CLUSTER_NAME:
+    sh: "yq '.clusterName' talos/talconfig.yaml"
 
 tasks:
   list:
@@ -62,3 +64,35 @@ tasks:
         docker pull ghcr.io/siderolabs/theila:latest
         xdg-open http://localhost:8080/
         docker run --rm -it --volume ${HOME}/.talos/config:/opt/talosconfig:ro --env TALOSCONFIG=/opt/talosconfig --publish 8080:8080 ghcr.io/siderolabs/theila:latest --address 0.0.0.0
+
+  generate-configs:
+    desc: Use talhelper to regenerate individual node configs
+    silent: true
+    generates:
+      - "{{.PROJECT_DIR}}/talos/clusterconfig/*"
+      - "{{.PROJECT_DIR}}/talos/clusterconfig/talosconfig"
+      - "{{.PROJECT_DIR}}/talos/clusterconfig/.gitignore"
+    cmds:
+      - |
+        pushd {{.PROJECT_DIR}}/talos/
+        talhelper genconfig
+        popd
+
+  diff-config:
+    desc: Diff config against running node config
+    vars:
+      NODE: '{{.CLI_ARGS | default .ONE_ETCD_MASTER}}'
+    cmds:
+      - |
+        talosctl apply-config --dry-run -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml
+
+  apply-config:
+    desc: Apply config against running node config
+    vars:
+      NODE: '{{.CLI_ARGS}}'
+    preconditions:
+      - sh: "[ '' -eq {{.NODE}} ]"
+        msg: Node Required!
+    cmds:
+      - |
+        talosctl apply-config -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml

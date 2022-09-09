@@ -1,6 +1,10 @@
 ---
 version: "3"
 
+vars:
+  CURRENT_NAMESPACE:
+    sh: "kubectl config get-contexts | grep '^*' | awk '{print $5}'"
+
 tasks:
   sync:
     desc: Sync flux-system with the Git Repository
