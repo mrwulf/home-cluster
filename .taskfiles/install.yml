@@ -7,11 +7,36 @@ tasks:
     - task: talhelper
     - task: go-task
     - task: yq
+    - task: age
+    - task: sops
     # - task: kubectl
     # - task: flux
     # - task: helm
     # - task: pre-commit
     # - task: krew
+
+  age:
+    desc: Install age
+    vars:
+      APP_NAME:
+        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+      OWNER: FiloSottile
+      RELEASE_VERSION:
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+      CURRENT_VERSION:
+        sh: "{{.APP_NAME}} --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+    cmds:
+      - |
+        echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
+        TEMP_DIR=$(mktemp -d)
+        wget -qnv --show-progress -O $TEMP_DIR/{{.APP_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.APP_NAME}}/releases/download/v{{.RELEASE_VERSION}}/{{.APP_NAME}}-v{{.RELEASE_VERSION}}-linux-amd64.tar.gz
+        tar -xzf ${TEMP_DIR}/{{.APP_NAME}}.tar.gz --strip-components=1 -C ~/bin/ age/{{.APP_NAME}}
+        # chmod +x ~/bin/{{.APP_NAME}}
+        rm -rf $TEMP_DIR
+    status:
+      - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
+    silent: true
+    ignore_errors: true
 
   go-task:
     desc: Update go-task
@@ -29,11 +54,30 @@ tasks:
     silent: true
     ignore_errors: true
 
+  sops:
+    desc: Install sops
+    vars:
+      APP_NAME:
+        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+      OWNER: mozilla
+      RELEASE_VERSION:
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+      CURRENT_VERSION:
+        sh: "{{.APP_NAME}} --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+    cmds:
+      - |
+        echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
+        sudo dnf install -y https://github.com/{{.OWNER}}/{{.APP_NAME}}/releases/download/v{{.RELEASE_VERSION}}/{{.APP_NAME}}-{{.RELEASE_VERSION}}-1.x86_64.rpm
+    status:
+      - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
+    silent: true
+    ignore_errors: true
+
   talhelper:
     desc: Install talhelper
     vars:
       TASK_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $2}'"
+        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       OWNER: budimanjojo
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
