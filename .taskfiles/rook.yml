@@ -1,6 +1,7 @@
 ---
 version: "3"
 
+
 vars:
   NAMESPACE: storage
   POOL: ceph-block
@@ -57,6 +58,9 @@ tasks:
     desc: Attach a volume to a container for debugging, ex. VOLUME=zigbee2mqtt-config-v1 NAMESPACE=home task debug-volume
     interactive: true
     silent: true
+    vars:
+      NAS_ADDRESS:
+        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_SERVER'"
     cmds:
       - |
         kubectl run debug-{{.VOLUME}} -n {{.NAMESPACE}} -i --tty --rm --image=null --overrides='

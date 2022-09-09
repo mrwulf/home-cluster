@@ -5,12 +5,9 @@ vars:
   PROJECT_DIR:
     sh: "git rev-parse --show-toplevel"
   CLUSTER_DIR: "{{.PROJECT_DIR}}/cluster"
-  NAS_ADDRESS:
-    sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_SERVER'"
-  CURRENT_NAMESPACE:
-    sh: "kubectl config get-contexts | grep '^*' | awk '{print $5}'"
 
 includes:
+  install: .taskfiles/install.yml
   cluster: .taskfiles/cluster.yml
   flux: .taskfiles/flux.yml
   rook: .taskfiles/rook.yml
