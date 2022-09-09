@@ -1,7 +1,7 @@
 clusterName: talos-v1
-talosVersion: v1.1.2
+talosVersion: v1.2.1
 kubernetesVersion: v1.24.3
-endpoint: https://10.0.0.200:6443
+endpoint: https://kubernetes.home:6443
 domain: cluster.local
 clusterPodNets:
   - 10.244.0.0/16
@@ -83,9 +83,6 @@ controlPlane:
       value:
         rotate-server-certificates: true
         feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true,EphemeralContainers=True
-    # - op: add
-    #   path: /machine/kubelet/defaultRuntimeSeccompProfileEnabled
-    #   value: true
     - op: add
       path: /cluster/apiServer/extraArgs
       value:
@@ -117,8 +114,7 @@ controlPlane:
         - kubernetes.home
   inlinePatch:
     cluster:
-      # allowSchedulingOnControlPlanes: true
-      allowSchedulingOnMasters: true
+      allowSchedulingOnControlPlanes: true
     #   extraManifests:
     #     - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
     #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
@@ -146,9 +142,6 @@ worker:
       value:
         rotate-server-certificates: true
         feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true,EphemeralContainers=True
-    # - op: add
-    #   path: /machine/kubelet/defaultRuntimeSeccompProfileEnabled
-    #   value: true
     - op: add
       path: /machine/sysctls
       value:
