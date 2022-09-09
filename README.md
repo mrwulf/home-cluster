@@ -5,6 +5,8 @@
 ## Install all the other dependencies (reference just the install taskfile so VARS don't need the dependencies)
 task --taskfile .taskfiles/install.yml all
 
+# Set up age/sops
+
 # Configure your cluster
 task talos:generate-secrets
 ## Edit ./talos/talconfig
