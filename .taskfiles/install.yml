@@ -3,17 +3,19 @@ version: "3"
 
 tasks:
   all:
-    - task: talosctl
-    - task: talhelper
-    - task: go-task
-    - task: yq
-    - task: age
-    - task: sops
-    # - task: kubectl
-    # - task: flux
-    # - task: helm
-    # - task: pre-commit
-    # - task: krew
+    desc: Install all of the dependencies & tools
+    cmds:
+      - task: talosctl
+      - task: talhelper
+      - task: go-task
+      - task: yq
+      - task: age
+      - task: sops
+      # - task: kubectl
+      # - task: flux
+      # - task: helm
+      # - task: pre-commit
+      # - task: krew
 
   age:
     desc: Install age
@@ -30,7 +32,7 @@ tasks:
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
         TEMP_DIR=$(mktemp -d)
         wget -qnv --show-progress -O $TEMP_DIR/{{.APP_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.APP_NAME}}/releases/download/v{{.RELEASE_VERSION}}/{{.APP_NAME}}-v{{.RELEASE_VERSION}}-linux-amd64.tar.gz
-        tar -xzf ${TEMP_DIR}/{{.APP_NAME}}.tar.gz --strip-components=1 -C ~/bin/ age/{{.APP_NAME}}
+        tar -xzf ${TEMP_DIR}/{{.APP_NAME}}.tar.gz --strip-components=1 -C ~/bin/ age/{{.APP_NAME}} age/{{.APP_NAME}}-keygen
         # chmod +x ~/bin/{{.APP_NAME}}
         rm -rf $TEMP_DIR
     status:

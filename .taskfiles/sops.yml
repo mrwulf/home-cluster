@@ -3,6 +3,26 @@ version: "3"
 
 tasks:
 
+  init:
+    vars:
+      TARGET_PATH: '~/.config/sops/age'
+      TARGET_FILE: "{{.TARGET_PATH}}/keys2.txt"
+      TEMP_FILE:
+        sh: mktemp -u
+    cmds:
+      - age-keygen -o {{.TEMP_FILE}}
+      - mkdir -p {{.TARGET_PATH}}
+      - mv {{.TEMP_FILE}} {{.TARGET_FILE}}
+      - chmod 400 {{.TARGET_FILE}}
+      - |
+        PUBLIC_KEY=$(grep 'public key:' {{.TARGET_FILE}} | awk -F: '{print $(NR)}')
+
+      - echo "Add 'export SOPS_AGE_KEY_FILE={{.TARGET_FILE}}' to your shell initialization script and reload"
+      - echo "Don't forget to BACK IT UP!"
+    preconditions:
+      - sh: "[ ! -f {{.TARGET_FILE}} ]"
+        msg: "Sops key already exists!"
+
   encrypt-file:
     desc: encrypt sops file 'to use must include -- before path to file.' eg "task sops:encrypt -- file.yml"
     cmds:
