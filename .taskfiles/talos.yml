@@ -7,8 +7,10 @@ vars:
     # sh: talosctl get hostname --output=json | jq '.spec.hostname' | sed -z 's/\n$//' | tr -s '\n' ','
   ONE_ETCD_MASTER:
     sh: talosctl -n {{.HOSTS_LIST}} get etcdsecret --output=json 2>/dev/null | jq '.node' | head -n1 | tr -d '"'
+  ONE_NODE:
+    sh: yq '.nodes[0].hostname' talos/talconfig.yaml
   CLUSTER_NAME:
-    sh: "yq '.clusterName' talos/talconfig.yaml"
+    sh: yq '.clusterName' talos/talconfig.yaml
 
 tasks:
   list:
@@ -18,10 +20,15 @@ tasks:
       - |
         echo {{.HOSTS_LIST}}
 
-  get-master:
+  get-a-master:
     silent: true
     cmds:
       - echo {{.ONE_ETCD_MASTER}}
+
+  get-a-node:
+    silent: true
+    cmds:
+      - echo {{.ONE_NODE}}
 
   backup-etcd:
     desc: Backup etcd to local file
@@ -65,18 +72,32 @@ tasks:
         xdg-open http://localhost:8080/
         docker run --rm -it --volume ${HOME}/.talos/config:/opt/talosconfig:ro --env TALOSCONFIG=/opt/talosconfig --publish 8080:8080 ghcr.io/siderolabs/theila:latest --address 0.0.0.0
 
+  generate-secrets:
+    dir: "{{.PROJECT_DIR}}"
+    vars:
+      FILENAME: "{{.PROJECT_DIR}}/talos/talsecret.sops.yaml"
+    cmds:
+      - talhelper gensecret > {{.FILENAME}}
+      - sops -e -i {{.FILENAME}}
+    preconditions:
+      - sh: "[ ! -f {{.FILENAME}} ]"
+        msg: "Talos secrets already exist!"
+      - sh: "[ -n $SOPS_AGE_KEY_FILE ]"
+        msg: "Sops not configured yet!"
+
   generate-configs:
     desc: Use talhelper to regenerate individual node configs
     silent: true
+    dir: "{{.PROJECT_DIR}}/talos/"
+    sources:
+      - "{{.PROJECT_DIR}}/talos/talconfig.yaml"
+      - "{{.PROJECT_DIR}}/talos/talsecret.sops.yaml"
     generates:
       - "{{.PROJECT_DIR}}/talos/clusterconfig/*"
       - "{{.PROJECT_DIR}}/talos/clusterconfig/talosconfig"
       - "{{.PROJECT_DIR}}/talos/clusterconfig/.gitignore"
     cmds:
-      - |
-        pushd {{.PROJECT_DIR}}/talos/
-        talhelper genconfig
-        popd
+      - talhelper genconfig
 
   diff-config:
     desc: Diff config against running node config

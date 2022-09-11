@@ -6,15 +6,23 @@
 task --taskfile .taskfiles/install.yml all
 
 # Set up age/sops
+task sops:init
+## Replace the public key in .sops.yaml
 
 # Configure your cluster
 task talos:generate-secrets
-## Edit ./talos/talconfig
+## Edit ./talos/talconfig.yaml
+task talos:generate-configs
 
 # Boot nodes to talos
 
 # Apply configuration to each node
 task talos:apply-config -- <node>
+
+# ONLY ONCE! Bootstrap a single node
+talos -n $(task talos:get-a-node) bootstrap
+
+# Add age secret to the cluster
 
 # Configure flux base repo
 

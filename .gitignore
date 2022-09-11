@@ -19,3 +19,5 @@ terraform.tfstate*
 cluster/apps/other/
 # talos/
 testing.sops.yaml
+# go-task build cache
+.task/
