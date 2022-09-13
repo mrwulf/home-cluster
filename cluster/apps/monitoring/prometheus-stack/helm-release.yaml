@@ -37,6 +37,7 @@ spec:
         targetPort: 2379
       serviceMonitor:
         scheme: https
+        insecureSkipVerify: true
     kubeControllerManager:
       enabled: true
       service:
