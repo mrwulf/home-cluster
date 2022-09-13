@@ -80,6 +80,9 @@ spec:
         targetPort: 10250
     grafana:
       adminPassword: ${GRAFANA_PASS}
+      defaultDashboardsTimezone: browser
+      deploymentStrategy:
+        type: Recreate
       persistence:
         type: pvc
         enabled: true
