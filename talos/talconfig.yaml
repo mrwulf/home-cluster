@@ -1,6 +1,6 @@
 clusterName: talos-v1
 talosVersion: v1.2.1
-kubernetesVersion: v1.24.3
+kubernetesVersion: v1.24.4
 endpoint: https://kubernetes.home:6443
 domain: cluster.local
 clusterPodNets:
@@ -100,7 +100,9 @@ controlPlane:
     - op: add
       path: /cluster/proxy/extraArgs
       value:
-        bind-address: 0.0.0.0
+        # This isn't working
+        # bind-address: 0.0.0.0
+        metrics-bind-address: '0.0.0.0:10249'
         feature-gates: MixedProtocolLBService=true,EphemeralContainers=True
     - op: add
       path: /machine/sysctls
