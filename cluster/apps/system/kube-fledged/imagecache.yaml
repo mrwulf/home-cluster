@@ -1,0 +1,36 @@
+---
+# Update with: task cluster:get-image-list | grep -E '(apiserver|controller-manager|kube-proxy|kube-scheduler|cloudflared|external-dns|coredns|fluxcd|plex|pihole|kyverno|flannel|ceph|speaker|traefik|vaultwarden)' | sed 's/^/        - /'
+apiVersion: kubefledged.io/v1alpha2
+kind: ImageCache
+metadata:
+  name: system-cache
+  namespace: system
+  labels:
+    app.kubernetes.io/name: kube-fledged
+    app.kubernetes.io/instance: kube-fledged
+    app.kubernetes.io/part-of: kube-fledged
+spec:
+  cacheSpec:
+    - images:
+        - crazymax/cloudflared:latest
+        - docker.io/bitnami/external-dns:0.12.2-debian-11-r14
+        - docker.io/coredns/coredns:1.9.3
+        - gcr.io/kasten-images/cephtool:5.0.8
+        - ghcr.io/fluxcd/helm-controller:v0.24.0
+        - ghcr.io/fluxcd/kustomize-controller:v0.28.0
+        - ghcr.io/fluxcd/notification-controller:v0.26.0
+        - ghcr.io/fluxcd/source-controller:v0.29.0
+        - ghcr.io/k8s-at-home/plex:v1.28.2.6151-914ddd2b3
+        - ghcr.io/kyverno/kyverno:v1.7.3
+        - ghcr.io/siderolabs/flannel:v0.19.2
+        - k8s.gcr.io/kube-apiserver:v1.24.4
+        - k8s.gcr.io/kube-controller-manager:v1.24.4
+        - k8s.gcr.io/kube-proxy:v1.24.4
+        - k8s.gcr.io/kube-scheduler:v1.24.4
+        - pihole/pihole:2022.09.1
+        - quay.io/ceph/ceph:v17.2.3
+        - quay.io/cephcsi/cephcsi:v3.7.0
+        - quay.io/metallb/speaker:v0.13.5
+        - rook/ceph:v1.10.1
+        - traefik:2.8.5
+        - vaultwarden/server:1.23.0

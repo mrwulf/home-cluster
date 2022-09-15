@@ -20,6 +20,12 @@ tasks:
     cmds:
       - kubectl get pods --all-namespaces -o=jsonpath="{range .items[*]}{'\n'}{range .spec.containers[*]}{.image}{'\n'}{end}{end}" | sort | uniq | grep -Ev 'quay|gcr|ghcr|ecr|us-docker' | grep -Ev 'bitnami|rook|intel|grafana' |  sed -e 's/docker\.io\///g' | sort | uniq
 
+  get-image-list:
+    desc: List all images running in the cluster
+    silent: true
+    cmds:
+      - kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" |tr -s '[[:space:]]' '\n' | sort | uniq
+
   delete-failed-pods:
     desc: Deletes failed pods
     cmds:
