@@ -4,6 +4,7 @@ resources:
   - descheduler
   - external-dns
   - k8s-dns-gateway
+  - kube-fledged
   - metrics-server
   - reflector
   - reloader
