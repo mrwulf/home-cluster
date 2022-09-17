@@ -79,6 +79,8 @@ tasks:
           fi
           sed -i "/${IMG}/d" image_list.txt
         done
+        echo "Results in image_list.txt:"
+        cat image_list.txt
 
 
   debug-volume:
