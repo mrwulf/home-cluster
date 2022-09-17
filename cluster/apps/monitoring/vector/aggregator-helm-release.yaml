@@ -1,0 +1,268 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: vector-aggregator
+  namespace: monitoring
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: vector
+      version: 0.16.0
+      sourceRef:
+        kind: HelmRepository
+        name: vector-charts
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  dependsOn:
+    - name: loki-stack
+      namespace: monitoring
+  values:
+    image:
+      repository: timberio/vector
+      tag: 0.24.1-debian
+
+    role: "Stateless-Aggregator"
+
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: vector-aggregator
+
+    customConfig:
+      data_dir: /vector-data-dir
+
+      api:
+        enabled: false
+
+      # Sources
+      sources:
+        kubernetes_logs:
+          address: 0.0.0.0:6000
+          type: vector
+          version: "2"
+
+        journal_logs:
+          type: vector
+          address: 0.0.0.0:6001
+          version: "2"
+
+        vector_metrics:
+          type: internal_metrics
+
+        talos_kernel_logs:
+          address: 0.0.0.0:6050
+          type: socket
+          mode: udp
+          max_length: 102400
+          decoding:
+            codec: json
+          host_key: __host
+
+        talos_service_logs:
+          address: 0.0.0.0:6051
+          type: socket
+          mode: udp
+          max_length: 102400
+          decoding:
+            codec: json
+          host_key: __host
+
+        opnsense_filterlog_logs:
+          type: syslog
+          address: 0.0.0.0:5140
+          mode: udp
+
+      # Transformations
+      transforms:
+        talos_kernel_logs_xform:
+          type: remap
+          inputs:
+            - talos_kernel_logs
+          source: |-
+            .__host, .err = replace(.__host, "10.0.1.44", "delta")
+            .__host = replace(.__host, "10.0.1.45", "epsilon")
+            .__host = replace(.__host, "10.0.1.42", "eta")
+            .__host = replace(.__host, "10.0.1.41", "zeta")
+        talos_service_logs_xform:
+          type: remap
+          inputs:
+            - talos_service_logs
+          source: |-
+            .__host, .err = replace(.__host, "10.0.1.44", "delta")
+            .__host = replace(.__host, "10.0.1.45", "epsilon")
+            .__host = replace(.__host, "10.0.1.42", "eta")
+            .__host = replace(.__host, "10.0.1.41", "zeta")
+
+        opnsense_filterlog_remap:
+          type: remap
+          inputs:
+            - opnsense_filterlog_logs
+          source: |
+            msg = parse_csv!(string!(.message))
+            # Only parse IPv4 / IPv6
+            if msg[8] == "4" || msg[8] == "6" {
+              .filter_interface = msg[4]
+              .filter_direction = msg[7]
+              .filter_action = msg[6]
+              .filter_ip_version = msg[8]
+              .filter_protocol = msg[16]
+              .filter_source_ip = msg[18]
+              .filter_destination_ip = msg[19]
+              if (msg[16] == "icmp" || msg[16] == "igmp" || msg[16] == "gre") {
+                .filter_data = msg[20]
+              } else {
+                .filter_source_port = msg[20]
+                .filter_destination_port = msg[21]
+                .filter_data_length = msg[22]
+                if msg[8] == "4" && msg[16] == "tcp" {
+                  .filter_tcp_flags = msg[23]
+                }
+              }
+            }
+        opnsense_filterlog_route:
+          type: route
+          inputs:
+            - opnsense_filterlog_remap
+          route:
+            pass_action: >-
+              .filter_action == "pass"
+        # opnsense_filterlog_geoip:
+        #   type: geoip
+        #   inputs:
+        #     - opnsense_filterlog_route.pass_action
+        #   database: /geoip/GeoLite2-City.mmdb
+        #   source: filter_source_ip
+        #   target: geoip
+
+      # Sinks
+      sinks:
+        loki_kubernetes:
+          type: loki
+          inputs:
+            - kubernetes_logs
+          endpoint: http://loki-stack.monitoring:3100
+          encoding:
+            codec: json
+          batch:
+            max_bytes: 400000
+          out_of_order_action: rewrite_timestamp
+          remove_label_fields: true
+          remove_timestamp: true
+          labels:
+            k8s_app: >-
+              {{`{{ "kubernetes.pod_labels.app\.kubernetes\.io/name" }}`}}
+            k8s_container: >-
+              {{`{{ "kubernetes.container_name" }}`}}
+            k8s_filename: >-
+              {{`{{ "kubernetes.file" }}`}}
+            k8s_instance: >-
+              {{`{{ "kubernetes.pod_labels.app\.kubernetes\.io/instance" }}`}}
+            k8s_namespace: >-
+              {{`{{ "kubernetes.pod_namespace" }}`}}
+            k8s_node: >-
+              {{`{{ "kubernetes.pod_node_name" }}`}}
+            k8s_pod: >-
+              {{`{{ "kubernetes.pod_name" }}`}}
+
+        loki_journal:
+          type: loki
+          inputs:
+            - journal_logs
+          endpoint: http://loki-stack.monitoring:3100
+          encoding:
+            codec: json
+          batch:
+            max_bytes: 2049000
+          out_of_order_action: accept
+          remove_label_fields: true
+          remove_timestamp: true
+          labels:
+            hostname: >-
+              {{`{{ host }}`}}
+
+        talos_kernel:
+          type: loki
+          inputs:
+            - talos_kernel_logs_xform
+          endpoint: http://loki-stack.monitoring:3100
+          encoding:
+            codec: json
+            except_fields:
+              - __host
+          batch:
+            max_bytes: 1048576
+          out_of_order_action: rewrite_timestamp
+          labels:
+            hostname: >-
+              {{`{{ __host }}`}}
+            service: >-
+              {{`{{ facility }}`}}
+
+        talos_service:
+          type: loki
+          inputs:
+            - talos_service_logs_xform
+          endpoint: http://loki-stack.monitoring:3100
+          encoding:
+            codec: json
+            except_fields:
+              - __host
+          batch:
+            max_bytes: 400000
+          out_of_order_action: rewrite_timestamp
+          labels:
+            hostname: >-
+              {{`{{ __host }}`}}
+            service: >-
+              {{`{{ "talos-service" }}`}}
+
+        loki_opnsense_filterlog:
+          type: loki
+          inputs:
+            - opnsense_filterlog_route._unmatched
+            # - opnsense_filterlog_geoip
+          endpoint: http://loki-gateway:80
+          encoding:
+            codec: json
+          batch:
+            max_bytes: 2049000
+          out_of_order_action: accept
+          labels:
+            hostname: opnsense
+
+    podMonitor:
+      enabled: true
+      jobLabel: vector-aggregator
+      port: prometheus-sink
+
+    resources:
+      requests:
+        cpu: 35m
+        memory: 249M
+      limits:
+        memory: 454M
+
+    service:
+      enabled: true
+      type: LoadBalancer
+
+  postRenderers:
+    - kustomize:
+        patchesJson6902:
+          - target:
+              kind: Service
+              name: vector-aggregator
+            patch:
+              - op: add
+                path: /spec/loadBalancerIP
+                value: ${SVC_VECTOR_AGGREGATOR_ADDR}
+              - op: replace
+                path: /spec/externalTrafficPolicy
+                value: Local

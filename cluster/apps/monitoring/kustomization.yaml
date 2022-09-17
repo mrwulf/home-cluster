@@ -8,3 +8,4 @@ resources:
   - grafana-dashboards-ceph.yaml
   - podmonitor.yaml
   - speedtest-exporter
+  - vector
