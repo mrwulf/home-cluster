@@ -140,6 +140,9 @@ controlPlane:
         destinations:
           - endpoint: "udp://vector.${internalDomain}:6051/"
             format: json_lines
+      install:
+        extraKernelArgs:
+          - "talos.logging.kernel=udp://vector.${internalDomain}:6050/"
 
 worker:
   configPatches:
@@ -177,3 +180,6 @@ worker:
         destinations:
           - endpoint: "udp://vector.${internalDomain}:6051/"
             format: json_lines
+      install:
+        extraKernelArgs:
+          - "talos.logging.kernel=udp://vector.${internalDomain}:6050/"
