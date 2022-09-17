@@ -1,3 +1,5 @@
+# https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
+
 clusterName: talos-v1
 talosVersion: v1.2.2
 kubernetesVersion: v1.24.4
@@ -134,6 +136,10 @@ controlPlane:
       # │ │ │ endpoints:
       #   │ │ │ - "https://registry.k8s.io"
       #   │ │ │ - "https://k8s.gcr.io"
+      logging:
+        destinations:
+          - endpoint: "udp://vector.${internalDomain}:6051/"
+            format: json_lines
 
 worker:
   configPatches:
@@ -167,3 +173,7 @@ worker:
       # │ │ │ endpoints:
       #   │ │ │ - "https://registry.k8s.io"
       #   │ │ │ - "https://k8s.gcr.io"
+      logging:
+        destinations:
+          - endpoint: "udp://vector.${internalDomain}:6051/"
+            format: json_lines

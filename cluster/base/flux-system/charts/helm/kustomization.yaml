@@ -32,4 +32,5 @@ resources:
   - stakater-charts.yaml
   - traefik-charts.yaml
   - vaultwarden-charts.yaml
+  - vector-charts.yaml
   - weaveworks-kured-charts.yaml
