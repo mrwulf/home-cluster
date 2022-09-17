@@ -22,17 +22,43 @@ tasks:
 
 # Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
   clean-up-pv:
+    vars:
+      PV: "{{.CLI_ARGS}}"
+      IMG:
+        sh: kubectl describe pv {{.PV}} | grep imageName | awk -F= '{print $2}'
+      CHILDREN:
+        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p ceph-block {{.IMG}}
     cmds:
       - |
-        PV={{.CLI_ARGS}}
-        IMG=$(kubectl describe pv {{.CLI_ARGS}} | grep imageName | awk -F= '{print $2}')
-        echo -e "PV: $PV\nIMG: $IMG"
-        kubectl delete pv $PV
-        kubectl exec -n {{.NAMESPACE}} -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block $IMG
+        echo -e "PV: {{.PV}}\nIMG: $IMG"
+
+        kubectl delete pv {{.PV}}
+        kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block {{.IMG}}
     preconditions:
       - sh: kubectl get po -n {{.NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
-        msg: |
-          Rook tools pod isn't running.
+        msg: Rook tools pod isn't running.
+      - sh: '[ -n "{{.CLI_ARGS}}" ]'
+        msg: 'Volume Name Required!'
+      - sh: '[ -z "{{.CHILDREN}}" ]'
+        msg: "These children must be removed first:\n {{.CHILDREN}}"
+
+  clean-up-img:
+    vars:
+      IMG: "{{.CLI_ARGS}}"
+      CHILDREN:
+        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p ceph-block {{.IMG}}
+    cmds:
+      - |
+        # kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd snap purge -p ceph-block {{.IMG}}
+        kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block {{.IMG}}
+    preconditions:
+      - sh: kubectl get po -n {{.NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
+        msg: Rook tools pod isn't running.
+      - sh: '[ -n "{{.CLI_ARGS}}" ]'
+        msg: 'Image Name Required!'
+      - sh: '[ -z "{{.CHILDREN}}" ]'
+        msg: "These children must be removed first:\n {{.CHILDREN}}"
+
 
 # Purge retained volumesnapshots & volumesnapshotcontents from backups NS (k10)
 # for SN in $(k get volumesnapshotcontents.snapshot.storage.k8s.io | grep Retain | awk '{print $1}'); do echo $SN; VS=$(kubectl get volumesnapshotcontents.snapshot.storage.k8s.io $SN -ojsonpath='{.spec.volumeSnapshotRef.name}'); echo $VS; kubectl delete volumesnapshot $VS -n backups;  kubectl delete volumesnapshotcontents $SN; done
@@ -42,6 +68,7 @@ tasks:
 # csi-vol-677b530e-f91a-11ec-bc39-0ed6f0913b1b
 
   get-unused-images:
+    silent: true
     cmds:
       - |
         kubectl exec -n {{.NAMESPACE}} -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd -p {{.POOL}} ls | grep 'csi-vol-' > image_list.txt
