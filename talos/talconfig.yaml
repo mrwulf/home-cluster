@@ -138,11 +138,11 @@ controlPlane:
       #   │ │ │ - "https://k8s.gcr.io"
       logging:
         destinations:
-          - endpoint: "udp://vector.${internalDomain}:6051/"
+          - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
             format: json_lines
       install:
         extraKernelArgs:
-          - "talos.logging.kernel=udp://vector.${internalDomain}:6050/"
+          - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
 
 worker:
   configPatches:
@@ -178,8 +178,8 @@ worker:
       #   │ │ │ - "https://k8s.gcr.io"
       logging:
         destinations:
-          - endpoint: "udp://vector.${internalDomain}:6051/"
+          - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
             format: json_lines
       install:
         extraKernelArgs:
-          - "talos.logging.kernel=udp://vector.${internalDomain}:6050/"
+          - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
