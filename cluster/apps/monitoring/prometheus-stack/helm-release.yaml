@@ -84,6 +84,10 @@ spec:
       defaultDashboardsTimezone: browser
       deploymentStrategy:
         type: Recreate
+      plugins:
+        - grafana-piechart-panel
+      serviceMonitor:
+        enabled: true
       persistence:
         type: pvc
         enabled: true
@@ -106,6 +110,8 @@ spec:
       grafana.ini:
         server:
           root_url: "https://grafana.home.${SECRET_DOMAIN}"
+        analytics:
+          check_for_updates: false
         security:
           allow_embedding: true
         auth:
