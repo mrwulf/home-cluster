@@ -262,7 +262,7 @@ spec:
             patch:
               - op: add
                 path: /spec/loadBalancerIP
-                value: ${SVC_VECTOR_AGGREGATOR_ADDR}
+                value: ${VECTOR_AGGREGATOR_ADDR}
               - op: replace
                 path: /spec/externalTrafficPolicy
                 value: Local
