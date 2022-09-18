@@ -6,6 +6,9 @@ resources:
   - prometheus-stack
   - grafana-dashboards-flux.yaml
   - grafana-dashboards-ceph.yaml
+  - grafana-dashboards-sonarr.yaml
+  - grafana-dashboards-radarr.yaml
+  - grafana-dashboards-metallb.yaml
   - podmonitor.yaml
   - speedtest-exporter
   - vector

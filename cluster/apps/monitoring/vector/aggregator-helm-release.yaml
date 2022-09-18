@@ -156,6 +156,7 @@ spec:
           remove_label_fields: true
           remove_timestamp: true
           labels:
+            job: kubernetes
             k8s_app: >-
               {{`{{ "kubernetes.pod_labels.app\.kubernetes\.io/name" }}`}}
             k8s_container: >-
@@ -184,6 +185,7 @@ spec:
           remove_label_fields: true
           remove_timestamp: true
           labels:
+            job: journal
             hostname: >-
               {{`{{ host }}`}}
 
@@ -200,6 +202,7 @@ spec:
             max_bytes: 1048576
           out_of_order_action: rewrite_timestamp
           labels:
+            job: talos_kernel
             hostname: >-
               {{`{{ __host }}`}}
             service: >-
@@ -218,6 +221,7 @@ spec:
             max_bytes: 400000
           out_of_order_action: rewrite_timestamp
           labels:
+            job: talos_service
             hostname: >-
               {{`{{ __host }}`}}
             service: >-
@@ -235,6 +239,7 @@ spec:
             max_bytes: 2049000
           out_of_order_action: accept
           labels:
+            job: opnsense
             hostname: opnsense
 
     podMonitor:

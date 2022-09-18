@@ -4,3 +4,4 @@ resources:
   - helm-release.yaml
   - middlewares
   - dashboard
+  - monitoring/service-monitor.yaml
