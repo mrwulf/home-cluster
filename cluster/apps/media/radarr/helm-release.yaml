@@ -91,3 +91,19 @@ spec:
           nfs:
             server: "${NFS_SERVER}"
             path: "${NFS_KUBERNETES_PATH}/backups/radarr"
+
+    metrics:
+      enabled: true
+      serviceMonitor:
+        interval: 3m
+        scrapeTimeout: 1m
+      prometheusRule:
+        enabled: true
+      exporter:
+        image:
+          repository: ghcr.io/onedr0p/exportarr
+          tag: v1.1.0
+        env:
+          port: 9794
+          additionalMetrics: true
+          unknownQueueItems: true
