@@ -228,7 +228,7 @@ spec:
           inputs:
             - opnsense_filterlog_route._unmatched
             # - opnsense_filterlog_geoip
-          endpoint: http://loki-gateway:80
+          endpoint: http://loki-stack.monitoring:3100
           encoding:
             codec: json
           batch:
