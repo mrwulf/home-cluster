@@ -29,6 +29,7 @@ spec:
       [global]
       bdev_enable_discard = true
       bdev_async_discard = true
+      mon clock drift allowed = 0.8
     operatorNamespace: storage
     toolbox:
       enabled: true

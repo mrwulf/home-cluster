@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespaces
   - cert-manager
+  - flux-system
   - metallb-system
   - node-system
   - security
