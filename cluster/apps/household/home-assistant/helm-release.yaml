@@ -27,7 +27,8 @@ spec:
       TZ: "${TIMEZONE}"
 
     image:
-      tag: "2022.7"
+      repository: home-assistant/home-assistant
+      tag: "2022.9"
 
     persistence:
       config:

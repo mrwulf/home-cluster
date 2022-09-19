@@ -6,3 +6,6 @@ http:
   ip_ban_enabled: true
   cors_allowed_origins:
     - https://home-assistant.${SECRET_DOMAIN}
+
+prometheus:
+  namespace: home_assistant
