@@ -104,8 +104,8 @@ spec:
     metrics:
       enabled: true
       serviceMonitor:
-        interval: 3m
-        scrapeTimeout: 1m
+        interval: 30m
+        scrapeTimeout: 3m
       exporter:
         image:
           repository: ghcr.io/onedr0p/exportarr
