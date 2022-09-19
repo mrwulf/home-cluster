@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: prometheus-token
+    namespace: flux-system
+stringData:
+    token: ENC[AES256_GCM,data:LYvS9WGLwYsCr7vlawgIdhOWCYeSGA1uVZSgCC/yOgV2rhILKLzwDFSSuA==,iv:845SUtZcAEV9+PeU+ntzl1WuA2JP61Va/BJsuUEkxzo=,tag:DsCcXf55BAx72eKbZP6RSQ==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age10ls774hqamu0vgl65vwxrfu2tqm6h7p7pj9k6gagcpluxllypfwsk3hqzm
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBpbmNCUUplbEpadkhkeEJx
+            bzF0aUYvZ3V2d2VaaFEwSTRmMDVqcFp0bVgwCm0wdnEvR285NWkvQ3A3dzIzeUZY
+            WFNUNlVSdE5kekVkQjlobGZ3SnQ4d1UKLS0tIC9rajJua1Fqek8valRjNk9za1I2
+            M1lNLzdQbS94amZQSi9HR0I2aHFsSVEKyKKnWro4d1pIwAsNDioYnADxJtPLZ4uy
+            /R+7VZLNTfnYrR/9bSqIlfzFIXNNbrdta2eL9Qr8ZUc1DsEefZiRkg==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2022-09-19T21:42:06Z"
+    mac: ENC[AES256_GCM,data:dOCkSXzTpsX0IzEZEd0XDRQkEqCrMTFNABMNvpMQJvO4Nq5Pwxb/IFhkvf7djVzb/JwCE8QIchWOyi9djHZmInPBOlxwK73pa9vXVz9lK8E1XBDtFfpQVlohnDumChkuqs/K7K68YA/qrxN4832FKLz+KHYGlKktcqGuNmBJrss=,iv:lV8+5ABHVREuisDFmVmwWjB6K1jh40PQF3W/cEnPQlQ=,tag:7KcUicTsTCHXODIWFpeZmQ==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.3
