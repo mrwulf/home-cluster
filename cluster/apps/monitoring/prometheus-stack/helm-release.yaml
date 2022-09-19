@@ -176,6 +176,14 @@ spec:
             #     password: password
             # If the entrypoint is HTTPS
             # scheme: https
+          - job_name: "home-assistant"
+            scrape_interval: 60s
+            metrics_path: "/api/prometheus"
+            bearer_token: "${HASS_PROMETHEUS_TOKEN}"
+            scheme: http
+            static_configs:
+              - targets:
+                  - home-assistant.household:8123
     alertmanager:
       ingress:
         enabled: true
