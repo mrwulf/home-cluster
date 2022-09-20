@@ -4,7 +4,7 @@ metadata:
     name: prometheus-token
     namespace: household
 stringData:
-    token: ENC[AES256_GCM,data:LYvS9WGLwYsCr7vlawgIdhOWCYeSGA1uVZSgCC/yOgV2rhILKLzwDFSSuA==,iv:845SUtZcAEV9+PeU+ntzl1WuA2JP61Va/BJsuUEkxzo=,tag:DsCcXf55BAx72eKbZP6RSQ==,type:str]
+    token: ENC[AES256_GCM,data:a2Ew0n4KDRSr/9xI2hgTQiT6iDEMoBN+wFL0FYjsJTPbNbQYmVmrGS7N4A==,iv:5VvizVVHbGQw1qseNgn4uOTV36eVp0XxoAUcd8oSLoc=,tag:xRUkQW2/za+moOdAG+XBeg==,type:str]
 sops:
     kms: []
     gcp_kms: []
@@ -20,8 +20,8 @@ sops:
             M1lNLzdQbS94amZQSi9HR0I2aHFsSVEKyKKnWro4d1pIwAsNDioYnADxJtPLZ4uy
             /R+7VZLNTfnYrR/9bSqIlfzFIXNNbrdta2eL9Qr8ZUc1DsEefZiRkg==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2022-09-19T21:50:06Z"
-    mac: ENC[AES256_GCM,data:776HGBThNRCICNIvccpM+CbhV83fa4/J39T6N2BwFYTeM5vF5UFCN5AZrR1YArJwsBRmtDx37YYxmPVpXZmEbYStUo3jhdEih/+AL2PK24CTvrM1kBVS1jzGLIjl+qpsVF/8slWM/KujKcZNMWGk1RCd7KEFLN8bkaHagecHYGI=,iv:dzr5/PTlfIFwsYRxMpnL7WS41fnvSh4IEJib/fV69T4=,tag:I6ydq5f4xHmzt6JTRIBQCg==,type:str]
+    lastmodified: "2022-09-20T01:57:15Z"
+    mac: ENC[AES256_GCM,data:DO79G+c1mh1C+NPSwQrey18h+JU2l5e6T/5zMhJ2ld0gI7NDxBAc0oBzr0JvSl9Y1X9zyTWsl9iG0Xob5mJpNetCELh/Lc4iC7aKIrvLPVSgHEINx0Bt5Gw0tHhv1U9hZFPGAZVOACx9WiKRLrCPgKSGdOVFyH3OEjV95xINXj4=,iv:cHxJCIHvaSOlX1Yok8QjkGBNAY+lZwOsTrqxMQr4cFU=,tag:aAJWUCRFx3Jxk+vKv+7mFw==,type:str]
     pgp: []
     encrypted_regex: ^(data|stringData)$
     version: 3.7.3
