@@ -42,6 +42,8 @@ spec:
           kubernetes.io/ingress.class: "traefik"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          hajimari.io/enable: "true"
+          hajimari.io/appName: "Rook/Ceph"
         host:
           name: &host "rook.home.${SECRET_DOMAIN}"
           path: "/"
