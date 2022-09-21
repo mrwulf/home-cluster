@@ -47,7 +47,9 @@ spec:
       create: true
       host: &host k10.home.${SECRET_DOMAIN}
       annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         kubernetes.io/ingress.class: "traefik"
+        hajimari.io/enable: "true"
       urlPath: "k10"
       hosts:
         - *host

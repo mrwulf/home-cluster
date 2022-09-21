@@ -101,6 +101,8 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          hajimari.io/enable: "true"
+          hajimari.io/appName: "Grafana"
         hosts:
           - &host "grafana.home.${SECRET_DOMAIN}"
         tls:
@@ -137,6 +139,8 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          hajimari.io/enable: "true"
+          hajimari.io/appName: "Prometheus"
         hosts:
           - &host "prom.home.${SECRET_DOMAIN}"
         tls:
@@ -183,6 +187,8 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          hajimari.io/enable: "true"
+          hajimari.io/appName: "Alertmanager"
         hosts:
           - &host "alerts.home.${SECRET_DOMAIN}"
         tls:

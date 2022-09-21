@@ -8,6 +8,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     # ,networking-authentik@kubernetescrd
     traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+    hajimari.io/enable: "true"
 spec:
   ingressClassName: "traefik"
   rules:
