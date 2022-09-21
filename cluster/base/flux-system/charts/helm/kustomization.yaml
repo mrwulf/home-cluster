@@ -19,6 +19,7 @@ resources:
   - k8s-gateway-charts.yaml
   - kasten-charts.yaml
   - kube-fledged-charts.yaml
+  - kubereboot-kured-charts.yaml
   - kyverno-charts.yaml
   - metallb-charts.yaml
   - metrics-server-charts.yaml
@@ -33,4 +34,3 @@ resources:
   - traefik-charts.yaml
   - vaultwarden-charts.yaml
   - vector-charts.yaml
-  - weaveworks-kured-charts.yaml
