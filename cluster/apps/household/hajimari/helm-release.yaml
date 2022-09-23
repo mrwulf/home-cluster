@@ -54,6 +54,15 @@ spec:
           url: http://pihole-1-web.networking.home.${SECRET_DOMAIN}/admin
         - name: Pi-Hole Two
           url: http://pihole-2-web.networking.home.${SECRET_DOMAIN}/admin
+        - name: OPNSense
+          group: Infrastructure
+          url: https://firewall.${SECRET_DOMAIN}/
+        - name: OurShare
+          group: Infrastructure
+          url: https://ourshare.home:5001/
+        - name: OurBackup
+          group: Infrastructure
+          url: https://ourbackup.home:5001/
       groups:
         - name: Talos
           links:
