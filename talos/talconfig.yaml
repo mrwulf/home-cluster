@@ -18,29 +18,23 @@ nodes:
   - hostname: delta
     ipAddress: 10.0.1.44
     controlPlane: true
-    installDisk: deleteme
+    installDiskSelector:
+      model: "SanDisk*"
+      size: '<= 128.1 GB'
     networkInterfaces:
       - interface: eth0
         dhcp: true
         vip:
           ip: 10.0.0.200
-    inlinePatch:
-      machine:
-        install:
-          diskSelector:
-            model: "SanDisk*"
   - hostname: epsilon
     ipAddress: 10.0.1.45
     controlPlane: false
-    installDisk: deleteme
+    installDiskSelector:
+      model: "SanDisk*"
+      size: '<= 128.1 GB'
     networkInterfaces:
       - interface: eth0
         dhcp: true
-    inlinePatch:
-      machine:
-        install:
-          diskSelector:
-            model: "SanDisk*"
     # configPatches:
     #   - op: add
     #     path: /machine/install/extraKernelArgs
@@ -48,36 +42,28 @@ nodes:
     #       - nvme_core.default_ps_max_latency_us=0
   - hostname: zeta
     ipAddress: 10.0.1.41
-    installDisk: deleteme
+    installDiskSelector:
+      model: "*KIOXIA*"
+      size: '<= 128.1 GB'
     controlPlane: true
     networkInterfaces:
       - interface: eth0
         dhcp: true
         vip:
           ip: 10.0.0.200
-    inlinePatch:
-      machine:
-        install:
-          diskSelector:
-            model: '*KIOXIA*'
   - hostname: eta
     ipAddress: 10.0.1.42
     controlPlane: true
-    installDisk: deleteme
+    installDiskSelector:
+      model: "*KIOXIA*"
+      size: '<= 128.1 GB'
     networkInterfaces:
       - interface: eth0
         dhcp: true
         vip:
           ip: 10.0.0.200
-    inlinePatch:
-      machine:
-        install:
-          diskSelector:
-            model: '*KIOXIA*'
 controlPlane:
   configPatches:
-    - op: remove
-      path: /machine/install/disk
     - op: remove
       path: /cluster/apiServer/admissionControl
     - op: add
@@ -138,16 +124,14 @@ controlPlane:
       #   │ │ │ - "https://k8s.gcr.io"
       logging:
         destinations:
-          - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
+          - endpoint: "udp://vector-aggregator-headless.monitoring.${internalDomain}:6051/"
             format: json_lines
       install:
         extraKernelArgs:
-          - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
+          - "talos.logging.kernel=udp://vector-aggregator-headless.monitoring.${internalDomain}:6050/"
 
 worker:
   configPatches:
-    - op: remove
-      path: /machine/install/disk
     - op: add
       path: /machine/kubelet/extraArgs
       value:
@@ -178,8 +162,8 @@ worker:
       #   │ │ │ - "https://k8s.gcr.io"
       logging:
         destinations:
-          - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
+          - endpoint: "udp://vector-aggregator-headless.monitoring.${internalDomain}:6051/"
             format: json_lines
       install:
         extraKernelArgs:
-          - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
+          - "talos.logging.kernel=udp://vector-aggregator-headless.monitoring.${internalDomain}:6050/"
