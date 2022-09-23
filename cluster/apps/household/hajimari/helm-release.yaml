@@ -49,18 +49,20 @@ spec:
           - system
           - vaultwarden
       name: "citizen"
-      # customApps:
-      #   - name: Home Assistant
-      #     url: https://hass.${SECRET_INTERNAL_DOMAIN}
-      # groups:
-      #   - name: Communicate
-      #     links:
-      #       - name: Discord
-      #         url: "https://discord.com/login"
-      #       - name: Telegram
-      #         url: "https://web.telegram.org/z/"
-      #       - name: Slack
-      #         url: "https://slack.com/signin"
+      customApps:
+        - name: Pi-Hole One
+          url: http://pihole-1-web.networking.home.${SECRET_DOMAIN}/admin
+        - name: Pi-Hole Two
+          url: http://pihole-2-web.networking.home.${SECRET_DOMAIN}/admin
+      groups:
+        - name: Talos
+          links:
+            - name: Talos
+              url: "https://www.talos.dev/v1.2/"
+            - name: "Github: Talos"
+              url: "https://github.com/siderolabs/talos"
+            - name: "Github: TalHelper"
+              url: "https://github.com/budimanjojo/talhelper"
       #   - name: mail
       #     links:
       #       - name: Gmail

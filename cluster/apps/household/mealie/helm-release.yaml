@@ -50,6 +50,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "food"
           hajimari.io/appName: "Mealie"
+          hajimari.io/group: "Home"
         hosts:
           - host: &host "meals.${SECRET_DOMAIN}"
             paths:
