@@ -9,6 +9,7 @@ metadata:
     # ,networking-authentik@kubernetescrd
     traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
     hajimari.io/enable: "true"
+    hajimari.io/group: "Media"
 spec:
   ingressClassName: "traefik"
   rules:

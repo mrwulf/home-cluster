@@ -59,6 +59,8 @@ spec:
           external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
           external-dns/is-public: "true"
           hajimari.io/enable: "true"
+          hajimari.io/icon: "home-automation"
+          hajimari.io/group: "Home"
         hosts:
           - host: &host "home-assistant.${SECRET_DOMAIN}"
             paths:
