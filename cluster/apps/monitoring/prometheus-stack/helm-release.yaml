@@ -149,7 +149,7 @@ spec:
               - *host
 
       prometheusSpec:
-        retentionSize: "9GiB"
+        retentionSize: "35GiB"
         serviceMonitorSelectorNilUsesHelmValues: false
         serviceMonitorSelector: {}
         storageSpec:
@@ -159,7 +159,7 @@ spec:
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
-                  storage: 10Gi
+                  storage: 40Gi
         podMonitorNamespaceSelector: {}
         podMonitorSelector:
           matchLabels:
