@@ -20,7 +20,6 @@ nodes:
     controlPlane: true
     installDiskSelector:
       model: "SanDisk*"
-      size: '<= 128.1 GB'
     networkInterfaces:
       - interface: eth0
         dhcp: true
@@ -31,7 +30,6 @@ nodes:
     controlPlane: false
     installDiskSelector:
       model: "SanDisk*"
-      size: '<= 128.1 GB'
     networkInterfaces:
       - interface: eth0
         dhcp: true
@@ -44,7 +42,6 @@ nodes:
     ipAddress: 10.0.1.41
     installDiskSelector:
       model: "*KIOXIA*"
-      size: '<= 128.1 GB'
     controlPlane: true
     networkInterfaces:
       - interface: eth0
@@ -56,7 +53,6 @@ nodes:
     controlPlane: true
     installDiskSelector:
       model: "*KIOXIA*"
-      size: '<= 128.1 GB'
     networkInterfaces:
       - interface: eth0
         dhcp: true
@@ -124,11 +120,11 @@ controlPlane:
       #   │ │ │ - "https://k8s.gcr.io"
       logging:
         destinations:
-          - endpoint: "udp://vector-aggregator-headless.monitoring.${internalDomain}:6051/"
+          - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
             format: json_lines
       install:
         extraKernelArgs:
-          - "talos.logging.kernel=udp://vector-aggregator-headless.monitoring.${internalDomain}:6050/"
+          - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
 
 worker:
   configPatches:
@@ -162,8 +158,8 @@ worker:
       #   │ │ │ - "https://k8s.gcr.io"
       logging:
         destinations:
-          - endpoint: "udp://vector-aggregator-headless.monitoring.${internalDomain}:6051/"
+          - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
             format: json_lines
       install:
         extraKernelArgs:
-          - "talos.logging.kernel=udp://vector-aggregator-headless.monitoring.${internalDomain}:6050/"
+          - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
