@@ -164,7 +164,7 @@ spec:
           matchLabels:
             app.kubernetes.io/component: monitoring
         additionalScrapeConfigs:
-          - job_name: extra-node-exporter
+          - job_name: node-exporter
             honor_timestamps: true
             static_configs:
               - targets:
