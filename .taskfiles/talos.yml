@@ -2,15 +2,16 @@
 version: "3"
 
 vars:
-  HOSTS_LIST:
-    sh: "kubectl get node -ojsonpath='{.items[*].status.addresses[?(.type == \"Hostname\")].address}' | tr ' ' ','"
-    # sh: talosctl get hostname --output=json | jq '.spec.hostname' | sed -z 's/\n$//' | tr -s '\n' ','
-  ONE_ETCD_MASTER:
-    sh: talosctl -n {{.HOSTS_LIST}} get etcdsecret --output=json 2>/dev/null | jq '.node' | head -n1 | tr -d '"'
-  ONE_NODE:
-    sh: yq '.nodes[0].hostname' talos/talconfig.yaml
   CLUSTER_NAME:
     sh: yq '.clusterName' talos/talconfig.yaml
+  NODE_LIST:
+    sh: yq '.nodes[].hostname' talos/talconfig.yaml | tr '\n' ',' | head -c -1
+  ONE_NODE:
+    sh: echo '{{.NODE_LIST}}' | tr ',' '\n' | shuf | head -n1
+  MASTER_LIST:
+    sh: yq '.nodes[] | select(.controlPlane==true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | head -c -1
+  ONE_MASTER:
+    sh: echo '{{.MASTER_LIST}}' | tr ',' '\n' | shuf | head -n1
 
 tasks:
   list:
@@ -18,12 +19,19 @@ tasks:
     silent: true
     cmds:
       - |
-        echo {{.HOSTS_LIST}}
+        echo {{.NODE_LIST}}
+
+  list-masters:
+    desc: List all the masters
+    silent: true
+    cmds:
+      - |
+        echo {{.MASTER_LIST}}
 
   get-a-master:
     silent: true
     cmds:
-      - echo {{.ONE_ETCD_MASTER}}
+      - echo {{.ONE_MASTER}}
 
   get-a-node:
     silent: true
@@ -37,7 +45,7 @@ tasks:
       - |
         mkdir -p {{.PROJECT_DIR}}/talos/backups
         DATE=$(date +'%Y%m%d-%H%M%S')
-        talosctl -n {{.ONE_ETCD_MASTER}} etcd snapshot {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.$DATE
+        talosctl -n {{.ONE_MASTER}} etcd snapshot {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.$DATE
         ls -tr {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.* | head -n -3 | xargs rm -f
 
   debug-node:
@@ -45,7 +53,7 @@ tasks:
     interactive: true
     silent: true
     vars:
-      NODE: '{{.CLI_ARGS | default .ONE_ETCD_MASTER}}'
+      NODE: '{{.CLI_ARGS | default .ONE_MASTER}}'
     cmds:
       - kubectl debug node/{{.NODE}} -it --image=fedora:36 -- bash
 
@@ -54,14 +62,14 @@ tasks:
     silent: true
     cmds:
       - |
-        talosctl -n {{.HOSTS_LIST}} dashboard
+        talosctl -n {{.NODE_LIST}} dashboard
 
   ctl:
     desc: Talosctl with all the hosts
     silent: true
     cmds:
       - |
-        talosctl -n {{.HOSTS_LIST}} {{.CLI_ARGS | default "--help"}}
+        talosctl -n {{.NODE_LIST}} {{.CLI_ARGS | default "--help"}}
 
   theila:
     desc: Show the Theila web-ui dashboard with all the hosts
@@ -102,7 +110,7 @@ tasks:
   diff-config:
     desc: Diff config against running node config
     vars:
-      NODE: '{{.CLI_ARGS | default .ONE_ETCD_MASTER}}'
+      NODE: '{{.CLI_ARGS | default .ONE_MASTER}}'
     cmds:
       - |
         talosctl apply-config --dry-run -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml
@@ -117,3 +125,33 @@ tasks:
     cmds:
       - |
         talosctl apply-config -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml
+
+  etcd-client:
+    desc: Interactive etcd shell
+    vars:
+      NODE: '{{.CLI_ARGS | default .ONE_MASTER}}'
+      NODE_IP:
+        sh: ping -c1 {{.NODE}} | grep -oP 'PING.*?\(\K[^)]+'
+      TEMP_DIR:
+        sh: mktemp -d
+      ETCDCTL_IMAGE:
+        sh: talosctl images | grep etcd
+    preconditions:
+      - sh: '[[ "{{.MASTER_LIST}}" == *"{{.NODE}}"* ]]'
+        msg: Invalid Master!
+    interactive: true
+    silent: true
+    cmds:
+      - |
+        # Get the secrets
+        talosctl -n {{.NODE}} cp /system/secrets/etcd {{.TEMP_DIR}}
+
+        # Run the etcdctl container
+        docker run -it --rm -v {{.TEMP_DIR}}:/etc/etcd --name etcdctl \
+          -e ETCDCTL_ENDPOINTS="{{.NODE_IP}}:2379" \
+          -e ETCDCTL_INSECURE_SKIP_TLS_VERIFY="true" \
+          -e ETCDCTL_KEY=/etc/etcd/admin.key \
+          -e ETCDCTL_CERT=/etc/etcd/admin.crt \
+          {{.ETCDCTL_IMAGE}} bash
+
+      - defer: rm -rf {{.TEMP_DIR}}
