@@ -11,7 +11,7 @@ data:
   PIHOLE_1_ADDR: 10.0.10.10
   PIHOLE_2_ADDR: 10.0.10.11
   PLEX_ADDR: 10.0.10.12
-  UNIFI_ADDR: 10.0.10.13 # there is a DCHP reservation for unifi on this IP
+  UNIFI_ADDR: 10.0.0.213 # there is a DCHP reservation for unifi on this IP
   LOCAL_DNS_ADDR: 10.0.10.14
   # LOKI_SYSLOG_ADDR: 10.0.10.15
   VECTOR_AGGREGATOR_ADDR: 10.0.10.15
