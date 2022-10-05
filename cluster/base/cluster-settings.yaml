@@ -5,13 +5,13 @@ metadata:
   name: cluster-settings
   namespace: flux-system
 data:
-  METALLB_LB_RANGE: 10.0.0.200-10.0.0.220
+  METALLB_LB_RANGE: 10.0.10.1-10.0.10.20
   TIMEZONE: "America/Los_Angeles"
-  PIHOLE_1_ADDR: 10.0.0.210
-  PIHOLE_2_ADDR: 10.0.0.211
-  PLEX_ADDR: 10.0.0.212
-  UNIFI_ADDR: 10.0.0.213 # there is a DCHP reservation for unifi on this IP
-  LOCAL_DNS_ADDR: 10.0.0.214
-  # LOKI_SYSLOG_ADDR: 10.0.0.215
-  VECTOR_AGGREGATOR_ADDR: 10.0.0.215
-  TRAEFIK_ADDR: 10.0.0.220
+  PIHOLE_1_ADDR: 10.0.10.10
+  PIHOLE_2_ADDR: 10.0.10.11
+  PLEX_ADDR: 10.0.10.12
+  UNIFI_ADDR: 10.0.10.13 # there is a DCHP reservation for unifi on this IP
+  LOCAL_DNS_ADDR: 10.0.10.14
+  # LOKI_SYSLOG_ADDR: 10.0.10.15
+  VECTOR_AGGREGATOR_ADDR: 10.0.10.15
+  TRAEFIK_ADDR: 10.0.10.20
