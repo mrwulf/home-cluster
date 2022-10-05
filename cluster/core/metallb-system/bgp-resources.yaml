@@ -1,0 +1,28 @@
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: bgp-default
+  namespace: metallb-system
+spec:
+  addresses:
+    - "${METALLB_LB_RANGE}"
+---
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata:
+  name: bgp-advertisement
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - bgp-default
+---
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: opnsense-bgp
+  namespace: metallb-system
+spec:
+  myASN: 65430
+  peerASN: 65400
+  peerAddress: 10.0.0.1

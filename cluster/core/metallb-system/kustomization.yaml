@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - l2-resources.yaml
+  - bgp-resources.yaml
