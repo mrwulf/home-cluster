@@ -36,6 +36,12 @@ tasks:
     cmds:
       - kubectl delete pods --field-selector status.phase=Succeeded -A --ignore-not-found=true
 
+  list-nfs-deployments:
+    desc: List all deployments with NFS volumes
+    silent: true
+    cmds:
+      - kubectl get deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 echo
+
   scale-nfs-deployments-down:
     desc: Scale all deployments with NFS volumes down to zero
     silent: true

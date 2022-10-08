@@ -1,7 +1,7 @@
 # https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
-talosVersion: v1.2.2
+talosVersion: v1.2.3
 kubernetesVersion: v1.24.4
 endpoint: https://kubernetes.home:6443
 domain: cluster.local
@@ -24,7 +24,7 @@ nodes:
       - interface: eth0
         dhcp: true
         vip:
-          ip: 10.0.0.200
+          ip: ${clusterEndpointIP}
   - hostname: epsilon
     ipAddress: 10.0.1.45
     controlPlane: false
@@ -47,7 +47,7 @@ nodes:
       - interface: eth0
         dhcp: true
         vip:
-          ip: 10.0.0.200
+          ip: ${clusterEndpointIP}
   - hostname: eta
     ipAddress: 10.0.1.42
     controlPlane: true
@@ -57,7 +57,7 @@ nodes:
       - interface: eth0
         dhcp: true
         vip:
-          ip: 10.0.0.200
+          ip: ${clusterEndpointIP}
 controlPlane:
   configPatches:
     - op: remove
@@ -96,7 +96,7 @@ controlPlane:
     - op: add
       path: /cluster/apiServer/certSANs
       value:
-        - 10.0.0.200
+        - ${clusterEndpointIP}
         - kubernetes.home
   inlinePatch:
     cluster:
@@ -116,6 +116,11 @@ controlPlane:
         disabled: false
         servers:
           - 10.0.0.1
+      network:
+        extraHostEntries:
+          - ip: ${clusterEndpointIP}
+            aliases:
+              - kubernetes.home
       # registries:
       # │ mirrors:
       # │ │ k8s.gcr.io:
@@ -154,6 +159,11 @@ worker:
         disabled: false
         servers:
           - 10.0.0.1
+      network:
+        extraHostEntries:
+          - ip: ${clusterEndpointIP}
+            aliases:
+              - kubernetes.home
       # registries:
       # │ mirrors:
       # │ │ k8s.gcr.io:

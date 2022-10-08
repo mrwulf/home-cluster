@@ -63,3 +63,6 @@ spec:
       loadBalancerIP: "${PIHOLE_1_ADDR}"
       annotations:
         metallb.universe.tf/allow-shared-ip: pihole-svc
+        hajimari.io/appName: "Pi-Hole #1"
+        hajimari.io/enable: "true"
+        hajimari.io/icon: "chart-pie"
