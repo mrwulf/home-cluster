@@ -25,6 +25,10 @@ nodes:
         dhcp: true
         vip:
           ip: ${clusterEndpointIP}
+      - interface: eth1
+        dhcp: true
+        vip:
+          ip: ${clusterEndpointIP}
   - hostname: epsilon
     ipAddress: 10.0.1.45
     controlPlane: false
@@ -32,6 +36,8 @@ nodes:
       model: "SanDisk*"
     networkInterfaces:
       - interface: eth0
+        dhcp: true
+      - interface: eth1
         dhcp: true
     # configPatches:
     #   - op: add
@@ -48,6 +54,10 @@ nodes:
         dhcp: true
         vip:
           ip: ${clusterEndpointIP}
+      - interface: eth1
+        dhcp: true
+        vip:
+          ip: ${clusterEndpointIP}
   - hostname: eta
     ipAddress: 10.0.1.42
     controlPlane: true
@@ -55,6 +65,10 @@ nodes:
       model: "*KIOXIA*"
     networkInterfaces:
       - interface: eth0
+        dhcp: true
+        vip:
+          ip: ${clusterEndpointIP}
+      - interface: eth1
         dhcp: true
         vip:
           ip: ${clusterEndpointIP}
