@@ -10,5 +10,6 @@ resources:
   - grafana-dashboards-radarr.yaml
   - grafana-dashboards-metallb.yaml
   - podmonitor.yaml
+  - smartctl-exporter
   - speedtest-exporter
   - vector
