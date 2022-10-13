@@ -28,7 +28,6 @@ repos:
     rev: v2.1.1
     hooks:
       - id: forbid-secrets
-        exclude: ^tmpl/
   - repo: https://github.com/zricethezav/gitleaks
     rev: v8.13.0
     hooks:

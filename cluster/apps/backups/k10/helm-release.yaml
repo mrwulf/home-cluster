@@ -49,7 +49,9 @@ spec:
       annotations:
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         kubernetes.io/ingress.class: "traefik"
+        hajimari.io/appName: Kasten K10
         hajimari.io/enable: "true"
+        hajimari.io/url: "https://k10.home.${SECRET_DOMAIN}/k10/dashboard"
       urlPath: "k10"
       hosts:
         - *host
