@@ -64,12 +64,19 @@ tasks:
       - |
         talosctl -n {{.NODE_LIST}} dashboard
 
-  ctl:
+  ctl-all:
     desc: Talosctl with all the hosts
     silent: true
     cmds:
       - |
         talosctl -n {{.NODE_LIST}} {{.CLI_ARGS | default "--help"}}
+
+  ctl-one:
+    desc: Talosctl with a single host
+    silent: true
+    cmds:
+      - |
+        talosctl -n {{.ONE_MASTER}} {{.CLI_ARGS | default "--help"}}
 
   theila:
     desc: Show the Theila web-ui dashboard with all the hosts

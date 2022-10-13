@@ -14,7 +14,7 @@ tasks:
       # - task: kubectl
       # - task: flux
       # - task: helm
-      # - task: pre-commit
+      # - task: pre-commit # should include pre-commit autoupdate
       # - task: krew
 
   age:

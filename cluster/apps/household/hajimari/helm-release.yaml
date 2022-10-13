@@ -33,6 +33,9 @@ spec:
     hajimari:
       # displays all discovered apps
       defaultEnable: false
+      #
+      showAppGroups: true
+      showAppStatus: true
       # namespaces to discover applications
       namespaceSelector:
         matchNames:
