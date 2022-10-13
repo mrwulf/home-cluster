@@ -33,9 +33,14 @@ spec:
     hajimari:
       # displays all discovered apps
       defaultEnable: false
-      #
+
+      # Config
       showAppGroups: true
       showAppStatus: true
+      showAppUrls: false
+      darkTheme: espresso
+      showGreeting: false
+
       # namespaces to discover applications
       namespaceSelector:
         matchNames:
@@ -53,50 +58,32 @@ spec:
           - vaultwarden
       name: "citizen"
       customApps:
-        - name: Pi-Hole One
-          url: http://pihole-1-web.networking.home.${SECRET_DOMAIN}/admin
-        - name: Pi-Hole Two
-          url: http://pihole-2-web.networking.home.${SECRET_DOMAIN}/admin
-        - name: OPNSense
-          group: Infrastructure
-          url: https://firewall.${SECRET_DOMAIN}/
-        - name: OurShare
-          group: Infrastructure
-          url: https://ourshare.home:5001/
-        - name: OurBackup
-          group: Infrastructure
-          url: https://ourbackup.home:5001/
-      groups:
-        - name: Talos
-          links:
+        - group: Infrastructure
+          apps:
+            - name: Pi-Hole One
+              url: http://pihole-1-web.networking.home.${SECRET_DOMAIN}/admin
+            - name: Pi-Hole Two
+              url: http://pihole-2-web.networking.home.${SECRET_DOMAIN}/admin
+            - name: OPNSense
+              group: Infrastructure
+              url: https://firewall.${SECRET_DOMAIN}/
+        - group: Storage
+          apps:
+            - name: OurShare
+              group: Infrastructure
+              url: https://ourshare.home:5001/
+            - name: OurBackup
+              group: Infrastructure
+              url: https://ourbackup.home:5001/
+      globalBookmarks:
+        - group: Talos
+          bookmarks:
             - name: Talos
               url: "https://www.talos.dev/v1.2/"
             - name: "Github: Talos"
               url: "https://github.com/siderolabs/talos"
             - name: "Github: TalHelper"
               url: "https://github.com/budimanjojo/talhelper"
-      #   - name: mail
-      #     links:
-      #       - name: Gmail
-      #         url: "https://gmail.com"
-      #       - name: Fastmail
-      #         url: "https://www.fastmail.com"
-      #       - name: Kochhaus
-      #         url: "https://mail.${SECRET_INTERNAL_DOMAIN}"
-      #   - name: Media
-      #     links:
-      #       - name: Netflix
-      #         url: "https://www.netflix.com/browse"
-      #       - name: Disney+
-      #         url: "https://www.disneyplus.com/login"
-      #       - name: Plex
-      #         url: "https://app.plex.tv/desktop"
-      #       - name: YouTube
-      #         url: "https://youtube.com/feed/subscriptions"
-      #       - name: Amazon Prime
-      #         url: "https://www.primevideo.com"
-      #       - name: Spotify
-      #         url: "https://open.spotify.com/browse"
     ingress:
       main:
         enabled: true
@@ -104,6 +91,7 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "weather-sunset"
+          hajimari.io/group: "Home"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         hosts:
           - host: &host "hajimari.home.${SECRET_DOMAIN}"
