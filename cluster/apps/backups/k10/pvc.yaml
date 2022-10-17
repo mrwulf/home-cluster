@@ -12,8 +12,8 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: ourbackup.home
-    path: /volume1/k8s-storage/backups/kasten-k10
+    server: ${NFS_SERVER}
+    path: ${NFS_KUBERNETES_PATH}/backups/kasten-k10
   mountOptions:
     - nconnect=8
     - hard

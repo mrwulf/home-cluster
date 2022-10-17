@@ -90,6 +90,8 @@ tasks:
     vars:
       NAS_ADDRESS:
         sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_SERVER'"
+      NAS_PATH:
+        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_KUBERNETES_PATH'"
     cmds:
       - |
         kubectl run debug-volume -n {{.VNAMESPACE}} -i --tty --rm --image=null --overrides='
@@ -133,7 +135,7 @@ tasks:
                   "name": "backups",
                   "nfs": {
                     "server": "{{.NAS_ADDRESS}}",
-                    "path": "/volume1/k8s-storage/backups"
+                    "path": "{{.NAS_PATH}}/backups"
                   }
                 },
                 {
