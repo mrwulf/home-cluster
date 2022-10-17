@@ -4,4 +4,4 @@ namespace: metallb-system
 
 resources:
   # renovate: registryUrl=https://metallb.github.io/metallb chart=metallb
-  - github.com/metallb/metallb/config/native?ref=v0.13.6
+  - github.com/metallb/metallb/config/native?ref=v0.13.7
