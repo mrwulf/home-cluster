@@ -12,20 +12,3 @@ spec:
       storage: 1Gi
   storageClassName: ceph-block
   volumeMode: Filesystem
-
----
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: transmission-incomplete
-#   namespace: media
-#   labels:
-#     kasten.io/backup-volume: disabled
-# spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 200Gi
-#   storageClassName: nfs
-#   volumeMode: Filesystem

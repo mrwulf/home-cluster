@@ -74,8 +74,8 @@ spec:
         type: custom
         volumeSpec:
           nfs:
-            server: ourbackup.home
-            path: /volume1/k8s-storage/active/media-downloaded
+            server: ${NFS_SERVER}
+            path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       movies:
         enabled: true
         mountPath: /Movies

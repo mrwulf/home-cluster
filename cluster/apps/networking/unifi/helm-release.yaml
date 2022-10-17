@@ -48,7 +48,6 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: networking-rfc1918-ips@kubernetescrd
           hajimari.io/enable: "true"
           hajimari.io/icon: "home-automation"
-          hajimari.io/group: "Infrastructure"
         hosts:
           - host: &host "unifi.home.${SECRET_DOMAIN}"
             paths:

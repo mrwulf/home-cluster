@@ -74,15 +74,15 @@ spec:
         type: custom
         volumeSpec:
           nfs:
-            server: ourbackup.home
-            path: /volume1/k8s-storage/active/media-downloaded
+            server: ${NFS_SERVER}
+            path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       tv:
         enabled: true
         mountPath: /TV
         type: custom
         volumeSpec:
           nfs:
-            server: ourbackup.home
+            server: ${NFS_SERVER}
             path: /volume1/Shared Videos/TV
 
       tv1:
@@ -91,7 +91,7 @@ spec:
         type: custom
         volumeSpec:
           nfs:
-            server: ourbackup.home
+            server: ${NFS_SERVER}
             path: /volume2/TV1
 
       backups:
