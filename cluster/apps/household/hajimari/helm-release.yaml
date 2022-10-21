@@ -66,7 +66,7 @@ spec:
               url: http://pihole-2-web.networking.home.${SECRET_DOMAIN}/admin
             - name: OPNSense
               group: Infrastructure
-              url: https://firewall.${SECRET_DOMAIN}/
+              url: https://firewall.${SECRET_DOMAIN}:${FIREWALL_PORT}/
         - group: Storage
           apps:
             - name: OurShare
