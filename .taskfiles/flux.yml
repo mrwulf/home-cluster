@@ -10,6 +10,7 @@ tasks:
     desc: Sync flux-system with the Git Repository
     cmds:
       - flux -n flux-system reconcile source git flux-system
+      - flux -n flux-system reconcile kustomization crds
       - flux -n flux-system reconcile kustomization core
       - flux -n flux-system reconcile kustomization apps
     silent: true
@@ -17,11 +18,17 @@ tasks:
   pause:
     cmds:
       - flux -n flux-system suspend source git flux-system
+      - flux -n flux-system suspend kustomization crds
+      - flux -n flux-system suspend kustomization core
+      - flux -n flux-system suspend kustomization apps
     silent: true
 
   resume:
     cmds:
       - flux -n flux-system resume source git flux-system
+      - flux -n flux-system resume kustomization crds
+      - flux -n flux-system resume kustomization core
+      - flux -n flux-system resume kustomization apps
     silent: true
 
   ns:
