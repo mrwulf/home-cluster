@@ -82,6 +82,11 @@ tasks:
         echo "Results in image_list.txt:"
         cat image_list.txt
 
+  ack-warnings:
+    desc: Archive all ceph crashes
+    silent: true
+    cmds:
+      - kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- ceph crash archive-all
 
   debug-volume:
     desc: Attach a volume to a container for debugging, ex. VOLUME=zigbee2mqtt-config-v1 VNAMESPACE=home task debug-volume
@@ -91,7 +96,7 @@ tasks:
       NAS_ADDRESS:
         sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_SERVER'"
       NAS_PATH:
-        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_KUBERNETES_PATH'"
+        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_K8S_PATH'"
     cmds:
       - |
         kubectl run debug-volume -n {{.VNAMESPACE}} -i --tty --rm --image=null --overrides='
