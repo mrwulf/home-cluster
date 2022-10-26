@@ -118,24 +118,21 @@ spec:
   postRenderers:
     - kustomize:
         patchesStrategicMerge:
-          - kind: Deployment
-            apiVersion: apps/v1
+          - apiVersion: apps/v1
+            kind: Deployment
+            metadata:
+              name: transmission-transmission-openvpn
             spec:
               template:
                 spec:
-                  livenessProbe:
-                    initialDelaySeconds: 90
-                    periodSeconds: 30
-                    exec:
-                      command:
-                        - sh
-                        - -c
-                        - /etc/scripts/healthcheck.sh
-                  readinessProbe:
-                    initialDelaySeconds: 15
-                    periodSeconds: 30
-                    exec:
-                      command:
-                        - sh
-                        - -c
-                        - /etc/scripts/healthcheck.sh
+                  containers:
+                    - name: transmission-openvpn
+                      livenessProbe:
+                        exec:
+                          command:
+                            - sh
+                            - -c
+                            - /etc/scripts/healthcheck.sh
+                        initialDelaySeconds: 15
+                        periodSeconds: 20
+                        timeoutSeconds: 5
