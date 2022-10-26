@@ -115,3 +115,27 @@ spec:
         memory: 1555M
       limits:
         memory: 3778M
+  postRenderers:
+    - kustomize:
+        patchesStrategicMerge:
+          - kind: Deployment
+            apiVersion: apps/v1
+            spec:
+              template:
+                spec:
+                  livenessProbe:
+                    initialDelaySeconds: 90
+                    periodSeconds: 30
+                    exec:
+                      command:
+                        - sh
+                        - -c
+                        - /etc/scripts/healthcheck.sh
+                  readinessProbe:
+                    initialDelaySeconds: 15
+                    periodSeconds: 30
+                    exec:
+                      command:
+                        - sh
+                        - -c
+                        - /etc/scripts/healthcheck.sh
