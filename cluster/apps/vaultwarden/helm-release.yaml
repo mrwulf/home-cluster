@@ -42,6 +42,7 @@ spec:
         external-dns/is-public: "true"
         hajimari.io/enable: "true"
         hajimari.io/group: "Home"
+        hajimari.io/url: https://bw.${SECRET_DOMAIN}/
       host: &host "bw.${SECRET_DOMAIN}"
       tls:
         - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
