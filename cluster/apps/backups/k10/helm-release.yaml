@@ -52,7 +52,7 @@ spec:
         hajimari.io/appName: Kasten K10
         hajimari.io/enable: "true"
         hajimari.io/group: "Storage"
-        hajimari.io/url: https://k10.home.${SECRET_DOMAIN}/k10/#/dashboard
+        hajimari.io/url: https://k10.home.${SECRET_DOMAIN}/k10/
       urlPath: 'k10'
       hosts:
         - *host
