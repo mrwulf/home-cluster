@@ -136,6 +136,7 @@ tasks:
   etcd-client:
     desc: Interactive etcd shell
     vars:
+      COMMAND: '{{.COMMAND | default "bash"}}'
       NODE: '{{.CLI_ARGS | default .ONE_MASTER}}'
       NODE_IP:
         sh: ping -c1 {{.NODE}} | grep -oP 'PING.*?\(\K[^)]+'
@@ -159,6 +160,21 @@ tasks:
           -e ETCDCTL_INSECURE_SKIP_TLS_VERIFY="true" \
           -e ETCDCTL_KEY=/etc/etcd/admin.key \
           -e ETCDCTL_CERT=/etc/etcd/admin.crt \
-          {{.ETCDCTL_IMAGE}} bash
+          {{.ETCDCTL_IMAGE}} {{.COMMAND}}
 
       - defer: rm -rf {{.TEMP_DIR}}
+
+  etcd-defrag:
+    desc: Defrag all etcd members
+    cmds:
+      - task: etcd-client
+        vars:
+          COMMAND: etcdctl defrag --cluster=true
+
+  etcd-command:
+    desc: Run a command in an etcd client
+    cmds:
+      - task: etcd-client
+        vars:
+          COMMAND: '{{.CLI_ARGS}}'
+          CLI_ARGS: null
