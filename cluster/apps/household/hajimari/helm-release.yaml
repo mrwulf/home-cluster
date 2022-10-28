@@ -84,6 +84,10 @@ spec:
               url: "https://github.com/siderolabs/talos"
             - name: "Github: TalHelper"
               url: "https://github.com/budimanjojo/talhelper"
+        - group: k8s@home
+          bookmarks:
+            - name: Search
+              url: https://nanne.dev/k8s-at-home-search
     ingress:
       main:
         enabled: true
