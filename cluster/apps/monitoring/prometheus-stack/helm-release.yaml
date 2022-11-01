@@ -160,8 +160,10 @@ spec:
                 requests:
                   storage: 40Gi
         podMonitorNamespaceSelector: {}
+        podMonitorNamespaceSelectorNilUsesHelmValues: false
         podMonitorSelector: {}
-        ruleSelectorNilUsesHelmValues: {}
+        ruleNamespaceSelector: {}
+        ruleSelectorNilUsesHelmValues: false
         ruleSelector: {}
         additionalScrapeConfigs:
           - job_name: node-exporter
