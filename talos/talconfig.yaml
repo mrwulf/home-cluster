@@ -1,7 +1,7 @@
 # https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
-talosVersion: v1.2.5
+talosVersion: v1.2.6
 kubernetesVersion: v1.24.4
 endpoint: https://kubernetes.home:6443
 domain: cluster.local
@@ -118,6 +118,7 @@ controlPlane:
       etcd:
         extraArgs:
           listen-metrics-urls: http://0.0.0.0:2381
+          auto-compaction-retention: 4
     #   extraManifests:
     #     - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
     #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml

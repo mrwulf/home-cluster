@@ -178,3 +178,23 @@ tasks:
         vars:
           COMMAND: '{{.CLI_ARGS}}'
           CLI_ARGS: null
+
+  upgrade:
+    desc: Upgrade Talos on a single node to version in talconfig.yaml
+    silent: true
+    vars:
+      NODE: '{{.CLI_ARGS | default .ONE_MASTER}}' # Use a master since masters should be upgraded before workers
+      TARGET_VERSION:
+        sh: yq '.talosVersion' talos/talconfig.yaml
+      TARGET_VERSION_IMAGE: "ghcr.io/siderolabs/installer:{{.TARGET_VERSION}}"
+    deps:
+      - task: generate-configs
+    preconditions:
+      - sh: "talosctl apply-config --dry-run -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml | grep -q 'No changes.'"
+        msg: Node config has changed - apply new config first!
+    cmds:
+      - |
+        echo "Target Version: {{.TARGET_VERSION}}"
+        echo "Target Version Image: {{.TARGET_VERSION_IMAGE}}"
+        echo "Target Node: {{.NODE}}"
+        talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}}
