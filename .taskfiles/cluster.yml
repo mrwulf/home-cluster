@@ -26,6 +26,17 @@ tasks:
     cmds:
       - kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" |tr -s '[[:space:]]' '\n' | sort | uniq
 
+  update-cached-images:
+    desc: Update the cached image list used by kube-fledged
+    silent: true
+    vars:
+      IMAGE_CACHE: "{{.CLUSTER_DIR}}/apps/system/kube-fledged/imagecache.yaml"
+      IMAGE_CACHE_TEMPLATE: "{{.IMAGE_CACHE}}.template"
+    cmds:
+      - |
+        cat {{.IMAGE_CACHE_TEMPLATE}} > {{.IMAGE_CACHE}}
+        (kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" |tr -s '[[:space:]]' '\n' | sort | uniq | grep -E '(apiserver|controller-manager|kube-proxy|kube-scheduler|cloudflared|external-dns|coredns|fluxcd|plex|pihole|kyverno|flannel|ceph|speaker|traefik|vaultwarden|unifi)' | sed 's/^/        - /') >> {{.IMAGE_CACHE}}
+
   delete-failed-pods:
     desc: Deletes failed pods
     cmds:
