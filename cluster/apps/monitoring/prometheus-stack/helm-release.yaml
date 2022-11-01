@@ -160,9 +160,9 @@ spec:
                 requests:
                   storage: 40Gi
         podMonitorNamespaceSelector: {}
-        podMonitorSelector:
-          matchLabels:
-            app.kubernetes.io/component: monitoring
+        podMonitorSelector: {}
+        ruleSelectorNilUsesHelmValues: {}
+        ruleSelector: {}
         additionalScrapeConfigs:
           - job_name: node-exporter
             honor_timestamps: true
