@@ -106,8 +106,10 @@ spec:
     metrics:
       enabled: true
       serviceMonitor:
-        interval: 30m
+        interval: 3m
         scrapeTimeout: 3m
+      prometheusRule:
+        enabled: true
       exporter:
         image:
           repository: ghcr.io/onedr0p/exportarr
