@@ -6,7 +6,7 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - "${METALLB_LB_RANGE}"
+    - 10.0.10.1-10.0.10.20 # "${METALLB_LB_RANGE}"
 ---
 apiVersion: metallb.io/v1beta1
 kind: BGPAdvertisement
@@ -26,3 +26,15 @@ spec:
   myASN: 65430
   peerASN: 65400
   peerAddress: 10.0.0.1
+  holdTime: "5m"
+#   bfdProfile: opnsense-bfd
+# ---
+# apiVersion: metallb.io/v1beta1
+# kind: BFDProfile
+# metadata:
+#   name: opnsense-bfd
+#   namespace: metallb-system
+# spec:
+#   receiveInterval: 3000
+#   transmitInterval: 2700
+#   detectMultiplier: 3
