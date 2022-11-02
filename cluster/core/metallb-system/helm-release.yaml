@@ -27,10 +27,15 @@ spec:
     fullnameOverride: 'metallb'
     crds:
       enabled: true
+    speaker:
+      frr:
+        enabled: true
     prometheus:
       namespace: monitoring
       serviceAccount: kube-prometheus-stack-prometheus
       serviceMonitor:
+        enabled: true
+      prometheusRule:
         enabled: true
     # configInline:
     #   address-pools:
