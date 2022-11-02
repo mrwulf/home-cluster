@@ -23,7 +23,7 @@ spec:
         - ghcr.io/k8s-at-home/plex:v1.29.1.6316-f4cdfea9c
         - ghcr.io/kyverno/kyverno:v1.8.1
         - ghcr.io/siderolabs/flannel:v0.19.2
-        - jacobalberty/unifi:v7.2.94
+        - jacobalberty/unifi:v7.2.95
         - k8s.gcr.io/kube-apiserver:v1.24.4
         - k8s.gcr.io/kube-controller-manager:v1.24.4
         - k8s.gcr.io/kube-proxy:v1.24.4
