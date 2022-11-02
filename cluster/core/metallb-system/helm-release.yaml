@@ -29,7 +29,7 @@ spec:
       enabled: true
     speaker:
       frr:
-        enabled: true
+        enabled: false
     prometheus:
       namespace: monitoring
       serviceAccount: kube-prometheus-stack-prometheus
