@@ -46,6 +46,9 @@ spec:
         external-dns/is-public: "true"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         # traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+        hajimari.io/enable: "true"
+        hajimari.io/icon: "shield-lock"
+        hajimari.io/group: "Home"
       hosts:
         - host: &host "auth.${SECRET_DOMAIN}"
           paths:
