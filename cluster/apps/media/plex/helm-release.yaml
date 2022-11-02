@@ -132,14 +132,17 @@ spec:
                   operator: In
                   values:
                     - 'true'
+      podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
-          - preference:
-              matchExpressions:
-                - key: feature.node.kubernetes.io/cpu-8500t
-                  operator: In
-                  values:
-                    - 'true'
-            weight: 100
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - photoprism
+              topologyKey: kubernetes.io/hostname
 
     addons:
       promtail:
