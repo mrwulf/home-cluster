@@ -100,6 +100,37 @@ spec:
               - *host
             secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
 
+    resources:
+      requests:
+        cpu: 1
+        memory: 1.5G
+        gpu.intel.com/i915: 1
+      limits:
+        gpu.intel.com/i915: 1
+        memory: 12G
+        # cpu: 4
+
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: feature.node.kubernetes.io/custom-intel-gpu
+                  operator: In
+                  values:
+                    - 'true'
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - plex
+              topologyKey: kubernetes.io/hostname
+
     # -- Enable and configure mariadb database subchart under this key.
     #    For more options see [mariadb chart documentation](https://github.com/bitnami/charts/tree/master/bitnami/mariadb)
     # @default -- See values.yaml
@@ -116,13 +147,3 @@ spec:
         persistence:
           enabled: true
           existingClaim: photoprism-db
-
-    resources:
-      requests:
-        cpu: 1
-        memory: 1.5G
-        gpu.intel.com/i915: 1
-      limits:
-        gpu.intel.com/i915: 1
-        memory: 12G
-        # cpu: 4
