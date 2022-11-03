@@ -5,17 +5,15 @@ metadata:
   name: prowlarr
   namespace: media
 spec:
-  interval: 5m
+  interval: 15m
   chart:
     spec:
-      # renovate: registryUrl=https://k8s-at-home.com/charts/
-      chart: prowlarr
-      version: 4.5.2
+      chart: app-template
+      version: 0.2.2
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: bjw-s-charts
         namespace: flux-system
-      interval: 5m
   install:
     createNamespace: true
     remediation:
@@ -24,22 +22,20 @@ spec:
     remediation:
       retries: 3
   values:
+    image:
+      repository: ghcr.io/onedr0p/prowlarr-nightly
+      tag: 0.4.7.2016@sha256:c745a0711067d707b50ec13deec094104c892d96ddcb75cf8cedb3431ff8cbf7
     env:
       TZ: "${TIMEZONE}"
-
-    image:
-      repository: ghcr.io/k8s-at-home/prowlarr
-      tag: v0.4.0.1802
-      pullPolicy: IfNotPresent
-
-    hostname: prowlarr
+    service:
+      main:
+        ports:
+          http:
+            port: 9696
 
     podSecurityContext:
       runAsUser: 0
       runAsGroup: 0
-      # supplementalGroups:
-        # - 0 # nfsnobody
-
     persistence:
       config:
         enabled: true
@@ -48,15 +44,13 @@ spec:
         enabled: true
         type: emptyDir
         mountPath: /shared
-      # backup:
-      #   enabled: true
-      #   mountPath: /config/Backups
-      #   # mountOptions: nolock
-      #   type: custom
-      #   volumeSpec:
-      #     nfs:
-      #       server: "${NFS_SERVER}"
-      #       path: "${NFS_KUBERNETES_PATH}/backups/prowlarr-config"
+      backups:
+        enabled: true
+        mountPath: /config/Backups
+        # mountOptions: nolock
+        type: nfs
+        server: "${NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/backups/prowlarr"
 
     ingress:
       main:
