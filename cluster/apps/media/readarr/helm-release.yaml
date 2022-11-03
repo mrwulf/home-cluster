@@ -1,0 +1,149 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: readarr
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: ghcr.io/onedr0p/readarr-nightly
+      tag: 0.1.1.1426@sha256:59b114a97c5f401a52a50c921929335c5cda2eb3f44fe4b92b258af1d608b544
+    env:
+      TZ: "${TIMEZONE}"
+    service:
+      main:
+        ports:
+          http:
+            port: 8787
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          hajimari.io/enable: "true"
+          hajimari.io/group: "Media"
+          hajimari.io/icon: "book-open"
+        hosts:
+          - host: &host "readarr.home.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - secretName: &tls "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+      api:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+        hosts:
+          - host: *host
+            paths:
+              - path: /api
+                pathType: Prefix
+        tls:
+          - secretName: *tls
+            hosts:
+              - *host
+    probes:
+      liveness:
+        enabled: true
+        custom: true
+        spec:
+          exec:
+            command:
+              - /usr/bin/env
+              - bash
+              - -c
+              - curl --fail localhost:8787/api/v1/system/status?apiKey=`IFS=\> && while
+                read -d \< E C; do if [[ $E = "ApiKey" ]]; then echo $C; fi; done < /config/config.xml`
+          failureThreshold: 5
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+    podSecurityContext:
+      runAsUser: 0
+      runAsGroup: 0
+    #   supplementalGroups:
+    #     - 1001
+    #     - 100
+    persistence:
+      config:
+        enabled: true
+        existingClaim: readarr-config
+      # downloads:
+      #   enabled: true
+      #   mountPath: /downloads
+      #   type: custom
+      #   volumeSpec:
+      #     nfs:
+      #       server: ${NFS_SERVER}
+      #       path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
+      nfs-downloads:
+        enabled: true
+        type: nfs
+        server: ${NFS_SERVER}
+        path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
+        mountPath: /downloads
+      audiobooks:
+        enabled: true
+        mountPath: /audiobooks
+        type: nfs
+        server: "${NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
+      books:
+        enabled: true
+        mountPath: /books
+        type: nfs
+        server: "${NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/active/books"
+      backups:
+        enabled: true
+        mountPath: /config/Backups
+        type: nfs
+        server: "${NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/backups/readarr"
+    resources:
+      requests:
+        memory: 100Mi
+        cpu: 100m
+      limits:
+        memory: 750Mi
+
+    metrics:
+      enabled: true
+      serviceMonitor:
+        interval: 30m
+        scrapeTimeout: 3m
+      prometheusRule:
+        enabled: true
+      exporter:
+        image:
+          repository: ghcr.io/onedr0p/exportarr
+          tag: v1.1.0
+        env:
+          port: 9794
+          additionalMetrics: true
+          unknownQueueItems: true
