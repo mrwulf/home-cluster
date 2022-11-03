@@ -15,7 +15,8 @@ tasks:
       # - task: flux
       # - task: helm
       # - task: pre-commit # should include pre-commit autoupdate
-      # - task: krew
+      # - task: krew & plugins
+      # - task: dyff
 
   age:
     desc: Install age
