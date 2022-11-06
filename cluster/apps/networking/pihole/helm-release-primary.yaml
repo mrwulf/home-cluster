@@ -30,7 +30,7 @@ spec:
     replicaCount: 1
 
     image:
-      tag: 2022.10
+      tag: '2022.10'
 
     extraEnvVars:
       DNSMASQ_USER: "root"
