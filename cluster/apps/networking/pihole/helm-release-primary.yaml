@@ -28,6 +28,10 @@ spec:
       retries: 3
   values:
     replicaCount: 1
+
+    image:
+      tag: 2022.10
+
     extraEnvVars:
       DNSMASQ_USER: "root"
       TZ: "${TIMEZONE}"
