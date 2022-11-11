@@ -1,0 +1,186 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: blackbox-exporter
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://prometheus-community.github.io/helm-charts
+      chart: prometheus-blackbox-exporter
+      version: 7.1.3
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community-charts
+        namespace: flux-system
+      interval: 5m
+  install:
+    createNamespace: true
+  values:
+    fullnameOverride: blackbox-exporter
+    image:
+      repository: quay.io/prometheus/blackbox-exporter
+    ingress:
+      enabled: true
+      className: traefik
+      hosts:
+        hosts:
+          - host: &host "blackbox.home.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+
+        tls:
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+    allowIcmp: true
+    config:
+      modules:
+        http_2xx:
+          prober: http
+          timeout: 5s
+          http:
+            valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+            follow_redirects: true
+            preferred_ip_protocol: "ip4"
+
+        icmp:
+          prober: icmp
+          timeout: 30s
+          icmp:
+            preferred_ip_protocol: "ip4"
+
+        dns_public:
+          prober: dns
+          timeout: 5s
+          dns:
+            query_name: "www.google.com"
+            query_type: "A"
+            valid_rcodes:
+              - NOERROR
+            validate_answer_rrs:
+              fail_if_not_matches_regexp:
+                - "www.google.com.\t.*\tIN\tA\t.*"
+
+        dns_private:
+          prober: dns
+          timeout: 5s
+          dns:
+            query_name: "traefik.home.${SECRET_DOMAIN}"
+            query_type: "A"
+            valid_rcodes:
+              - NOERROR
+            validate_answer_rrs:
+              fail_if_not_matches_regexp:
+                - "traefik.home.${SECRET_DOMAIN}.\t.*\tIN\tA\t10\\.0\\.10\\.20"
+
+        # dns_private_cname:
+        #   prober: dns
+        #   timeout: 5s
+        #   dns:
+        #     query_name: "homebase.homelab"
+        #     query_type: "CNAME"
+        #     valid_rcodes:
+        #       - NOERROR
+        #     validate_answer_rrs:
+        #       fail_if_not_matches_regexp:
+        #         - "homebase.homelab.\t.*\tIN\tCNAME\tingress-http\\.service\\.consul\\."
+
+        dns_ad_blocking:
+          prober: dns
+          timeout: 5s
+          dns:
+            query_name: "googleadservices.com"
+            query_type: "A"
+            valid_rcodes:
+              - NOERROR
+            validate_answer_rrs:
+              fail_if_not_matches_regexp:
+                - "googleadservices.com.\t.*\tIN\tA\t0.0.0.0"
+
+    serviceMonitor:
+      enabled: true
+      defaults:
+        labels:
+          release: prometheus
+        interval: 2m
+        scrapeTimeout: 30s
+      targets:
+        - module: icmp
+          name: unifi-icmp
+          url: unifi
+        - module: icmp
+          name: unifi-home-icmp
+          url: unifi.home
+
+        - module: icmp
+          name: pihole-1-icmp
+          url: &pihole1 10.0.10.10
+        - module: icmp
+          name: pihole-2-icmp
+          url: &pihole2 10.0.10.11
+        - module: icmp
+          name: opnsense-icmp
+          url: &opnsense 10.0.0.1
+
+        - module: dns_public
+          name: pihole-1-public-dns
+          url: *pihole1
+        - module: dns_public
+          name: pihole-2-public-dns
+          url: *pihole2
+        - module: dns_public
+          name: opnsense-public-dns
+          url: *opnsense
+
+        - module: dns_private
+          name: pihole-1-private-dns
+          url: *pihole1
+        - module: dns_private
+          name: pihole-2-private-dns
+          url: *pihole2
+        - module: dns_private
+          name: opnsense-private-dns
+          url: *opnsense
+
+        - module: dns_ad_blocking
+          name: pihole-1-dns
+          url: *pihole1
+        - module: dns_ad_blocking
+          name: pihole-2-dns
+          url: *pihole2
+        - module: dns_ad_blocking
+          name: opnsense-dns
+          url: *opnsense
+    prometheusRule:
+      enabled: true
+      additionalLabels:
+        app: prometheus-operator
+        release: prometheus
+      rules:
+        - alert: BlackboxSslCertificateWillExpireSoon
+          expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 3
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            description: |-
+              The SSL certificate for {{"{{ $labels.target }}"}} will expire in less than 3 days
+        - alert: BlackboxSslCertificateExpired
+          expr: probe_ssl_earliest_cert_expiry - time() <= 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            description: |-
+              The SSL certificate for {{"{{ $labels.target }}"}} has expired
+        - alert: BlackboxProbeFailed
+          expr: probe_success == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            description: |-
+              The host {{"{{ $labels.target }}"}} is currently unreachable
