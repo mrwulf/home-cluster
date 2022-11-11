@@ -26,15 +26,15 @@ spec:
       enabled: true
       className: traefik
       hosts:
-        hosts:
-          - host: &host "blackbox.home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
+        - host: &host "blackbox.home.${SECRET_DOMAIN}"
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - *host
+          secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
 
-        tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
     allowIcmp: true
     config:
       modules:
