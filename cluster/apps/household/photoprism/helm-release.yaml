@@ -68,7 +68,7 @@ spec:
         type: custom
         volumeSpec:
           nfs:
-            server: "ourbackup.home"
+            server: "${NFS_SERVER}"
             path: "/volume3/Pictures"
 
       backups:
