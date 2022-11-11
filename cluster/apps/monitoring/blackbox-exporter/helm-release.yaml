@@ -74,7 +74,19 @@ spec:
               - NOERROR
             validate_answer_rrs:
               fail_if_not_matches_regexp:
-                - "traefik\\.home\\.${SECRET_DOMAIN}\\.\\t.*\\tIN\\tA\\t10\\.0\\.10\\.20"
+                - "traefik\\.home\\.${SECRET_DOMAIN}\\.\\t.*\\tIN\\tA\\t${TRAEFIK_ADDR/./\\.}"
+
+        dns_unifi:
+          prober: dns
+          timeout: 5s
+          dns:
+            query_name: "unifi.home"
+            query_type: "A"
+            valid_rcodes:
+              - NOERROR
+            validate_answer_rrs:
+              fail_if_not_matches_regexp:
+                - "unifi\\.home\\.\\t.*\\tIN\\tA\\t${UNIFI_ADDR/./\\.}"
 
         dns_ad_blocking:
           prober: dns
@@ -98,20 +110,17 @@ spec:
       targets:
         - module: icmp
           name: unifi-icmp
-          url: unifi
-        - module: icmp
-          name: unifi-home-icmp
-          url: unifi.home
+          url: ${UNIFI_ADDR}
 
         - module: icmp
           name: pihole-1-icmp
-          url: &pihole1 10.0.10.10
+          url: &pihole1 ${PIHOLE_1_ADDR}
         - module: icmp
           name: pihole-2-icmp
-          url: &pihole2 10.0.10.11
+          url: &pihole2 ${PIHOLE_2_ADDR}
         - module: icmp
-          name: opnsense-icmp
-          url: &opnsense 10.0.0.1
+          name: gateway-icmp
+          url: &gateway ${GATEWAY_ADDR}
 
         - module: dns_public
           name: pihole-1-public-dns
@@ -120,8 +129,8 @@ spec:
           name: pihole-2-public-dns
           url: *pihole2
         - module: dns_public
-          name: opnsense-public-dns
-          url: *opnsense
+          name: gateway-public-dns
+          url: *gateway
 
         - module: dns_private
           name: pihole-1-private-dns
@@ -130,18 +139,28 @@ spec:
           name: pihole-2-private-dns
           url: *pihole2
         - module: dns_private
-          name: opnsense-private-dns
-          url: *opnsense
+          name: gateway-private-dns
+          url: *gateway
+
+        - module: dns_unifi
+          name: pihole-1-unifi-dns
+          url: *pihole1
+        - module: dns_unifi
+          name: pihole-2-unifi-dns
+          url: *pihole2
+        - module: dns_unifi
+          name: gateway-unifi-dns
+          url: *gateway
 
         - module: dns_ad_blocking
-          name: pihole-1-dns
+          name: pihole-1-blocking-dns
           url: *pihole1
         - module: dns_ad_blocking
-          name: pihole-2-dns
+          name: pihole-2-blocking-dns
           url: *pihole2
         - module: dns_ad_blocking
-          name: opnsense-dns
-          url: *opnsense
+          name: gateway-blocking-dns
+          url: *gateway
     prometheusRule:
       enabled: true
       additionalLabels:
