@@ -160,7 +160,7 @@ spec:
                 requests:
                   storage: 40Gi
         podMonitorNamespaceSelector: {}
-        podMonitorNamespaceSelectorNilUsesHelmValues: false
+        podMonitorSelectorNilUseHelmValues: false
         podMonitorSelector: {}
         ruleNamespaceSelector: {}
         ruleSelectorNilUsesHelmValues: false
