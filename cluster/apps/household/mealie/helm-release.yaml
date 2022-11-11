@@ -18,7 +18,7 @@ spec:
   values:
     image:
       repository: &repo hkotel/mealie
-      tag: &tag frontend-v1.0.0beta-4
+      tag: frontend-v1.0.0beta-5
       pullPolicy: IfNotPresent
 
     env: &env
@@ -36,7 +36,8 @@ spec:
     api:
       image:
         repository: *repo
-        tag: api-v1.0.0beta-4
+        tag: api-v1.0.0beta-5
+        pullPolicy: IfNotPresent
       env: *env
 
     ingress:
