@@ -46,10 +46,12 @@ spec:
     dnsmasq:
       upstreamServers:
         - "server=/home.${SECRET_DOMAIN}/${LOCAL_DNS_ADDR}"
+        - "server=${GATEWAY_ADDR}"
 
-      customDnsEntries:
-        - address=/unifi.home/10.0.0.213
-        - address=/kubernetes.home/10.0.0.200
+
+      # customDnsEntries:
+      #   - address=/unifi.home/10.0.0.213
+      #   - address=/kubernetes.home/10.0.0.200
 
       additionalHostsEntries: []
       staticDhcpEntries: []
@@ -75,13 +77,10 @@ spec:
       avoidRelease: pihole-2
 
     doh:
-      enabled: true
-      name: "cloudflared"
-      repository: "crazymax/cloudflared"
-      tag: "2021.5.7"
+      enabled: false
 
     monitoring:
-      podMonitor:
+      serviceMonitor:
         enabled: true
       sidecar:
         enabled: true
