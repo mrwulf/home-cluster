@@ -82,7 +82,7 @@ spec:
         type: custom
         volumeSpec:
           nfs:
-            server: ourshare.home
+            server: 10.0.1.10
             path: /volume1/Shared Videos/Movies
 
       backups:

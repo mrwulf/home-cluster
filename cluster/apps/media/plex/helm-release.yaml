@@ -93,7 +93,7 @@ spec:
         type: custom
         volumeSpec:
           nfs:
-            server: ourshare.home
+            server: 10.0.1.10
             path: /volume1/Shared Videos/Movies
 
       tv:
@@ -102,7 +102,7 @@ spec:
         type: custom
         volumeSpec:
           nfs:
-            server: ourbackup.home
+            server: 10.0.1.20
             path: /volume1/Shared Videos/TV
 
       tv1:
@@ -111,7 +111,7 @@ spec:
         type: custom
         volumeSpec:
           nfs:
-            server: ourbackup.home
+            server: 10.0.1.20
             path: /volume2/TV1
 
     resources:
