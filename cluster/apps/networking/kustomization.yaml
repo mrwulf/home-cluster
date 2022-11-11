@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - wildcard-cert.yaml
   - wildcard-cert-internal.yaml
-  - blackbox-exporter
   - traefik
   - pihole
   - unifi
