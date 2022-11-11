@@ -5,6 +5,7 @@ version: "3"
 vars:
   NAMESPACE: storage
   POOL: ceph-block
+  VOLUMESNAPSHOTCLASS: csi-rbdplugin-snapclass
 
 tasks:
   toolbox:
@@ -153,3 +154,13 @@ tasks:
               "restartPolicy": "Never"
             }
           }'
+
+  browse-volume-snapshot:
+    desc: Clone a volume snapshot and then attach and start a little file browser web app. Press ctrl+c to kill browser
+    interactive: true
+    vars:
+      PVC: '{{.CLI_ARGS}}'
+      NAMESPACE:
+        sh: 'kubectl get pvc -A -oyaml | yq ''.items[] | select(.metadata.name=="{{.PVC}}") | .metadata.namespace'''
+    cmds:
+      - kubestr browse {{.PVC}} -n {{.NAMESPACE}} -v {{.VOLUMESNAPSHOTCLASS}}

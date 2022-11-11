@@ -11,6 +11,7 @@ tasks:
       - task: yq
       - task: age
       - task: sops
+      - task: kubestr
       # - task: kubectl
       # - task: flux
       # - task: helm
@@ -132,3 +133,27 @@ tasks:
       - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
     silent: true
     ignore_errors: true
+
+  kubestr:
+    desc: Install talhelper
+    silent: true
+    ignore_errors: true
+    vars:
+      TASK_NAME:
+        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+      OWNER: kastenhq
+      RELEASE_VERSION:
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+      CURRENT_VERSION:
+        sh: "{{.TASK_NAME}} version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+      FILENAME: "kubestr_{{.RELEASE_VERSION}}_Linux_amd64.tar.gz"
+    status:
+      - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
+    cmds:
+      - |
+        echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
+        TEMP_DIR=$(mktemp -d)
+        wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.TASK_NAME}}/releases/download/v{{.RELEASE_VERSION}}/{{.FILENAME}}
+        tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components=0 -C ~/bin/ {{.TASK_NAME}}
+        # chmod +x ~/bin/{{.TASK_NAME}}
+        rm -rf $TEMP_DIR

@@ -42,6 +42,7 @@ tasks:
     desc: Backup etcd to local file
     silent: true
     cmds:
+      - task: etcd-defrag
       - |
         mkdir -p {{.PROJECT_DIR}}/talos/backups
         DATE=$(date +'%Y%m%d-%H%M%S')
