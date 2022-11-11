@@ -80,7 +80,7 @@ spec:
       enabled: false
 
     monitoring:
-      serviceMonitor:
+      podMonitor:
         enabled: true
       sidecar:
         enabled: true
