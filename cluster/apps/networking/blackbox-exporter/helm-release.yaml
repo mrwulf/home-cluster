@@ -62,7 +62,7 @@ spec:
               - NOERROR
             validate_answer_rrs:
               fail_if_not_matches_regexp:
-                - "www.google.com.\t.*\tIN\tA\t.*"
+                - "www\\.google\\.com\\.\\t.*\\tIN\\tA\\t.*"
 
         dns_private:
           prober: dns
@@ -74,19 +74,7 @@ spec:
               - NOERROR
             validate_answer_rrs:
               fail_if_not_matches_regexp:
-                - "traefik.home.${SECRET_DOMAIN}.\t.*\tIN\tA\t10\\.0\\.10\\.20"
-
-        # dns_private_cname:
-        #   prober: dns
-        #   timeout: 5s
-        #   dns:
-        #     query_name: "homebase.homelab"
-        #     query_type: "CNAME"
-        #     valid_rcodes:
-        #       - NOERROR
-        #     validate_answer_rrs:
-        #       fail_if_not_matches_regexp:
-        #         - "homebase.homelab.\t.*\tIN\tCNAME\tingress-http\\.service\\.consul\\."
+                - "traefik\\.home\\.${SECRET_DOMAIN}\\.\\t.*\\tIN\\tA\\t10\\.0\\.10\\.20"
 
         dns_ad_blocking:
           prober: dns
@@ -98,7 +86,7 @@ spec:
               - NOERROR
             validate_answer_rrs:
               fail_if_not_matches_regexp:
-                - "googleadservices.com.\t.*\tIN\tA\t0.0.0.0"
+                - "googleadservices\\.com\\.\\t.*\\tIN\\tA\\t0\\.0\\.0\\.0"
 
     serviceMonitor:
       enabled: true
