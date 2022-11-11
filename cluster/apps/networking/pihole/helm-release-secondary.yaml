@@ -45,15 +45,55 @@ spec:
 
     adminPassword: "${SECRET_PIHOLE_PASSWORD}"
 
+    dnsmasq:
+      upstreamServers:
+        - "server=/home.${SECRET_DOMAIN}/${LOCAL_DNS_ADDR}"
+        - "server=${GATEWAY_ADDR}"
+
+
+      # customDnsEntries:
+      #   - address=/unifi.home/10.0.0.213
+      #   - address=/kubernetes.home/10.0.0.200
+
+      additionalHostsEntries: []
+      staticDhcpEntries: []
+      customSettings: []
+      customCnameEntries: []
+
+    adlists:
+      - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+
+    whitelist: {}
+
+    blacklist: {}
+
     podDnsConfig:
-      enabled: false
+      enabled: true
+      policy: "None"
+      nameservers:
+        - 127.0.0.1
+        - 1.1.1.1
 
     antiaff:
       enabled: true
       avoidRelease: pihole-1
 
     doh:
-      enabled: true
+      enabled: false
+
+    monitoring:
+      podMonitor:
+        enabled: true
+      sidecar:
+        enabled: true
+        image:
+          pullPolicy: "IfNotPresent"
+          repository: "ekofr/pihole-exporter"
+          tag: "v0.3.0"
+          port: 9617
+        resources:
+          limits:
+            memory: "128Mi"
 
     serviceDhcp:
       enabled: false
