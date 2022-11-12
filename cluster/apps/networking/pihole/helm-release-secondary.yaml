@@ -48,7 +48,7 @@ spec:
     dnsmasq:
       upstreamServers:
         - "server=/home.${SECRET_DOMAIN}/${LOCAL_DNS_ADDR}"
-        - "server=${GATEWAY_ADDR}"
+        - "server=${GATEWAY_ADDR}#53053"
 
 
       # customDnsEntries:
