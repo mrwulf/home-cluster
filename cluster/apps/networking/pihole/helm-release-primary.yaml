@@ -46,8 +46,6 @@ spec:
     dnsmasq:
       upstreamServers:
         - "server=/home.${SECRET_DOMAIN}/${LOCAL_DNS_ADDR}"
-        - "server=${GATEWAY_ADDR}#53053"
-
 
       # customDnsEntries:
       #   - address=/unifi.home/10.0.0.213
@@ -77,7 +75,10 @@ spec:
       avoidRelease: pihole-2
 
     doh:
-      enabled: false
+      enabled: true
+      name: "cloudflared"
+      repository: "crazymax/cloudflared"
+      tag: "2022.10.2"
 
     monitoring:
       podMonitor:
