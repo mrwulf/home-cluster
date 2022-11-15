@@ -48,6 +48,8 @@ spec:
     dnsmasq:
       upstreamServers:
         - "server=/home.${SECRET_DOMAIN}/${LOCAL_DNS_ADDR}"
+        - "server=/home/${GATEWAY_ADDR}"
+        - "server=/0.10.in-addr.arpa/${GATEWAY_ADDR}"
 
       # customDnsEntries:
       #   - address=/unifi.home/10.0.0.213
