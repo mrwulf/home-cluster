@@ -121,6 +121,9 @@ spec:
         - module: icmp
           name: gateway-icmp
           url: &gateway ${GATEWAY_ADDR}
+        - module: icmp
+          name: gateway-icmp
+          url: &pihole ${PIHOLE_SHARED_ADDR}
 
         - module: dns_public
           name: pihole-1-public-dns
@@ -131,6 +134,9 @@ spec:
         - module: dns_public
           name: gateway-public-dns
           url: *gateway
+        - module: dns_public
+          name: pihole-public-dns
+          url: *pihole
 
         - module: dns_private
           name: pihole-1-private-dns
@@ -141,13 +147,16 @@ spec:
         - module: dns_private
           name: gateway-private-dns
           url: *gateway
+        - module: dns_private
+          name: pihole-private-dns
+          url: *pihole
 
-        - module: dns_unifi
-          name: pihole-1-unifi-dns
-          url: *pihole1
-        - module: dns_unifi
-          name: pihole-2-unifi-dns
-          url: *pihole2
+        # - module: dns_unifi
+        #   name: pihole-1-unifi-dns
+        #   url: *pihole1
+        # - module: dns_unifi
+        #   name: pihole-2-unifi-dns
+        #   url: *pihole2
         - module: dns_unifi
           name: gateway-unifi-dns
           url: *gateway
@@ -161,28 +170,31 @@ spec:
         - module: dns_ad_blocking
           name: gateway-blocking-dns
           url: *gateway
+        - module: dns_ad_blocking
+          name: pihole-blocking-dns
+          url: *pihole
     prometheusRule:
       enabled: true
       additionalLabels:
         app: prometheus-operator
         release: prometheus
       rules:
-        - alert: BlackboxSslCertificateWillExpireSoon
-          expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 3
-          for: 5m
-          labels:
-            severity: critical
-          annotations:
-            description: |-
-              The SSL certificate for {{"{{ $labels.target }}"}} will expire in less than 3 days
-        - alert: BlackboxSslCertificateExpired
-          expr: probe_ssl_earliest_cert_expiry - time() <= 0
-          for: 5m
-          labels:
-            severity: critical
-          annotations:
-            description: |-
-              The SSL certificate for {{"{{ $labels.target }}"}} has expired
+        # - alert: BlackboxSslCertificateWillExpireSoon
+        #   expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 3
+        #   for: 5m
+        #   labels:
+        #     severity: critical
+        #   annotations:
+        #     description: |-
+        #       The SSL certificate for {{"{{ $labels.target }}"}} will expire in less than 3 days
+        # - alert: BlackboxSslCertificateExpired
+        #   expr: probe_ssl_earliest_cert_expiry - time() <= 0
+        #   for: 5m
+        #   labels:
+        #     severity: critical
+        #   annotations:
+        #     description: |-
+        #       The SSL certificate for {{"{{ $labels.target }}"}} has expired
         - alert: BlackboxProbeFailed
           expr: probe_success == 0
           for: 5m
