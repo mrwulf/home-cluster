@@ -8,7 +8,7 @@ metadata:
     name: github
     namespace: flux-system
 stringData:
-    token: ENC[AES256_GCM,data:FyqKao41D1hyY/9I6JdQ6PsyC3wHORqmear8Im4pu1Vtt86jIe46cQ==,iv:Te6KJqA2XWZKZFia6/OmCMpqph3kOdItZJDy6SQcroA=,tag:pwLYD8cYF0FI+dGXtm5hvA==,type:str]
+    token: ENC[AES256_GCM,data:coV8Z5+A2DMY9tRsLWzCRlSXH9it7K2Oklbq45xn9oKx64V3rVSdKw==,iv:+gXMB5DtsTfou71j3Di2OHhJ9LMvJu6Uz8CNEj/IPds=,tag:/3bQ+drFG3TxV1jyIIhUIg==,type:str]
 sops:
     kms: []
     gcp_kms: []
@@ -24,8 +24,8 @@ sops:
             U2lEcUNkTWViQ0pOTmtaTWkyek04aDAKlRbMDz+F+4eZRrixMRo4n2aZq5CJZQ9s
             4EwZya0kZhsYI2c0edltNAQZ/NjX5yOK1a2r4Yp7JLDQn43NHq37FQ==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2022-09-19T16:17:30Z"
-    mac: ENC[AES256_GCM,data:sTelXVU1LdlMyXrnXrZJNRCXyvvE2iZz/GqdzukZh+Q/oZTheEPBla/NAb9GXjyIprDXu8gD9JvOi4yI9k/r5JZkv3rZmeLxwcLoRfEUFPlExI4oqYENuUbEgC/Ir6+soMZ7x86RCs42b/gHEXBE4kLoAsgmIFYLlj/xw5R9iH8=,iv:HqYdNu10A8Logubsxb6xze4xZiwr6OJ1vYCQ1wYYKV4=,tag:WAWI1hLqLuNwtgB3vtw5YA==,type:str]
+    lastmodified: "2022-11-17T22:48:01Z"
+    mac: ENC[AES256_GCM,data:KN10qRy1kOu9EeYi5Z1ibVEjgaU0cQLCATOuk1fFdKqLFCWPyhi/sOjpBjAhu+Xy2YD0VCb6G7dDNUhP+7hegz5Y2/Cw18xcTIGodOQwEyOqlhUdzdA+6ukIvn/WeI520vnsJqp7k5c7gUoOu+E0ZMf6/qwnMoHdpccEs0DPhQA=,iv:k5NMLwPDfihaquLMypkkndGfWI+DyrUMiEDQMPq670o=,tag:pysgFlA0rhoOPzIvWvWzKA==,type:str]
     pgp: []
     encrypted_regex: ^(data|stringData)$
     version: 3.7.3
