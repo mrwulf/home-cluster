@@ -32,6 +32,7 @@ spec:
     replicaCount: 1
 
     image:
+      repository: pihole/pihole
       tag: '2022.10'
 
     extraEnvVars:
@@ -112,6 +113,3 @@ spec:
       loadBalancerIP: "${PIHOLE_2_ADDR}"
       annotations:
         metallb.universe.tf/allow-shared-ip: pihole-svc
-        hajimari.io/appName: "Pi-Hole #2"
-        hajimari.io/enable: "true"
-        hajimari.io/icon: "chart-pie-outline"
