@@ -36,6 +36,26 @@ spec:
           secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
 
     allowIcmp: true
+
+    podSecurityContext:
+      sysctls:
+        - name: net.ipv4.ping_group_range
+          value: "1000 1000"
+
+    # extraArgs:
+    #   - "--log.level=debug"
+
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+    # Add NET_RAW to enable ICMP
+        add: ["NET_RAW"]
+
     config:
       modules:
         http_2xx:
@@ -108,35 +128,44 @@ spec:
         interval: 2m
         scrapeTimeout: 30s
       targets:
-        - module: icmp
-          name: unifi-icmp
-          url: ${UNIFI_ADDR}
-
-        - module: icmp
-          name: pihole-1-icmp
-          url: &pihole1 ${PIHOLE_1_ADDR}
-        - module: icmp
-          name: pihole-2-icmp
-          url: &pihole2 ${PIHOLE_2_ADDR}
+        # Network
         - module: icmp
           name: gateway-icmp
           url: &gateway ${GATEWAY_ADDR}
         - module: icmp
-          name: pihole-icmp
-          url: &pihole ${PIHOLE_SHARED_ADDR}
+          name: primary-nfs-icmp
+          url: ${PRIMARY_NFS_SERVER}
+        - module: icmp
+          name: secondary-nfs-icmp
+          url: ${SECONDARY_NFS_SERVER}
 
+        # Nodes
+        - module: icmp
+          name: delta-icmp
+          url: delta.home
+        - module: icmp
+          name: epsilon-icmp
+          url: epsilon.home
+        - module: icmp
+          name: zeta-icmp
+          url: zeta.home
+        - module: icmp
+          name: eta-icmp
+          url: eta.home
+
+        # DNS
         - module: dns_public
           name: pihole-1-public-dns
-          url: *pihole1
+          url: &pihole1 ${PIHOLE_1_ADDR}
         - module: dns_public
           name: pihole-2-public-dns
-          url: *pihole2
+          url: &pihole2 ${PIHOLE_2_ADDR}
         - module: dns_public
           name: gateway-public-dns
           url: *gateway
         - module: dns_public
           name: pihole-public-dns
-          url: *pihole
+          url: &pihole ${PIHOLE_SHARED_ADDR}
 
         - module: dns_private
           name: pihole-1-private-dns
@@ -151,12 +180,12 @@ spec:
           name: pihole-private-dns
           url: *pihole
 
-        # - module: dns_unifi
-        #   name: pihole-1-unifi-dns
-        #   url: *pihole1
-        # - module: dns_unifi
-        #   name: pihole-2-unifi-dns
-        #   url: *pihole2
+        - module: dns_unifi
+          name: pihole-1-unifi-dns
+          url: *pihole1
+        - module: dns_unifi
+          name: pihole-2-unifi-dns
+          url: *pihole2
         - module: dns_unifi
           name: gateway-unifi-dns
           url: *gateway
