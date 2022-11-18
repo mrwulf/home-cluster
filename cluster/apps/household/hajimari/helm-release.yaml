@@ -81,7 +81,7 @@ spec:
         - group: Talos
           bookmarks:
             - name: Talos
-              url: "https://www.talos.dev/v1.2/"
+              url: "https://www.talos.dev/"
             - name: "Github: Talos"
               url: "https://github.com/siderolabs/talos"
             - name: "Github: TalHelper"

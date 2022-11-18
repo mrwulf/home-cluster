@@ -81,38 +81,30 @@ spec:
       backups:
         enabled: true
         mountPath: /plex-backups
-        type: custom
-        volumeSpec:
-          nfs:
-            server: "${NFS_SERVER}"
-            path: "${NFS_KUBERNETES_PATH}/backups/plex-database-backups"
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/backups/plex-database-backups"
 
       movies:
         enabled: true
         mountPath: /mnt/OurShare/Movies
-        type: custom
-        volumeSpec:
-          nfs:
-            server: 10.0.1.10
-            path: /volume1/Shared Videos/Movies
+        type: nfs
+        server: "${SECONDARY_NFS_SERVER}"
+        path: /volume1/Shared Videos/Movies
 
       tv:
         enabled: true
         mountPath: /mnt/OurBackup/TV
-        type: custom
-        volumeSpec:
-          nfs:
-            server: 10.0.1.20
-            path: /volume1/Shared Videos/TV
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: /volume1/Shared Videos/TV
 
       tv1:
         enabled: true
         mountPath: /mnt/OurBackup/TV1
-        type: custom
-        volumeSpec:
-          nfs:
-            server: 10.0.1.20
-            path: /volume2/TV1
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: /volume2/TV1
 
     resources:
       requests:

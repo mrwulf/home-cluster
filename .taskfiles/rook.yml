@@ -95,7 +95,7 @@ tasks:
     silent: true
     vars:
       NAS_ADDRESS:
-        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_SERVER'"
+        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.PRIMARY_NFS_SERVER'"
       NAS_PATH:
         sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_K8S_PATH'"
     cmds:

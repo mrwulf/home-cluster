@@ -37,11 +37,9 @@ spec:
       backups:
         enabled: true
         mountPath: /config/backups
-        type: custom
-        volumeSpec:
-          nfs:
-            server: "${NFS_SERVER}"
-            path: "${NFS_KUBERNETES_PATH}/backups/homeassistant"
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/backups/homeassistant"
 
     resources:
       requests:
