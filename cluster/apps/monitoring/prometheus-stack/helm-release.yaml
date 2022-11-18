@@ -149,6 +149,7 @@ spec:
 
       prometheusSpec:
         retentionSize: "35GiB"
+        serviceMonitorNamespaceSelector: {}
         serviceMonitorSelectorNilUsesHelmValues: false
         serviceMonitorSelector: {}
         storageSpec:
@@ -160,7 +161,7 @@ spec:
                 requests:
                   storage: 40Gi
         podMonitorNamespaceSelector: {}
-        podMonitorSelectorNilUseHelmValues: false
+        podMonitorSelectorNilUsesHelmValues: false
         podMonitorSelector: {}
         ruleNamespaceSelector: {}
         ruleSelectorNilUsesHelmValues: false
