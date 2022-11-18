@@ -31,7 +31,7 @@ spec:
 
     image:
       repository: pihole/pihole
-      tag: '2022.10'
+      tag: '2022.11'
 
     extraEnvVars:
       DNSMASQ_USER: "root"
