@@ -12,7 +12,7 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: ${NFS_SERVER}
+    server: ${PRIMARY_NFS_SERVER}
     path: ${NFS_KUBERNETES_PATH}/backups/kasten-k10
   mountOptions:
     - nconnect=8

@@ -49,7 +49,7 @@ spec:
         mountPath: /config/Backups
         # mountOptions: nolock
         type: nfs
-        server: "${NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/prowlarr"
 
     ingress:

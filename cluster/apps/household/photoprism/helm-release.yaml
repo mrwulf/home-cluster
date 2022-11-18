@@ -56,29 +56,23 @@ spec:
       config:
         enabled: true
         mountPath: /photoprism/storage
-        type: custom
-        volumeSpec:
-          nfs:
-            server: "${NFS_SERVER}"
-            path: "${NFS_KUBERNETES_PATH}/active/photoprism-assets"
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/active/photoprism-assets"
 
       originals:
         enabled: true
         mountPath: "/photoprism/originals"
-        type: custom
-        volumeSpec:
-          nfs:
-            server: "${NFS_SERVER}"
-            path: "/volume3/Pictures"
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "/volume3/Pictures"
 
       backups:
         enabled: true
         mountPath: "/photoprism/backups"
-        type: custom
-        volumeSpec:
-          nfs:
-            server: "${NFS_SERVER}"
-            path: "${NFS_KUBERNETES_PATH}/backups/photoprism"
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/backups/photoprism"
 
     ingress:
       main:

@@ -67,24 +67,18 @@ spec:
       audiobooks:
         enabled: true
         mountPath: /audiobooks
-        type: custom
-        volumeSpec:
-          nfs:
-            server: "${NFS_SERVER}"
-            path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
       books:
         enabled: true
         mountPath: /books
-        type: custom
-        volumeSpec:
-          nfs:
-            server: "${NFS_SERVER}"
-            path: "${NFS_KUBERNETES_PATH}/active/books"
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/active/books"
       backups:
         enabled: true
         mountPath: /metadata/backups
-        type: custom
-        volumeSpec:
-          nfs:
-            server: "${NFS_SERVER}"
-            path: "${NFS_KUBERNETES_PATH}/backups/audiobookshelf"
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/backups/audiobookshelf"
