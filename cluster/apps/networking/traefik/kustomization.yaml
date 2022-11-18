@@ -5,3 +5,4 @@ resources:
   - middlewares
   - dashboard
   - monitoring/service-monitor.yaml
+  - monitoring/prometheusrules.yaml

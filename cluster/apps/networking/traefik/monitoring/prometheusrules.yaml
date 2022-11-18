@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app.kubernetes.io/instance: traefik
+    app.kubernetes.io/managed-by: Flux
+    app.kubernetes.io/name: traefik
+  name: traefik
+  namespace: networking
+spec:
+  groups:
+    - name: traefik
+      rules:
+        - alert: TraefikServiceDown
+          expr: count(traefik_service_server_up) by (service) == 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: Traefik service down (instance {{ $labels.instance }})
+            description: "All Traefik services are down\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
