@@ -4,7 +4,7 @@ metadata:
   name: pihole-pdb
   namespace: networking
 spec:
-  maxUnavailable: 1
+  minAvailable: 1
   selector:
     matchLabels:
       app: pihole
