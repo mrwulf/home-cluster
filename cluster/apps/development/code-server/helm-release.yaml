@@ -39,4 +39,4 @@ spec:
       existingClaim: code-server-storage
     extraVars:
       - name: DISABLE_TELEMETRY
-        value: true
+        value: "true"
