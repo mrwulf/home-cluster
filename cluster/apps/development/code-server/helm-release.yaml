@@ -31,8 +31,7 @@ spec:
       hosts:
         - host: &host "code.home.${SECRET_DOMAIN}"
           paths:
-            - path: /
-              type: Prefix
+            - /
       tls:
         - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
           hosts:
