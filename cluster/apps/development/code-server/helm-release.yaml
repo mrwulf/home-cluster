@@ -17,6 +17,10 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    image:
+      repository: codercom/code-server
+      tag: 4.4.0
+
     ingress:
       enabled: true
       annotations:
