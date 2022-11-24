@@ -34,3 +34,4 @@ resources:
   - traefik-charts.yaml
   - vaultwarden-charts.yaml
   - vector-charts.yaml
+  - wrmilling-charts.yaml
