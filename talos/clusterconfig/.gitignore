@@ -1,5 +1,5 @@
-talos-v1-delta.yaml
-talos-v1-epsilon.yaml
-talos-v1-zeta.yaml
-talos-v1-eta.yaml
 talosconfig
+talos-v1-delta.home.yaml
+talos-v1-epsilon.home.yaml
+talos-v1-zeta.home.yaml
+talos-v1-eta.home.yaml

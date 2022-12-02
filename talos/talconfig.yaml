@@ -1,7 +1,7 @@
 # https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
-talosVersion: v1.2.6
+talosVersion: v1.2.7
 kubernetesVersion: v1.24.4
 endpoint: https://kubernetes.home:6443
 domain: cluster.local
@@ -15,8 +15,9 @@ clusterSvcNets:
 #     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/cilium.yaml
 #     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/configmap.yaml
 nodes:
-  - hostname: delta
+  - hostname: delta.home
     ipAddress: 10.0.1.44
+    disableSearchDomain: true
     controlPlane: true
     installDiskSelector:
       model: "SanDisk*"
@@ -29,8 +30,9 @@ nodes:
         dhcp: true
         vip:
           ip: ${clusterEndpointIP}
-  - hostname: epsilon
+  - hostname: epsilon.home
     ipAddress: 10.0.1.45
+    disableSearchDomain: true
     controlPlane: false
     installDiskSelector:
       model: "SanDisk*"
@@ -44,8 +46,9 @@ nodes:
     #     path: /machine/install/extraKernelArgs
     #     value:
     #       - nvme_core.default_ps_max_latency_us=0
-  - hostname: zeta
+  - hostname: zeta.home
     ipAddress: 10.0.1.41
+    disableSearchDomain: true
     installDiskSelector:
       model: "*KIOXIA*"
     controlPlane: true
@@ -58,8 +61,9 @@ nodes:
         dhcp: true
         vip:
           ip: ${clusterEndpointIP}
-  - hostname: eta
+  - hostname: eta.home
     ipAddress: 10.0.1.42
+    disableSearchDomain: true
     controlPlane: true
     installDiskSelector:
       model: "*KIOXIA*"
@@ -122,7 +126,10 @@ controlPlane:
     #   extraManifests:
     #     - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
     #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-
+      discovery:
+        registries:
+          service:
+            disabled: true
 
     machine:
       certSANs:
