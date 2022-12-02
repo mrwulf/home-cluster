@@ -50,6 +50,9 @@ spec:
       # UMASK: 0000
       PHOTOPRISM_ORIGINALS_LIMIT: 10000 # in MB (default 1000)
       PHOTOPRISM_DETECT_NSFW: "true"
+      # Enable quicksync - "sponsors" only
+      # PHOTOPRISM_FFMPEG_ENCODER: "intel"
+      # PHOTOPRISM_INIT: "intel tensorflow"
       TZ: "${TIMEZONE}"
 
     persistence:

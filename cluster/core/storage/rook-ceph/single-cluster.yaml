@@ -155,3 +155,25 @@ spec:
       #       dataPool: ceph-ecpool
       #       imageFeatures: layering
       #       imageFormat: "2"
+
+
+  # https://rook.github.io/docs/rook/v1.9/ceph-monitoring.html
+  postRenderers:
+    - kustomize:
+        patches:
+          - patch: |-
+              # Remove CephNodeNetworkPacketDrops Alert
+              - op: remove
+                path: /spec/groups/6/rules/1
+              # Remove CephPGImbalance Alert
+              - op: remove
+                path: /spec/groups/2/rules/15
+              # Remove CephNodeInconsistentMTU Alert (Was rule 4, but 1 was removed...)
+              - op: remove
+                path: /spec/groups/6/rules/3
+
+            target:
+              group: monitoring.coreos.com
+              kind: PrometheusRule
+              name: "prometheus-ceph-rules"
+              version: v1
