@@ -1,0 +1,109 @@
+---
+version: "3"
+
+vars:
+  CLUSTER_NAME:
+    sh: yq '.clusterName' talos/talconfig.yaml
+  NODE_LIST:
+    sh: yq '.nodes[].hostname' talos/talconfig.yaml | tr '\n' ',' | head -c -1
+  ONE_NODE:
+    sh: echo '{{.NODE_LIST}}' | tr ',' '\n' | shuf | head -n1
+  MASTER_LIST:
+    sh: yq '.nodes[] | select(.controlPlane==true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | head -c -1
+  ONE_MASTER:
+    sh: echo '{{.MASTER_LIST}}' | tr ',' '\n' | shuf | head -n1
+
+tasks:
+  backup:
+    desc: Backup etcd to local file
+    silent: true
+    cmds:
+      - task: defrag
+      - |
+        mkdir -p {{.PROJECT_DIR}}/talos/backups
+        DATE=$(date +'%Y%m%d-%H%M%S')
+        talosctl -n {{.ONE_MASTER}} etcd snapshot {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.$DATE
+        ls -tr {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.* | head -n -3 | xargs rm -f
+
+  client:
+    desc: Interactive etcd shell
+    vars:
+      COMMAND: '{{.COMMAND | default "bash"}}'
+      NODE: '{{coalesce .CLI_ARGS .NODE .ONE_MASTER}}'
+      NODE_IP:
+        sh: dig +short {{.NODE}}
+        # sh: host {{.NODE}} | awk '{print $NF}'
+        # sh: ping -c1 -w3 {{.NODE}} | grep -oP 'PING.*?\(\K[^)]+'
+      TEMP_DIR:
+        sh: mktemp -d
+      ETCDCTL_IMAGE:
+        sh: talosctl images | grep etcd
+    preconditions:
+      - sh: '[[ "{{.MASTER_LIST}}" == *"{{.NODE}}"* ]]'
+        msg: Invalid etcd node '{{.NODE}}'!
+    interactive: true
+    silent: true
+    cmds:
+      - |
+        # Get the secrets
+        talosctl -n {{.NODE}} cp /system/secrets/etcd {{.TEMP_DIR}}
+
+        # Build script to run
+        cat << "EOF" > {{.TEMP_DIR}}/script.sh
+        #!/bin/bash
+
+        # Prepare the environment
+        NODE={{.NODE}}
+
+        {{.COMMAND}}
+        EOF
+        chmod +x {{.TEMP_DIR}}/script.sh
+
+        # Run the etcdctl container
+        docker run -it --rm --name etcdctl \
+          -v {{.TEMP_DIR}}:/etc/etcd \
+          -e ETCDCTL_ENDPOINTS="{{.NODE_IP}}:2379" \
+          -e ETCDCTL_INSECURE_SKIP_TLS_VERIFY="true" \
+          -e ETCDCTL_KEY=/etc/etcd/admin.key \
+          -e ETCDCTL_CERT=/etc/etcd/admin.crt \
+          {{.ETCDCTL_IMAGE}} /etc/etcd/script.sh
+
+      - defer: rm -rf {{.TEMP_DIR}}
+
+  defrag:
+    desc: Defrag all etcd members
+    interactive: false
+    cmds:
+      - task: compact-all
+      - task: client
+        vars:
+          COMMAND: etcdctl defrag --cluster=true
+
+  command:
+    desc: Run a command in an etcd client
+    interactive: false
+    cmds:
+      - task: client
+        vars:
+          COMMAND: '{{.CLI_ARGS}}'
+          CLI_ARGS: null
+
+  compact-all:
+    desc: Compact an etcd member
+    silent: true
+    interactive: false
+    cmds:
+      - task: client
+        vars:
+          COMMAND: |
+            echo "Working on: {{.MASTER_LIST}}"
+            {{range $i, $line := splitList "," .MASTER_LIST}}
+            ETCDCTL_ENDPOINTS={{$line}}:2379
+            echo "Compacting {{$line}}..."
+            rev=$(/usr/local/bin/etcdctl endpoint status --write-out=json | egrep -o '"revision":[0-9]*' | egrep -o '[0-9].*')
+            sleep 1
+            [[ $rev != '' ]] && etcdctl compact $(($rev - 3))
+            {{end}}
+            # echo "Compacting ${NODE}..."
+            # rev=$(/usr/local/bin/etcdctl endpoint status --write-out=json | egrep -o '"revision":[0-9]*' | egrep -o '[0-9].*')
+            # etcdctl compact $rev

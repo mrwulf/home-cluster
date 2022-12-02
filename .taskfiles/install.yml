@@ -105,15 +105,16 @@ tasks:
     vars:
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/siderolabs/talos/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
         sh: "talosctl version --client | grep 'Tag:' | grep -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
-        echo "talosctl released: v{{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
-        wget -qnv --show-progress -O ~/bin/talosctl https://github.com/siderolabs/talos/releases/download/v{{.RELEASE_VERSION}}/talosctl-linux-amd64
+        echo "talosctl released: v{{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: v{{.DESIRED_VERSION}}"
+        wget -qnv --show-progress -O ~/bin/talosctl https://github.com/siderolabs/talos/releases/download/v{{.DESIRED_VERSION}}/talosctl-linux-amd64
         chmod +x ~/bin/talosctl
     status:
-      - '[ "v{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
+      - '[ "v{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
     silent: true
     ignore_errors: true
 

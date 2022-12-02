@@ -38,17 +38,6 @@ tasks:
     cmds:
       - echo {{.ONE_NODE}}
 
-  backup-etcd:
-    desc: Backup etcd to local file
-    silent: true
-    cmds:
-      - task: etcd-defrag
-      - |
-        mkdir -p {{.PROJECT_DIR}}/talos/backups
-        DATE=$(date +'%Y%m%d-%H%M%S')
-        talosctl -n {{.ONE_MASTER}} etcd snapshot {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.$DATE
-        ls -tr {{.PROJECT_DIR}}/talos/backups/etcd-snapshot.* | head -n -3 | xargs rm -f
-
   debug-node:
     desc: Create a privileged container on a node for debugging, ex. task talos:debug-node -- <node-name>
     interactive: true
@@ -134,86 +123,9 @@ tasks:
       - |
         talosctl apply-config -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml
 
-  etcd-client:
-    desc: Interactive etcd shell
-    vars:
-      COMMAND: '{{.COMMAND | default "bash"}}'
-      NODE: '{{coalesce .CLI_ARGS .NODE .ONE_MASTER}}'
-      NODE_IP:
-        sh: ping -c1 -w3 {{.NODE}} | grep -oP 'PING.*?\(\K[^)]+'
-      TEMP_DIR:
-        sh: mktemp -d
-      ETCDCTL_IMAGE:
-        sh: talosctl images | grep etcd
-    preconditions:
-      - sh: '[[ "{{.MASTER_LIST}}" == *"{{.NODE}}"* ]]'
-        msg: Invalid etcd node '{{.NODE}}'!
-    interactive: true
-    silent: true
-    cmds:
-      - |
-        # Get the secrets
-        talosctl -n {{.NODE}} cp /system/secrets/etcd {{.TEMP_DIR}}
-
-        # Build script to run
-        cat << "EOF" > {{.TEMP_DIR}}/script.sh
-        #!/bin/bash
-
-        # Prepare the environment
-        NODE={{.NODE}}
-
-        {{.COMMAND}}
-        EOF
-        chmod +x {{.TEMP_DIR}}/script.sh
-
-        # Run the etcdctl container
-        docker run -it --rm --name etcdctl \
-          -v {{.TEMP_DIR}}:/etc/etcd \
-          -e ETCDCTL_ENDPOINTS="{{.NODE_IP}}:2379" \
-          -e ETCDCTL_INSECURE_SKIP_TLS_VERIFY="true" \
-          -e ETCDCTL_KEY=/etc/etcd/admin.key \
-          -e ETCDCTL_CERT=/etc/etcd/admin.crt \
-          {{.ETCDCTL_IMAGE}} /etc/etcd/script.sh
-
-      - defer: rm -rf {{.TEMP_DIR}}
-
-  etcd-defrag:
-    desc: Defrag all etcd members
-    cmds:
-      - task: etcd-compact-all
-      - task: etcd-client
-        vars:
-          COMMAND: etcdctl defrag --cluster=true
-
-  etcd-command:
-    desc: Run a command in an etcd client
-    cmds:
-      - task: etcd-client
-        vars:
-          COMMAND: '{{.CLI_ARGS}}'
-          CLI_ARGS: null
-
-  etcd-compact-all:
-    desc: Compact an etcd member
-    silent: true
-    cmds:
-      - task: etcd-client
-        vars:
-          COMMAND: |
-            {{range $i, $line := splitList "," .MASTER_LIST}}
-            ETCDCTL_ENDPOINTS={{$line}}:2379
-            echo "Compacting {{$line}}..."
-            rev=$(/usr/local/bin/etcdctl endpoint status --write-out=json | egrep -o '"revision":[0-9]*' | egrep -o '[0-9].*')
-            sleep 1
-            etcdctl compact $(($rev - 3))
-            {{end}}
-            # echo "Compacting ${NODE}..."
-            # rev=$(/usr/local/bin/etcdctl endpoint status --write-out=json | egrep -o '"revision":[0-9]*' | egrep -o '[0-9].*')
-            # etcdctl compact $rev
-
   upgrade:
     desc: Upgrade Talos on a single node to version in talconfig.yaml
-    silent: true
+    # silent: true
     vars:
       NODE: '{{.CLI_ARGS | default .ONE_MASTER}}' # Use a master since masters should be upgraded before workers
       TARGET_VERSION:
@@ -221,9 +133,9 @@ tasks:
       TARGET_VERSION_IMAGE: "ghcr.io/siderolabs/installer:{{.TARGET_VERSION}}"
     deps:
       - task: generate-configs
-    preconditions:
-      - sh: "talosctl apply-config --dry-run -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml | grep -q 'No changes.'"
-        msg: Node config has changed - apply new config first!
+    # preconditions:
+    #   - sh: "talosctl apply-config --dry-run -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml | grep -q 'No changes.'"
+    #     msg: Node config has changed - apply new config first!
     cmds:
       - |
         echo "Target Version: {{.TARGET_VERSION}}"
