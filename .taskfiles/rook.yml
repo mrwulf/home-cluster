@@ -164,3 +164,4 @@ tasks:
         sh: 'kubectl get pvc -A -oyaml | yq ''.items[] | select(.metadata.name=="{{.PVC}}") | .metadata.namespace'''
     cmds:
       - kubestr browse {{.PVC}} -n {{.NAMESPACE}} -v {{.VOLUMESNAPSHOTCLASS}}
+      - echo "Don't forget to delete the left over PV"

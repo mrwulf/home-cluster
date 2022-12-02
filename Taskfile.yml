@@ -7,12 +7,13 @@ vars:
   CLUSTER_DIR: "{{.PROJECT_DIR}}/cluster"
 
 includes:
-  install: .taskfiles/install.yml
   cluster: .taskfiles/cluster.yml
+  etcd: .taskfiles/etcd.yml
   flux: .taskfiles/flux.yml
-  rook: .taskfiles/rook.yml
   format: .taskfiles/format.yml
+  install: .taskfiles/install.yml
   lint: .taskfiles/lint.yml
-  talos: .taskfiles/talos.yml
   pre-commit: .taskfiles/pre-commit.yml
+  rook: .taskfiles/rook.yml
   sops: .taskfiles/sops.yml
+  talos: .taskfiles/talos.yml
