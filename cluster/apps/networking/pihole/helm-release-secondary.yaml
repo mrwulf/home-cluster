@@ -53,9 +53,9 @@ spec:
         # - "server=/home/${GATEWAY_ADDR}"
         # - "server=/0.10.in-addr.arpa/${GATEWAY_ADDR}"
 
-      # customDnsEntries:
-      #   - address=/unifi.home/10.0.0.213
-      #   - address=/kubernetes.home/10.0.0.200
+      customDnsEntries:
+        - address=/unifi.home/10.0.0.213
+        - address=/kubernetes.home/10.0.0.200
 
       additionalHostsEntries: []
       staticDhcpEntries: []
