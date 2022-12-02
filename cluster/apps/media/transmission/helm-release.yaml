@@ -28,13 +28,15 @@ spec:
 
     image:
       repository: "haugene/transmission-openvpn"
-      tag: "4.0"
+      tag: "4.3"
       pullPolicy: "Always"
 
     ingress:
       enabled: false
 
     env:
+      - name: CREATE_TUN_DEVICE
+        value: "false"
       - name: OPENVPN_PROVIDER
         value: "PIA" # VPN provider. List of supported providers: https://haugene.github.io/docker-transmission-openvpn/supported-providers/
       - name: OPENVPN_CONFIG
