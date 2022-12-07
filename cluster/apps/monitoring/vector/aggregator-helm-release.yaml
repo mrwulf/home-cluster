@@ -158,13 +158,13 @@ spec:
           labels:
             job: kubernetes
             k8s_app: >-
-              {{`{{ "kubernetes.pod_labels.app\.kubernetes\.io/name" }}`}}
+              {{`{{ "kubernetes.pod_labels.\"app.kubernetes.io/name\"" }}`}}
             k8s_container: >-
               {{`{{ "kubernetes.container_name" }}`}}
             k8s_filename: >-
               {{`{{ "kubernetes.file" }}`}}
             k8s_instance: >-
-              {{`{{ "kubernetes.pod_labels.app\.kubernetes\.io/instance" }}`}}
+              {{`{{ "kubernetes.pod_labels.\"app.kubernetes.io/instance\"" }}`}}
             k8s_namespace: >-
               {{`{{ "kubernetes.pod_namespace" }}`}}
             k8s_node: >-
