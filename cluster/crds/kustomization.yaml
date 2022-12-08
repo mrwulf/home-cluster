@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - cert-manager
   - kube-fledged
-  # - rook-ceph
+  - rook-ceph
   # - metallb
   - prometheus-stack
   - snapshot-controller/crds.yaml
