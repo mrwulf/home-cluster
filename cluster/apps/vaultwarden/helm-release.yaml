@@ -23,6 +23,9 @@ spec:
     remediation:
       retries: 3
   values:
+    image:
+      repository: vaultwarden/server
+      tag: 1.26.0-alpine
     vaultwarden:
       allowSignups: false
       allowInvitation: false
