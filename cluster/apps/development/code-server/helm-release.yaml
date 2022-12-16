@@ -19,7 +19,7 @@ spec:
   values:
     image:
       repository: codercom/code-server
-      tag: 4.9.0
+      tag: 4.9.1
 
     ingress:
       enabled: true
