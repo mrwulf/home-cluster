@@ -24,8 +24,8 @@ spec:
       retries: 3
   values:
     image:
-      # https://github.com/k8s-at-home/container-images/pkgs/container/plex
-      repository: ghcr.io/k8s-at-home/plex
+      # https://github.com/onedr0p/container-images/pkgs/container/plex
+      repository: ghcr.io/onedr0p/plex
       tag: v1.29.2.6364-6d72b0cf6
 
     podSecurityContext:
@@ -140,7 +140,7 @@ spec:
       promtail:
         enabled: true
         image:
-          repository: ghcr.io/k8s-at-home/promtail
+          repository: ghcr.io/promtail
           tag: v2.6.1
         loki: http://loki-stack.monitoring:3100/loki/api/v1/push
         logs:
