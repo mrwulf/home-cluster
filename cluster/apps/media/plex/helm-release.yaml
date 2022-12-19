@@ -140,8 +140,8 @@ spec:
       promtail:
         enabled: true
         image:
-          repository: ghcr.io/promtail
-          tag: v2.6.1
+          repository: grafana/promtail
+          tag: 2.7.1
         loki: http://loki-stack.monitoring:3100/loki/api/v1/push
         logs:
           - name: promtail/plex
