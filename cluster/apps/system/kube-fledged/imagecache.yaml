@@ -12,28 +12,28 @@ metadata:
 spec:
   cacheSpec:
     - images:
-        - crazymax/cloudflared:2021.5.7
-        - crazymax/cloudflared:latest
-        - docker.io/bitnami/external-dns:0.13.1-debian-11-r0
+        - crazymax/cloudflared:2022.10.2
+        - docker.io/bitnami/external-dns:0.13.1-debian-11-r19
         - docker.io/coredns/coredns:1.9.3
         - ekofr/pihole-exporter:v0.3.0
-        - gcr.io/kasten-images/cephtool:5.5.0
-        - ghcr.io/fluxcd/helm-controller:v0.26.0
-        - ghcr.io/fluxcd/kustomize-controller:v0.30.0
-        - ghcr.io/fluxcd/notification-controller:v0.28.0
-        - ghcr.io/fluxcd/source-controller:v0.31.0
-        - ghcr.io/k8s-at-home/plex:v1.29.2.6364-6d72b0cf6
-        - ghcr.io/kyverno/kyverno:v1.8.1
+        - gcr.io/kasten-images/cephtool:5.5.1
+        - ghcr.io/fluxcd/helm-controller:v0.27.0
+        - ghcr.io/fluxcd/kustomize-controller:v0.31.0
+        - ghcr.io/fluxcd/notification-controller:v0.29.0
+        - ghcr.io/fluxcd/source-controller:v0.32.1
+        - ghcr.io/kyverno/kyverno:v1.8.4
+        - ghcr.io/onedr0p/plex:1.30.0.6486-629d58034
         - ghcr.io/siderolabs/flannel:v0.19.2
-        - jacobalberty/unifi:v7.2.95
+        - jacobalberty/unifi:v7.3.76
         - k8s.gcr.io/kube-apiserver:v1.24.4
         - k8s.gcr.io/kube-controller-manager:v1.24.4
         - k8s.gcr.io/kube-proxy:v1.24.4
         - k8s.gcr.io/kube-scheduler:v1.24.4
-        - pihole/pihole:2022.10
+        - pihole/pihole:2022.11
         - quay.io/ceph/ceph:v17.2.5
         - quay.io/cephcsi/cephcsi:v3.7.2
         - quay.io/metallb/speaker:v0.13.7
         - rook/ceph:v1.10.5
-        - traefik:2.9.4
-        - vaultwarden/server:1.23.0
+        - rook/ceph:v1.10.7
+        - traefik:v2.9.6
+        - vaultwarden/server:1.26.0-alpine
