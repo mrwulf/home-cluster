@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - auth
   - backups/k10
+  - databases
   - development
   - household
   - joplin

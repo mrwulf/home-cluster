@@ -5,6 +5,7 @@ resources:
   - bananaspliff-charts.yaml
   - bitnami-charts.yaml
   - bjw-s-charts.yaml
+  - cloudnative-pg-charts.yaml
   - dcardellino-charts.yaml
   - deliveryhero-charts.yaml
   - descheduler-charts.yaml
