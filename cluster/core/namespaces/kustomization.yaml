@@ -4,6 +4,7 @@ resources:
   - auth.yaml
   - backups.yaml
   - cert-manager.yaml
+  - databases.yaml
   - development.yaml
   - household.yaml
   - joplin.yaml
