@@ -25,6 +25,7 @@ spec:
     controller:
       annotations:
         reloader.stakater.com/auto: "true"
+      replicas: 2
     image:
       repository: quay.io/minio/minio
       tag: RELEASE.2022-12-12T19-27-27Z
