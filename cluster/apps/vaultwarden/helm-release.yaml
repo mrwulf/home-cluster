@@ -33,6 +33,21 @@ spec:
         service:
         enabed: true
       enableWebSockets: true
+
+      extraEnv:
+        DOMAIN: "https://bw.${SECRET_DOMAIN}"
+        TZ: "${TIMEZONE}"
+        # DATA_FOLDER: "data"
+        SIGNUPS_ALLOWED: "false"
+        WEBSOCKET_ENABLED: "true"
+        SMTP_FROM_NAME: Bitwarden
+        SMTP_FROM: vaultwarden@${SECRET_DOMAIN}
+        SMTP_SSL: "true"
+        SMTP_HOST: smtp-relay.system.svc.cluster.local
+        SMTP_PORT: 2525
+        SMTP_SECURITY: "off"
+    strategy:
+      type: Recreate
     persistence:
       enabled: true
       existingClaim: vaultwarden-db
