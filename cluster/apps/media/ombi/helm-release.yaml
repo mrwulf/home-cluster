@@ -20,6 +20,9 @@ spec:
     - name: traefik
       namespace: networking
   values:
+    image:
+      repository: ghcr.io/linuxserver/ombi
+      tag: 4.16.12
     env:
       TZ: "${TIMEZONE}"
     #   PUID: "816"
