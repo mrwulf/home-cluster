@@ -6,7 +6,7 @@ resources:
   - cluster
 configMapGenerator:
   - name: cloudnative-pg-dashboard
-    namespace: databases
+    namespace: monitoring
     files:
       - cloudnative-pg-dashboard.json=https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/main/docs/src/samples/monitoring/grafana-dashboard.json
 generatorOptions:
@@ -14,4 +14,4 @@ generatorOptions:
   annotations:
     kustomize.toolkit.fluxcd.io/substitute: disabled
   labels:
-    grafana_dashboard: "true"
+    grafana_dashboard: "1"
