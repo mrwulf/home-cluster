@@ -20,6 +20,11 @@ spec:
               secretKeyRef:
                 name: outline-secret
                 key: POSTGRES_PASS
+          - name: POSTGRES_SUPER_USER
+            valueFrom:
+              secretKeyRef:
+                name: outline-secret
+                key: POSTGRES_USER
         envFrom:
           - secretRef:
               name: outline-secret
