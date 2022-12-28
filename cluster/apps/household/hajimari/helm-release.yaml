@@ -46,6 +46,7 @@ spec:
         matchNames:
           - auth
           - backups
+          - databases
           - default
           - household
           - joplin

@@ -8,3 +8,4 @@ resources:
   - metrics-server
   - reflector
   - reloader
+  - smtp-relay
