@@ -19,12 +19,12 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: postgres-superuser
-                key: POSTGRES_SUPER_PASS
+                key: password
           - name: POSTGRES_SUPER_USER
             valueFrom:
               secretKeyRef:
                 name: postgres-superuser
-                key: POSTGRES_SUPER_USER
+                key: username
         envFrom:
           - secretRef:
               name: outline-secret
