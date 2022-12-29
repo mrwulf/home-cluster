@@ -25,6 +25,11 @@ spec:
               secretKeyRef:
                 name: postgres-superuser
                 key: username
+          - name: POSTGRES_PASS
+            valueFrom:
+              secretKeyRef:
+                name: outline-secret
+                key: POSTGRES_PASSWORD
         envFrom:
           - secretRef:
               name: outline-secret
