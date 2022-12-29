@@ -15,16 +15,16 @@ spec:
             value: postgres-rw.databases.svc.cluster.local.
           - name: POSTGRES_DB
             value: *app
-          - name: POSTGRES_SUPER_PASS
-            valueFrom:
-              secretKeyRef:
-                name: outline-secret
-                key: POSTGRES_PASS
-          - name: POSTGRES_SUPER_USER
-            valueFrom:
-              secretKeyRef:
-                name: outline-secret
-                key: POSTGRES_USER
+          # - name: POSTGRES_SUPER_PASS
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: outline-secret
+          #       key: POSTGRES_PASS
+          # - name: POSTGRES_SUPER_USER
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: outline-secret
+          #       key: POSTGRES_SUPER_USER
         envFrom:
           - secretRef:
               name: outline-secret
