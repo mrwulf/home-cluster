@@ -11,6 +11,7 @@ resources:
   - grafana-dashboards-sonarr.yaml
   - grafana-dashboards-radarr.yaml
   - grafana-dashboards-metallb.yaml
+  - grafana-dashboards-minio.yaml
   - podmonitor.yaml
   - smartctl-exporter
   - speedtest-exporter
