@@ -27,6 +27,10 @@ spec:
       namespace: databases
     - name: redis
       namespace: databases
+    - name: minio
+      namespace: databases
+    - name: smtp-relay
+      namespace: system
   values:
     controller:
       replicas: 2
