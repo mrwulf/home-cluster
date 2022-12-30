@@ -22,6 +22,9 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  dependsOn:
+    - name: smtp-relay
+      namespace: system
   values:
     image:
       repository: vaultwarden/server

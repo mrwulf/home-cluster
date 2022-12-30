@@ -5,7 +5,7 @@
 1. Create `~/.mc/config.json`
 
     ```sh
-    mc alias set minio https://s3.home.${SECRET_DOMAIN} <access-key> <secret-key>
+    mc alias set minio https://cdn.${SECRET_DOMAIN} <access-key> <secret-key>
     ```
 
 2. Create the outline user and password
