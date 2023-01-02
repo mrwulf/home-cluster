@@ -85,6 +85,13 @@ spec:
         type: Recreate
       plugins:
         - grafana-piechart-panel
+      dashboards:
+        default:
+          # Ref: https://grafana.com/grafana/dashboards/13502
+          minio:
+            gnetId: 13502
+            revision: 19
+            datasource: Prometheus
       serviceMonitor:
         enabled: true
       persistence:
