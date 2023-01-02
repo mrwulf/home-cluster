@@ -38,6 +38,12 @@ spec:
       postgresql:
         password: "${AUTHENTIK_DB_PASS}"
 
+      email:
+        host: smtp-relay.system.svc.cluster.local.
+        port: 2525
+        use_ssl: true
+        from: "Authentik <auth@${SECRET_DOMAIN}>"
+
     ingress:
       enabled: true
       ingressClassName: "traefik"
