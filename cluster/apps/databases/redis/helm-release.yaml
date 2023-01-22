@@ -23,7 +23,7 @@ spec:
       retries: 3
   values:
     global:
-      imageRegistry: public.ecr.aws
+      # imageRegistry: public.ecr.aws
       storageClass: ceph-block
     auth:
       enabled: false
