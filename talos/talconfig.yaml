@@ -1,7 +1,7 @@
 # https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
-talosVersion: v1.3.1
+talosVersion: v1.3.3
 kubernetesVersion: v1.24.4
 endpoint: https://kubernetes.home:6443
 domain: cluster.local
@@ -143,12 +143,6 @@ controlPlane:
           - ip: ${clusterEndpointIP}
             aliases:
               - kubernetes.home
-      # registries:
-      # │ mirrors:
-      # │ │ k8s.gcr.io:
-      # │ │ │ endpoints:
-      #   │ │ │ - "https://registry.k8s.io"
-      #   │ │ │ - "https://k8s.gcr.io"
       logging:
         destinations:
           - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
@@ -186,12 +180,6 @@ worker:
           - ip: ${clusterEndpointIP}
             aliases:
               - kubernetes.home
-      # registries:
-      # │ mirrors:
-      # │ │ k8s.gcr.io:
-      # │ │ │ endpoints:
-      #   │ │ │ - "https://registry.k8s.io"
-      #   │ │ │ - "https://k8s.gcr.io"
       logging:
         destinations:
           - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
