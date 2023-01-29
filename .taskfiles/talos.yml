@@ -121,7 +121,7 @@ tasks:
         msg: Node Required!
     cmds:
       - |
-        talosctl apply-config -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml
+        talosctl apply-config -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml -m=no-reboot
 
   upgrade:
     desc: Upgrade Talos on a single node to version in talconfig.yaml
@@ -142,3 +142,15 @@ tasks:
         echo "Target Version Image: {{.TARGET_VERSION_IMAGE}}"
         echo "Target Node: {{.NODE}}"
         talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}}
+
+  refresh-certificate:
+    # https://www.talos.dev/v1.3/talos-guides/configuration/managing-pki/
+    desc: Renew Administrator Certificate
+    silent: true
+    deps:
+      - task: generate-configs
+    vars:
+      FILE: '{{.TALOSCONFIG | default "$HOME/.talos/config"}}'
+    cmds:
+      - |
+        yq -i '. *= load("{{.PROJECT_DIR}}//talos/clusterconfig/talosconfig")'  {{.FILE}}
