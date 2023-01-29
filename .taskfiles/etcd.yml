@@ -36,8 +36,8 @@ tasks:
         # sh: ping -c1 -w3 {{.NODE}} | grep -oP 'PING.*?\(\K[^)]+'
       TEMP_DIR:
         sh: mktemp -d
-      ETCDCTL_IMAGE:
-        sh: talosctl images | grep etcd
+      ETCDCTL_IMAGE: 'gcr.io/etcd-development/etcd:v3.5.6'
+        # sh: talosctl images | grep etcd
     preconditions:
       - sh: '[[ "{{.MASTER_LIST}}" == *"{{.NODE}}"* ]]'
         msg: Invalid etcd node '{{.NODE}}'!
@@ -61,12 +61,12 @@ tasks:
 
         # Run the etcdctl container
         docker run -it --rm --name etcdctl \
-          -v {{.TEMP_DIR}}:/etc/etcd \
+          -v {{.TEMP_DIR}}:/opt/etcd \
           -e ETCDCTL_ENDPOINTS="{{.NODE_IP}}:2379" \
           -e ETCDCTL_INSECURE_SKIP_TLS_VERIFY="true" \
-          -e ETCDCTL_KEY=/etc/etcd/admin.key \
-          -e ETCDCTL_CERT=/etc/etcd/admin.crt \
-          {{.ETCDCTL_IMAGE}} /etc/etcd/script.sh
+          -e ETCDCTL_KEY=/opt/etcd/admin.key \
+          -e ETCDCTL_CERT=/opt/etcd/admin.crt \
+          {{.ETCDCTL_IMAGE}} /opt/etcd/script.sh
 
       - defer: rm -rf {{.TEMP_DIR}}
 
