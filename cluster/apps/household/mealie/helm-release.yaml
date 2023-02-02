@@ -28,7 +28,7 @@ spec:
       BASE_URL: https://meals.${SECRET_DOMAIN}
       SMTP_HOST: smtp-relay.system.svc.cluster.local.
       SMTP_PORT: 2525
-      SMTP_FROM_NAME: Mealie
+      SMTP_FROM_NAME: meals@${SECRET_DOMAIN}
       SMTP_AUTH_STRATEGY: none
       SMTP_FROM_EMAIL: meals@${SECRET_DOMAIN}
 
