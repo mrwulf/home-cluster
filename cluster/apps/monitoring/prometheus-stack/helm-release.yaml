@@ -178,7 +178,7 @@ spec:
             honor_timestamps: true
             static_configs:
               - targets:
-                  - "firewall.home:9100"
+                  - "firewall.${SECRET_DOMAIN}:9100"
     alertmanager:
       ingress:
         enabled: true
