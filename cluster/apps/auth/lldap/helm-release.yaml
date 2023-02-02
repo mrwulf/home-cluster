@@ -33,12 +33,11 @@ spec:
       main:
         ports:
           http:
-            port: 3890
-          web:
+            port: 17170
+          ldap:
             enabled: true
             protocol: TCP
-            port: 17170
-
+            port: 3890
     ingress:
       main:
         enabled: true
