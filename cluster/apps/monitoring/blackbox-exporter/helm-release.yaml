@@ -157,54 +157,54 @@ spec:
         - module: dns_public
           name: gateway-public-dns
           url: *gateway
-        - module: dns_public
-          name: pihole-1-public-dns
-          url: &pihole1 ${PIHOLE_1_ADDR}
-        - module: dns_public
-          name: pihole-2-public-dns
-          url: &pihole2 ${PIHOLE_2_ADDR}
-        - module: dns_public
-          name: pihole-public-dns
-          url: &pihole ${PIHOLE_SHARED_ADDR}
+        # - module: dns_public
+        #   name: pihole-1-public-dns
+        #   url: &pihole1 ${PIHOLE_1_ADDR}
+        # - module: dns_public
+        #   name: pihole-2-public-dns
+        #   url: &pihole2 ${PIHOLE_2_ADDR}
+        # - module: dns_public
+        #   name: pihole-public-dns
+        #   url: &pihole ${PIHOLE_SHARED_ADDR}
 
         - module: dns_private
           name: gateway-private-dns
           url: *gateway
-        - module: dns_private
-          name: pihole-1-private-dns
-          url: *pihole1
-        - module: dns_private
-          name: pihole-2-private-dns
-          url: *pihole2
-        - module: dns_private
-          name: pihole-private-dns
-          url: *pihole
+        # - module: dns_private
+        #   name: pihole-1-private-dns
+        #   url: *pihole1
+        # - module: dns_private
+        #   name: pihole-2-private-dns
+        #   url: *pihole2
+        # - module: dns_private
+        #   name: pihole-private-dns
+        #   url: *pihole
 
         - module: dns_unifi
           name: gateway-unifi-dns
           url: *gateway
-        - module: dns_unifi
-          name: pihole-1-unifi-dns
-          url: *pihole1
-        - module: dns_unifi
-          name: pihole-2-unifi-dns
-          url: *pihole2
-        - module: dns_unifi
-          name: pihole-unifi-dns
-          url: *pihole
+        # - module: dns_unifi
+        #   name: pihole-1-unifi-dns
+        #   url: *pihole1
+        # - module: dns_unifi
+        #   name: pihole-2-unifi-dns
+        #   url: *pihole2
+        # - module: dns_unifi
+        #   name: pihole-unifi-dns
+        #   url: *pihole
 
         - module: dns_ad_blocking
           name: gateway-blocking-dns
           url: *gateway
-        - module: dns_ad_blocking
-          name: pihole-1-blocking-dns
-          url: *pihole1
-        - module: dns_ad_blocking
-          name: pihole-2-blocking-dns
-          url: *pihole2
-        - module: dns_ad_blocking
-          name: pihole-blocking-dns
-          url: *pihole
+        # - module: dns_ad_blocking
+        #   name: pihole-1-blocking-dns
+        #   url: *pihole1
+        # - module: dns_ad_blocking
+        #   name: pihole-2-blocking-dns
+        #   url: *pihole2
+        # - module: dns_ad_blocking
+        #   name: pihole-blocking-dns
+        #   url: *pihole
     prometheusRule:
       enabled: true
       additionalLabels:

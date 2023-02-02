@@ -61,12 +61,12 @@ spec:
       customApps:
         - group: Infrastructure
           apps:
-            - name: Pi-Hole One
-              url: http://pihole-1-web.networking.home.${SECRET_DOMAIN}/admin
-              icon: "chart-pie"
-            - name: Pi-Hole Two
-              url: http://pihole-2-web.networking.home.${SECRET_DOMAIN}/admin
-              icon: "chart-pie-outline"
+            # - name: Pi-Hole One
+            #   url: http://pihole-1-web.networking.home.${SECRET_DOMAIN}/admin
+            #   icon: "chart-pie"
+            # - name: Pi-Hole Two
+            #   url: http://pihole-2-web.networking.home.${SECRET_DOMAIN}/admin
+            #   icon: "chart-pie-outline"
             - name: OPNSense
               group: Infrastructure
               url: https://firewall.${FIREWALL_URI}/
