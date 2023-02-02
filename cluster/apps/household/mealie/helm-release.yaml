@@ -24,6 +24,7 @@ spec:
     env: &env
       TZ: "${TIMEZONE}"
       DEFAULT_EMAIL: "${SECRET_CLOUDFLARE_EMAIL}"
+      AUTO_BACKUP_ENABLED: true
       BASE_URL: https://meals.${SECRET_DOMAIN}
       SMTP_HOST: smtp-relay.system.svc.cluster.local.
       SMTP_PORT: 2525
@@ -74,3 +75,9 @@ spec:
       api-data:
         enabled: true
         existingClaim: mealie-api-data
+      backups:
+        enabled: true
+        mountPath: /app/data/backups
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/backups/mealie"
