@@ -2,7 +2,7 @@
 
 clusterName: talos-v1
 talosVersion: v1.3.3
-kubernetesVersion: v1.24.4
+kubernetesVersion: v1.24.9
 endpoint: https://kubernetes.home:6443
 domain: cluster.local
 clusterPodNets:
