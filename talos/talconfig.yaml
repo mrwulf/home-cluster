@@ -17,7 +17,6 @@ clusterSvcNets:
 nodes:
   - hostname: delta.home
     ipAddress: 10.0.1.44
-    disableSearchDomain: true
     controlPlane: true
     installDiskSelector:
       model: "SanDisk*"
@@ -32,7 +31,6 @@ nodes:
           ip: ${clusterEndpointIP}
   - hostname: epsilon.home
     ipAddress: 10.0.1.45
-    disableSearchDomain: true
     controlPlane: false
     installDiskSelector:
       model: "SanDisk*"
@@ -48,7 +46,6 @@ nodes:
     #       - nvme_core.default_ps_max_latency_us=0
   - hostname: zeta.home
     ipAddress: 10.0.1.41
-    disableSearchDomain: true
     installDiskSelector:
       model: "*KIOXIA*"
     controlPlane: true
@@ -63,7 +60,6 @@ nodes:
           ip: ${clusterEndpointIP}
   - hostname: eta.home
     ipAddress: 10.0.1.42
-    disableSearchDomain: true
     controlPlane: true
     installDiskSelector:
       model: "*KIOXIA*"
