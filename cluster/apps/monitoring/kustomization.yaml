@@ -5,9 +5,9 @@ resources:
   - goldilocks
   - loki-stack
   - prometheus-stack
-  - grafana-dashboards-flux.yaml
-  - grafana-dashboards-pihole.yaml
-  - grafana-dashboards-ceph.yaml
+  # - grafana-dashboards-flux.yaml
+  # - grafana-dashboards-pihole.yaml
+  # - grafana-dashboards-ceph.yaml
   - grafana-dashboards-sonarr.yaml
   - grafana-dashboards-radarr.yaml
   - grafana-dashboards-metallb.yaml
