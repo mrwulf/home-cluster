@@ -175,7 +175,18 @@ spec:
               url: http://kube-prometheus-stack-alertmanager.monitoring:9093
               jsonData:
                 implementation: prometheus
-
+      dashboardProviders:
+        dashboardproviders.yaml:
+          apiVersion: 1
+          providers:
+            - name: "default"
+              orgId: 1
+              folder: ""
+              type: file
+              disableDeletion: false
+              editable: true
+              options:
+                path: /var/lib/grafana/dashboards/default
       dashboards:
         default:
           # # Ref: https://grafana.com/grafana/dashboards/7845-zfs/
