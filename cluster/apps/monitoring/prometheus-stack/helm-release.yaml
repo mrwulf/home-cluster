@@ -290,7 +290,7 @@ spec:
         ruleSelectorNilUsesHelmValues: false
         ruleSelector: {}
         additionalScrapeConfigs:
-          - job_name: node-exporter
+          - job_name: firewall-node
             honor_timestamps: true
             static_configs:
               - targets:
