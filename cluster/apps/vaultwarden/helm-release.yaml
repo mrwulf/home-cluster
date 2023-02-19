@@ -38,13 +38,13 @@ spec:
       DOMAIN: "https://bw.${SECRET_CLUSTER_DOMAIN}"
       TZ: "${TIMEZONE}"
       SIGNUPS_ALLOWED: "false"
-      INVITATIONS_ALLOWED: "false"
+      INVITATIONS_ALLOWED: "true"
       WEBSOCKET_ENABLED: "true"
       WEBSOCKET_ADDRESS: 0.0.0.0
       SHOW_PASSWORD_HINT: "false"
-      SMTP_HOST: smtp-relay.default.svc.cluster.local.
+      SMTP_HOST: smtp-relay.system.svc.cluster.local
       SMTP_FROM: vaultwarden@${SECRET_DOMAIN}
-      SMTP_FROM_NAME: vaultwarden
+      SMTP_FROM_NAME: vaultwarden@${SECRET_DOMAIN}
       SMTP_PORT: 2525
       SMTP_SECURITY: "off"
     # envFrom:
