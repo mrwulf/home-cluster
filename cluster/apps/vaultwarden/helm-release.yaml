@@ -39,6 +39,8 @@ spec:
       TZ: "${TIMEZONE}"
       SIGNUPS_ALLOWED: "false"
       INVITATIONS_ALLOWED: "true"
+      ORG_EVENTS_ENABLED: "true"
+      EVENTS_DAYS_RETAIN: "730" # organizational events, 2 yrs: 365 * 2
       WEBSOCKET_ENABLED: "true"
       WEBSOCKET_ADDRESS: 0.0.0.0
       SHOW_PASSWORD_HINT: "false"
