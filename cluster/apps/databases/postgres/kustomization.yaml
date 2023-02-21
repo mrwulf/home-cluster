@@ -4,6 +4,7 @@ resources:
   - secret.sops.yaml
   - helm-release.yaml
   - cluster
+  - backups/cronjob.yaml
 configMapGenerator:
   - name: cloudnative-pg-dashboard
     namespace: monitoring

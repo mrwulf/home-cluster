@@ -40,9 +40,11 @@ spec:
       SIGNUPS_ALLOWED: "false"
       INVITATIONS_ALLOWED: "true"
       ORG_EVENTS_ENABLED: "true"
+      PASSWORD_ITERATIONS: "321000"
       EVENTS_DAYS_RETAIN: "730" # organizational events, 2 yrs: 365 * 2
       WEBSOCKET_ENABLED: "true"
       WEBSOCKET_ADDRESS: 0.0.0.0
+      REQUIRE_DEVICE_EMAIL: "true"
       SHOW_PASSWORD_HINT: "false"
       SMTP_HOST: smtp-relay.system.svc.cluster.local
       SMTP_FROM: vaultwarden@${SECRET_DOMAIN}
