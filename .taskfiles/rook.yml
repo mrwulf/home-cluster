@@ -41,7 +41,7 @@ tasks:
       - sh: '[ -n "{{.CLI_ARGS}}" ]'
         msg: 'Volume Name Required!'
       - sh: '[ -z "{{.CHILDREN}}" ]'
-        msg: "These children must be removed first:\n {{.CHILDREN}}"
+        msg: "These children must be removed first: (probably volumesnapshots)\n {{.CHILDREN}}"
 
   clean-up-img:
     vars:

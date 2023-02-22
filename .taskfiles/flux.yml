@@ -15,7 +15,7 @@ tasks:
       - flux -n flux-system reconcile kustomization apps
     silent: true
 
-  pause:
+  suspend:
     cmds:
       - flux -n flux-system suspend source git flux-system
       - flux -n flux-system suspend kustomization crds
