@@ -4,6 +4,7 @@ resources:
   - secret.sops.yaml
   - helm-release.yaml
   - cluster
+  - pgAdmin
   - backups/cronjob.yaml
 configMapGenerator:
   - name: cloudnative-pg-dashboard
