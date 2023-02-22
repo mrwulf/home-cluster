@@ -67,6 +67,7 @@ spec:
         tls:
           - hosts:
               - *host
+            secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
 
     resources:
       requests:
