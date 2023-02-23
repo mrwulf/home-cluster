@@ -74,9 +74,9 @@ tasks:
     cmds:
       - |
         docker pull ghcr.io/siderolabs/theila:latest
-        xdg-open http://localhost:8080/
-        docker run --rm -it --volume ${HOME}/.talos/config:/opt/talosconfig:ro --env TALOSCONFIG=/opt/talosconfig --publish 8080:8080 ghcr.io/siderolabs/theila:latest --address 0.0.0.0
-
+        xdg-open http://localhost:8080/ >/dev/null 2>&1
+        docker run --rm -it --volume ${HOME}/.talos/config:/opt/talosconfig:ro --env TALOSCONFIG=/opt/talosconfig \
+                            --publish 8080:8080 ghcr.io/siderolabs/theila:latest --address 0.0.0.0 >/dev/null 2>&1
   generate-secrets:
     dir: "{{.PROJECT_DIR}}"
     vars:
