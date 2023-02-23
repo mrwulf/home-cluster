@@ -23,6 +23,11 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  dependsOn:
+    - name: postgres
+      namespace: databases
+    - name: smtp-relay
+      namespace: system
   values:
     replicas: 2
 

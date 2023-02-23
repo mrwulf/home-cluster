@@ -1,11 +1,12 @@
 ---
+# For Reference: https://github.com/prodrigestivill/docker-postgres-backup-local
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: postgres-backup
   namespace: databases
 spec:
-  schedule: '0 18 * * *'
+  schedule: '0 */2 * * *'
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
@@ -39,6 +40,11 @@ spec:
                       key: password
                 - name: POSTGRES_DB
                   value: 'authentik,outline'
+                - name: BACKUP_KEEP_MINS
+                  value: '1440'
+                - name: TZ
+                  value: "${TIMEZONE}"
+
               volumeMounts:
                 - name: nas-backups
                   mountPath: /backups
