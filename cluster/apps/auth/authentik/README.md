@@ -1,3 +1,7 @@
+# Outline Config
+# OPNSense Config
+# Grafana Config
+
 # [Minio Config](https://version-2023-1.goauthentik.io/integrations/services/minio/)
 ## In Authentik, Create customization -> policy mapping:
 ```
