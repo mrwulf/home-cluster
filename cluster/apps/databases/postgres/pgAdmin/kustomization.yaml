@@ -4,3 +4,12 @@ resources:
   - pvc.yaml
   - secret.sops.yaml
   - helm-release.yaml
+configMapGenerator:
+  - name: pgadmin-oauth-configmap
+    namespace: databases
+    files:
+      - config_local.py
+generatorOptions:
+  disableNameSuffixHash: true
+  # annotations:
+  #   kustomize.toolkit.fluxcd.io/substitute: disabled

@@ -25,6 +25,12 @@ spec:
     image:
       repository: dpage/pgadmin4
       tag: "6.20"
+
+    controller:
+      replicas: 1
+      strategy: RollingUpdate
+      annotations:
+        reloader.stakater.com/auto: "true"
     strategy:
       type: Recreate
 
@@ -49,6 +55,13 @@ spec:
         enabled: true
         mountPath: "/var/lib/pgadmin"
         existingClaim: pgadmin-config
+      oauth_config:
+        enabled: true
+        type: configMap
+        name: pgadmin-oauth-configmap
+        subPath: config_local.py
+        mountPath: /pgadmin4/config_local.py
+        readOnly: true
 
     ingress:
       main:
