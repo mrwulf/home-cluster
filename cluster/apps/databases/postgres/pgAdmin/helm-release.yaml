@@ -55,7 +55,7 @@ spec:
         enabled: true
         mountPath: "/var/lib/pgadmin"
         existingClaim: pgadmin-config
-      oauth_config:
+      oauthconfig:
         enabled: true
         type: configMap
         name: pgadmin-oauth-configmap
