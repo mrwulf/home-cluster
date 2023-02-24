@@ -227,7 +227,7 @@ spec:
           # Ref: https://grafana.com/grafana/dashboards/11311-unifi-poller-network-sites-prometheus/
           unifi-poller-sites:
             gnetId: 11311
-            revision: 10
+            revision: 5
             datasource: Prometheus
           # Ref: https://grafana.com/grafana/dashboards/11315-unifi-poller-client-insights-prometheus/
           unifi-poller-clients:
