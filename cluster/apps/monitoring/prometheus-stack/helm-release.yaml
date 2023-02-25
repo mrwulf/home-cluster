@@ -168,7 +168,7 @@ spec:
             - name: Loki
               type: loki
               access: proxy
-              url: http://loki-stack:100
+              url: http://loki-stack:3100
             - name: Alertmanager
               type: alertmanager
               access: proxy
