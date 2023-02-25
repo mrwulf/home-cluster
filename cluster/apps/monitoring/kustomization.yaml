@@ -5,14 +5,14 @@ resources:
   - goldilocks
   - loki-stack
   - prometheus-stack
-  # - grafana-dashboards-flux.yaml
-  # - grafana-dashboards-pihole.yaml
-  # - grafana-dashboards-ceph.yaml
-  - grafana-dashboards-sonarr.yaml
-  - grafana-dashboards-radarr.yaml
-  - grafana-dashboards-metallb.yaml
-  - podmonitor.yaml
   - smartctl-exporter
   - speedtest-exporter
   - unifi-poller
   - vector
+
+  # Individual Resources
+  - cert-manager-prometheusrule.yaml
+  - grafana-dashboards-sonarr.yaml
+  - grafana-dashboards-radarr.yaml
+  - grafana-dashboards-metallb.yaml
+  - podmonitor.yaml
