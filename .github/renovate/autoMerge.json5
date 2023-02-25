@@ -19,6 +19,15 @@
       "matchPackageNames": ["ghcr.io/onedr0p/prowlarr-nightly"]
     },
     {
+      "description": "Auto merge containers",
+      "matchDatasources": ["docker"],
+      "automerge": true,
+      "automergeType": "branch",
+      "requiredStatusChecks": null,
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["ghcr.io/onedr0p/readarr-nightly"]
+    },
+    {
       "description": "Auto merge GitHub Actions",
       "matchManagers": ["github-actions"],
       "matchDatasources": ["github-tags"],
