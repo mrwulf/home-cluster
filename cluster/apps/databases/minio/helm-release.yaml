@@ -116,8 +116,8 @@ spec:
         # existingClaim: minio-nfs
         mountPath: /data
         type: nfs
-        server: # "${PRIMARY_NFS_SERVER}"
-        path: # "${NFS_KUBERNETES_PATH}/active/minio"
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/active/minio"
         mountOptions:
           - nfsvers=4
           - nconnect=8
