@@ -25,7 +25,7 @@ spec:
     controller:
       annotations:
         reloader.stakater.com/auto: "true"
-      replicas: 2
+      replicas: 1
     image:
       repository: quay.io/minio/minio
       tag: RELEASE.2022-12-12T19-27-27Z
@@ -113,8 +113,18 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: minio-nfs
+        # existingClaim: minio-nfs
         mountPath: /data
+        type: nfs
+        server: # "${PRIMARY_NFS_SERVER}"
+        path: # "${NFS_KUBERNETES_PATH}/active/minio"
+        mountOptions:
+          - nfsvers=4
+          - nconnect=8
+          - hard
+          - noatime
+          # - nfsvers=4.2
+
     resources:
       requests:
         memory: 100Mi
