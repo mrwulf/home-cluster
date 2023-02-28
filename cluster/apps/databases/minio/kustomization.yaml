@@ -3,5 +3,4 @@ kind: Kustomization
 resources:
   - minio-secret.sops.yaml
   - storageclass.yaml
-  - minio-nfs-storage.yaml
   - helm-release.yaml
