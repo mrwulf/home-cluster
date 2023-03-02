@@ -54,6 +54,8 @@ spec:
         values:
           - auth
           - cert-manager
+          - databases
+          - development
           - household
           - joplin
           - media
@@ -62,6 +64,7 @@ spec:
           - system
           - networking
           - vaultwarden
+          - vpn
           - kasten-io-cluster
   subFrequency:
     days:
