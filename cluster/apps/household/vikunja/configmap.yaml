@@ -11,7 +11,7 @@ data:
       # This is the default auth mechanism and does not require any additional configuration.
       local:
         # Enable or disable local authentication
-        enabled: true
+        enabled: false
       # OpenID configuration will allow users to authenticate through a third-party OpenID Connect compatible provider.
       # The provider needs to support the `openid`, `profile` and `email` scopes.
       # **Note:** Some openid providers (like gitlab) only make the email of the user available through openid claims if they have set it to be publicly visible.
@@ -25,13 +25,13 @@ data:
         enabled: true
         # The url to redirect clients to. Defaults to the configured frontend url. If you're using Vikunja with the official
         # frontend, you don't need to change this value.
-        redirecturl: https://tasks.${SECRET_DOMAIN}/auth/openid/
+        # redirecturl: https://lists.${SECRET_DOMAIN}/
         # A list of enabled providers
         providers:
           # The name of the provider as it will appear in the frontend.
-          - name: authelia
+          - name: authentik
             # The auth url to send users to if they want to authenticate using OpenID Connect.
-            authurl: https://auth.${SECRET_DOMAIN}
+            authurl: https://auth.${SECRET_DOMAIN}/application/o/vikunja/
             # The client ID used to authenticate Vikunja at the OpenID Connect provider.
             clientid: ${SECRET_VIKUNJA_OAUTH_CLIENT_ID}
             # The client secret used to authenticate Vikunja at the OpenID Connect provider.
