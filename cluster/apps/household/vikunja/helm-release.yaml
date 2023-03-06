@@ -36,65 +36,67 @@ spec:
       pullPolicy: IfNotPresent
 
     sidecars:
-      - frontend:
-          image: vikunja/frontend:0.20.3
-          resources:
-            requests:
-              cpu: 10m
-              memory: 26Mi
-            limits:
-              memory: 26Mi
+      frontend:
+        image: vikunja/frontend:0.20.3
+        resources:
+          requests:
+            cpu: 10m
+            memory: 26Mi
+          limits:
+            memory: 26Mi
 
-      - api:
-          image: vikunja/api:0.20.2
-          env:
-            - name: VIKUNJA_SERVICE_TIMEZONE
-              value: ${TIMEZONE}
-            - name: VIKUNJA_DATABASE_TYPE
-              value: "postgres"
-            - name: VIKUNJA_DATABASE_HOST
-              value: postgres-rw.databases.svc.cluster.local
-            - name: VIKUNJA_DATABASE_DATABASE
-              value: vikunja
-            - name: VIKUNJA_SERVICE_FRONTENDURL
-              value: https://tasks.${SECRET_DOMAIN}
-            - name: VIKUNJA_MAILER_FROMEMAIL
-              value: tasks@${SECRET_DOMAIN}
-            - name: VIKUNJA_MAILER_ENABLED
-              value: "true"
-            - name: VIKUNJA_MAILER_HOST
-              value: smtp-relay.home.svc.cluster.local
-            - name: VIKUNJA_MAILER_PORT
-              value: "2525"
-            - name: &envjwt VIKUNJA_SERVICE_JWT
-              valueFrom:
-                secretKeyRef:
-                  name: *app
-                  key: *envjwt
-            - name: &envdbuser VIKUNJA_DATABASE_USER
-              valueFrom:
-                secretKeyRef:
-                  name: *app
-                  key: *envdbuser
-            - name: &envdbpass VIKUNJA_DATABASE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: *app
+      api:
+        image: vikunja/api:0.20.2
+        env:
+          - name: VIKUNJA_SERVICE_TIMEZONE
+            value: ${TIMEZONE}
+          - name: VIKUNJA_DATABASE_TYPE
+            value: "postgres"
+          - name: VIKUNJA_DATABASE_HOST
+            value: postgres-rw.databases.svc.cluster.local
+          - name: VIKUNJA_DATABASE_DATABASE
+            value: vikunja
+          - name: VIKUNJA_SERVICE_FRONTENDURL
+            value: https://lists.${SECRET_DOMAIN}
+          - name: VIKUNJA_MAILER_FROMEMAIL
+            value: lists@${SECRET_DOMAIN}
+          - name: VIKUNJA_MAILER_ENABLED
+            value: "true"
+          - name: VIKUNJA_MAILER_HOST
+            value: smtp-relay.home.svc.cluster.local
+          - name: VIKUNJA_MAILER_PORT
+            value: "2525"
+          - name: VIKUNJA_METRICS_ENABLED
+            value: "true"
+          - name: &envjwt VIKUNJA_SERVICE_JWT
+            valueFrom:
+              secretKeyRef:
+                name: *app
+                key: *envjwt
+          - name: &envdbuser VIKUNJA_DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                name: *app
+                key: *envdbuser
+          - name: &envdbpass VIKUNJA_DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: *app
                 key: *envdbpass
-          resources:
-            requests:
-              cpu: 15m
-              memory: 24Mi
-            limits:
-              memory: 300Mi
+        resources:
+          requests:
+            cpu: 15m
+            memory: 24Mi
+          limits:
+            memory: 300Mi
 
-          volumeMounts:
-            - name: files
-              mountPath: /app/vikunja/files
-            - name: config
-              mountPath: /app/vikunja/config.yml
-              subPath: config.yml
-              readOnly: true
+        volumeMounts:
+          - name: files
+            mountPath: /app/vikunja/files
+          - name: config
+            mountPath: /app/vikunja/config.yml
+            subPath: config.yml
+            readOnly: true
 
     service:
       main:
@@ -111,11 +113,11 @@ spec:
           external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
           external-dns/is-public: "true"
           hajimari.io/enable: "true"
-          hajimari.io/appName: "Tasks"
+          hajimari.io/appName: "Lists"
           hajimari.io/icon: mdi:format-list-checkbox
-          hajimari.io/group: "household"
+          hajimari.io/group: "Home"
         hosts:
-          - host: &host "tasks.${SECRET_DOMAIN}"
+          - host: &host "lists.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
