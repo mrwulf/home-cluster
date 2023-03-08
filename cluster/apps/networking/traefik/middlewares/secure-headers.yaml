@@ -1,0 +1,15 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: secure-headers
+  namespace: networking
+spec:
+  headers:
+    stsPreload: true
+    forceSTSHeader: true
+    stsSeconds: 31536000
+    stsIncludeSubdomains: true
+    contentSecurityPolicy: block-all-mixed-content
+    frameDeny: true
+    browserXssFilter: true
