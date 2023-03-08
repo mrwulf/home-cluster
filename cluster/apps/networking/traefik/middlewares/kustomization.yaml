@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - rfc1918.yaml
   - authentik-forward-auth.yaml
+  - secure-headers.yaml
