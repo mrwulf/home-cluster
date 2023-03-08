@@ -58,6 +58,8 @@ spec:
             value: vikunja
           - name: VIKUNJA_SERVICE_FRONTENDURL
             value: https://lists.${SECRET_DOMAIN}
+          - name: VIKUNJA_SERVICE_ENABLETASKCOMMENTS
+            value: "false"
           - name: VIKUNJA_MAILER_FROMEMAIL
             value: lists@${SECRET_DOMAIN}
           - name: VIKUNJA_MAILER_ENABLED
