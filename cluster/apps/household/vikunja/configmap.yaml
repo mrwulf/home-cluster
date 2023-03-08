@@ -36,6 +36,7 @@ data:
             clientid: ${SECRET_VIKUNJA_OAUTH_CLIENT_ID}
             # The client secret used to authenticate Vikunja at the OpenID Connect provider.
             clientsecret: ${SECRET_VIKUNJA_OAUTH_CLIENT_SECRET}
+            logoutUrl: https://auth.${SECRET_DOMAIN}/application/o/vikunja/end-session/
   Caddyfile: |-
     {
       admin off
