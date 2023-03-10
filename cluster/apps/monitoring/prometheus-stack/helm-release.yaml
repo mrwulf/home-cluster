@@ -152,7 +152,7 @@ spec:
           org_role: Viewer
 
       datasources:
-        datasources.yaml:
+        datasource.yaml:
           apiVersion: 1
           deleteDatasources:
             - name: Loki
