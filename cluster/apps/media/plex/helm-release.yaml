@@ -26,7 +26,7 @@ spec:
     image:
       # https://github.com/onedr0p/container-images/pkgs/container/plex
       repository: ghcr.io/onedr0p/plex
-      tag: 1.31.1.6782-77dfff442
+      tag: 1.31.2.6810-a607d384f
 
     podSecurityContext:
       runAsUser: 985
