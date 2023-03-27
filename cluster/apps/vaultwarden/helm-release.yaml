@@ -28,7 +28,7 @@ spec:
   values:
     image:
       repository: vaultwarden/server
-      tag: 1.27.0-alpine
+      tag: 1.28.0-alpine
     env:
       ROCKET_PORT: &port 80
       WEBSOCKET_PORT: &websocket-port 3012
