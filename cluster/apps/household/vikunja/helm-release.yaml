@@ -98,7 +98,6 @@ spec:
           - name: config
             mountPath: /app/vikunja/config.yml
             subPath: config.yml
-            readOnly: true
 
     service:
       main:
@@ -109,7 +108,7 @@ spec:
     # Needs redis
     serviceMonitor:
       main:
-        enabled: true
+        enabled: false
         endpoints:
           - port: http
             scheme: http
