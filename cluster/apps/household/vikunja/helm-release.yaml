@@ -150,8 +150,8 @@ spec:
       config:
         enabled: true
         type: custom
-        readOnly: true
-        mountPath: "-"
+        mountPath: /etc/vikunja/config.yml
+        subPath: Vikunja.yaml
         volumeSpec:
           configMap:
             name: vikunja
