@@ -73,6 +73,14 @@ spec:
               - "class"
               - "vendor"
               - "device"
+          pci:
+            deviceClassWhitelist:
+              - "0300"
+              - "0880"
+            deviceLabelFields:
+              - 'class'
+              - 'vendor'
+              - 'device'
 # https://kubernetes-sigs.github.io/node-feature-discovery/master/advanced/customization-guide.html#custom-feature-source
           custom:
             - name: "cpu-6700t"
@@ -103,3 +111,10 @@ spec:
               matchOn:
                 - usbId:
                     vendor: ["1a6e", "18d1"]
+
+            - name: 'cyberpower-ups'
+              matchOn:
+                - usbId:
+                    class: ['03']
+                    vendor: ['0764']
+                    device: ['0601']
