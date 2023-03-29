@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: readarr
+  name: &app readarr-books
   namespace: media
 spec:
   interval: 15m
@@ -43,7 +43,7 @@ spec:
           hajimari.io/group: "Media"
           hajimari.io/icon: "book-open"
         hosts:
-          - host: &host "readarr.home.${SECRET_DOMAIN}"
+          - host: &host "readarr-books.home.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -92,19 +92,19 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: readarr-config
+        existingClaim: readarr-books-config
       downloads:
         enabled: true
         type: nfs
         server: ${PRIMARY_NFS_SERVER}
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
         mountPath: /downloads
-      audiobooks:
-        enabled: true
-        mountPath: /audiobooks
-        type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
-        path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
+      # audiobooks:
+      #   enabled: true
+      #   mountPath: /audiobooks
+      #   type: nfs
+      #   server: "${PRIMARY_NFS_SERVER}"
+      #   path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
       books:
         enabled: true
         mountPath: /books
@@ -116,7 +116,7 @@ spec:
         mountPath: /config/Backups
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
-        path: "${NFS_KUBERNETES_PATH}/backups/readarr"
+        path: "${NFS_KUBERNETES_PATH}/backups/readarr-books"
     resources:
       requests:
         memory: 100Mi
