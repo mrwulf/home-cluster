@@ -6,7 +6,8 @@ resources:
   - plex
   - prowlarr
   - radarr
-  - readarr
+  - readarr-audio
+  - readarr-books
   - sonarr
   - tautulli
   - transmission
