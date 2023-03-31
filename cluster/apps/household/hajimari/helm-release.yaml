@@ -59,24 +59,23 @@ spec:
           - vaultwarden
       name: "citizen"
       customApps:
-        - group: Infrastructure
+        - group: infrastructure
           apps:
-            # - name: Pi-Hole One
-            #   url: http://pihole-1-web.networking.home.${SECRET_DOMAIN}/admin
-            #   icon: "chart-pie"
-            # - name: Pi-Hole Two
-            #   url: http://pihole-2-web.networking.home.${SECRET_DOMAIN}/admin
-            #   icon: "chart-pie-outline"
             - name: OPNSense
-              group: Infrastructure
+              icon: 'mdi:wall-fire'
               url: https://firewall.${FIREWALL_URI}/
-        - group: Storage
+        - group: monitoring
+          apps:
+            - name: Uptime-Kuma
+              icon: 'mdi:alert-circle-check'
+              url: https://ourshare.home:5001/
+        - group: storage
           apps:
             - name: OurShare
-              group: Infrastructure
+              icon: 'mdi:nas'
               url: https://ourshare.home:5001/
             - name: OurBackup
-              group: Infrastructure
+              icon: 'mdi:nas'
               url: https://ourbackup.home:5001/
       globalBookmarks:
         - group: Talos
