@@ -59,7 +59,7 @@ spec:
           - vaultwarden
       name: "citizen"
       customApps:
-        - group: infrastructure
+        - group: networking
           apps:
             - name: OPNSense
               icon: 'mdi:wall-fire'
@@ -68,8 +68,8 @@ spec:
           apps:
             - name: Uptime-Kuma
               icon: 'mdi:alert-circle-check'
-              url: https://ourshare.home:5001/
-        - group: storage
+              url: https://status.${SECRET_DOMAIN}/
+        - group: Storage
           apps:
             - name: OurShare
               icon: 'mdi:nas'
