@@ -44,7 +44,7 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           hajimari.io/enable: "true"
           hajimari.io/appName: "Rook/Ceph"
-          hajimari.io/group: "Storage"
+          hajimari.io/group: "storage"
         host:
           name: &host "rook.home.${SECRET_DOMAIN}"
           path: "/"
