@@ -51,7 +51,7 @@ spec:
         kubernetes.io/ingress.class: "traefik"
         hajimari.io/appName: Kasten K10
         hajimari.io/enable: "true"
-        hajimari.io/group: "Storage"
+        hajimari.io/group: "storage"
         hajimari.io/url: https://k10.home.${SECRET_DOMAIN}/k10/
       urlPath: 'k10'
       hosts:

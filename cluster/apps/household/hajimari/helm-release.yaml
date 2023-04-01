@@ -69,7 +69,7 @@ spec:
             - name: Uptime-Kuma
               icon: 'mdi:alert-circle-check'
               url: https://status.${SECRET_DOMAIN}/
-        - group: Storage
+        - group: storage
           apps:
             - name: OurShare
               icon: 'mdi:nas'
