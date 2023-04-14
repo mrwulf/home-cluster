@@ -28,7 +28,7 @@ spec:
 
     image:
       repository: "haugene/transmission-openvpn"
-      tag: "4.3"
+      tag: "5.0"
       pullPolicy: "Always"
 
     ingress:
