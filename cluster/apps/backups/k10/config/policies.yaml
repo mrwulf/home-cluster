@@ -47,6 +47,7 @@ spec:
   frequency: '@daily'
   retention:
     daily: 3
+    weekly: 3
   selector:
     matchExpressions:
       - key: k10.kasten.io/appNamespace
