@@ -20,6 +20,7 @@ metadata:
     app.kubernetes.io/instance: kubelet-serving-cert-approver
     app.kubernetes.io/name: kubelet-serving-cert-approver
   name: kubelet-serving-cert-approver
+  namespace: node-system
 spec:
   allowPrivilegeEscalation: false
   forbiddenSysctls:
