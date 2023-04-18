@@ -29,14 +29,14 @@ spec:
       annotations:
         reloader.stakater.com/auto: "true"
     image:
-      repository: ghcr.io/onedr0p/sonarr
-      tag: '3.0.10.1567'
+      repository: ghcr.io/onedr0p/radarr
+      tag: '4.4.4.7068'
 
     env:
       TZ: "${TIMEZONE}"
-      SONARR__INSTANCE_NAME: Sonarr
-      SONARR__PORT: &port 8989
-      SONARR__APPLICATION_URL: "https://sonarr.home.${SECRET_DOMAIN}"
+      SONARR__INSTANCE_NAME: Radarr
+      SONARR__PORT: &port 7878
+      SONARR__APPLICATION_URL: "https://radarr.home.${SECRET_DOMAIN}"
       SONARR__LOG_LEVEL: info
 
     service:
