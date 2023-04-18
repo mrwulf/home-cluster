@@ -38,7 +38,7 @@ spec:
       runAsGroup: 568
       fsGroup: 568
       supplementalGroups: [10000]
-      # fsGroupChangePolicy: "OnRootMismatch"
+      fsGroupChangePolicy: "OnRootMismatch"
 
     env:
       TZ: "${TIMEZONE}"
