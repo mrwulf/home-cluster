@@ -8,14 +8,13 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://k8s-at-home.com/charts/
-      chart: radarr
-      version: 16.3.2
+      chart: app-template
+      version: 1.4.0
+      interval: 15m
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: bjw-s-charts
         namespace: flux-system
-      interval: 5m
   install:
     createNamespace: true
     remediation:
@@ -23,20 +22,28 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  # See https://github.com/bjw-s/helm-charts/blob/main/charts/library/common/values.yaml
   values:
+    controller:
+      type: statefulset
+      annotations:
+        reloader.stakater.com/auto: "true"
     image:
-      repository: ghcr.io/k8s-at-home/radarr
-      tag: rolling
-
-    podSecurityContext:
-      runAsUser: 0
-      runAsGroup: 0
-      # fsGroup: 977
+      repository: ghcr.io/onedr0p/sonarr
+      tag: '3.0.10.1567'
 
     env:
       TZ: "${TIMEZONE}"
-      PUID: 985
-      PGID: 977
+      SONARR__INSTANCE_NAME: Sonarr
+      SONARR__PORT: &port 8989
+      SONARR__APPLICATION_URL: "https://sonarr.home.${SECRET_DOMAIN}"
+      SONARR__LOG_LEVEL: info
+
+    service:
+      main:
+        ports:
+          http:
+            port: *port
 
     ingress:
       main:
@@ -57,13 +64,6 @@ spec:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
-
-    resources:
-      requests:
-        cpu: 15m
-        memory: 1312M
-      limits:
-        memory: 4655M
 
     persistence:
       config:
@@ -89,18 +89,31 @@ spec:
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/radarr"
 
-    metrics:
-      enabled: true
-      serviceMonitor:
-        interval: 3m
-        scrapeTimeout: 1m
-      prometheusRule:
-        enabled: true
-      exporter:
-        image:
-          repository: ghcr.io/onedr0p/exportarr
-          tag: v1.1.0
-        env:
-          port: 9794
-          additionalMetrics: true
-          unknownQueueItems: true
+    podSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+      # fsGroupChangePolicy: "OnRootMismatch"
+
+    resources:
+      requests:
+        cpu: 15m
+        memory: 1312M
+      limits:
+        memory: 4655M
+
+    # metrics:
+    #   enabled: true
+    #   serviceMonitor:
+    #     interval: 3m
+    #     scrapeTimeout: 1m
+    #   prometheusRule:
+    #     enabled: true
+    #   exporter:
+    #     image:
+    #       repository: ghcr.io/onedr0p/exportarr
+    #       tag: v1.1.0
+    #     env:
+    #       port: 9794
+    #       additionalMetrics: true
+    #       unknownQueueItems: true
