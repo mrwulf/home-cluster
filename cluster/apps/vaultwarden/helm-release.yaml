@@ -26,6 +26,8 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    controller:
+      type: statefulset
     image:
       repository: vaultwarden/server
       tag: 1.28.1-alpine
