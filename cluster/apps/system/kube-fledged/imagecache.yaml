@@ -22,7 +22,7 @@ spec:
         - ghcr.io/fluxcd/source-controller:v0.36.1
         - ghcr.io/kyverno/cleanup-controller:v1.9.2
         - ghcr.io/kyverno/kyverno:v1.9.2
-        - ghcr.io/onedr0p/plex:1.32.0.6918-6f393eda1
+        - ghcr.io/onedr0p/plex:1.32.0.6950-8521b7d99
         - ghcr.io/siderolabs/flannel:v0.20.2
         - jacobalberty/unifi:v7.3.83
         - quay.io/ceph/ceph:v17.2.5
