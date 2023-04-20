@@ -27,10 +27,10 @@ spec:
       tag: "7.0"
 
     controller:
-      replicas: 1
-      strategy: Recreate
+      type: statefulset
       annotations:
         reloader.stakater.com/auto: "true"
+
     strategy:
       type: Recreate
 

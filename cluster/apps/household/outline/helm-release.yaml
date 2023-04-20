@@ -33,10 +33,10 @@ spec:
       namespace: system
   values:
     controller:
-      replicas: 1
-      strategy: RollingUpdate
+      type: statefulset
       annotations:
         reloader.stakater.com/auto: "true"
+
     image:
       repository: docker.io/outlinewiki/outline
       tag: 0.68.1
