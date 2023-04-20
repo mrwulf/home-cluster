@@ -28,6 +28,10 @@ spec:
     remediation:
       retries: 3
   values:
+    controller:
+      type: statefulset
+      annotations:
+        reloader.stakater.com/auto: "true"
     image:
       repository: ghcr.io/advplyr/audiobookshelf
       tag: 2.2.19

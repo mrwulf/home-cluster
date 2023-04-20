@@ -22,6 +22,10 @@ spec:
     remediation:
       retries: 5
   values:
+    controller:
+      type: statefulset
+      annotations:
+        reloader.stakater.com/auto: "true"
     image:
       repository: ghcr.io/onedr0p/readarr-nightly
       tag: 0.1.4.1596@sha256:8f054b4b3bab741e808be24eac1a272fef2bc8ad28cc5c5a96d4885f70442f27
@@ -124,18 +128,18 @@ spec:
       limits:
         memory: 1.5G
 
-    metrics:
-      enabled: true
-      serviceMonitor:
-        interval: 30m
-        scrapeTimeout: 3m
-      prometheusRule:
-        enabled: true
-      exporter:
-        image:
-          repository: ghcr.io/onedr0p/exportarr
-          tag: v1.1.0
-        env:
-          port: 9794
-          additionalMetrics: true
-          unknownQueueItems: true
+    # metrics:
+    #   enabled: true
+    #   serviceMonitor:
+    #     interval: 30m
+    #     scrapeTimeout: 3m
+    #   prometheusRule:
+    #     enabled: true
+    #   exporter:
+    #     image:
+    #       repository: ghcr.io/onedr0p/exportarr
+    #       tag: v1.1.0
+    #     env:
+    #       port: 9794
+    #       additionalMetrics: true
+    #       unknownQueueItems: true

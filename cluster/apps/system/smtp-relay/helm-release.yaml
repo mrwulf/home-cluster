@@ -22,8 +22,7 @@ spec:
       retries: 3
   values:
     controller:
-      replicas: 1
-      strategy: RollingUpdate
+      type: statefulset
       annotations:
         reloader.stakater.com/auto: "true"
     image:
