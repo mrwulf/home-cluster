@@ -167,6 +167,7 @@ spec:
               access: proxy
               url: http://kube-prometheus-stack-prometheus.monitoring:9090
               isDefault: true
+              uid: Prometheus
             - name: Loki
               type: loki
               access: proxy
