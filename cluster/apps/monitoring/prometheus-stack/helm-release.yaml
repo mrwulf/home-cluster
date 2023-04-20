@@ -192,11 +192,6 @@ spec:
                 path: /var/lib/grafana/dashboards/default
       dashboards:
         default:
-          # Ref: https://grafana.com/grafana/dashboards/12693-haproxy-2-full/
-          haproxy:
-            gnetId: 12693
-            revision: 5
-            datasource: Prometheus
           # # Ref: https://grafana.com/grafana/dashboards/7845-zfs/
           # zfs:
           #   gnetId: 7845
