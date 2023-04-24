@@ -128,17 +128,9 @@ spec:
         memory: 6669M
 
     nodeSelector:
-      intel.feature.node.kubernetes.io/gpu: "true"
+      feature.node.kubernetes.io/custom-intel-gpu: "true"
 
     affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: feature.node.kubernetes.io/custom-intel-gpu
-                  operator: In
-                  values:
-                    - 'true'
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 100
