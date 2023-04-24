@@ -5,16 +5,16 @@ metadata:
   name: plex
   namespace: media
 spec:
-  interval: 5m
+  interval: 30m
   chart:
     spec:
-      chart: plex
-      version: 6.4.3
+      chart: app-template
+      version: 1.4.0
+      interval: 30m
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: bjw-s
         namespace: flux-system
-      interval: 5m
   install:
     createNamespace: true
     remediation:
@@ -23,20 +23,28 @@ spec:
     remediation:
       retries: 3
   values:
+    controller:
+      type: statefulset
+      annotations:
+        reloader.stakater.com/auto: "true"
+
     image:
       # https://github.com/onedr0p/container-images/pkgs/container/plex
       repository: ghcr.io/onedr0p/plex
-      tag: 1.32.0.6973-a787c5a8e
+      tag: 1.31.3.6868-28fc46b27
 
     podSecurityContext:
-      runAsUser: 985
-      runAsGroup: 977
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+      fsGroupChangePolicy: "OnRootMismatch"
       supplementalGroups:
-        - 65534 # nfsnobody
+        - 65539
 
     env:
       TZ: "${TIMEZONE}"
       # CLAIM_TOKEN: ''
+      ADVERTISE_IP: "https://plex.${SECRET_DOMAIN}:443/,http://${CLUSTER_EXTERNAL_SUBNET_PREFIX}.${CLUSTER_LB_PLEX}:32400/"
 
     service:
       main:
@@ -46,6 +54,9 @@ spec:
           metallb.universe.tf/allow-shared-ip: plexserver
         loadBalancerIP: ${PLEX_ADDR}
         externalTrafficPolicy: Local
+        ports:
+          http:
+            port: 32400
 
     ingress:
       main:
@@ -116,6 +127,9 @@ spec:
         gpu.intel.com/i915: 1
         memory: 6669M
 
+    nodeSelector:
+      intel.feature.node.kubernetes.io/gpu: "true"
+
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -137,21 +151,21 @@ spec:
                       - photoprism
               topologyKey: kubernetes.io/hostname
 
-    addons:
-      promtail:
-        enabled: true
-        image:
-          repository: grafana/promtail
-          tag: 2.8.0
-        loki: http://loki-stack.monitoring:3100/loki/api/v1/push
-        logs:
-          - name: promtail/plex
-            path: "/config/Library/Application Support/Plex Media Server/Logs/*.log"
-          - name: promtail/plex/plugins
-            path: "/config/Library/Application Support/Plex Media Server/Logs/PMS Plugin Logs/*.log"
-        volumeMounts:
-          - name: config
-            mountPath: /config
-            readOnly: true
-        securityContext:
-          runAsUser: 0
+    # addons:
+    #   promtail:
+    #     enabled: true
+    #     image:
+    #       repository: grafana/promtail
+    #       tag: 2.8.0
+    #     loki: http://loki-stack.monitoring:3100/loki/api/v1/push
+    #     logs:
+    #       - name: promtail/plex
+    #         path: "/config/Library/Application Support/Plex Media Server/Logs/*.log"
+    #       - name: promtail/plex/plugins
+    #         path: "/config/Library/Application Support/Plex Media Server/Logs/PMS Plugin Logs/*.log"
+    #     volumeMounts:
+    #       - name: config
+    #         mountPath: /config
+    #         readOnly: true
+    #     securityContext:
+    #       runAsUser: 0
