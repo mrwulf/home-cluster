@@ -2,7 +2,6 @@
   "extends": [
     "config:base",
     "docker:enableMajor",
-    ":disableRateLimiting",
     ":dependencyDashboard",
     ":semanticCommits",
     ":enablePreCommit",
