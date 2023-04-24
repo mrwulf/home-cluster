@@ -42,6 +42,9 @@ spec:
           ingestion_burst_size_mb: 12
       serviceMonitor:
         enabled: true
+      rbac:
+        pspEnabled: false
+
     promtail:
       enabled: false
     #   serviceMonitor:
