@@ -62,11 +62,11 @@ tasks:
       - task: delete-failed-pods
       - task: delete-completed-pods
 
-  list-nfs-deployments:
+  list-nfs-workloads:
     desc: List all deployments with NFS volumes
     silent: true
     cmds:
-      - kubectl get deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 echo
+      - kubectl get sts,deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.kind + "/" + .metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 echo
 
   list-nfs-pods:
     desc: List all deployments with NFS volumes
@@ -74,17 +74,17 @@ tasks:
     cmds:
       - kubectl get pods -A -o=json | jq -r '[.items[] | select(.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 echo
 
-  scale-nfs-deployments-down:
+  scale-nfs-workloads-down:
     desc: Scale all deployments with NFS volumes down to zero
     silent: true
     cmds:
-      - kubectl get deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale deployments --replicas=0 -n
+      - kubectl get sts,deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.kind + "/" + .metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale --replicas=0 -n
 
-  scale-nfs-deployments-up:
+  scale-nfs-workloads-up:
     desc: Scale all deployments with NFS volumes to one
     silent: true
     cmds:
-      - kubectl get deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale deployments --replicas=1 -n
+      - kubectl get sts,deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.kind + "/" + .metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale --replicas=1 -n
 
   rebalance:
     desc: Run the descheduler to rebalance pods

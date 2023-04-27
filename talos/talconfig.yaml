@@ -146,6 +146,9 @@ controlPlane:
       install:
         extraKernelArgs:
           - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
+        extensions:
+          - image: ghcr.io/siderolabs/i915-ucode:20230310
+          - image: ghcr.io/siderolabs/intel-ucode:20230214
 
 worker:
   configPatches:
@@ -183,3 +186,6 @@ worker:
       install:
         extraKernelArgs:
           - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
+        extensions:
+          - image: ghcr.io/siderolabs/i915-ucode:20230310
+          - image: ghcr.io/siderolabs/intel-ucode:20230214

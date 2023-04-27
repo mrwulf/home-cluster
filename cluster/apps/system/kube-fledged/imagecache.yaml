@@ -14,18 +14,17 @@ spec:
     - images:
         - docker.io/bitnami/external-dns:0.13.4-debian-11-r2
         - docker.io/coredns/coredns:1.10.0
-        - docker.io/traefik:v2.9.10
-        - gcr.io/kasten-images/cephtool:5.5.8
+        - docker.io/traefik:v2.10.0
+        - gcr.io/kasten-images/cephtool:5.5.9
         - ghcr.io/fluxcd/helm-controller:v0.31.2
         - ghcr.io/fluxcd/kustomize-controller:v0.35.1
         - ghcr.io/fluxcd/notification-controller:v0.33.0
         - ghcr.io/fluxcd/source-controller:v0.36.1
         - ghcr.io/kyverno/cleanup-controller:v1.9.2
         - ghcr.io/kyverno/kyverno:v1.9.2
-        - ghcr.io/onedr0p/plex:1.32.0.6950-8521b7d99
+        - ghcr.io/onedr0p/plex:1.32.0.6973-a787c5a8e
         - ghcr.io/siderolabs/flannel:v0.20.2
         - jacobalberty/unifi:v7.3.83
-        - quay.io/ceph/ceph:v17.2.5
         - quay.io/ceph/ceph:v17.2.6
         - quay.io/cephcsi/cephcsi:v3.8.0
         - quay.io/metallb/speaker:v0.13.9
