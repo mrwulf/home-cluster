@@ -89,18 +89,26 @@ tasks:
     cmds:
       - kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- ceph crash archive-all
 
-  debug-volume:
+  debug-pvc:
     desc: Attach a volume to a container for debugging, ex. VOLUME=zigbee2mqtt-config-v1 VNAMESPACE=home task debug-volume
     interactive: true
-    silent: true
+    silent: false
     vars:
+      VOLUME: "{{.CLI_ARGS}}"
+      VOL:
+        sh: "echo {{.VOLUME}} | cut -c -52"
+      NAMESPACE:
+        sh: "kubectl get pvc -A | grep {{.VOLUME}} | awk '{print $1; exit}'"
       NAS_ADDRESS:
         sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.PRIMARY_NFS_SERVER'"
       NAS_PATH:
-        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_K8S_PATH'"
+        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_KUBERNETES_PATH'"
+    preconditions:
+      - sh: '[ -n "{{.CLI_ARGS}}" ]'
+        msg: 'PVC Name Required!'
     cmds:
       - |
-        kubectl run debug-volume -n {{.VNAMESPACE}} -i --tty --rm --image=null --overrides='
+        kubectl run debug-pvc-{{.VOL}} -n {{.NAMESPACE}} -it --rm --image=null --overrides='
           {
             "spec": {
               "containers": [

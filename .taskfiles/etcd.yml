@@ -60,6 +60,7 @@ tasks:
         chmod +x {{.TEMP_DIR}}/script.sh
 
         # Run the etcdctl container
+          # specify DNS if needed --dns 13.13.13.1 \
         docker run -it --rm --name etcdctl \
           -v {{.TEMP_DIR}}:/opt/etcd \
           -e ETCDCTL_ENDPOINTS="{{.NODE_IP}}:2379" \

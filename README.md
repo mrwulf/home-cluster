@@ -83,8 +83,8 @@ cluster
 | Node                                                   | Role                                                  | Specs                                                  |
 |--------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------|
 | delta | Control Plane | Dell Optiplex 7040 MFF<br />Intel 6700t<br />24G |
-| epsilon | Worker | Dell Optiplex<br />Intel 8500t<br />16G |
-| zeta | Control Plane | Dell Optiplex<br />Intel 6700t<br />16G |
-| eta | Control Plane | Dell Optiplex<br />Intel 6700t<br />24G |
+| epsilon | Worker | Dell Optiplex 7050 MFF<br />Intel 7500t<br />16G |
+| zeta | Control Plane | Dell Optiplex 7040 MFF<br />Intel 6700t<br />16G |
+| eta | Control Plane | Dell Optiplex 7040 MFF<br />Intel 6700t<br />24G |
 
 # Other Stuff

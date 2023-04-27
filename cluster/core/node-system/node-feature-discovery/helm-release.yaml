@@ -92,9 +92,9 @@ spec:
                     family: {op: In, value: ["6"]}
                     id: {op: In, value: ["94"]}
                     vendor_id: {op: In, value: ["Intel"]}
-            - name: "cpu-8500t"
+            - name: "cpu-7500t"
               labels:
-                "cpu-8500t": "true"
+                "cpu-7500t": "true"
               matchFeatures:
                 - feature: cpu.model
                   matchExpressions:

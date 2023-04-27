@@ -17,3 +17,19 @@ includes:
   rook: .taskfiles/rook.yml
   sops: .taskfiles/sops.yml
   talos: .taskfiles/talos.yml
+
+tasks:
+  git-rebase:
+    dir: '{{.PROJECT_DIR}}'
+    cmds:
+      - git stash push -u
+      - git pull --rebase --stat
+      - git stash apply
+
+  git-sync:
+    dir: '{{.PROJECT_DIR}}'
+    cmds:
+      - git stash push -u
+      - git pull --rebase --stat
+      - git push origin HEAD --
+      - git stash apply
