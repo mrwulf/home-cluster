@@ -44,7 +44,7 @@ spec:
     env:
       TZ: "${TIMEZONE}"
       # CLAIM_TOKEN: ''
-      ADVERTISE_IP: "https://plex.${SECRET_DOMAIN}:443/,http://${PLEX_ADDR}:32400/"
+      ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,https://plex.home.${SECRET_DOMAIN}:443/,https://plex.${SECRET_DOMAIN}:443/"
 
     service:
       main:
@@ -67,18 +67,26 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/group: "Media"
           hajimari.io/icon: "mdi:plex"
-          # external-dns/is-public: "true"
+          external-dns/is-public: "true"
           # external-dns.alpha.kubernetes.io/target: ingress.${SECRET_DOMAIN}
-          # external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+          # external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+          external-dns/cloudflare-proxied: "false"
         hosts:
-          - host: &host "plex.home.${SECRET_DOMAIN}"
+          - host: "plex.home.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+          - host: "plex.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
-              - *host
+              - "plex.home.${SECRET_DOMAIN}"
+          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - "plex.${SECRET_DOMAIN}"
 
     persistence:
       config:
