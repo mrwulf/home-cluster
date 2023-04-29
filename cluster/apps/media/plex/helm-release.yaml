@@ -43,6 +43,7 @@ spec:
 
     env:
       TZ: "${TIMEZONE}"
+      ADVERTISE_IP: "https://plex.${SECRET_DOMAIN}:443,https://${DDNS_TARGET}:12233/,https://${PLEX_ADDR}:32400"
       # CLAIM_TOKEN: ''
       # ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,https://plex.media.home.${SECRET_DOMAIN}:32400/,https://plex.${SECRET_DOMAIN}:443/"
 
@@ -57,6 +58,27 @@ spec:
         ports:
           http:
             port: 32400
+            protocol: TCP
+          companion:
+            enabled: true
+            port: 8324
+            protocol: TCP
+          gdm1:
+            enabled: true
+            port: 32410
+            protocol: UDP
+          gdm2:
+            enabled: true
+            port: 32412
+            protocol: UDP
+          gdm3:
+            enabled: true
+            port: 32413
+            protocol: UDP
+          gdm4:
+            enabled: true
+            port: 32414
+            protocol: UDP
 
     ingress:
       main:
