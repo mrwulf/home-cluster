@@ -43,7 +43,7 @@ spec:
 
     env:
       TZ: "${TIMEZONE}"
-      ADVERTISE_IP: "https://plex.${SECRET_DOMAIN}:443,https://${DDNS_TARGET}:12233/,https://${PLEX_ADDR}:32400"
+      ADVERTISE_IP: "https://${PLEX_ADDR}:32400/,https://plex.${SECRET_DOMAIN}:443/,https://${DDNS_TARGET}:12233/"
       # CLAIM_TOKEN: ''
       # ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,https://plex.media.home.${SECRET_DOMAIN}:32400/,https://plex.${SECRET_DOMAIN}:443/"
 
