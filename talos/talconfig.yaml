@@ -4,11 +4,13 @@ clusterName: talos-v1
 talosVersion: v1.4.1
 kubernetesVersion: v1.26.4
 endpoint: https://kubernetes.home:6443
-domain: cluster.local
-clusterPodNets:
-  - 10.244.0.0/16
-clusterSvcNets:
-  - 10.96.0.0/12
+
+additionalApiServerCertSans:
+  - ${clusterEndpointIP}
+
+# cniConfig:
+#   name: none
+
 # cniConfig:
 #   name: custom
 #   urls:
@@ -107,11 +109,6 @@ controlPlane:
       value:
         fs.inotify.max_user_watches: "1048576"
         fs.inotify.max_user_instances: "8192"
-    - op: add
-      path: /cluster/apiServer/certSANs
-      value:
-        - ${clusterEndpointIP}
-        - kubernetes.home
   inlinePatch:
     cluster:
       allowSchedulingOnControlPlanes: true
@@ -124,11 +121,14 @@ controlPlane:
     #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
       discovery:
         registries:
+          kubernetes:
+            disabled: false
           service:
             disabled: true
 
     machine:
       certSANs:
+        - ${clusterEndpointIP}
         - kubernetes.home
       time:
         disabled: false
@@ -163,13 +163,17 @@ worker:
         fs.inotify.max_user_watches: "1048576"
         fs.inotify.max_user_instances: "8192"
   inlinePatch:
-    # cluster:
+    cluster:
+      discovery:
+        registries:
+          kubernetes:
+            disabled: false
+          service:
+            disabled: true
     #   extraManifests:
     #     - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
     #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
     machine:
-      certSANs:
-        - kubernetes.home
       time:
         disabled: false
         servers:
