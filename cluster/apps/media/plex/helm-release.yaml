@@ -33,6 +33,19 @@ spec:
       repository: ghcr.io/onedr0p/plex
       tag: 1.32.0.6973-a787c5a8e
 
+    # Add this to start the container, but not plex:
+    #   command:
+    #     - bash
+    #     - -c
+    #     - while :; do echo 'sleeping'; sleep 30; done;
+    # probes:
+    #   startup:
+    #     enabled: false
+    #   readiness:
+    #     enabled: false
+    #   liveness:
+    #     enabled: false
+
     podSecurityContext:
       runAsUser: 568
       runAsGroup: 568
@@ -43,7 +56,7 @@ spec:
 
     env:
       TZ: "${TIMEZONE}"
-      ADVERTISE_IP: "https://${PLEX_ADDR}:32400/,https://plex.${SECRET_DOMAIN}:443/,https://${DDNS_TARGET}:12233/"
+      ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,https://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
       # CLAIM_TOKEN: ''
       # ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,https://plex.media.home.${SECRET_DOMAIN}:32400/,https://plex.${SECRET_DOMAIN}:443/"
 
