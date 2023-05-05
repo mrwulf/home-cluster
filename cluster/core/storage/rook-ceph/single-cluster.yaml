@@ -95,7 +95,7 @@ spec:
               - name: "sda"
           - name: "zeta"
             devices:
-              - name: "sda"
+              - name: "nvme0n1"
           - name: "eta"
             devices:
               - name: "sda"
