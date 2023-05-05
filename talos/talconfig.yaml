@@ -49,7 +49,7 @@ nodes:
   - hostname: zeta.home
     ipAddress: 10.0.1.41
     installDiskSelector:
-      model: "*KIOXIA*"
+      type: ssd
     controlPlane: true
     networkInterfaces:
       - interface: eth0
@@ -149,6 +149,10 @@ controlPlane:
         extensions:
           - image: ghcr.io/siderolabs/i915-ucode:20230310
           - image: ghcr.io/siderolabs/intel-ucode:20230214
+      udev:
+        rules:
+          - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
+          # - ACTION=="add", ATTR{idVendor}=="10ec", ATTR{idProduct}=="8125", ATTR{bConfigurationValue}="1"
 
 worker:
   configPatches:
@@ -193,3 +197,7 @@ worker:
         extensions:
           - image: ghcr.io/siderolabs/i915-ucode:20230310
           - image: ghcr.io/siderolabs/intel-ucode:20230214
+      udev:
+        rules:
+          - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
+          # - ACTION=="add", ATTR{idVendor}=="10ec", ATTR{idProduct}=="8125", ATTR{bConfigurationValue}="1"
