@@ -89,7 +89,7 @@ spec:
         nodes:
           - name: "delta"
             devices:
-              - name: "sda"
+              - name: "nvme0n1"
           - name: "epsilon"
             devices:
               - name: "sda"
