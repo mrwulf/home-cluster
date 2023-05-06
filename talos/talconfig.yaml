@@ -21,8 +21,8 @@ nodes:
     ipAddress: 10.0.1.44
     controlPlane: true
     installDiskSelector:
-      model: "SanDisk*"
-    networkInterfaces:
+      type: ssd
+    networkInterfaces: &ctlnetwork
       - interface: eth0
         dhcp: true
         vip:
@@ -36,44 +36,24 @@ nodes:
     controlPlane: false
     installDiskSelector:
       model: "SanDisk*"
-    networkInterfaces:
+    networkInterfaces: &wrknetwork
       - interface: eth0
         dhcp: true
       - interface: eth1
         dhcp: true
-    # configPatches:
-    #   - op: add
-    #     path: /machine/install/extraKernelArgs
-    #     value:
-    #       - nvme_core.default_ps_max_latency_us=0
   - hostname: zeta.home
     ipAddress: 10.0.1.41
     installDiskSelector:
       type: ssd
     controlPlane: true
-    networkInterfaces:
-      - interface: eth0
-        dhcp: true
-        vip:
-          ip: ${clusterEndpointIP}
-      - interface: eth1
-        dhcp: true
-        vip:
-          ip: ${clusterEndpointIP}
+    networkInterfaces: *ctlnetwork
   - hostname: eta.home
     ipAddress: 10.0.1.42
     controlPlane: true
     installDiskSelector:
-      model: "*KIOXIA*"
-    networkInterfaces:
-      - interface: eth0
-        dhcp: true
-        vip:
-          ip: ${clusterEndpointIP}
-      - interface: eth1
-        dhcp: true
-        vip:
-          ip: ${clusterEndpointIP}
+      type: nvme
+    networkInterfaces: *ctlnetwork
+
 controlPlane:
   configPatches:
     - op: remove
