@@ -28,7 +28,7 @@ spec:
         reloader.stakater.com/auto: "true"
     image:
       repository: ghcr.io/onedr0p/readarr-nightly
-      tag: 0.1.5.1767@sha256:3bd8218b06d1c12cf3d35d19f6e24a7f7d546155be249d149697fe03a7b8a182
+      tag: 0.1.5.1782@sha256:09fa0dc752e73bd44be81c962551be7efad3221b52cc6be2e86d15dc2d37ccb6
     env:
       TZ: "${TIMEZONE}"
     service:
