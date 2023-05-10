@@ -52,6 +52,9 @@ spec:
       fsGroup: 568
       fsGroupChangePolicy: "OnRootMismatch"
       supplementalGroups:
+        - 44
+        - 100
+        - 109
         - 65539
 
     env:
@@ -59,6 +62,11 @@ spec:
       ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,http://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
       # CLAIM_TOKEN: ''
       # ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,https://plex.media.home.${SECRET_DOMAIN}:32400/,https://plex.${SECRET_DOMAIN}:443/"
+
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
 
     service:
       main:
@@ -123,7 +131,6 @@ spec:
       transcode:
         enabled: true
         type: emptyDir
-        medium: Memory
 
       backups:
         enabled: true
@@ -160,7 +167,7 @@ spec:
         gpu.intel.com/i915: 1
       limits:
         gpu.intel.com/i915: 1
-        memory: 6669M
+        memory: 9248M
 
     nodeSelector:
       feature.node.kubernetes.io/custom-intel-gpu: "true"
