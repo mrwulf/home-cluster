@@ -13,11 +13,12 @@ tasks:
       - task: sops
       - task: kubestr
       # - task: kubectl
-      # - task: flux
-      # - task: helm
-      # - task: pre-commit # should include pre-commit autoupdate
+      - task: flux
+      - task: helm
+      - task: pre-commit
       # - task: krew & plugins
       # - task: dyff
+      # - task: kustomize
 
   age:
     desc: Install age
@@ -158,3 +159,81 @@ tasks:
         tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components=0 -C ~/bin/ {{.TASK_NAME}}
         # chmod +x ~/bin/{{.TASK_NAME}}
         rm -rf $TEMP_DIR
+
+  flux:
+    desc: Install flux
+    silent: true
+    ignore_errors: true
+    vars:
+      TASK_NAME:
+        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+      OWNER: fluxcd
+      PROJECT: flux2 # '{{.PROJECT | default .TASK_NAME}}'
+      RELEASE_VERSION:
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
+      CURRENT_VERSION:
+        sh: "{{.TASK_NAME}} version | grep -oPm1 '[0-9]+.[0-9]+.[0-9]+(-.+)?$' || echo 0.0.0"
+      FILENAME: "{{.TASK_NAME}}_{{.DESIRED_VERSION}}_Linux_amd64.tar.gz"
+    status:
+      - '[ "{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
+    cmds:
+      - |
+        echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}"
+        TEMP_DIR=$(mktemp -d)
+        wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.PROJECT}}/releases/download/v{{.DESIRED_VERSION}}/{{.FILENAME}}
+        tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components=0 -C ~/bin/ {{.TASK_NAME}}
+        # chmod +x ~/bin/{{.TASK_NAME}}
+        rm -rf $TEMP_DIR
+        ~/bin/{{.TASK_NAME}} version
+
+  helm:
+    desc: Install helm
+    silent: true
+    ignore_errors: true
+    vars:
+      TASK_NAME:
+        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+      OWNER: helm
+      PROJECT: '{{.PROJECT | default .TASK_NAME}}'
+      RELEASE_VERSION:
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
+      CURRENT_VERSION:
+        sh: '{{.TASK_NAME}} version | grep -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | head -1 || echo 0.0.0'
+      FILENAME: "{{.TASK_NAME}}-v{{.DESIRED_VERSION}}-linux-amd64.tar.gz"
+      STRIP_COMPONENTS: 1
+    status:
+      - '[ "{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
+    cmds:
+      - |
+        echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}"
+        TEMP_DIR=$(mktemp -d)
+        wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://get.helm.sh/{{.FILENAME}}
+        tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components={{.STRIP_COMPONENTS}} -C ~/bin/ linux-amd64/{{.TASK_NAME}}
+        # chmod +x ~/bin/{{.TASK_NAME}}
+        rm -rf $TEMP_DIR
+        ~/bin/{{.TASK_NAME}} version
+
+  pre-commit:
+    desc: Install pre-commit
+    silent: false
+    ignore_errors: true
+    vars:
+      TASK_NAME:
+        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+      OWNER: pre-commit
+      PROJECT: '{{.PROJECT | default .TASK_NAME}}'
+      RELEASE_VERSION:
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
+      CURRENT_VERSION:
+        sh: '{{.TASK_NAME}} -V | grep -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | head -1 || echo 0.0.0'
+    status:
+      - '[ "{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
+    cmds:
+      - |
+        echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}"
+        pip install pre-commit --upgrade
+        pre-commit autoupdate
+        pre-commit gc
