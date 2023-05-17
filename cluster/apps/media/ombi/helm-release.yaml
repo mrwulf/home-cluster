@@ -26,7 +26,7 @@ spec:
         reloader.stakater.com/auto: "true"
     image:
       repository: ghcr.io/linuxserver/ombi
-      tag: 4.35.10
+      tag: 4.35.11
     env:
       TZ: "${TIMEZONE}"
     #   PUID: "816"
