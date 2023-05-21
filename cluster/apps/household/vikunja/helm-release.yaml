@@ -48,7 +48,7 @@ spec:
             cpu: 10m
             memory: 26Mi
           limits:
-            memory: 26Mi
+            memory: 120Mi
 
       api:
         image: vikunja/api:0.20.2
@@ -95,7 +95,7 @@ spec:
             cpu: 15m
             memory: 24Mi
           limits:
-            memory: 300Mi
+            memory: 512Mi
 
         volumeMounts:
           - name: files

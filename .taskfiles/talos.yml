@@ -68,6 +68,15 @@ tasks:
       - |
         talosctl -n {{.ONE_MASTER}} {{.CLI_ARGS | default "--help"}}
 
+  kubelet-uptime:
+    desc: Show kubelet uptime for each node
+    silent: true
+    cmds:
+      - task: ctl-all
+        vars:
+          CLI_ARGS: 'service | tail -n +2 | grep kubelet | sort -r -k 5'
+
+
   theila:
     desc: Show the Theila web-ui dashboard with all the hosts
     silent: true
@@ -133,6 +142,8 @@ tasks:
       TARGET_VERSION_IMAGE: "ghcr.io/siderolabs/installer:{{.TARGET_VERSION}}"
     deps:
       - task: generate-configs
+      - task: diff-config
+      - task: apply-config
     # preconditions:
     #   - sh: "talosctl apply-config --dry-run -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml | grep -q 'No changes.'"
     #     msg: Node config has changed - apply new config first!
