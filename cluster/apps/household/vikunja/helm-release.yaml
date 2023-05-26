@@ -48,7 +48,7 @@ spec:
             cpu: 10m
             memory: 26Mi
           limits:
-            memory: 120Mi
+            memory: 512Mi
 
       api:
         image: vikunja/api:0.20.2
@@ -174,4 +174,4 @@ spec:
         cpu: 15m
         memory: 100M
       limits:
-        memory: 100M
+        memory: 1024M
