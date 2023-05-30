@@ -37,6 +37,11 @@ spec:
           http:
             port: 9696
 
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
+
     podSecurityContext:
       runAsUser: 0
       runAsGroup: 0
