@@ -30,6 +30,11 @@ spec:
     env:
       TZ: ${TIMEZONE}
 
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
+
     hajimari:
       # displays all discovered apps
       defaultEnable: false
