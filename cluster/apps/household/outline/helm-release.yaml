@@ -49,6 +49,12 @@ spec:
         "-c",
         "yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled",
       ]
+
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
+
     service:
       main:
         ports:

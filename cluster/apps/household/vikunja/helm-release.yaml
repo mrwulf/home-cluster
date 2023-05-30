@@ -104,6 +104,11 @@ spec:
             mountPath: /app/vikunja/config.yml
             subPath: config.yml
 
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
+
     service:
       main:
         ports:
