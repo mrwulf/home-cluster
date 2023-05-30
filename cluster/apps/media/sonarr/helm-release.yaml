@@ -47,6 +47,11 @@ spec:
       SONARR__APPLICATION_URL: "https://sonarr.home.${SECRET_DOMAIN}"
       SONARR__LOG_LEVEL: info
 
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
+
     service:
       main:
         ports:

@@ -24,9 +24,11 @@ spec:
       type: statefulset
       annotations:
         reloader.stakater.com/auto: "true"
+
     image:
       repository: ghcr.io/linuxserver/ombi
       tag: 4.39.1
+
     env:
       TZ: "${TIMEZONE}"
     #   PUID: "816"
@@ -36,10 +38,17 @@ spec:
     #   runAsGroup: 816
     #   fsGroup: 816
     #   fsGroupChangePolicy: "OnRootMismatch"
+
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
+
     persistence:
       config:
         enabled: true
         existingClaim: ombi-config
+
     ingress:
       main:
         enabled: true
@@ -57,6 +66,7 @@ spec:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
+
       resources:
         requests:
           cpu: 15m

@@ -32,11 +32,19 @@ spec:
       type: statefulset
       annotations:
         reloader.stakater.com/auto: "true"
+
     image:
       repository: ghcr.io/advplyr/audiobookshelf
       tag: 2.2.21
+
     env:
       TZ: "${TIMEZONE}"
+
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
+
     ingress:
       main:
         # primary: true
@@ -59,6 +67,7 @@ spec:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
+
     persistence:
       config:
         enabled: true
