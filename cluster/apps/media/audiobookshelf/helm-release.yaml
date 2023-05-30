@@ -34,7 +34,7 @@ spec:
         reloader.stakater.com/auto: "true"
     image:
       repository: ghcr.io/advplyr/audiobookshelf
-      tag: 2.2.20
+      tag: 2.2.21
     env:
       TZ: "${TIMEZONE}"
     ingress:
