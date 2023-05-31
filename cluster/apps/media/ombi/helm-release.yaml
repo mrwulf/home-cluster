@@ -27,7 +27,7 @@ spec:
 
     image:
       repository: ghcr.io/linuxserver/ombi
-      tag: 4.39.1
+      tag: v4.39.1-ls159
 
     env:
       TZ: "${TIMEZONE}"
