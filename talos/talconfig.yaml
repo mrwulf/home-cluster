@@ -1,7 +1,7 @@
 # https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
-talosVersion: v1.4.4
+talosVersion: v1.4.5
 kubernetesVersion: v1.26.4
 endpoint: https://kubernetes.home:6443
 
@@ -127,8 +127,8 @@ controlPlane:
         extraKernelArgs:
           - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
         extensions:
-          - image: ghcr.io/siderolabs/i915-ucode:20230310
-          - image: ghcr.io/siderolabs/intel-ucode:20230214
+          - image: ghcr.io/siderolabs/i915-ucode:20230515
+          - image: ghcr.io/siderolabs/intel-ucode:20230512
       udev:
         rules:
           - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
@@ -175,8 +175,8 @@ worker:
         extraKernelArgs:
           - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
         extensions:
-          - image: ghcr.io/siderolabs/i915-ucode:20230310
-          - image: ghcr.io/siderolabs/intel-ucode:20230214
+          - image: ghcr.io/siderolabs/i915-ucode:20230515
+          - image: ghcr.io/siderolabs/intel-ucode:20230512
       udev:
         rules:
           - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
