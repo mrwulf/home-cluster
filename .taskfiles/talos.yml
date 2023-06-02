@@ -154,7 +154,7 @@ tasks:
         echo "Target Node: {{.NODE}}"
         talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}}
 
-  refresh-certificate:
+  refresh-certificates:
     # https://www.talos.dev/v1.3/talos-guides/configuration/managing-pki/
     desc: Renew Administrator Certificate
     silent: true
@@ -165,3 +165,4 @@ tasks:
     cmds:
       - |
         yq -i '. *= load("{{.PROJECT_DIR}}//talos/clusterconfig/talosconfig")'  {{.FILE}}
+        talosctl kubeconfig -n {{.ONE_MASTER}} --force

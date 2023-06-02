@@ -27,10 +27,10 @@ spec:
         - jacobalberty/unifi:v7.3.83
         - quay.io/ceph/ceph:v17.2.6
         - quay.io/cephcsi/cephcsi:v3.8.0
-        - quay.io/metallb/speaker:v0.13.9
+        - quay.io/metallb/speaker:v0.13.10
         - registry.k8s.io/kube-apiserver:v1.26.4
         - registry.k8s.io/kube-controller-manager:v1.26.4
         - registry.k8s.io/kube-proxy:v1.26.4
         - registry.k8s.io/kube-scheduler:v1.26.4
-        - rook/ceph:v1.11.6
+        - rook/ceph:v1.11.7
         - vaultwarden/server:1.28.1-alpine
