@@ -76,9 +76,11 @@ tasks:
     interactive: false
     cmds:
       - task: compact-all
-      - task: client
-        vars:
-          COMMAND: etcdctl defrag --cluster=true
+      - |
+        talosctl -n {{.ONE_MASTER}} etcd defrag
+      # - task: client
+      #   vars:
+      #     COMMAND: etcdctl defrag --cluster=true
 
   command:
     desc: Run a command in an etcd client
