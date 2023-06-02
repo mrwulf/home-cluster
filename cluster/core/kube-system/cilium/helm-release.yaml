@@ -20,19 +20,20 @@ spec:
     # cluster:
     #   name: "${CLUSTER_NAME}"
     #   id: "${CLUSTER_ID}"
+    policyEnforcementMode: "never"
     rollOutCiliumPods: true
     localRedirectPolicy: true
     kubeProxyReplacement: "strict"
     # kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
     ipv4NativeRoutingCIDR: "${NETWORK_K8S_CLUSTER_CIDR}"
     nativeRoutingCIDR: "${NETWORK_K8S_CLUSTER_CIDR}"
+    autoDirectNodeRoutes: true
     k8sServiceHost: "${CONTROL_PLANE_ENDPOINT}"
     k8sServicePort: 6443
     loadBalancer:
       algorithm: "maglev"
       mode: "dsr"
     tunnel: "disabled"
-    autoDirectNodeRoutes: true
     ipam:
       mode: "kubernetes"
     operator:
@@ -75,10 +76,26 @@ spec:
             - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
               hosts:
                 - *host
+
+
+    # bgpControlPlane:
+    #   enabled: true
+    # bgp:
+    #   enabled: false
+    #   announce:
+    #     loadbalancerIP: true
+    #     podCIDR: false
+
     bgp:
       enabled: false
       # announce:
       #   loadbalancerIP: true
+
+    cgroup:
+      autoMount:
+        enabled: false
+      hostRoot: /sys/fs/cgroup
+
     securityContext:
       # -- Run the pod with elevated privileges
       privileged: false
