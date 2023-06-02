@@ -20,11 +20,11 @@ spec:
     # cluster:
     #   name: "${CLUSTER_NAME}"
     #   id: "${CLUSTER_ID}"
-    policyEnforcementMode: "never"
+    # policyEnforcementMode: "never"
     rollOutCiliumPods: true
     localRedirectPolicy: true
     kubeProxyReplacement: "strict"
-    # kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
+    kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
     ipv4NativeRoutingCIDR: "${NETWORK_K8S_CLUSTER_CIDR}"
     nativeRoutingCIDR: "${NETWORK_K8S_CLUSTER_CIDR}"
     autoDirectNodeRoutes: true
