@@ -6,6 +6,7 @@ metadata:
   namespace: flux-system
 data:
   CONTROL_PLANE_ENDPOINT: 10.0.0.200
+  NETWORK_K8S_CLUSTER_CIDR: 10.42.0.0/16
   METALLB_LB_RANGE: 10.0.10.1-10.0.10.20
   METALLB_LB_RANGE_OLD: 10.0.0.201-10.0.0.220
   TIMEZONE: "America/Los_Angeles"
