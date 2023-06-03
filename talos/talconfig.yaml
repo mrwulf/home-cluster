@@ -18,7 +18,7 @@ cniConfig:
 #     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/configmap.yaml
 nodes:
   - hostname: talos-cp-01.home
-    ipAddress: 10.0.1.44
+    ipAddress: 10.0.1.43
     controlPlane: true
     installDiskSelector:
       type: nvme
@@ -120,6 +120,16 @@ controlPlane:
       certSANs:
         - ${clusterEndpointIP}
         - kubernetes.home
+
+      files:
+        - content: |
+            [plugins]
+              [plugins."io.containerd.grpc.v1.cri"]
+                enable_unprivileged_ports = true
+                enable_unprivileged_icmp = true
+          path: /etc/cri/conf.d/20-customization.part
+          op: create
+
       time:
         disabled: false
         servers:
@@ -168,6 +178,15 @@ worker:
     #     - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
     #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
     machine:
+      files:
+        - content: |
+            [plugins]
+              [plugins."io.containerd.grpc.v1.cri"]
+                enable_unprivileged_ports = true
+                enable_unprivileged_icmp = true
+          path: /etc/cri/conf.d/20-customization.part
+          op: create
+
       time:
         disabled: false
         servers:
