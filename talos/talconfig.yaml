@@ -17,11 +17,11 @@ cniConfig:
 #     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/cilium.yaml
 #     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/configmap.yaml
 nodes:
-  - hostname: delta.home
+  - hostname: talos-cp-01.home
     ipAddress: 10.0.1.44
     controlPlane: true
     installDiskSelector:
-      type: ssd
+      type: nvme
     networkInterfaces: &ctlnetwork
       - interface: eth0
         dhcp: true
@@ -31,16 +31,22 @@ nodes:
         dhcp: true
         vip:
           ip: ${clusterEndpointIP}
-  - hostname: epsilon.home
-    ipAddress: 10.0.1.45
+  - hostname: delta.home
+    ipAddress: 10.0.1.44
     controlPlane: false
     installDiskSelector:
-      model: "SanDisk*"
+      type: ssd
     networkInterfaces: &wrknetwork
       - interface: eth0
         dhcp: true
       - interface: eth1
         dhcp: true
+  - hostname: epsilon.home
+    ipAddress: 10.0.1.45
+    controlPlane: false
+    installDiskSelector:
+      model: "SanDisk*"
+    networkInterfaces: *wrknetwork
   - hostname: zeta.home
     ipAddress: 10.0.1.41
     installDiskSelector:
