@@ -42,7 +42,7 @@ tasks:
       - |
         cp {{.IMAGE_CACHE}} {{.IMAGE_CACHE}}.old
         cat {{.IMAGE_CACHE_TEMPLATE}} > {{.IMAGE_CACHE}}
-        (kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" |tr -s '[[:space:]]' '\n' | sort | uniq | grep -E '(apiserver|controller-manager|kube-proxy|kube-scheduler|cloudflared|external-dns|coredns|fluxcd|plex|pihole|kyverno|flannel|ceph|speaker|traefik|vaultwarden|unifi)' | sed 's/^/        - /') >> {{.IMAGE_CACHE}}
+        (kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" |tr -s '[[:space:]]' '\n' | sort | uniq | grep -E '(apiserver|cilium|controller-manager|cloudflared|external-dns|coredns|kube-scheduler|fluxcd|plex|kyverno|ceph|speaker|traefik|unifi|vaultwarden|vector)' | sed 's/^/        - /') >> {{.IMAGE_CACHE}}
       - dyff between --omit-header {{.IMAGE_CACHE}}.old {{.IMAGE_CACHE}}
       - rm "{{.IMAGE_CACHE}}.old"
 
