@@ -23,14 +23,18 @@ spec:
         - ghcr.io/kyverno/cleanup-controller:v1.9.5
         - ghcr.io/kyverno/kyverno:v1.9.5
         - ghcr.io/onedr0p/plex:1.32.2.7100-248a2daf0
-        - ghcr.io/siderolabs/flannel:v0.20.2
         - jacobalberty/unifi:v7.3.83
         - quay.io/ceph/ceph:v17.2.6
         - quay.io/cephcsi/cephcsi:v3.8.0
+        - quay.io/cilium/cilium:v1.13.3@sha256:77176464a1e11ea7e89e984ac7db365e7af39851507e94f137dcf56c87746314
+        - quay.io/cilium/hubble-relay:v1.13.3@sha256:19e4aae5ff72cd9fbcb7d2d16a1570533320a478acc015fc91a4d41a177cadf6
+        - quay.io/cilium/hubble-ui-backend:v0.11.0@sha256:14c04d11f78da5c363f88592abae8d2ecee3cbe009f443ef11df6ac5f692d839
+        - quay.io/cilium/hubble-ui:v0.11.0@sha256:bcb369c47cada2d4257d63d3749f7f87c91dde32e010b223597306de95d1ecc8
+        - quay.io/cilium/operator-generic:v1.13.3@sha256:fa7003cbfdf8358cb71786afebc711b26e5e44a2ed99bd4944930bba915b8910
         - quay.io/metallb/speaker:v0.13.10
         - registry.k8s.io/kube-apiserver:v1.26.4
         - registry.k8s.io/kube-controller-manager:v1.26.4
-        - registry.k8s.io/kube-proxy:v1.26.4
         - registry.k8s.io/kube-scheduler:v1.26.4
         - rook/ceph:v1.11.7
+        - timberio/vector:0.30.0-debian
         - vaultwarden/server:1.28.1-alpine
