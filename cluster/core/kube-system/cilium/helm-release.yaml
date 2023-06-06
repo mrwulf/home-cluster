@@ -32,6 +32,8 @@ spec:
     k8sServicePort: 6443
     bpf:
       masquerade: true
+      tproxy: true
+
     loadBalancer:
       algorithm: "maglev"
       mode: "dsr"
@@ -60,6 +62,9 @@ spec:
       relay:
         enabled: true
         rollOutPods: true
+        prometheus:
+          serviceMonitor:
+            enabled: true
       ui:
         enabled: true
         rollOutPods: true
@@ -79,6 +84,12 @@ spec:
               hosts:
                 - *host
 
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        namespace: monitoring
+        labelValue: "1"
+        annotations: {}
 
     bgpControlPlane:
       enabled: true
@@ -87,11 +98,14 @@ spec:
       announce:
         loadbalancerIP: true
         podCIDR: false
-
     cgroup:
       autoMount:
         enabled: false
       hostRoot: /sys/fs/cgroup
+
+    socketLB:
+      enabled: true
+      hostNamespaceOnly: true
 
     securityContext:
       # -- Run the pod with elevated privileges
