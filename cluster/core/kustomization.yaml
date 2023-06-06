@@ -5,7 +5,7 @@ resources:
   - kube-system
   - cert-manager
   - flux-system
-  - metallb-system
+  # - metallb-system
   - node-system
   - security
   - storage
