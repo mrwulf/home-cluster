@@ -8,13 +8,13 @@ spec:
   interval: 5m
   chart:
     spec:
-      chart: unifi
-      version: 5.1.2
+      chart: app-template
+      version: 1.5.1
+      interval: 15m
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: bjw-s-charts
         namespace: flux-system
-      interval: 5m
   install:
     createNamespace: true
     remediation:
@@ -28,16 +28,51 @@ spec:
       tag: v7.3.83
 
     env:
+      RUNAS_UID0: "false"
+      UNIFI_UID: "999"
+      UNIFI_GID: "999"
+      UNIFI_STDOUT: "true"
+      JVM_INIT_HEAP_SIZE:
+      JVM_MAX_HEAP_SIZE: 1024M
       TZ: "${TIMEZONE}"
 
     service:
       main:
         type: LoadBalancer
-        annotations:
-          coredns.io/hostname: unifi
-          metallb.universe.tf/allow-shared-ip: unifi-svc
-          metallb.universe.tf/loadBalancerIPs: "${UNIFI_ADDR}"
+        loadBalancerIP: "${UNIFI_ADDR}"
         externalTrafficPolicy: Local
+        ports:
+          http:
+            port: 8443
+            protocol: HTTPS
+          controller:
+            enabled: true
+            port: 8080
+            protocol: TCP
+          portal-http:
+            enabled: false
+            port: 8880
+            protocol: HTTP
+          portal-https:
+            enabled: false
+            port: 8843
+            protocol: HTTPS
+          speedtest:
+            enabled: true
+            port: 6789
+            protocol: TCP
+          stun:
+            enabled: true
+            port: 3478
+            protocol: UDP
+          syslog:
+            enabled: true
+            port: 5514
+            protocol: UDP
+          discovery:
+            enabled: true
+            port: 10001
+            protocol: UDP
 
     ingress:
       main:
@@ -52,7 +87,6 @@ spec:
           - host: &host "unifi.home.${SECRET_DOMAIN}"
             paths:
               - path: /
-
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
@@ -62,6 +96,7 @@ spec:
       data:
         enabled: true
         existingClaim: unifi-data
+        mountPath: /unifi
       backups:
         enabled: true
         mountPath: /unifi/data/backup
@@ -72,6 +107,6 @@ spec:
     resources:
       requests:
         cpu: 50m
-        memory: 1.5G
+        memory: 1G
       limits:
-        memory: 2.5G
+        memory: 2G
