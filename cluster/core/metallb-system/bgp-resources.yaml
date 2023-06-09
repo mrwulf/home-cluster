@@ -6,7 +6,7 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - 10.0.10.1-10.0.10.20 # "${METALLB_LB_RANGE}"
+    - "${NETWORK_LB_RANGE}"
 ---
 apiVersion: metallb.io/v1beta1
 kind: BGPAdvertisement
