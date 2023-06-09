@@ -53,8 +53,10 @@ spec:
           - backups
           - databases
           - default
+          - development
           - household
           - joplin
+          - kube-system
           - media
           - monitoring
           - networking
@@ -62,6 +64,7 @@ spec:
           - storage
           - system
           - vaultwarden
+          - vpn
       name: "citizen"
       customApps:
         - group: networking
