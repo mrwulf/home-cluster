@@ -59,6 +59,16 @@ nodes:
     installDiskSelector:
       type: nvme
     networkInterfaces: *ctlnetwork
+  - hostname: worker-01.home
+    ipAddress: 10.0.1.46
+    controlPlane: false
+    installDiskSelector:
+      type: nvme
+    networkInterfaces:
+      - interface: eth0
+        dhcp: true
+      - interface: eth1
+        dhcp: true
 
 controlPlane:
   configPatches:
