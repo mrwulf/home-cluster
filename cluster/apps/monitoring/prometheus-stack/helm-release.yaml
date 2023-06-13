@@ -53,14 +53,6 @@ spec:
           k8s-app: kube-scheduler
       serviceMonitor:
         scheme: https
-    kubeProxy:
-      enabled: true
-      service:
-        enabled: true
-        selector:
-          k8s-app: kube-proxy
-      serviceMonitor:
-        scheme: https
     coreDns:
       enabled: true
       service:
