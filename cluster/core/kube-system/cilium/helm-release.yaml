@@ -93,7 +93,7 @@ spec:
         annotations: {}
 
     bgpControlPlane:
-      enabled: false
+      enabled: true
     bgp:
       enabled: false
       announce:
