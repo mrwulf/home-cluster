@@ -25,10 +25,12 @@ nodes:
     networkInterfaces: &ctlnetwork
       - interface: eth0
         dhcp: true
+        # mtu: 4000
         vip:
           ip: ${clusterEndpointIP}
       - interface: eth1
         dhcp: true
+        # mtu: 4000
         vip:
           ip: ${clusterEndpointIP}
   - hostname: delta.home
@@ -36,17 +38,25 @@ nodes:
     controlPlane: false
     installDiskSelector:
       type: ssd
-    networkInterfaces: &wrknetwork
+    networkInterfaces:
       - interface: eth0
         dhcp: true
+        mtu: 9000
       - interface: eth1
         dhcp: true
+        mtu: 9000
   - hostname: epsilon.home
     ipAddress: 10.0.1.45
     controlPlane: false
     installDiskSelector:
       model: "SanDisk*"
-    networkInterfaces: *wrknetwork
+    networkInterfaces: &wrknetwork
+      - interface: eth0
+        dhcp: true
+        # mtu: 9000
+      - interface: eth1
+        dhcp: true
+        # mtu: 9000
   - hostname: zeta.home
     ipAddress: 10.0.1.41
     installDiskSelector:
@@ -64,11 +74,7 @@ nodes:
     controlPlane: false
     installDiskSelector:
       type: nvme
-    networkInterfaces:
-      - interface: eth0
-        dhcp: true
-      - interface: eth1
-        dhcp: true
+    networkInterfaces: *wrknetwork
 
 controlPlane:
   configPatches:
