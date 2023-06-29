@@ -24,7 +24,7 @@ spec:
   values:
     image:
       repository: dpage/pgadmin4
-      tag: "7.3"
+      tag: "7.4"
 
     controller:
       type: statefulset
