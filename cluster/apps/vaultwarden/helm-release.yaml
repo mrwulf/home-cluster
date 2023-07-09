@@ -32,7 +32,7 @@ spec:
         reloader.stakater.com/auto: "true"
     image:
       repository: vaultwarden/server
-      tag: 1.28.1-alpine
+      tag: 1.29.0-alpine
     env:
       ROCKET_PORT: &port 80
       WEBSOCKET_PORT: &websocket-port 3012
