@@ -1,0 +1,15 @@
+---
+version: "3"
+
+tasks:
+  update-uptime-kuma:
+    desc: Update Uptime Kuma
+    silent: true
+    cmds:
+      - |
+        export FLYCTL_INSTALL="$HOME/.fly"
+        export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
+        cd {{.PROJECT_DIR}}/monitoring
+        flyctl status
+        flyctl deploy
