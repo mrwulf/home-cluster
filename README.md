@@ -82,9 +82,12 @@ cluster
 
 | Node                                                   | Role                                                  | Specs                                                  |
 |--------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------|
-| delta | Control Plane | Dell Optiplex 7040 MFF<br />Intel 6700t<br />24G |
+| delta | Worker | Dell Optiplex 7040 MFF<br />Intel 6700t<br />24G |
 | epsilon | Worker | Dell Optiplex 7050 MFF<br />Intel 7500t<br />16G |
 | zeta | Control Plane | Dell Optiplex 7040 MFF<br />Intel 6700t<br />16G |
 | eta | Control Plane | Dell Optiplex 7040 MFF<br />Intel 6700t<br />24G |
+| talos-cp-01 | Control Plane | Lenovo m710q Tiny<br /> Intel 8500t<br />24G |
+| worker-01 | Worker | Lenovo m80q Tiny<br /> Intel 10400t<br />16G |
+
 
 # Other Stuff

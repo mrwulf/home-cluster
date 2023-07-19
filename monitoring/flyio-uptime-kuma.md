@@ -1,5 +1,7 @@
 # Fly.io Uptime Kuma
 
+https://web.archive.org/web/20230528055235/https://noted.lol/easy-off-site-monitoring-with-fly-io-and-uptime-kuma/
+
 > https://noted.lol/easy-off-site-monitoring-with-fly-io-and-uptime-kuma/
 
 # Recreate from fly.toml
@@ -12,3 +14,8 @@ In this folder (with fly.toml)
 1. Deploy: `fly deploy`
 1. Add cloudflare tunnel id in settings
 1. Upload backup of monitors
+
+# Update
+```
+task monitoring:update-uptime-kuma
+```
