@@ -31,7 +31,7 @@ spec:
     image:
       # https://github.com/onedr0p/container-images/pkgs/container/plex
       repository: ghcr.io/onedr0p/plex
-      tag: 1.32.4.7195-7c8f9d3b6
+      tag: 1.32.5.7328-2632c9d3a
 
     # Add this to start the container, but not plex:
     #   command:
