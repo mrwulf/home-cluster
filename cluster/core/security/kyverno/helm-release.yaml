@@ -34,6 +34,8 @@ spec:
     namespaceOverride: security
 
     admissionController:
+      podDisruptionBudget:
+        enabled: false
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
