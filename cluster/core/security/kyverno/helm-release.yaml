@@ -28,12 +28,10 @@ spec:
   #   - name: kube-prometheus-stack
   #     namespace: monitoring
   values:
-    # TODO: change this to "mode: ha" when the new version gets released
-    replicaCount: 3
-
     namespaceOverride: security
 
     admissionController:
+      replicas: 3
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
@@ -53,6 +51,3 @@ spec:
     grafana:
       enabled: true
       namespace: monitoring
-
-    upgrade:
-      fromV2: true
