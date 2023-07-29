@@ -31,6 +31,8 @@ spec:
     # TODO: change this to "mode: ha" when the new version gets released
     replicaCount: 3
 
+    namespaceOverride: security
+
     admissionController:
       topologySpreadConstraints:
         - maxSkew: 1
