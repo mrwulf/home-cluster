@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: kyverno
-      version: 2.7.5
+      version: 3.0.3
       sourceRef:
         kind: HelmRepository
         name: kyverno-charts
@@ -31,17 +31,26 @@ spec:
     # TODO: change this to "mode: ha" when the new version gets released
     replicaCount: 3
 
-    topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-            app.kubernetes.io/instance: kyverno
+    admissionController:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: kyverno
 
-    resources:
-      requests:
-        cpu: 92m
-        memory: 226M
-      limits:
-        memory: 285M
+      container:
+        resources:
+          requests:
+            cpu: 92m
+            memory: 226M
+          limits:
+            memory: 285M
+
+    grafana:
+      enabled: true
+      namespace: monitoring
+
+    upgrade:
+      fromV2: true
