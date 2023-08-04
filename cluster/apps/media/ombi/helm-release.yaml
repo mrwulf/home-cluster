@@ -8,12 +8,11 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://k8s-at-home.com/charts/
-      chart: ombi
-      version: 11.5.2
+      chart: app-template
+      version: 1.5.1
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: bjw-s-charts
         namespace: flux-system
       interval: 5m
   dependsOn:
@@ -26,18 +25,17 @@ spec:
         reloader.stakater.com/auto: "true"
 
     image:
-      repository: ghcr.io/linuxserver/ombi
-      tag: v4.39.1-ls159
+      repository: lscr.io/linuxserver/ombi
+      tag: 4.39.1
 
     env:
       TZ: "${TIMEZONE}"
-    #   PUID: "816"
-    #   GUID: "816"
-    # podSecurityContext:
-    #   runAsUser: 816
-    #   runAsGroup: 816
-    #   fsGroup: 816
-    #   fsGroupChangePolicy: "OnRootMismatch"
+      PUID: "1000"
+      PGID: "1000"
+
+    podSecurityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: OnRootMismatch
 
     dnsConfig:
       options:
@@ -49,6 +47,12 @@ spec:
         enabled: true
         existingClaim: ombi-config
 
+    service:
+      main:
+        ports:
+          http:
+            port: 3579
+
     ingress:
       main:
         enabled: true
@@ -57,6 +61,7 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: websecure
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           hajimari.io/enable: "true"
+          hajimari.io/icon: mdi:ticket-account
           hajimari.io/group: "Media"
         hosts:
           - host: &host "ombi.home.${SECRET_DOMAIN}"
