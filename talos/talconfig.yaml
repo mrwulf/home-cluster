@@ -1,8 +1,8 @@
 # https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
-talosVersion: v1.4.7
-kubernetesVersion: v1.26.4
+talosVersion: v1.5.1
+kubernetesVersion: v1.27.4
 endpoint: https://kubernetes.home:6443
 
 additionalApiServerCertSans:
@@ -84,28 +84,28 @@ controlPlane:
       path: /machine/kubelet/extraArgs
       value:
         rotate-server-certificates: true
-        feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true,EphemeralContainers=true
+        feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true
     - op: add
       path: /cluster/apiServer/extraArgs
       value:
-        feature-gates: MixedProtocolLBService=true,EphemeralContainers=true
+        feature-gates: MixedProtocolLBService=true
     - op: add
       path: /cluster/controllerManager/extraArgs
       value:
         bind-address: 0.0.0.0
-        feature-gates: MixedProtocolLBService=true,EphemeralContainers=true
+        feature-gates: MixedProtocolLBService=true
     - op: add
       path: /cluster/scheduler/extraArgs
       value:
         bind-address: 0.0.0.0
-        feature-gates: MixedProtocolLBService=true,EphemeralContainers=true
+        feature-gates: MixedProtocolLBService=true
     - op: add
       path: /cluster/proxy/extraArgs
       value:
         # This isn't working -- only applied when bootstrapping a cluster
         # bind-address: 0.0.0.0
         metrics-bind-address: '0.0.0.0:10249'
-        feature-gates: MixedProtocolLBService=true,EphemeralContainers=true
+        feature-gates: MixedProtocolLBService=true
     - op: add
       path: /machine/sysctls
       value:
@@ -163,8 +163,8 @@ controlPlane:
         extraKernelArgs:
           - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
         extensions:
-          - image: ghcr.io/siderolabs/i915-ucode:20230625
-          - image: ghcr.io/siderolabs/intel-ucode:20230613
+          - image: ghcr.io/siderolabs/i915-ucode:20230804
+          - image: ghcr.io/siderolabs/intel-ucode:20230808
       udev:
         rules:
           - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
@@ -176,7 +176,7 @@ worker:
       path: /machine/kubelet/extraArgs
       value:
         rotate-server-certificates: true
-        feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true,EphemeralContainers=true
+        feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true
     - op: add
       path: /machine/sysctls
       value:
@@ -220,8 +220,8 @@ worker:
         extraKernelArgs:
           - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
         extensions:
-          - image: ghcr.io/siderolabs/i915-ucode:20230625
-          - image: ghcr.io/siderolabs/intel-ucode:20230613
+          - image: ghcr.io/siderolabs/i915-ucode:20230804
+          - image: ghcr.io/siderolabs/intel-ucode:20230808
       udev:
         rules:
           - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
