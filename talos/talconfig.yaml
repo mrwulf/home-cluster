@@ -1,4 +1,4 @@
-# https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
+# example: https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
 talosVersion: v1.5.1
@@ -17,39 +17,39 @@ cniConfig:
 #     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/cilium.yaml
 #     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/configmap.yaml
 nodes:
+  - hostname: zeta.home
+    ipAddress: 10.0.1.41
+    installDiskSelector:
+      type: ssd
+    controlPlane: true
+    networkInterfaces: &ctlnetwork
+      - interface: eth0
+        dhcp: true
+        # mtu: 9000
+        vip:
+          ip: ${clusterEndpointIP}
+      - interface: eth1
+        dhcp: true
+        # mtu: 9000
+        vip:
+          ip: ${clusterEndpointIP}
+  - hostname: eta.home
+    ipAddress: 10.0.1.42
+    controlPlane: true
+    installDiskSelector:
+      type: nvme
+    networkInterfaces: *ctlnetwork
   - hostname: talos-cp-01.home
     ipAddress: 10.0.1.43
     controlPlane: true
     installDiskSelector:
       type: nvme
-    networkInterfaces: &ctlnetwork
-      - interface: eth0
-        dhcp: true
-        # mtu: 4000
-        vip:
-          ip: ${clusterEndpointIP}
-      - interface: eth1
-        dhcp: true
-        # mtu: 4000
-        vip:
-          ip: ${clusterEndpointIP}
+    networkInterfaces: *ctlnetwork
   - hostname: delta.home
     ipAddress: 10.0.1.44
     controlPlane: false
     installDiskSelector:
       type: ssd
-    networkInterfaces:
-      - interface: eth0
-        dhcp: true
-        mtu: 9000
-      - interface: eth1
-        dhcp: true
-        mtu: 9000
-  - hostname: epsilon.home
-    ipAddress: 10.0.1.45
-    controlPlane: false
-    installDiskSelector:
-      model: "SanDisk*"
     networkInterfaces: &wrknetwork
       - interface: eth0
         dhcp: true
@@ -57,18 +57,12 @@ nodes:
       - interface: eth1
         dhcp: true
         # mtu: 9000
-  - hostname: zeta.home
-    ipAddress: 10.0.1.41
+  - hostname: epsilon.home
+    ipAddress: 10.0.1.45
+    controlPlane: false
     installDiskSelector:
-      type: ssd
-    controlPlane: true
-    networkInterfaces: *ctlnetwork
-  - hostname: eta.home
-    ipAddress: 10.0.1.42
-    controlPlane: true
-    installDiskSelector:
-      type: nvme
-    networkInterfaces: *ctlnetwork
+      model: "SanDisk*"
+    networkInterfaces: *wrknetwork
   - hostname: worker-01.home
     ipAddress: 10.0.1.46
     controlPlane: false
@@ -76,153 +70,84 @@ nodes:
       type: nvme
     networkInterfaces: *wrknetwork
 
-controlPlane:
-  configPatches:
-    - op: remove
-      path: /cluster/apiServer/admissionControl
-    - op: add
-      path: /machine/kubelet/extraArgs
-      value:
-        rotate-server-certificates: true
-        feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true
-    - op: add
-      path: /cluster/apiServer/extraArgs
-      value:
-        feature-gates: MixedProtocolLBService=true
-    - op: add
-      path: /cluster/controllerManager/extraArgs
-      value:
-        bind-address: 0.0.0.0
-        feature-gates: MixedProtocolLBService=true
-    - op: add
-      path: /cluster/scheduler/extraArgs
-      value:
-        bind-address: 0.0.0.0
-        feature-gates: MixedProtocolLBService=true
-    - op: add
-      path: /cluster/proxy/extraArgs
-      value:
-        # This isn't working -- only applied when bootstrapping a cluster
-        # bind-address: 0.0.0.0
-        metrics-bind-address: '0.0.0.0:10249'
-        feature-gates: MixedProtocolLBService=true
-    - op: add
-      path: /machine/sysctls
-      value:
+worker:
+  inlinePatch:
+    cluster: &clusterConfig
+      discovery:
+        registries:
+          kubernetes:
+            disabled: false
+          service:
+            disabled: true
+    machine: &machineConfig
+      files:
+        - content: |
+            [plugins]
+              [plugins."io.containerd.grpc.v1.cri"]
+                enable_unprivileged_ports = true
+                enable_unprivileged_icmp = true
+          path: /etc/cri/conf.d/20-customization.part
+          op: create
+      install:
+        extraKernelArgs:
+          - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
+        extensions:
+          - image: ghcr.io/siderolabs/i915-ucode:20230804
+          - image: ghcr.io/siderolabs/intel-ucode:20230808
+      kubelet:
+        extraArgs:
+          rotate-server-certificates: true
+          feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true
+      logging:
+        destinations:
+          - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
+            format: json_lines
+      network:
+        extraHostEntries:
+          - ip: ${clusterEndpointIP}
+            aliases:
+              - kubernetes.home
+      sysctls:
         fs.inotify.max_user_watches: "1048576"
         fs.inotify.max_user_instances: "8192"
+      time:
+        disabled: false
+        servers:
+          - 10.0.0.1
+      udev:
+        rules:
+          - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
+          # - ACTION=="add", ATTR{idVendor}=="10ec", ATTR{idProduct}=="8125", ATTR{bConfigurationValue}="1"
+
+controlPlane:
   inlinePatch:
     cluster:
+      <<: *clusterConfig
       allowSchedulingOnControlPlanes: true
+      apiServer:
+        admissionControl: null
+        extraArgs:
+          feature-gates: MixedProtocolLBService=true
+      controllerManager:
+        extraArgs:
+          bind-address: 0.0.0.0
+          feature-gates: MixedProtocolLBService=true
       etcd:
         extraArgs:
           listen-metrics-urls: http://0.0.0.0:2381
           auto-compaction-retention: 4
-    #   extraManifests:
-    #     - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
-    #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-
-
+  #   extraManifests:
+  #     - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
+  #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
       proxy:
         disabled: true
-      discovery:
-        registries:
-          kubernetes:
-            disabled: false
-          service:
-            disabled: true
+      scheduler:
+        extraArgs:
+          bind-address: 0.0.0.0
+          feature-gates: MixedProtocolLBService=true
 
     machine:
+      <<: *machineConfig
       certSANs:
         - ${clusterEndpointIP}
         - kubernetes.home
-
-      files:
-        - content: |
-            [plugins]
-              [plugins."io.containerd.grpc.v1.cri"]
-                enable_unprivileged_ports = true
-                enable_unprivileged_icmp = true
-          path: /etc/cri/conf.d/20-customization.part
-          op: create
-
-      time:
-        disabled: false
-        servers:
-          - 10.0.0.1
-      network:
-        extraHostEntries:
-          - ip: ${clusterEndpointIP}
-            aliases:
-              - kubernetes.home
-      logging:
-        destinations:
-          - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
-            format: json_lines
-      install:
-        extraKernelArgs:
-          - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
-        extensions:
-          - image: ghcr.io/siderolabs/i915-ucode:20230804
-          - image: ghcr.io/siderolabs/intel-ucode:20230808
-      udev:
-        rules:
-          - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
-          # - ACTION=="add", ATTR{idVendor}=="10ec", ATTR{idProduct}=="8125", ATTR{bConfigurationValue}="1"
-
-worker:
-  configPatches:
-    - op: add
-      path: /machine/kubelet/extraArgs
-      value:
-        rotate-server-certificates: true
-        feature-gates: MixedProtocolLBService=true,GracefulNodeShutdown=true
-    - op: add
-      path: /machine/sysctls
-      value:
-        fs.inotify.max_user_watches: "1048576"
-        fs.inotify.max_user_instances: "8192"
-  inlinePatch:
-    cluster:
-      discovery:
-        registries:
-          kubernetes:
-            disabled: false
-          service:
-            disabled: true
-    #   extraManifests:
-    #     - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
-    #     - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-    machine:
-      files:
-        - content: |
-            [plugins]
-              [plugins."io.containerd.grpc.v1.cri"]
-                enable_unprivileged_ports = true
-                enable_unprivileged_icmp = true
-          path: /etc/cri/conf.d/20-customization.part
-          op: create
-
-      time:
-        disabled: false
-        servers:
-          - 10.0.0.1
-      network:
-        extraHostEntries:
-          - ip: ${clusterEndpointIP}
-            aliases:
-              - kubernetes.home
-      logging:
-        destinations:
-          - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
-            format: json_lines
-      install:
-        extraKernelArgs:
-          - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
-        extensions:
-          - image: ghcr.io/siderolabs/i915-ucode:20230804
-          - image: ghcr.io/siderolabs/intel-ucode:20230808
-      udev:
-        rules:
-          - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
-          # - ACTION=="add", ATTR{idVendor}=="10ec", ATTR{idProduct}=="8125", ATTR{bConfigurationValue}="1"
