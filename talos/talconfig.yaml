@@ -80,6 +80,10 @@ worker:
           service:
             disabled: true
     machine: &machineConfig
+      features:
+        kubePrism:
+          enabled: true
+          port: 7445
       files:
         - content: |
             [plugins]
