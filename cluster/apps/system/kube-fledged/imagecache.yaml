@@ -12,30 +12,30 @@ metadata:
 spec:
   cacheSpec:
     - images:
-        - docker.io/bitnami/external-dns:0.13.5-debian-11-r55
-        - docker.io/coredns/coredns:1.10.0
+        - docker.io/bitnami/external-dns:0.13.5-debian-11-r79
         - docker.io/traefik:v2.10.4
-        - gcr.io/kasten-images/cephtool:6.0.4
-        - ghcr.io/fluxcd/helm-controller:v0.35.0
-        - ghcr.io/fluxcd/kustomize-controller:v1.0.1
-        - ghcr.io/fluxcd/notification-controller:v1.0.0
-        - ghcr.io/fluxcd/source-controller:v1.0.1
-        - ghcr.io/kyverno/background-controller:v1.10.2
-        - ghcr.io/kyverno/cleanup-controller:v1.10.2
-        - ghcr.io/kyverno/kyverno:v1.10.2
-        - ghcr.io/kyverno/reports-controller:v1.10.2
+        - gcr.io/kasten-images/cephtool:6.0.5
+        - ghcr.io/fluxcd/helm-controller:v0.36.0
+        - ghcr.io/fluxcd/kustomize-controller:v1.1.0
+        - ghcr.io/fluxcd/notification-controller:v1.1.0
+        - ghcr.io/fluxcd/source-controller:v1.1.0
+        - ghcr.io/kyverno/background-controller:v1.10.3
+        - ghcr.io/kyverno/cleanup-controller:v1.10.3
+        - ghcr.io/kyverno/kyverno:v1.10.3
+        - ghcr.io/kyverno/reports-controller:v1.10.3
         - ghcr.io/onedr0p/plex:1.32.5.7349-8f4248874
         - jacobalberty/unifi:v7.4.162
         - quay.io/ceph/ceph:v17.2.6
         - quay.io/cephcsi/cephcsi:v3.9.0
-        - quay.io/cilium/cilium:v1.14.0@sha256:5a94b561f4651fcfd85970a50bc78b201cfbd6e2ab1a03848eab25a82832653a
-        - quay.io/cilium/hubble-relay:v1.14.0@sha256:bfe6ef86a1c0f1c3e8b105735aa31db64bcea97dd4732db6d0448c55a3c8e70c
+        - quay.io/cilium/cilium:v1.14.1@sha256:edc1d05ea1365c4a8f6ac6982247d5c145181704894bb698619c3827b6963a72
+        - quay.io/cilium/hubble-relay:v1.14.1@sha256:db30e85a7abc10589ce2a97d61ee18696a03dc5ea04d44b4d836d88bd75b59d8
         - quay.io/cilium/hubble-ui-backend:v0.12.0@sha256:8a79a1aad4fc9c2aa2b3e4379af0af872a89fcec9d99e117188190671c66fc2e
         - quay.io/cilium/hubble-ui:v0.12.0@sha256:1c876cfa1d5e35bc91e1025c9314f922041592a88b03313c22c1f97a5d2ba88f
-        - quay.io/cilium/operator-generic:v1.14.0@sha256:3014d4bcb8352f0ddef90fa3b5eb1bbf179b91024813a90a0066eb4517ba93c9
-        - registry.k8s.io/kube-apiserver:v1.26.4
-        - registry.k8s.io/kube-controller-manager:v1.26.4
-        - registry.k8s.io/kube-scheduler:v1.26.4
-        - rook/ceph:v1.12.1
-        - timberio/vector:0.31.0-debian
+        - quay.io/cilium/operator-generic:v1.14.1@sha256:e061de0a930534c7e3f8feda8330976367971238ccafff42659f104effd4b5f7
+        - registry.k8s.io/coredns/coredns:v1.10.1
+        - registry.k8s.io/kube-apiserver:v1.27.4
+        - registry.k8s.io/kube-controller-manager:v1.27.4
+        - registry.k8s.io/kube-scheduler:v1.27.4
+        - rook/ceph:v1.12.2
+        - timberio/vector:0.32.1-debian
         - vaultwarden/server:1.29.1-alpine
