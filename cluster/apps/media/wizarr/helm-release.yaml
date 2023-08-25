@@ -62,11 +62,11 @@ spec:
           - secretname: "wildcard-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
-    podSecurityContext:
-      runAsUser: 568
-      runAsGroup: 568
-      fsGroup: 568
-      fsGroupChangePolicy: OnRootMismatch
+    # podSecurityContext:
+    #   runAsUser: 568
+    #   runAsGroup: 568
+    #   fsGroup: 568
+    #   fsGroupChangePolicy: OnRootMismatch
     persistence:
       config:
         enabled: true
