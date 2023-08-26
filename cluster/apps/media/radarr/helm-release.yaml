@@ -25,7 +25,6 @@ spec:
   # See https://github.com/bjw-s/helm-charts/blob/main/charts/library/common/values.yaml
   values:
     controller:
-      type: statefulset
       annotations:
         reloader.stakater.com/auto: "true"
     image:
