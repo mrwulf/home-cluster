@@ -23,7 +23,6 @@ spec:
       retries: 5
   values:
     controller:
-      type: statefulset
       annotations:
         reloader.stakater.com/auto: "true"
     image:

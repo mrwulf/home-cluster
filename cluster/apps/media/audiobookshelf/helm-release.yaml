@@ -29,7 +29,6 @@ spec:
       retries: 3
   values:
     controller:
-      type: statefulset
       annotations:
         reloader.stakater.com/auto: "true"
 
