@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - hajimari
   - home-assistant
+  - immich
   - mealie
   - photoprism
   - outline
