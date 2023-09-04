@@ -4,6 +4,8 @@ version: "3"
 vars:
   CLUSTER_NAME:
     sh: yq '.clusterName' talos/talconfig.yaml
+  NODE_ARRAY:
+    sh: yq '.nodes[].hostname' talos/talconfig.yaml
   NODE_LIST:
     sh: yq '.nodes[].hostname' talos/talconfig.yaml | tr '\n' ',' | head -c -1
   ONE_NODE:
@@ -76,7 +78,6 @@ tasks:
         vars:
           CLI_ARGS: 'service | tail -n +2 | grep kubelet | sort -r -k 5'
 
-
   theila:
     desc: Show the Theila web-ui dashboard with all the hosts
     silent: true
@@ -116,21 +117,37 @@ tasks:
   diff-config:
     desc: Diff config against running node config
     vars:
-      NODE: '{{.CLI_ARGS | default .ONE_MASTER}}'
+      NODE: '{{.CLI_ARGS | default .NODE | default .ONE_MASTER}}'
     cmds:
       - |
         talosctl apply-config --dry-run -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml
 
+  diff-all-configs:
+    desc: Diff config for all nodes
+    cmds:
+      - for: { var: NODE_ARRAY, as: NODE }
+        task: diff-config
+        vars:
+          NODE: '{{.NODE}}'
+
   apply-config:
     desc: Apply config against running node config
     vars:
-      NODE: '{{.CLI_ARGS}}'
+      NODE: '{{.CLI_ARGS | default .NODE}}'
     preconditions:
       - sh: "[ '' -eq {{.NODE}} ]"
         msg: Node Required!
     cmds:
       - |
         talosctl apply-config -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml -m=no-reboot
+
+  apply-all-configs:
+    desc: Apply config for all nodes
+    cmds:
+      - for: { var: NODE_ARRAY, as: NODE }
+        task: apply-config
+        vars:
+          NODE: '{{.NODE}}'
 
   upgrade:
     desc: Upgrade Talos on a single node to version in talconfig.yaml

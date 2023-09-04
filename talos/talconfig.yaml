@@ -33,12 +33,15 @@ nodes:
         # mtu: 9000
         vip:
           ip: ${clusterEndpointIP}
+    nodeLabels: &nodeLabels
+      node.home.arpa/physical: true
   - hostname: eta.home
     ipAddress: 10.0.1.42
     controlPlane: true
     installDiskSelector:
       type: nvme
     networkInterfaces: *ctlnetwork
+    nodeLabels: *nodeLabels
   - hostname: talos-cp-01.home
     ipAddress: 10.0.1.43
     controlPlane: true
@@ -57,18 +60,21 @@ nodes:
       - interface: eth1
         dhcp: true
         # mtu: 9000
+    nodeLabels: *nodeLabels
   - hostname: epsilon.home
     ipAddress: 10.0.1.45
     controlPlane: false
     installDiskSelector:
       model: "SanDisk*"
     networkInterfaces: *wrknetwork
+    nodeLabels: *nodeLabels
   - hostname: worker-01.home
     ipAddress: 10.0.1.46
     controlPlane: false
     installDiskSelector:
       type: nvme
     networkInterfaces: *wrknetwork
+    nodeLabels: *nodeLabels
 
 worker:
   inlinePatch:
