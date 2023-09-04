@@ -14,6 +14,6 @@ data:
   TYPESENSE_DATA_DIR: /config
   TYPESENSE_HOST: immich-typesense.household.svc.cluster.local
   OAUTH_ENABLED: "true"
-  OAUTH_ISSUER_URL: "https://auth.${SECRET_DOMAIN}/.well-known/openid-configuration"
+  OAUTH_ISSUER_URL: "https://auth.${SECRET_DOMAIN}/application/o/immich/.well-known/openid-configuration"
   OAUTH_AUTO_REGISTER: "true"
   OAUTH_BUTTON_TEXT: "Login with Authentik"
