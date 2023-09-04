@@ -4,3 +4,4 @@ resources:
   - rfc1918.yaml
   - authentik-forward-auth.yaml
   - secure-headers.yaml
+  - stripprefix-api.yaml
