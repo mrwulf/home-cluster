@@ -68,7 +68,7 @@ spec:
           # nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
           # nginx.ingress.kubernetes.io/proxy-body-size: "0"
         hosts:
-          - host: &host immich.home.${SECRET_DOMAIN}
+          - host: &host photos.${SECRET_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
@@ -80,7 +80,7 @@ spec:
         tls:
           - hosts:
               - *host
-            secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
 
     persistence:
       library:
