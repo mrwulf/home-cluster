@@ -63,6 +63,8 @@ spec:
           hajimari.io/appName: Immich
           hajimari.io/icon: heroicons:photo
           traefik.ingress.kubernetes.io/router.middlewares: networking-stripprefix-api@kubernetescrd
+          external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
+          external-dns/is-public: "true"
           # nginx.ingress.kubernetes.io/configuration-snippet: |
           #   rewrite /api/(.*) /$1 break;
           # nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
