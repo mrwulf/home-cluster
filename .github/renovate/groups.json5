@@ -9,12 +9,34 @@
       "separateMinorPatch": true
     },
     {
+      matchDatasources: ["helm", "docker"],
+      matchPackageNames: [
+        "quay.io/cilium/cilium",
+        "quay.io/cilium/operator-generic",
+        "cilium",
+      ],
+      groupName: "cilium",
+      additionalBranchPrefix: "",
+      separateMinorPatch: true,
+      stabilityDays: 2,
+    },
+    {
       "description": "External Snapshotter image and kustomization",
       "groupName": "External Snapshotter",
       "matchPackagePatterns": ["external-snapshotter", "snapshot-controller"],
       "matchDatasources": ["docker", "github-tags"],
       "group": { "commitMessageTopic": "{{{groupName}}} group" },
       "separateMinorPatch": true
+    },
+    {
+      description: "Immich images",
+      groupName: "Immich",
+      matchPackagePatterns: ["immich"],
+      matchDatasources: ["docker"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      separateMinorPatch: true,
     },
     {
       "description": "Vector image and chart - versions do not match",
