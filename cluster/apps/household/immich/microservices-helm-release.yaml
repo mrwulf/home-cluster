@@ -72,5 +72,5 @@ spec:
         cpu: 100m
         memory: 250Mi
         gpu.intel.com/i915: 1
-      limit:
+      limits:
         gpu.intel.com/i915: 1
