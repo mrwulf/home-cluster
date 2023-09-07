@@ -59,16 +59,6 @@ spec:
         existingClaim: immich-nfs
         mountPath: /usr/src/app/upload
 
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: node.home.arpa/physical
-                  operator: In
-                  values:
-                    - "true"
-
     topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
@@ -81,3 +71,4 @@ spec:
       requests:
         cpu: 100m
         memory: 250Mi
+        gpu.intel.com/i915: 1

@@ -85,17 +85,8 @@ spec:
           matchLabels:
             app.kubernetes.io/name: *app
 
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: node.home.arpa/physical
-                  operator: In
-                  values:
-                    - "true"
-
     resources:
       requests:
         cpu: 100m
         memory: 250Mi
+        gpu.intel.com/i915: 1
