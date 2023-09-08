@@ -32,7 +32,7 @@ spec:
 
   values:
     controller:
-      replicas: 2
+      replicas: 4
       strategy: RollingUpdate
       annotations:
         configmap.reloader.stakater.com/reload: &configMap immich-configmap
