@@ -43,6 +43,12 @@ spec:
 
     clusterName: home-cluster
 
+    garbagecollector:
+      daemonPeriod: 3600
+      keepMaxActions: 1000
+      retireActions:
+        enabled: true
+
     ingress:
       create: true
       host: &host k10.home.${SECRET_DOMAIN}
