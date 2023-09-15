@@ -31,7 +31,7 @@ spec:
     recreate: true
     cleanupOnFail: true
   values:
-    domain: "home.${SECRET_DOMAIN}"
+    domain: "home.${SECRET_DOMAIN} ${SECRET_DOMAIN}"
     ttl: 1
     service:
       type: LoadBalancer
