@@ -60,6 +60,7 @@ spec:
         ingressClassName: traefik
         annotations:
           # external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
           hajimari.io/appName: Immich
           hajimari.io/icon: heroicons:photo
           traefik.ingress.kubernetes.io/router.middlewares: networking-stripprefix-api@kubernetescrd
