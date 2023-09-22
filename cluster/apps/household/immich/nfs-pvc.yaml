@@ -1,4 +1,16 @@
 ---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  labels:
+    kasten.io/backup-volume: disabled
+    kustomize.toolkit.fluxcd.io/name: apps
+    kustomize.toolkit.fluxcd.io/namespace: flux-system
+  name: immich-nfs
+provisioner: undefined
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -33,14 +45,36 @@ spec:
     requests:
       storage: 1Mi # Size does not matter
 ---
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
+apiVersion: v1
+kind: PersistentVolume
 metadata:
+  name: immich-memories-nfs
   labels:
     kasten.io/backup-volume: disabled
-    kustomize.toolkit.fluxcd.io/name: apps
-    kustomize.toolkit.fluxcd.io/namespace: flux-system
-  name: immich-nfs
-provisioner: undefined
-reclaimPolicy: Retain
-volumeBindingMode: Immediate
+spec:
+  storageClassName: immich-nfs
+  capacity:
+    storage: 2Mi # Size does not matter
+  accessModes: ["ReadWriteMany"]
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: ${PRIMARY_NFS_SERVER}
+    # path: "${NFS_KUBERNETES_PATH}/active/books"
+    path: "/volume3/Pictures"
+  # Note: The first two options are strictly for NFSv4.2
+  # mountOptions: ["nfsvers=4.2", "nconnect=8", "hard", "noatime"]
+  mountOptions: ["nconnect=8", "hard", "noatime"]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-memories-nfs
+  namespace: household
+  labels:
+    kasten.io/backup-volume: disabled
+spec:
+  accessModes: ["ReadWriteMany"]
+  storageClassName: immich-nfs
+  resources:
+    requests:
+      storage: 2Mi # Size does not matter
