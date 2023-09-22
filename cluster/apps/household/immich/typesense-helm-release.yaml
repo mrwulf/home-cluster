@@ -110,3 +110,13 @@ spec:
       requests:
         cpu: 100m
         memory: 250Mi
+
+  postRenderers:
+    - kustomize:
+        patchesStrategicMerge:
+          - apiVersion: apps/v1
+            kind: StatefulSet
+            metadata:
+              name: immich-typesense
+            spec:
+              serviceName: headless
