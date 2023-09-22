@@ -86,6 +86,7 @@ spec:
         enabled: true
         type: configMap
         name: immich-typesense-nodes
+        subPath: nodes
         mountPath: /usr/share/typesense/nodelist.conf
         readOnly: true
 
