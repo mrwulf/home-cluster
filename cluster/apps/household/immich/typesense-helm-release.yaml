@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: immich-typesense
+  name: &app immich-typesense
   namespace: household
 spec:
   interval: 30m
@@ -28,7 +28,7 @@ spec:
   values:
     controller:
       type: statefulset
-      replicas: 1
+      replicas: 3
       annotations:
         configmap.reloader.stakater.com/reload: &configMap immich-configmap
         secret.reloader.stakater.com/reload: &secret immich-secret
@@ -36,6 +36,9 @@ spec:
     image:
       repository: docker.io/typesense/typesense
       tag: 0.25.1
+
+    env:
+      TYPESENSE_NODES: /usr/share/typesense/nodelist.conf
 
     envFrom:
       - configMapRef:
@@ -48,9 +51,23 @@ spec:
         ports:
           http:
             port: &port 8108
+          peering:
+            enabled: true
+            port: 8107
 
     probes:
       liveness: &probes
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /health
+            port: *port
+          initialDelaySeconds: 90
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+      readiness:
         enabled: true
         custom: true
         spec:
@@ -61,9 +78,26 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 1
           failureThreshold: 3
-      readiness: *probes
       startup:
         enabled: false
+
+    persistence:
+      nodelist:
+        enabled: true
+        type: configMap
+        name: immich-typesense-nodes
+        mountPath: /usr/share/typesense/nodelist.conf
+        readOnly: true
+
+    podManagementPolicy: Parallel
+
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: *app
 
     volumeClaimTemplates:
       - name: config
