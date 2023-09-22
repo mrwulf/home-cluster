@@ -21,7 +21,7 @@ data:
 ---
 apiVersion: v1
 data:
-  nodes: immich-typesense-0:8107:8108,immich-typesense-1:8107:8108,immich-typesense-2:8107:8108
+  nodes: immich-typesense-0.headless.household.svc.cluster.local:8107:8108,immich-typesense-1.headless.household.svc.cluster.local:8107:8108,immich-typesense-2.headless.household.svc.cluster.local:8107:8108
 kind: ConfigMap
 metadata:
   name: immich-typesense-nodes

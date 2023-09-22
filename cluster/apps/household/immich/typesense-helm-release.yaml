@@ -29,6 +29,7 @@ spec:
     controller:
       type: statefulset
       replicas: 3
+      podManagementPolicy: Parallel
       annotations:
         configmap.reloader.stakater.com/reload: &configMap immich-configmap
         secret.reloader.stakater.com/reload: &secret immich-secret
@@ -89,8 +90,6 @@ spec:
         subPath: nodes
         mountPath: /usr/share/typesense/nodelist.conf
         readOnly: true
-
-    podManagementPolicy: Parallel
 
     topologySpreadConstraints:
       - maxSkew: 1
