@@ -90,6 +90,10 @@ spec:
         enabled: true
         existingClaim: immich-nfs
         mountPath: /usr/src/app/upload
+      memories:
+        enabled: true
+        existingClaim: immich-memories-nfs
+        mountPath: /mnt/memories
 
     affinity:
       nodeAffinity:
