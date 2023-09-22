@@ -6,6 +6,7 @@ metadata:
   namespace: household
 spec:
   clusterIP: None
+  publishNotReadyAddresses: true
   ports:
     - name: http
       port: 8108
