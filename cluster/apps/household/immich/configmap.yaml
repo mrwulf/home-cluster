@@ -18,3 +18,11 @@ data:
   OAUTH_AUTO_REGISTER: "true"
   OAUTH_BUTTON_TEXT: "Login with Authentik"
   TZ: "${TIMEZONE}"
+---
+apiVersion: v1
+data:
+  nodes: immich-typesense-0:8107:8108,immich-typesense-1:8107:8108,immich-typesense-2:8107:8108
+kind: ConfigMap
+metadata:
+  name: immich-typesense-nodes
+  namespace: household
