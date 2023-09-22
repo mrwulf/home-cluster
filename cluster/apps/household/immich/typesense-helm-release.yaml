@@ -103,7 +103,7 @@ spec:
       - name: config
         mountPath: /config
         accessMode: ReadWriteOnce
-        size: 10Gi
+        size: 20Gi
         storageClass: ceph-block-delete
 
     resources:
