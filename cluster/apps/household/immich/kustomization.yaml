@@ -5,6 +5,7 @@ resources:
   - ml-cache-pvc.yaml
   - configmap.yaml
   - immich-secret.sops.yaml
+  - typesense-service.yaml
   - typesense-helm-release.yaml
   - server-helm-release.yaml
   - microservices-helm-release.yaml
