@@ -67,7 +67,7 @@ spec:
           initialDelaySeconds: 90
           periodSeconds: 10
           timeoutSeconds: 1
-          failureThreshold: 3
+          failureThreshold: 30
       readiness:
         enabled: true
         custom: true
@@ -103,7 +103,7 @@ spec:
       - name: config
         mountPath: /config
         accessMode: ReadWriteOnce
-        size: 20Gi
+        size: 50Gi
         storageClass: ceph-block-delete
 
     resources:
