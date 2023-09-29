@@ -1,7 +1,7 @@
 # example: https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
-talosVersion: v1.5.2
+talosVersion: v1.5.3
 kubernetesVersion: v1.27.4
 endpoint: https://kubernetes.home:6443
 
@@ -17,64 +17,67 @@ cniConfig:
 #     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/cilium.yaml
 #     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/configmap.yaml
 nodes:
-  - hostname: zeta.home
-    ipAddress: 10.0.1.41
-    installDiskSelector:
-      type: ssd
-    controlPlane: true
-    networkInterfaces: &ctlnetwork
-      - interface: eth0
-        dhcp: true
-        # mtu: 9000
-        vip:
-          ip: ${clusterEndpointIP}
-      - interface: eth1
-        dhcp: true
-        # mtu: 9000
-        vip:
-          ip: ${clusterEndpointIP}
-    nodeLabels: &nodeLabels
-      node.home.arpa/physical: true
-  - hostname: eta.home
-    ipAddress: 10.0.1.42
-    controlPlane: true
-    installDiskSelector:
-      type: nvme
-    networkInterfaces: *ctlnetwork
-    nodeLabels: *nodeLabels
-  - hostname: talos-cp-01.home
-    ipAddress: 10.0.1.43
-    controlPlane: true
-    installDiskSelector:
-      type: nvme
-    networkInterfaces: *ctlnetwork
-  - hostname: delta.home
-    ipAddress: 10.0.1.44
-    controlPlane: false
-    installDiskSelector:
-      type: ssd
-    networkInterfaces: &wrknetwork
-      - interface: eth0
-        dhcp: true
-        # mtu: 9000
-      - interface: eth1
-        dhcp: true
-        # mtu: 9000
-    nodeLabels: *nodeLabels
-  - hostname: epsilon.home
-    ipAddress: 10.0.1.45
-    controlPlane: false
-    installDiskSelector:
-      model: "SanDisk*"
-    networkInterfaces: *wrknetwork
-    nodeLabels: *nodeLabels
   - hostname: worker-01.home
     ipAddress: 10.0.1.46
     controlPlane: false
     installDiskSelector:
       type: nvme
-    networkInterfaces: *wrknetwork
-    nodeLabels: *nodeLabels
+    networkInterfaces: &workerNetwork
+      - interface: eth0
+        dhcp: true
+        # mtu: 9000
+      - interface: eth1
+        dhcp: true
+        # mtu: 9000
+    nodeLabels: &workerNodeLabels
+      node.home.arpa/physical: true
+  - hostname: zeta.home
+    ipAddress: 10.0.1.41
+    installDiskSelector:
+      type: ssd
+    controlPlane: true
+    networkInterfaces: &controllerNetwork
+      - interface: eth0
+        dhcp: true
+        # mtu: 9000
+        vip:
+          ip: ${clusterEndpointIP}
+      - interface: eth1
+        dhcp: true
+        # mtu: 9000
+        vip:
+          ip: ${clusterEndpointIP}
+    nodeLabels: &controllerNodeLabels
+      <<: *workerNodeLabels
+      node-role.kubernetes.io/control-plane: ''
+  - hostname: eta.home
+    ipAddress: 10.0.1.42
+    controlPlane: true
+    installDiskSelector:
+      type: nvme
+    networkInterfaces: *controllerNetwork
+    nodeLabels: *controllerNodeLabels
+  - hostname: talos-cp-01.home
+    ipAddress: 10.0.1.43
+    controlPlane: true
+    installDiskSelector:
+      type: nvme
+    networkInterfaces: *controllerNetwork
+    nodeLabels: *controllerNodeLabels
+  - hostname: delta.home
+    ipAddress: 10.0.1.44
+    controlPlane: false
+    installDiskSelector:
+      type: ssd
+    networkInterfaces: *workerNetwork
+    nodeLabels: *workerNodeLabels
+  - hostname: epsilon.home
+    ipAddress: 10.0.1.45
+    controlPlane: false
+    installDiskSelector:
+      model: "SanDisk*"
+    networkInterfaces: *workerNetwork
+    nodeLabels: *workerNodeLabels
 
 worker:
   inlinePatch:
