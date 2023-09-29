@@ -28,7 +28,7 @@ spec:
   values:
     controller:
       type: statefulset
-      replicas: 5
+      replicas: 3
       podManagementPolicy: Parallel
       annotations:
         configmap.reloader.stakater.com/reload: &configMap immich-configmap
@@ -104,7 +104,7 @@ spec:
         mountPath: /config
         accessMode: ReadWriteOnce
         size: 50Gi
-        storageClass: ceph-block-delete
+        storageClass: ceph-block-mirrored-delete
 
     resources:
       requests:
