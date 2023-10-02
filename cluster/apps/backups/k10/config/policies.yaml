@@ -18,6 +18,12 @@ spec:
           excludeClusterResources:
             - name: flux-managed-storage-class
               resource: storageclasses
+            - name: nfs
+              resource: storageclasses
+            - name: immich-nfs
+              resource: storageclasses
+          includeResources: []
+          excludeResources:
             - group: ""
               version: ""
               resource: persistentvolumeclaims
@@ -27,10 +33,6 @@ spec:
                   operator: In
                   values:
                     - disabled
-            - name: nfs
-              resource: storageclasses
-            - name: immich-nfs
-              resource: storageclasses
         profile:
           name: synology-backups
           namespace: backups
