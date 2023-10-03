@@ -22,6 +22,15 @@ spec:
               resource: storageclasses
             - name: immich-nfs
               resource: storageclasses
+            - group: ""
+              version: ""
+              resource: persistentvolumes
+              name: ""
+              matchExpressions:
+                - key: kasten.io/backup-volume
+                  operator: In
+                  values:
+                    - disabled
           includeResources: []
           excludeResources:
             - group: ""
