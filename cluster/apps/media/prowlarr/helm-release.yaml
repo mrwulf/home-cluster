@@ -27,7 +27,7 @@ spec:
         reloader.stakater.com/auto: "true"
     image:
       repository: ghcr.io/onedr0p/prowlarr-nightly
-      tag: 1.9.3.4008@sha256:06bcd68af1e6ef1e9ce4d6627e79954df2158e02426c8f1c8d170a189f99e55b
+      tag: 1.9.3.4011@sha256:4a5699ad2626035e26e8f49148e01094e7d818556ca3dbbde9f0aeaded46a3e2
     env:
       TZ: "${TIMEZONE}"
     service:
