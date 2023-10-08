@@ -12,7 +12,7 @@ metadata:
 spec:
   cacheSpec:
     - images:
-        - docker.io/bitnami/external-dns:0.13.6-debian-11-r11
+        - docker.io/bitnami/external-dns:0.13.6-debian-11-r26
         - docker.io/traefik:v2.10.4
         - gcr.io/kasten-images/cephtool:6.0.7
         - ghcr.io/fluxcd/helm-controller:v0.36.1
@@ -23,7 +23,7 @@ spec:
         - ghcr.io/kyverno/cleanup-controller:v1.10.3
         - ghcr.io/kyverno/kyverno:v1.10.3
         - ghcr.io/kyverno/reports-controller:v1.10.3
-        - ghcr.io/onedr0p/plex:1.32.6.7468-07e0d4a7e
+        - ghcr.io/onedr0p/plex:1.32.6.7557-1cf77d501
         - jacobalberty/unifi:v7.5.174
         - quay.io/ceph/ceph:v17.2.6
         - quay.io/cephcsi/cephcsi:v3.9.0
@@ -33,9 +33,9 @@ spec:
         - quay.io/cilium/hubble-ui:v0.12.0@sha256:1c876cfa1d5e35bc91e1025c9314f922041592a88b03313c22c1f97a5d2ba88f
         - quay.io/cilium/operator-generic:v1.14.2@sha256:52f70250dea22e506959439a7c4ea31b10fe8375db62f5c27ab746e3a2af866d
         - registry.k8s.io/coredns/coredns:v1.10.1
-        - registry.k8s.io/kube-apiserver:v1.27.4
-        - registry.k8s.io/kube-controller-manager:v1.27.4
-        - registry.k8s.io/kube-scheduler:v1.27.4
-        - rook/ceph:v1.12.4
-        - timberio/vector:0.32.2-debian
+        - registry.k8s.io/kube-apiserver:v1.27.6
+        - registry.k8s.io/kube-controller-manager:v1.27.6
+        - registry.k8s.io/kube-scheduler:v1.27.6
+        - rook/ceph:v1.12.5
+        - timberio/vector:0.33.0-debian
         - vaultwarden/server:1.29.2-alpine

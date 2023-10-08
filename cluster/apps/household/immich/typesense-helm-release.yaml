@@ -108,8 +108,10 @@ spec:
 
     resources:
       requests:
-        cpu: 100m
-        memory: 250Mi
+        cpu: 500m
+        memory: 1G
+      limits:
+        memory: 8G
 
   postRenderers:
     - kustomize:

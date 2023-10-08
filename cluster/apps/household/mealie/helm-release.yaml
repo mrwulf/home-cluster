@@ -35,9 +35,9 @@ spec:
     resources:
       requests:
         cpu: 10m
-        memory: 226M
+        memory: 411M
       limits:
-        memory: 284M
+        memory: 512M
 
     api:
       image:
