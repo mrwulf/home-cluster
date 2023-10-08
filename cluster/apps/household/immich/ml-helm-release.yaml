@@ -89,6 +89,16 @@ spec:
           matchLabels:
             app.kubernetes.io/name: *app
 
+    affinity:
+      nodeAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: NotIn
+                  values:
+                    - epsilon
+
     # affinity:
     #   nodeAffinity:
     #     preferredDuringSchedulingIgnoredDuringExecution:
@@ -99,7 +109,7 @@ spec:
 
     resources:
       requests:
-        cpu: 100m
+        cpu: 500m
         memory: 250Mi
         gpu.intel.com/i915: 1
       limits:
