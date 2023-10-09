@@ -53,11 +53,8 @@ spec:
     service:
       main:
         ports:
-          api:
-            enabled: true
-            port: 9000
           http:
-            port: 3000
+            port: 9000
 
     ingress:
       main:
