@@ -8,22 +8,25 @@ spec:
   interval: 5m
   chart:
     spec:
-      chart: mealie
-      version: 5.1.2
+      chart: app-template
+      version: 1.5.1
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home-charts
+        name: bjw-s-charts
         namespace: flux-system
       interval: 5m
   values:
     image:
-      repository: &repo hkotel/mealie
-      tag: frontend-v1.0.0beta-5
+      # docker pull ghcr.io/mealie-recipes/mealie:v1.0.0-rc1.1
+      repository: &repo ghcr.io/mealie-recipes/mealie
+      tag: v1.0.0-rc1.1
       pullPolicy: IfNotPresent
 
     env: &env
       TZ: "${TIMEZONE}"
       DEFAULT_EMAIL: "${SECRET_CLOUDFLARE_EMAIL}"
+      ALLOW_SIGNUP: false
+      API_PORT: 9000
       AUTO_BACKUP_ENABLED: true
       BASE_URL: https://meals.${SECRET_DOMAIN}
       SMTP_HOST: smtp-relay.system.svc.cluster.local.
@@ -31,6 +34,7 @@ spec:
       SMTP_FROM_NAME: meals@${SECRET_DOMAIN}
       SMTP_AUTH_STRATEGY: none
       SMTP_FROM_EMAIL: meals@${SECRET_DOMAIN}
+      TOKEN_TIME: 720
 
     resources:
       requests:
@@ -39,12 +43,21 @@ spec:
       limits:
         memory: 512M
 
-    api:
-      image:
-        repository: *repo
-        tag: api-v1.0.0beta-5
-        pullPolicy: IfNotPresent
-      env: *env
+    # api:
+    #   image:
+    #     repository: *repo
+    #     tag: v1.0.0-rc1.1
+    #     pullPolicy: IfNotPresent
+    #   env: *env
+
+    service:
+      main:
+        ports:
+          api:
+            enabled: true
+            port: 9000
+          http:
+            port: 3000
 
     ingress:
       main:
@@ -69,12 +82,13 @@ spec:
               - *host
 
     persistence:
-      config:
-        enabled: true
-        existingClaim: mealie-db
+      # config:
+      #   enabled: true
+      #   existingClaim: mealie-db
       api-data:
         enabled: true
         existingClaim: mealie-api-data
+        mountPath: /app/data/
       backups:
         enabled: true
         mountPath: /app/data/backups
