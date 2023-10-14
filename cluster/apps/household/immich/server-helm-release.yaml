@@ -62,12 +62,26 @@ spec:
     persistence:
       library:
         enabled: true
-        existingClaim: immich-nfs
         mountPath: /usr/src/app/upload
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "/volume3/Pictures/immich"
+        mountOptions:
+          - nfsvers=4
+          - nconnect=8
+          - hard
+          - noatime
       memories:
         enabled: true
-        existingClaim: immich-memories-nfs
         mountPath: /mnt/memories
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "/volume3/Pictures"
+        mountOptions:
+          - nfsvers=4
+          - nconnect=8
+          - hard
+          - noatime
 
     affinity:
       nodeAffinity:
