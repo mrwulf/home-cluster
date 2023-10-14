@@ -43,6 +43,8 @@ spec:
       tag: v1.81.1
 
     args: ["start-microservices.sh"]
+    env:
+      NODE_OPTIONS: "--max-old-space-size=8192"
     envFrom:
       - configMapRef:
           name: *configMap
@@ -56,12 +58,26 @@ spec:
     persistence:
       library:
         enabled: true
-        existingClaim: immich-nfs
         mountPath: /usr/src/app/upload
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "/volume3/Pictures/immich"
+        mountOptions:
+          - nfsvers=4
+          - nconnect=8
+          - hard
+          - noatime
       memories:
         enabled: true
-        existingClaim: immich-memories-nfs
         mountPath: /mnt/memories
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "/volume3/Pictures"
+        mountOptions:
+          - nfsvers=4
+          - nconnect=8
+          - hard
+          - noatime
 
     topologySpreadConstraints:
       - maxSkew: 1
@@ -74,8 +90,8 @@ spec:
     resources:
       requests:
         cpu: 100m
-        memory: 3G
+        memory: 16G
         gpu.intel.com/i915: 1
       limits:
         gpu.intel.com/i915: 1
-        memory: 12G
+        memory: 16G

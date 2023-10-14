@@ -21,7 +21,7 @@ nodes:
     ipAddress: 10.0.1.46
     controlPlane: false
     installDiskSelector:
-      type: nvme
+      type: ssd
     networkInterfaces: &workerNetwork
       - interface: eth0
         dhcp: true
@@ -182,6 +182,16 @@ controlPlane:
 
     machine:
       <<: *machineConfig
+      features:
+        kubePrism:
+          enabled: true
+          port: 7445
+        kubernetesTalosAPIAccess:
+          enabled: true
+          allowedRoles:
+            - os:etcd:backup
+          allowedKubernetesNamespaces:
+            - backups
       certSANs:
         - ${clusterEndpointIP}
         - kubernetes.home

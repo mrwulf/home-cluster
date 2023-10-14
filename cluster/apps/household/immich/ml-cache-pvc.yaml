@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/name: &name immich-machine-learning
     app.kubernetes.io/instance: *name
 spec:
-  storageClassName: ceph-block
+  storageClassName: ceph-block-mirrored-delete
   accessModes:
     - ReadWriteOnce
   resources:
