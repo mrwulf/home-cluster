@@ -45,12 +45,14 @@ talos -n $(task talos:get-a-node) bootstrap
 * [kustomize](https://kustomize.io/)
 
 # Components
+- [authentik](https://goauthentik.io) - IDp + SSO
 - [cert-manager](https://cert-manager.io/) - SSL certificates - with Cloudflare DNS challenge
 - [flux](https://toolkit.fluxcd.io/) - GitOps tool for deploying manifests from the `cluster` directory
-- [hajimari](https://github.com/toboshii/hajimari) - start page with ingress discovery
-- [metallb](https://metallb.universe.tf/) - bare metal load balancer
+- [kasten k10](https://www.kasten.io/product/) - backup implementation
+- [kyverno](https://kverno.io) - policy engine
 - [reloader](https://github.com/stakater/Reloader) - restart pods when Kubernetes `configmap` or `secret` changes
 - [traefik](https://traefik.io) - ingress controller
+- [rook](https://rook.io) - operator for ceph
 
 ## :open_file_folder:&nbsp; Repository structure
 
@@ -61,33 +63,16 @@ The Git repository contains the following directories under `cluster` and are or
 - **core** directory (depends on **crds**) are important infrastructure applications (grouped by namespace) that should never be pruned by Flux
 - **apps** directory (depends on **core**) is where your common applications (grouped by namespace) could be placed, Flux will prune resources here if they are not tracked by Git anymore
 
-```
-cluster
-├── apps
-│   ├── default
-│   ├── networking
-│   └── system-upgrade
-├── base
-│   └── flux-system
-├── core
-│   ├── cert-manager
-│   ├── metallb-system
-│   ├── namespaces
-│   └── system-upgrade
-└── crds
-    └── cert-manager
-```
-
 # My Cluster
 
 | Node                                                   | Role                                                  | Specs                                                  |
 |--------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------|
-| delta | Worker | Dell Optiplex 7040 MFF<br />Intel 6700t<br />24G |
-| epsilon | Worker | Dell Optiplex 7050 MFF<br />Intel 7500t<br />16G |
-| zeta | Control Plane | Dell Optiplex 7040 MFF<br />Intel 6700t<br />16G |
-| eta | Control Plane | Dell Optiplex 7040 MFF<br />Intel 6700t<br />24G |
-| talos-cp-01 | Control Plane | Lenovo m710q Tiny<br /> Intel 8500t<br />24G |
-| worker-01 | Worker | Lenovo m80q Tiny<br /> Intel 10400t<br />16G |
+| delta | Worker, Storage | Dell Optiplex 7040 MFF<br />Intel 6700t<br />32G |
+| epsilon | Worker, Storage | Dell Optiplex 7050 MFF<br />Intel 7500t<br />32G |
+| zeta | Control Plane, Storage | Dell Optiplex 7040 MFF<br />Intel 6700t<br />32G |
+| eta | Control Plane, Storage | Dell Optiplex 7040 MFF<br />Intel 6700t<br />32G |
+| talos-cp-01 | Control Plane | Lenovo m710q Tiny<br /> Intel 8500t<br />32G |
+| worker-01 | Worker | Lenovo m80q Tiny<br /> Intel 10400t<br />32G |
 
 
 # Other Stuff
