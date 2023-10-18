@@ -69,6 +69,12 @@ spec:
       config:
         enabled: true
         existingClaim: tautulli-config
+      backups:
+        enabled: true
+        mountPath: /config/backups
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/backups/tautulli"
 
     resources:
       requests:
