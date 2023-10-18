@@ -105,7 +105,7 @@ worker:
         extraKernelArgs:
           - "talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/"
         extensions:
-          - image: ghcr.io/siderolabs/i915-ucode:20230804
+          - image: ghcr.io/siderolabs/i915-ucode:20230919
           - image: ghcr.io/siderolabs/intel-ucode:20230808
       kubelet:
         extraArgs:
