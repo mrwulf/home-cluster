@@ -12,19 +12,19 @@ metadata:
 spec:
   cacheSpec:
     - images:
-        - docker.io/bitnami/external-dns:0.13.6-debian-11-r26
+        - docker.io/bitnami/external-dns:0.13.6-debian-11-r30
         - docker.io/traefik:v2.10.4
-        - gcr.io/kasten-images/cephtool:6.0.7
-        - ghcr.io/fluxcd/helm-controller:v0.36.1
-        - ghcr.io/fluxcd/kustomize-controller:v1.1.0
+        - gcr.io/kasten-images/cephtool:6.0.9
+        - ghcr.io/fluxcd/helm-controller:v0.36.2
+        - ghcr.io/fluxcd/kustomize-controller:v1.1.1
         - ghcr.io/fluxcd/notification-controller:v1.1.0
-        - ghcr.io/fluxcd/source-controller:v1.1.1
+        - ghcr.io/fluxcd/source-controller:v1.1.2
         - ghcr.io/kyverno/background-controller:v1.10.3
         - ghcr.io/kyverno/cleanup-controller:v1.10.3
         - ghcr.io/kyverno/kyverno:v1.10.3
         - ghcr.io/kyverno/reports-controller:v1.10.3
         - ghcr.io/onedr0p/plex:1.32.6.7557-1cf77d501
-        - jacobalberty/unifi:v7.5.174
+        - jacobalberty/unifi:v7.5.176
         - quay.io/ceph/ceph:v17.2.6
         - quay.io/cephcsi/cephcsi:v3.9.0
         - quay.io/cilium/cilium:v1.14.2@sha256:6263f3a3d5d63b267b538298dbeb5ae87da3efacf09a2c620446c873ba807d35
