@@ -5,3 +5,4 @@ resources:
   - helm-release.yaml
   - config/policies.yaml
   # - dr-secret.sops.yaml
+  - networkpolicy.yaml
