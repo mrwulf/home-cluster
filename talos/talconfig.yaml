@@ -1,7 +1,7 @@
 # example: https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
-talosVersion: v1.5.3
+talosVersion: v1.5.4
 kubernetesVersion: v1.27.6
 endpoint: https://kubernetes.home:6443
 
@@ -146,7 +146,7 @@ controlPlane:
             cpu: 400m
             memory: 1.5G
           limits:
-            cpu: 2
+            # cpu: 2
             memory: 2.5G
       controllerManager:
         extraArgs:
@@ -157,7 +157,7 @@ controlPlane:
             cpu: 100m
             memory: 100Mi
           limits:
-            cpu: 150m
+            # cpu: 150m
             memory: 400Mi
       etcd:
         extraArgs:
@@ -177,7 +177,7 @@ controlPlane:
             cpu: 10m
             memory: 100Mi
           limits:
-            cpu: 150m
+            # cpu: 150m
             memory: 100Mi
 
     machine:
