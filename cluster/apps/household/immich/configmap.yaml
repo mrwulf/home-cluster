@@ -17,6 +17,7 @@ data:
   OAUTH_ISSUER_URL: "https://auth.${SECRET_DOMAIN}/application/o/immich/.well-known/openid-configuration"
   OAUTH_AUTO_REGISTER: "true"
   OAUTH_BUTTON_TEXT: "Login with Authentik"
+  PUBLIC_IMMICH_SERVER_URL: "https://photos.${SECRET_DOMAIN}"
   TZ: "${TIMEZONE}"
 ---
 apiVersion: v1
