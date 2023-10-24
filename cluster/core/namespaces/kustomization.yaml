@@ -10,7 +10,6 @@ resources:
   - joplin.yaml
   - kube-system.yaml
   - media.yaml
-  - metallb-system.yaml
   - monitoring.yaml
   - networking.yaml
   - node-system.yaml
