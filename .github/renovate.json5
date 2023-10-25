@@ -3,6 +3,7 @@
     "config:base",
     "docker:enableMajor",
     ":dependencyDashboard",
+    ":disableRateLimiting",
     ":semanticCommits",
     ":enablePreCommit",
     ":separatePatchReleases",
