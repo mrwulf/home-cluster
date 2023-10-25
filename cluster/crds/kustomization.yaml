@@ -4,7 +4,6 @@ resources:
   - cert-manager
   - kube-fledged
   - rook-ceph
-  # - metallb
   - prometheus-stack
   - snapshot-controller/crds.yaml
   - traefik
