@@ -129,7 +129,6 @@ spec:
         values:
           - default
           - flux-system
-          - metallb-system
           - node-system
           - other
           - security

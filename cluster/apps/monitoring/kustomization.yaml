@@ -15,5 +15,4 @@ resources:
   - grafana-dashboards-haproxy.yaml
   - grafana-dashboards-sonarr.yaml
   - grafana-dashboards-radarr.yaml
-  - grafana-dashboards-metallb.yaml
   - podmonitor.yaml
