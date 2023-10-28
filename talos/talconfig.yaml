@@ -147,7 +147,7 @@ controlPlane:
             memory: 1.5G
           limits:
             # cpu: 2
-            memory: 2.5G
+            memory: 4G
       controllerManager:
         extraArgs:
           bind-address: 0.0.0.0
