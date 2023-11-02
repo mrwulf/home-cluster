@@ -4,5 +4,3 @@ resources:
   - nfs-provisioner-helm-release.yaml
   - rook-ceph
   - direct-mount
-  # - snapshot-controller
-  # - synology-csi

@@ -113,7 +113,6 @@ spec:
     persistence:
       config:
         enabled: true
-        # existingClaim: minio-nfs
         mountPath: /data
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
