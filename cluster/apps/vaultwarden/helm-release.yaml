@@ -74,6 +74,20 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 2Gi
+          backups:
+            image:
+              repository: bruceforce/vaultwarden-backup
+              tag: 2.0.4
+            env:
+              TIMESTAMP: true
+              DELETE_AFTER: 30
+              CRON_TIME: "0 * * * *"
+              ENCRYPTION_PASSWORD: "${VAULTWARDEN_BACKUP_PASS}"
+              BACKUP_DIR: '/backups'
+              BACKUP_ON_STARTUP: true
+              GID: 0
+              UID: 0
+
     service:
       main:
         ports:
@@ -85,6 +99,13 @@ spec:
         existingClaim: vaultwarden-db
         globalMounts:
           - path: /data
+      backups:
+        enabled: true
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/backups/vaultwarden"
+        globalMounts:
+          - path: /backups
     defaultPodOptions:
       annotations:
         secret.reloader.stakater.com/reload: *app
