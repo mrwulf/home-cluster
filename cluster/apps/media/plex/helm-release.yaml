@@ -170,19 +170,6 @@ spec:
     nodeSelector:
       feature.node.kubernetes.io/custom-intel-gpu: "true"
 
-    affinity:
-      podAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                      - photoprism
-              topologyKey: kubernetes.io/hostname
-
     # addons:
     #   promtail:
     #     enabled: true

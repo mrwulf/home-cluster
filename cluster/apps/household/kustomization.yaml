@@ -6,6 +6,5 @@ resources:
   - immich
   - libreddit
   - mealie
-  # - photoprism
   - outline
   - vikunja

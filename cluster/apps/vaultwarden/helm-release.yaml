@@ -75,6 +75,9 @@ spec:
               limits:
                 memory: 2Gi
           backups:
+            # Restore with:
+            #   gpg --decrypt backup.tar.xz.gpg > backup.tar.xz
+            #   tar -xJvf ./backup/data.tar.xz -C /data/
             image:
               repository: bruceforce/vaultwarden-backup
               tag: 2.0.4
