@@ -4,6 +4,7 @@ resources:
   - hajimari
   - home-assistant
   - immich
+  - libreddit
   - mealie
   # - photoprism
   - outline
