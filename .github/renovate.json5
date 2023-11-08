@@ -130,15 +130,6 @@
       "matchPackagePatterns": [
         "plex"
       ]
-    },
-    {
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchPackageNames": [
-        "photoprism/photoprism"
-      ],
-      "versioning": "regex:^v?(?<major>\\d+)-jammy$"
     }
   ]
 }
