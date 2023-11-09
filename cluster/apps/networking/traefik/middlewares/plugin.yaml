@@ -1,0 +1,14 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-middleware-cloudflare-tunnel
+  namespace: networking
+spec:
+  plugin:
+    real-ip:
+      Proxy:
+        - proxyHeadername: Id-Cf-Tunnel-Source
+          proxyHeadervalue: id-cf-realip-xff
+          realIP: Cf-Connecting-Ip
+          overwriteXFF: true

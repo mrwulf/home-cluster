@@ -5,12 +5,11 @@ metadata:
   name: traefik-dashboard
   namespace: networking
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
     hajimari.io/appName: "traefik"
     hajimari.io/enable: "true"
     hajimari.io/icon: "web"
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-    traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd" # ,networking-authentik@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
 spec:
   ingressClassName: "traefik"
   tls:
