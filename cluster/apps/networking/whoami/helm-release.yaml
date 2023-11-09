@@ -60,7 +60,7 @@ spec:
           hajimari.io/appName: "Who Am I?"
           hajimari.io/icon: mdi:id-card-outline
         hosts:
-          - host: &host "whoami.internal.${SECRET_DOMAIN}"
+          - host: &host "whoami.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
