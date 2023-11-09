@@ -64,18 +64,17 @@ spec:
           hajimari.io/appName: Immich
           hajimari.io/group: "Home"
           hajimari.io/icon: heroicons:photo
-          traefik.ingress.kubernetes.io/router.middlewares: networking-stripprefix-api@kubernetescrd
+          traefik.ingress.kubernetes.io/router.middlewares: networking-stripprefix-api@kubernetescrd,traefik-middleware-chain-no-auth@kubernetescrd
           external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
           external-dns/is-public: "true"
-          # nginx.ingress.kubernetes.io/configuration-snippet: |
-          #   rewrite /api/(.*) /$1 break;
-          # nignx.ingress.kubernetes.io/force-ssl-redirect: "true"
-          # nginx.ingress.kubernetes.io/proxy-body-size: "0"
         hosts:
           - host: &host photos.${SECRET_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
+                service:
+                  name: main
+                  port: http
               - path: /api
                 pathType: Prefix
                 service:

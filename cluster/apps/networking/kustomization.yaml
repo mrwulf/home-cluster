@@ -5,3 +5,4 @@ resources:
   - wildcard-cert-internal.yaml
   - traefik
   - unifi
+  - whoami
