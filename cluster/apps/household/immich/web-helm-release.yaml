@@ -64,7 +64,7 @@ spec:
           hajimari.io/appName: Immich
           hajimari.io/group: "Home"
           hajimari.io/icon: heroicons:photo
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-stripprefix-api@kubernetescrd,networking-traefik-middleware-chain-no-auth@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-stripprefix-api@kubernetescrd,networking-traefik-middleware-chain-immich@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
           external-dns/is-public: "true"
         hosts:
