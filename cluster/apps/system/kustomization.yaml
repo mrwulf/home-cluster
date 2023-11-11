@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - descheduler
   - external-dns
+  - external-secrets
   - k8s-dns-gateway
   - kube-cleanup-operator
   - kube-fledged
