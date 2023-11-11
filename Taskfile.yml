@@ -9,6 +9,7 @@ vars:
 includes:
   cluster: .taskfiles/cluster.yml
   etcd: .taskfiles/etcd.yml
+  es: .taskfiles/externalsecrets.yml
   flux: .taskfiles/flux.yml
   format: .taskfiles/format.yml
   install: .taskfiles/install.yml
