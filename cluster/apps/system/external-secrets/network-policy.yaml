@@ -2,7 +2,7 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: external-secrets-to-bw-cli
+  name: external-secrets-to-bitwarden-api
   namespace: system
 spec:
   endpointSelector:
