@@ -7,8 +7,8 @@ metadata:
 spec:
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/instance: bitwarden
-      app.kubernetes.io/name: bitwarden
+      app.kubernetes.io/instance: bitwarden-api
+      app.kubernetes.io/name: bitwarden-api
   ingress:
     - fromEndpoints:
         - matchLabels:

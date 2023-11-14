@@ -6,7 +6,7 @@ resources:
   - app-helm-release.yaml
   - secret.sops.yaml
   - network-policy.yaml
-  - bw-cli-helm-release.yaml
+  - bitwarden-api-helm-release.yaml
   - stores
 
 configMapGenerator:
