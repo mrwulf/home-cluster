@@ -25,7 +25,7 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    installCRDs: false
+    installCRDs: true
     serviceMonitor:
       enabled: true
       interval: 1m
