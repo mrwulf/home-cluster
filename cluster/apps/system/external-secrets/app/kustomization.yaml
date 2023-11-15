@@ -7,7 +7,6 @@ resources:
   - secret.sops.yaml
   - network-policy.yaml
   - bitwarden-api-helm-release.yaml
-  # - stores
 
 configMapGenerator:
   - name: external-secrets-dashboard
