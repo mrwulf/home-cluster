@@ -4,7 +4,6 @@ resources:
   - compress.yaml
   - chains.yaml
   - rfc1918.yaml
-  - authentik-forward-auth.yaml
   - plugin.yaml
   - secure.yaml
   - secure-headers.yaml
