@@ -31,9 +31,6 @@ spec:
   values:
     replicas: 2
 
-    # image:
-    #   tag: 2022.5.3
-
     initContainers:
       init-db:
         image: ghcr.io/onedr0p/postgres-initdb:14.8
@@ -106,10 +103,6 @@ spec:
 
     postgresql:
       enabled: false
-      # enabled: true
-      # persistence:
-      #   existingClaim: authentik-pgsql-db
-      # postgresqlPassword: "${AUTHENTIK_DB_PASS}"
 
     redis:
       enabled: true

@@ -1,0 +1,2 @@
+# Ignore vaultwarden IDs
+cluster/apps/system/external-dns/external-secret.yaml:generic-api-key:24
