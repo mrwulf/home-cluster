@@ -43,6 +43,9 @@ spec:
     domainFilters:
       - "${SECRET_DOMAIN}"
 
+    podAnnotations:
+      secret.reloader.stakater.com/reload: cloudflare-api-key
+
     crd:
       create: true
 
