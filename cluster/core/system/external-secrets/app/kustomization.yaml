@@ -5,7 +5,7 @@ namespace: system
 resources:
   - app-helm-release.yaml
   - secret.sops.yaml
-  - network-policy.yaml
+  # - network-policy.yaml
   - bitwarden-api-helm-release.yaml
 
 configMapGenerator:
