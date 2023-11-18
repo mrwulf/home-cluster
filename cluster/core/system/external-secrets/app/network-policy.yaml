@@ -1,18 +1,23 @@
 ---
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
 metadata:
   name: external-secrets-to-bitwarden-api
   namespace: system
 spec:
-  endpointSelector:
+  podSelector:
     matchLabels:
       app.kubernetes.io/instance: bitwarden-api
       app.kubernetes.io/name: bitwarden-api
+  policyTypes:
+    - Ingress
   ingress:
-    - fromEndpoints:
-        - matchLabels:
-            app.kubernetes.io/instance: external-secrets
-            app.kubernetes.io/name: external-secrets
-            ## Namespace where external-secret lives. Can be removed if they're in the same namespace
-            k8s:io.kubernetes.pod.namespace: system
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: external-secrets
+              app.kubernetes.io/name: external-secrets
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: external-secrets
+              app.kubernetes.io/name: external-secrets-webhook

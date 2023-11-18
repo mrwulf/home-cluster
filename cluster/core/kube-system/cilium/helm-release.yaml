@@ -90,7 +90,8 @@ spec:
         label: grafana_dashboard
         namespace: monitoring
         labelValue: "1"
-        annotations: {}
+        annotations:
+          grafana_folder: Cilium
 
     bgpControlPlane:
       enabled: true
@@ -136,8 +137,8 @@ spec:
           # Both PERFMON and BPF requires kernel 5.8, container runtime
           # cri-o >= v1.22.0 or containerd >= v1.5.0.
           # If available, SYS_ADMIN can be removed.
-          #- PERFMON
-          #- BPF
+          # - PERFMON
+          # - BPF
           # Allow discretionary access control (e.g. required for package installation)
           - DAC_OVERRIDE
           # Allow to set Access Control Lists (ACLs) on arbitrary files (e.g. required for package installation)
@@ -160,7 +161,7 @@ spec:
           # Used for nsenter
           - SYS_CHROOT
           - SYS_PTRACE
-        # -- Capabilities for the `clean-cilium-state` init container
+          # -- Capabilities for the `clean-cilium-state` init container
         cleanCiliumState:
           # Most of the capabilities here are the same ones used in the
           # cilium-agent's container because this container can be used to
@@ -179,5 +180,5 @@ spec:
           # Both PERFMON and BPF requires kernel 5.8, container runtime
           # cri-o >= v1.22.0 or containerd >= v1.5.0.
           # If available, SYS_ADMIN can be removed.
-          #- PERFMON
-          #- BPF
+          # - PERFMON
+          # - BPF
