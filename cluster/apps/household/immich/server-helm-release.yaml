@@ -49,7 +49,7 @@ spec:
 
     image:
       repository: ghcr.io/immich-app/immich-server
-      tag: v1.88.0
+      tag: v1.88.1
 
     args: ["start-server.sh"]
     env:
@@ -59,7 +59,7 @@ spec:
       main:
         ports:
           http:
-            port: 2283
+            port: 3001
     ingress:
       main:
         enabled: true
@@ -79,7 +79,7 @@ spec:
                 pathType: Prefix
                 service:
                   name: immich-server
-                  port: 2283
+                  port: 3001
         tls:
           - hosts:
               - *host
