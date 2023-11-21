@@ -9,4 +9,3 @@ resources:
   - server-helm-release.yaml
   - microservices-helm-release.yaml
   - ml-helm-release.yaml
-  - web-helm-release.yaml
