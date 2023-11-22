@@ -1,13 +1,12 @@
----
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: node-feature-discovery
-  namespace: node-system
 spec:
   interval: 5m
   chart:
     spec:
+      # renovate: registryUrl=https://kubernetes-sigs.github.io/node-feature-discovery/charts
       chart: node-feature-discovery
       version: 0.14.3
       sourceRef:
@@ -15,74 +14,83 @@ spec:
         name: node-feature-discovery-charts
         namespace: flux-system
       interval: 5m
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
   values:
+    image:
+      repository: gcr.io/k8s-staging-nfd/node-feature-discovery
+      tag: v0.14.3
     master:
       tolerations:
-        - effect: "NoExecute"
-          operator: "Exists"
-        - effect: "NoSchedule"
-          operator: "Exists"
-
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Equal"
+          value: ""
+          effect: "NoSchedule"
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 1
               preference:
                 matchExpressions:
-                  - key: "node-role.kubernetes.io/master"
-                    operator: In
-                    values: [""]
                   - key: "node-role.kubernetes.io/control-plane"
                     operator: In
                     values: [""]
-
     worker:
-      annotations:
-        configmap.reloader.stakater.com/reload: "node-feature-discovery-worker-conf"
-
       tolerations:
         - effect: "NoExecute"
           operator: "Exists"
         - effect: "NoSchedule"
           operator: "Exists"
-
       config:
         core:
-          labelSources:
+          sources:
             - custom
             - pci
             - usb
-
         sources:
           usb:
             deviceClassWhitelist:
               - "02"
               - "03"
-              - "0a"
+              - "0e"
               - "ef"
               - "fe"
               - "ff"
             deviceLabelFields:
-              - "class"
-              - "vendor"
-              - "device"
-          pci:
-            deviceClassWhitelist:
-              - "0300"
-              - "0880"
-            deviceLabelFields:
-              - 'class'
-              - 'vendor'
-              - 'device'
-# https://kubernetes-sigs.github.io/node-feature-discovery/master/usage/customization-guide.html#custom-feature-source
+              - class
+              - vendor
+              - device
           custom:
+            - name: intel-gpu
+              matchOn:
+                - pciId:
+                    class: ["0300"]
+                    vendor: ["8086"]
+            - name: coral-tpu
+              matchOn:
+                - pciId:
+                    class: ["0880"]
+                    vendor: ["1ac1"]
+                    device: ["089a"]
+                - usbId:
+                    vendor: ["1a6e", "18d1"]
+            - name: zwave
+              matchOn:
+                - usbId:
+                    class: ["02"]
+                    vendor: ["0658"]
+                    device: ["0200"]
+            - name: ups-apc
+              matchOn:
+                - usbId:
+                    class: ["03"]
+                    vendor: ["051d"]
+                    device: ["0002"]
+            - name: 'ups-cyberpower'
+              matchOn:
+                - usbId:
+                    class: ['03']
+                    vendor: ['0764']
+                    device: ['0601']
+# https://kubernetes-sigs.github.io/node-feature-discovery/master/usage/customization-guide.html#custom-feature-source
             - name: "cpu-6700t"
               labels:
                 "cpu-6700t": "true"
@@ -101,20 +109,3 @@ spec:
                     family: {op: In, value: ["6"]}
                     id: {op: In, value: ["158"]}
                     vendor_id: {op: In, value: ["Intel"]}
-            - name: "intel-gpu"
-              matchOn:
-                - pciId:
-                    class: ["0300"]
-                    vendor: ["8086"]
-
-            - name: "coral-tpu"
-              matchOn:
-                - usbId:
-                    vendor: ["1a6e", "18d1"]
-
-            - name: 'cyberpower-ups'
-              matchOn:
-                - usbId:
-                    class: ['03']
-                    vendor: ['0764']
-                    device: ['0601']
