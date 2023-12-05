@@ -33,6 +33,7 @@ spec:
         enabled: false
     sentinel:
       enabled: true
+      masterSet: redis-master
       getMasterTimeout: 10
       persistence:
         enabled: false
