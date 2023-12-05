@@ -16,15 +16,15 @@ spec:
         - docker.io/bitnami/external-dns:0.14.0-debian-11-r1
         - docker.io/traefik:v2.10.5
         - docker.io/traefik/whoami:v1.10.1
-        - gcr.io/kasten-images/cephtool:6.0.12
+        - gcr.io/kasten-images/cephtool:6.5.0
         - ghcr.io/fluxcd/helm-controller:v0.36.2
         - ghcr.io/fluxcd/kustomize-controller:v1.1.1
         - ghcr.io/fluxcd/notification-controller:v1.1.0
         - ghcr.io/fluxcd/source-controller:v1.1.2
-        - ghcr.io/kyverno/background-controller:v1.11.0
-        - ghcr.io/kyverno/cleanup-controller:v1.11.0
-        - ghcr.io/kyverno/kyverno:v1.11.0
-        - ghcr.io/kyverno/reports-controller:v1.11.0
+        - ghcr.io/kyverno/background-controller:v1.11.1
+        - ghcr.io/kyverno/cleanup-controller:v1.11.1
+        - ghcr.io/kyverno/kyverno:v1.11.1
+        - ghcr.io/kyverno/reports-controller:v1.11.1
         - ghcr.io/onedr0p/plex:1.32.7.7621-871adbd44
         - jacobalberty/unifi:v7.5.176
         - quay.io/ceph/ceph:v17.2.6
@@ -38,6 +38,6 @@ spec:
         - registry.k8s.io/kube-apiserver:v1.27.6
         - registry.k8s.io/kube-controller-manager:v1.27.6
         - registry.k8s.io/kube-scheduler:v1.27.6
-        - rook/ceph:v1.12.8
+        - rook/ceph:v1.12.9
         - timberio/vector:0.34.1-debian
         - vaultwarden/server:1.30.1-alpine
