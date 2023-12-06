@@ -14,7 +14,7 @@ spec:
     - images:
         - bruceforce/vaultwarden-backup:2.0.4
         - docker.io/bitnami/external-dns:0.14.0-debian-11-r1
-        - docker.io/traefik:v2.10.5
+        - docker.io/traefik:v2.10.6
         - docker.io/traefik/whoami:v1.10.1
         - gcr.io/kasten-images/cephtool:6.5.0
         - ghcr.io/fluxcd/helm-controller:v0.36.2
@@ -25,7 +25,7 @@ spec:
         - ghcr.io/kyverno/cleanup-controller:v1.11.1
         - ghcr.io/kyverno/kyverno:v1.11.1
         - ghcr.io/kyverno/reports-controller:v1.11.1
-        - ghcr.io/onedr0p/plex:1.32.7.7621-871adbd44
+        - ghcr.io/onedr0p/plex:1.32.8.7639-fb6452ebf
         - jacobalberty/unifi:v7.5.176
         - quay.io/ceph/ceph:v17.2.6
         - quay.io/cephcsi/cephcsi:v3.9.0
