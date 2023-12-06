@@ -92,6 +92,8 @@ spec:
         sniStrict: true
     pilot:
       enabled: false
+    experimental:
+      plugins: {}
     resources:
       requests:
         memory: 110Mi
