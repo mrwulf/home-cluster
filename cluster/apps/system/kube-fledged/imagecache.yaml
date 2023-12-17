@@ -14,13 +14,19 @@ spec:
     - images:
         - bruceforce/vaultwarden-backup:2.0.4
         - docker.io/bitnami/external-dns:0.14.0-debian-11-r1
+        - docker.io/bitnami/external-dns:0.14.0-debian-11-r2
+        - docker.io/traefik:v2.10.5
         - docker.io/traefik:v2.10.6
         - docker.io/traefik/whoami:v1.10.1
         - gcr.io/kasten-images/cephtool:6.5.0
         - ghcr.io/fluxcd/helm-controller:v0.36.2
+        - ghcr.io/fluxcd/helm-controller:v0.37.1
         - ghcr.io/fluxcd/kustomize-controller:v1.1.1
+        - ghcr.io/fluxcd/kustomize-controller:v1.2.1
         - ghcr.io/fluxcd/notification-controller:v1.1.0
+        - ghcr.io/fluxcd/notification-controller:v1.2.3
         - ghcr.io/fluxcd/source-controller:v1.1.2
+        - ghcr.io/fluxcd/source-controller:v1.2.3
         - ghcr.io/kyverno/background-controller:v1.11.1
         - ghcr.io/kyverno/cleanup-controller:v1.11.1
         - ghcr.io/kyverno/kyverno:v1.11.1
@@ -28,16 +34,19 @@ spec:
         - ghcr.io/onedr0p/plex:1.32.8.7639-fb6452ebf
         - jacobalberty/unifi:v7.5.176
         - quay.io/ceph/ceph:v17.2.6
-        - quay.io/cephcsi/cephcsi:v3.9.0
+        - quay.io/cephcsi/cephcsi:v3.10.0
         - quay.io/cilium/cilium:v1.14.4@sha256:4981767b787c69126e190e33aee93d5a076639083c21f0e7c29596a519c64a2e
+        - quay.io/cilium/cilium:v1.14.5@sha256:d3b287029755b6a47dee01420e2ea469469f1b174a2089c10af7e5e9289ef05b
         - quay.io/cilium/hubble-relay:v1.14.4@sha256:ca81622fd9f04c1316bf4144bde5dbce613758810f6022f6c706b14c9c0815db
+        - quay.io/cilium/hubble-relay:v1.14.5@sha256:dbef89f924a927043d02b40c18e417c1ea0e8f58b44523b80fef7e3652db24d4
         - quay.io/cilium/hubble-ui-backend:v0.12.1@sha256:1f86f3400827a0451e6332262467f894eeb7caf0eb8779bd951e2caa9d027cbe
         - quay.io/cilium/hubble-ui:v0.12.1@sha256:9e5f81ee747866480ea1ac4630eb6975ff9227f9782b7c93919c081c33f38267
         - quay.io/cilium/operator-generic:v1.14.4@sha256:f0f05e4ba3bb1fe0e4b91144fa4fea637701aba02e6c00b23bd03b4a7e1dfd55
+        - quay.io/cilium/operator-generic:v1.14.5@sha256:303f9076bdc73b3fc32aaedee64a14f6f44c8bb08ee9e3956d443021103ebe7a
         - registry.k8s.io/coredns/coredns:v1.10.1
         - registry.k8s.io/kube-apiserver:v1.27.6
         - registry.k8s.io/kube-controller-manager:v1.27.6
         - registry.k8s.io/kube-scheduler:v1.27.6
-        - rook/ceph:v1.12.9
+        - rook/ceph:v1.13.0
         - timberio/vector:0.34.1-debian
         - vaultwarden/server:1.30.1-alpine
