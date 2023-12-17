@@ -40,7 +40,7 @@ spec:
 
     image:
       repository: ghcr.io/immich-app/immich-server
-      tag: v1.90.2
+      tag: v1.91.2
 
     args: ["start-microservices.sh"]
     env:
