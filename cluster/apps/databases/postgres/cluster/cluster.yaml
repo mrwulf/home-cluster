@@ -7,6 +7,7 @@ metadata:
   annotations:
     kyverno.io/ignore: "true"
 spec:
+  imageName: ghcr.io/bo0tzz/cnpgvecto.rs:16.1-v0.1.11
   instances: 3
   primaryUpdateStrategy: unsupervised
   storage:
@@ -16,6 +17,12 @@ spec:
     name: postgres-superuser
   monitoring:
     enablePodMonitor: true
+  postgresql:
+    parameters:
+      max_connections: "300"
+      shared_buffers: 512MB
+    shared_preload_libraries:
+      - "vectors.so"
   backup:
     retentionPolicy: 30d
     barmanObjectStore:
