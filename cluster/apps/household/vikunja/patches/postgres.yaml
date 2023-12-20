@@ -12,7 +12,7 @@ spec:
         env:
           - name: INIT_POSTGRES_HOST
             value: postgres-rw.databases.svc.cluster.local
-          - name: DB_DATABASE_NAME
+          - name: INIT_POSTGRES_DBNAME
             value: vikunja
           - name: INIT_POSTGRES_SUPER_USER
             valueFrom:
