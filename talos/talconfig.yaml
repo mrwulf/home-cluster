@@ -2,7 +2,7 @@
 
 clusterName: talos-v1
 talosVersion: v1.6.1
-kubernetesVersion: v1.27.9
+kubernetesVersion: v1.28.5
 endpoint: https://kubernetes.home:6443
 
 additionalApiServerCertSans:
