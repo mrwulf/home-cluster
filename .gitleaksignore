@@ -1,2 +1,4 @@
 # Ignore vaultwarden IDs
+cluster/apps/networking/cloudflare-ddns/external-secret.yaml:generic-api-key:27
+cluster/apps/networking/cloudflare-ddns/external-secret.yaml:generic-api-key:35
 cluster/apps/system/external-dns/external-secret.yaml:generic-api-key:24
