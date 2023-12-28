@@ -59,13 +59,14 @@ spec:
 
     persistence:
       config:
+        enabled: true
         type: configMap
         name: cloudflare-ddns
         defaultMode: 0775
-        globalMap:
+        readOnly: true
+        globalMounts:
           - path: /app/cloudflare-ddns.sh
             subPath: cloudflare-ddns.sh
-            readOnly: true
 
     service:
       main:
