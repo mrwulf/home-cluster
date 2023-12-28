@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: network
 resources:
   - ./helm-release.yaml
-  - ./externalsecret.yaml
+  - ./external-secret.yaml
 configMapGenerator:
   - name: cloudflare-ddns
     files:
