@@ -76,6 +76,7 @@ spec:
         port: 10250
         targetPort: 10250
     grafana:
+      assertNoLeakedSecrets: false
       adminPassword: ${GRAFANA_PASS}
       defaultDashboardsTimezone: browser
       deploymentStrategy:
