@@ -28,13 +28,13 @@ tasks:
       IMG:
         sh: kubectl describe pv {{.PV}} | grep imageName | awk -F= '{print $2}'
       CHILDREN:
-        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p ceph-block {{.IMG}}
+        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}}
     cmds:
       - |
         echo -e "PV: {{.PV}}\nIMG: $IMG"
 
         kubectl delete pv {{.PV}}
-        kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block {{.IMG}}
+        kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p {{.POOL}} {{.IMG}}
     preconditions:
       - sh: kubectl get po -n {{.NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
         msg: Rook tools pod isn't running.
@@ -47,11 +47,11 @@ tasks:
     vars:
       IMG: "{{.CLI_ARGS}}"
       CHILDREN:
-        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p ceph-block {{.IMG}}
+        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}}
     cmds:
       - |
-        # kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd snap purge -p ceph-block {{.IMG}}
-        kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p ceph-block {{.IMG}}
+        # kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd snap purge -p {{.POOL}} {{.IMG}}
+        kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p {{.POOL}} {{.IMG}}
     preconditions:
       - sh: kubectl get po -n {{.NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
         msg: Rook tools pod isn't running.
@@ -73,7 +73,7 @@ tasks:
     cmds:
       - |
         kubectl exec -n {{.NAMESPACE}} -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd -p {{.POOL}} ls | grep 'csi-vol-' > image_list.txt
-        for PV in $(kubectl get pv | grep ceph-block | awk '{print $1}'); do
+        for PV in $(kubectl get pv | grep {{.POOL}} | awk '{print $1}'); do
           IMG=$(kubectl describe pv $PV | grep imageName | awk -F= '{print $2}')
           if (! grep -q $IMG image_list.txt); then
             echo "$IMG not in image_list.txt"
