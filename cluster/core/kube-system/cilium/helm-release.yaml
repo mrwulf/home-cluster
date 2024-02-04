@@ -38,6 +38,7 @@ spec:
       algorithm: "maglev"
       mode: "dsr"
     tunnel: "disabled"
+    routing-mode: "native"
     ipam:
       mode: "kubernetes"
     operator:
