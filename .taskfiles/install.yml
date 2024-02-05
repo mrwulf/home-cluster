@@ -89,11 +89,12 @@ tasks:
         sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
       CURRENT_VERSION:
         sh: "{{.TASK_NAME}} --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
     cmds:
       - |
-        echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
+        echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: v{{.DESIRED_VERSION}}"
         TEMP_DIR=$(mktemp -d)
-        wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.TASK_NAME}}/releases/download/v{{.RELEASE_VERSION}}/talhelper_linux_amd64.tar.gz
+        wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.TASK_NAME}}/releases/download/v{{.DESIRED_VERSION}}/talhelper_linux_amd64.tar.gz
         tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components=0 -C ~/bin/ {{.TASK_NAME}}
         # chmod +x ~/bin/{{.TASK_NAME}}
         rm -rf $TEMP_DIR
@@ -112,7 +113,7 @@ tasks:
         sh: "talosctl version --client | grep 'Tag:' | grep -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
-        echo "talosctl released: v{{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: v{{.DESIRED_VERSION}}"
+        echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: v{{.DESIRED_VERSION}}"
         wget -qnv --show-progress -O ~/bin/talosctl https://github.com/siderolabs/talos/releases/download/v{{.DESIRED_VERSION}}/talosctl-linux-amd64
         chmod +x ~/bin/talosctl
     status:
