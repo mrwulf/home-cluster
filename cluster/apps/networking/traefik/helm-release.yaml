@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: traefik
-      version: 25.0.0
+      version: 26.0.0
       sourceRef:
         kind: HelmRepository
         name: traefik-charts
@@ -66,8 +66,6 @@ spec:
       - "--providers.kubernetesingress.allowexternalnameservices=true"
       - "--providers.kubernetescrd.allowexternalnameservices=true"
       - "--providers.kubernetescrd.allowCrossNamespace=true"
-      - "--experimental.plugins.real-ip.modulename=github.com/Paxxs/traefik-get-real-ip"
-      - "--experimental.plugins.real-ip.version=v1.0.2"
     env:
       - name: TZ
         value: "${TIMEZONE}"
@@ -94,7 +92,9 @@ spec:
       enabled: false
     experimental:
       plugins:
-        enabled: true
+        real-ip:
+          moduleName: github.com/Paxxs/traefik-get-real-ip
+          version: v1.0.2
     resources:
       requests:
         memory: 110Mi
