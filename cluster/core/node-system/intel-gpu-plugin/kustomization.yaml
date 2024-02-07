@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - operator-helm-release.yaml
   - gpu-helm-release.yaml
+  - gpu-rule.yaml
