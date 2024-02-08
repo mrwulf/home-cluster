@@ -5,7 +5,7 @@ metadata:
   name: transmission
   namespace: media
 spec:
-  interval: 5m
+  interval: 30m
   chart:
     spec:
       # renovate: registryUrl=https://bananaspliff.github.io/geek-charts
@@ -15,7 +15,6 @@ spec:
         kind: HelmRepository
         name: bananaspliff-charts
         namespace: flux-system
-      interval: 5m
   install:
     createNamespace: true
     remediation:

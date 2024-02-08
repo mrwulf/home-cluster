@@ -6,7 +6,7 @@ metadata:
   name: unifi-poller
   namespace: monitoring
 spec:
-  interval: 1h
+  interval: 30h
   chart:
     spec:
       chart: app-template
