@@ -7,7 +7,6 @@ resources:
   - databases.yaml
   - development.yaml
   - household.yaml
-  - joplin.yaml
   - kube-system.yaml
   - media.yaml
   - monitoring.yaml

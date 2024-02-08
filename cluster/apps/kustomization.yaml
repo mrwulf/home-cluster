@@ -6,7 +6,6 @@ resources:
   - databases
   - development
   - household
-  - joplin
   - media
   - monitoring
   - networking
