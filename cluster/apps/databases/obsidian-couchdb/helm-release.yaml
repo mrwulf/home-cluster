@@ -41,8 +41,9 @@ spec:
 
         initContainers:
           init-config:
-            image: public.ecr.aws/docker/library/busybox
-            tag: latest
+            image:
+              repository: public.ecr.aws/docker/library/busybox
+              tag: latest
             command:
               - "sh"
               - "-c"
