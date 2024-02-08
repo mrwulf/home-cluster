@@ -5,11 +5,11 @@ metadata:
   name: unifi
   namespace: networking
 spec:
-  interval: 5m
+  interval: 30m
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.5.0
       interval: 15m
       sourceRef:
         kind: HelmRepository
@@ -23,18 +23,30 @@ spec:
     remediation:
       retries: 3
   values:
-    image:
-      repository: jacobalberty/unifi
-      tag: v8.0.28
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: jacobalberty/unifi
+              tag: v8.0.28
 
-    env:
-      RUNAS_UID0: "false"
-      UNIFI_UID: "999"
-      UNIFI_GID: "999"
-      UNIFI_STDOUT: "true"
-      JVM_INIT_HEAP_SIZE:
-      JVM_MAX_HEAP_SIZE: 1024M
-      TZ: "${TIMEZONE}"
+            env:
+              RUNAS_UID0: "false"
+              UNIFI_UID: "999"
+              UNIFI_GID: "999"
+              UNIFI_STDOUT: "true"
+              JVM_INIT_HEAP_SIZE:
+              JVM_MAX_HEAP_SIZE: 1024M
+              TZ: "${TIMEZONE}"
+            resources:
+              requests:
+                cpu: 50m
+                memory: 1G
+              limits:
+                memory: 2G
 
     service:
       main:
@@ -87,6 +99,9 @@ spec:
           - host: &host "unifi.home.${SECRET_DOMAIN}"
             paths:
               - path: /
+                service:
+                  name: main
+                  port: http
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
@@ -96,17 +111,12 @@ spec:
       data:
         enabled: true
         existingClaim: unifi-data
-        mountPath: /unifi
+        globalMounts:
+          - path: /unifi
       backups:
         enabled: true
-        mountPath: /unifi/data/backup
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/unifi"
-
-    resources:
-      requests:
-        cpu: 50m
-        memory: 1G
-      limits:
-        memory: 2G
+        globalMounts:
+          - path: /unifi/data/backup
