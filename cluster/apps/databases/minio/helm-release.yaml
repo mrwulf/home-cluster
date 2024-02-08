@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.5.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -22,24 +22,43 @@ spec:
     remediation:
       retries: 3
   values:
-    controller:
-      annotations:
-        reloader.stakater.com/auto: "true"
-      replicas: 1
-    image:
-      repository: quay.io/minio/minio
-      tag: RELEASE.2022-12-12T19-27-27Z
-    env:
-      TZ: "${TIMEZONE}"
-      MINIO_UPDATE: "off"
-      MINIO_PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
-      MINIO_PROMETHEUS_JOB_ID: minio
-      MINIO_BROWSER_REDIRECT_URL: "https://minio.home.${SECRET_DOMAIN}"
-      MINIO_SERVER_URL: "https://cdn.${SECRET_DOMAIN}"
-    envFrom:
-      - secretRef:
-          name: minio-secret
-    args: ["server", "/data", "--console-address", ":9001"]
+    controllers:
+      main:
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        replicas: 1
+        pod:
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: "OnRootMismatch"
+            supplementalGroups:
+              - 100
+        containers:
+          main:
+            image:
+              repository: quay.io/minio/minio
+              tag: RELEASE.2022-12-12T19-27-27Z
+            env:
+              TZ: "${TIMEZONE}"
+              MINIO_UPDATE: "off"
+              MINIO_PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+              MINIO_PROMETHEUS_JOB_ID: minio
+              MINIO_BROWSER_REDIRECT_URL: "https://minio.home.${SECRET_DOMAIN}"
+              MINIO_SERVER_URL: "https://cdn.${SECRET_DOMAIN}"
+            envFrom:
+              - secretRef:
+                  name: minio-secret
+            args: ["server", "/data", "--console-address", ":9001"]
+            resources:
+              requests:
+                memory: 100Mi
+                cpu: 100m
+              limits:
+                memory: 750Mi
+
     service:
       main:
         enabled: true
@@ -49,6 +68,7 @@ spec:
           api:
             enabled: true
             port: &api-port 9000
+
     # https://min.io/docs/minio/linux/reference/minio-mc-admin/mc-admin-prometheus.html
     serviceMonitor:
       main:
@@ -62,6 +82,7 @@ spec:
             bearerTokenSecret:
               name: minio-secret
               key: MINIO_PROMETHEUS_TOKEN
+
     ingress:
       main:
         enabled: true
@@ -77,6 +98,7 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
+                  name: main
                   port: *console-port
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
@@ -98,22 +120,16 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
+                  name: main
                   port: *api-port
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *api-host
-    # podSecurityContext:
-    #   runAsUser: 568
-    #   runAsGroup: 568
-    #   fsGroup: 568
-    #   fsGroupChangePolicy: "OnRootMismatch"
-    #   supplementalGroups:
-    #     - 100
+
     persistence:
       config:
         enabled: true
-        mountPath: /data
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/active/minio"
@@ -123,10 +139,5 @@ spec:
           - hard
           - noatime
           # - nfsvers=4.2
-
-    resources:
-      requests:
-        memory: 100Mi
-        cpu: 100m
-      limits:
-        memory: 750Mi
+        globalMounts:
+          - path: /data
