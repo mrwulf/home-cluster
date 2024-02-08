@@ -1,66 +1,77 @@
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: &app pgadmin
   namespace: databases
 spec:
-  interval: 15m
+  interval: 30m
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.5.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
+  maxHistory: 2
   install:
     createNamespace: true
     remediation:
-      retries: 5
+      retries: 3
   upgrade:
+    cleanupOnFail: true
     remediation:
-      retries: 5
+      retries: 3
+  uninstall:
+    keepHistory: false
   values:
-    image:
-      repository: dpage/pgadmin4
-      tag: "8.2"
-
-    controller:
-      annotations:
-        reloader.stakater.com/auto: "true"
-
-    strategy:
-      type: Recreate
-
-    envFrom:
-      - secretRef:
-          name: pgadmin-secrets
-
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: dpage/pgadmin4
+              tag: "8.2"
+            env:
+              PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
+            pod:
+              securityContext:
+                runAsUser: 5050
+                runAsGroup: 5050
+                fsGroup: 5050
+                fsGroupChangePolicy: "OnRootMismatch"
+            envFrom:
+              - secretRef:
+                  name: pgadmin-secrets
+            resources:
+              requests:
+                cpu: 50m
+                memory: 164M
+              limits:
+                memory: 236M
     service:
       main:
         ports:
           http:
             port: 80
-
-    podSecurityContext:
-      runAsUser: 5050
-      runAsGroup: 5050
-      fsGroup: 5050
-      fsGroupChangePolicy: "OnRootMismatch"
-
     persistence:
       config:
         enabled: true
-        mountPath: "/var/lib/pgadmin"
         existingClaim: pgadmin-config
+        globalMounts:
+          - path: "/var/lib/pgadmin"
       oauthconfig:
         enabled: true
         type: configMap
         name: pgadmin-oauth-configmap
         subPath: config_local.py
-        mountPath: /pgadmin4/config_local.py
         readOnly: true
+        globalMounts:
+          - path: /pgadmin4/config_local.py
 
     ingress:
       main:
@@ -75,15 +86,10 @@ spec:
           - host: &host "pgadmin.home.${SECRET_DOMAIN}"
             paths:
               - path: /
-                pathType: Prefix
+                service:
+                  name: main
+                  port: http
         tls:
           - hosts:
               - *host
             secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-
-    resources:
-      requests:
-        cpu: 15m
-        memory: 164M
-      limits:
-        memory: 236M
