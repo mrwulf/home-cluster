@@ -92,7 +92,6 @@ spec:
           - databases
           - development
           - household
-          - joplin
           - media
           - monitoring
           - storage
