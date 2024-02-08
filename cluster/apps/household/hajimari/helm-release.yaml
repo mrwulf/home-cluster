@@ -5,7 +5,7 @@ metadata:
   name: hajimari
   namespace: household
 spec:
-  interval: 15m
+  interval: 30m
   chart:
     spec:
       chart: hajimari
@@ -55,7 +55,6 @@ spec:
           - default
           - development
           - household
-          - joplin
           - kube-system
           - media
           - monitoring

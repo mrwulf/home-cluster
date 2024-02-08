@@ -5,12 +5,11 @@ metadata:
   name: radarr
   namespace: media
 spec:
-  interval: 5m
+  interval: 30m
   chart:
     spec:
       chart: app-template
       version: 1.5.1
-      interval: 15m
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts

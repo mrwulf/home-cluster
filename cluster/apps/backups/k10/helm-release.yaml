@@ -6,7 +6,7 @@ metadata:
   namespace: backups
 spec:
   releaseName: k10
-  interval: 5m
+  interval: 30m
   chart:
     spec:
       chart: k10
@@ -15,7 +15,6 @@ spec:
         kind: HelmRepository
         name: kasten-charts
         namespace: flux-system
-      interval: 5m
   install:
     createNamespace: true
     crds: CreateReplace
