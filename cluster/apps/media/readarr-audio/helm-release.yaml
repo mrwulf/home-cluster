@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.5.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -22,19 +22,51 @@ spec:
     remediation:
       retries: 5
   values:
-    controller:
-      annotations:
-        reloader.stakater.com/auto: "true"
-    image:
-      repository: ghcr.io/onedr0p/readarr-nightly
-      tag: 0.3.18.2411@sha256:fed3704e34c0fa3b2643926e5d4427e66ace218a82767d5d61f156f077dbf2b0
-    env:
-      TZ: "${TIMEZONE}"
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+        containers:
+          main:
+            image:
+              repository: ghcr.io/onedr0p/readarr-nightly
+              tag: 0.3.18.2411@sha256:fed3704e34c0fa3b2643926e5d4427e66ace218a82767d5d61f156f077dbf2b0
+            env:
+              TZ: "${TIMEZONE}"
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /usr/bin/env
+                      - bash
+                      - -c
+                      - curl --fail localhost:8787/api/v1/system/status?apiKey=`IFS=\> && while
+                        read -d \< E C; do if [[ $E = "ApiKey" ]]; then echo $C; fi; done < /config/config.xml`
+                  failureThreshold: 5
+                  initialDelaySeconds: 60
+                  periodSeconds: 10
+                  successThreshold: 1
+                  timeoutSeconds: 10
+            resources:
+              requests:
+                memory: 100Mi
+                cpu: 100m
+              limits:
+                memory: 1.5G
+
     service:
       main:
         ports:
           http:
             port: 8787
+
     ingress:
       main:
         enabled: true
@@ -49,49 +81,14 @@ spec:
           - host: &host "readarr-audio.home.${SECRET_DOMAIN}"
             paths:
               - path: /
-                pathType: Prefix
+                service:
+                  name: main
+                  port: http
         tls:
           - secretName: &tls "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
-      api:
-        enabled: true
-        ingressClassName: "traefik"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-        hosts:
-          - host: *host
-            paths:
-              - path: /api
-                pathType: Prefix
-        tls:
-          - secretName: *tls
-            hosts:
-              - *host
-    probes:
-      liveness:
-        enabled: true
-        custom: true
-        spec:
-          exec:
-            command:
-              - /usr/bin/env
-              - bash
-              - -c
-              - curl --fail localhost:8787/api/v1/system/status?apiKey=`IFS=\> && while
-                read -d \< E C; do if [[ $E = "ApiKey" ]]; then echo $C; fi; done < /config/config.xml`
-          failureThreshold: 5
-          initialDelaySeconds: 60
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 10
-    podSecurityContext:
-      runAsUser: 0
-      runAsGroup: 0
-    #   supplementalGroups:
-    #     - 1001
-    #     - 100
+
     persistence:
       config:
         enabled: true
@@ -101,44 +98,15 @@ spec:
         type: nfs
         server: ${PRIMARY_NFS_SERVER}
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
-        mountPath: /downloads
       audiobooks:
         enabled: true
-        mountPath: /audiobooks
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
-      # books:
-      #   enabled: true
-      #   mountPath: /books
-      #   type: nfs
-      #   server: "${PRIMARY_NFS_SERVER}"
-      #   path: "${NFS_KUBERNETES_PATH}/active/books"
       backups:
         enabled: true
-        mountPath: /config/Backups
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/readarr-audio"
-    resources:
-      requests:
-        memory: 100Mi
-        cpu: 100m
-      limits:
-        memory: 1.5G
-
-    # metrics:
-    #   enabled: true
-    #   serviceMonitor:
-    #     interval: 30m
-    #     scrapeTimeout: 3m
-    #   prometheusRule:
-    #     enabled: true
-    #   exporter:
-    #     image:
-    #       repository: ghcr.io/onedr0p/exportarr
-    #       tag: v1.1.0
-    #     env:
-    #       port: 9794
-    #       additionalMetrics: true
-    #       unknownQueueItems: true
+        globalMounts:
+          - path: /config/Backups
