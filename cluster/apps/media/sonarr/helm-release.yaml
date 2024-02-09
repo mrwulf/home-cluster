@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.5.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -24,53 +24,59 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    controller:
-      annotations:
-        reloader.stakater.com/auto: "true"
-    image:
-      repository: ghcr.io/onedr0p/sonarr-develop
-      tag: '4.0.1.1096'
-
-    podSecurityContext:
-      runAsUser: 568
-      runAsGroup: 568
-      fsGroup: 568
-      supplementalGroups: [10000]
-      fsGroupChangePolicy: "OnRootMismatch"
-
-    env:
-      TZ: "${TIMEZONE}"
-      SONARR__INSTANCE_NAME: Sonarr
-      SONARR__PORT: &port 8989
-      SONARR__APPLICATION_URL: "https://sonarr.home.${SECRET_DOMAIN}"
-      SONARR__LOG_LEVEL: info
-
-    dnsConfig:
-      options:
-        - name: ndots
-          value: "1"
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            supplementalGroups: [10000]
+            fsGroupChangePolicy: "OnRootMismatch"
+        containers:
+          main:
+            image:
+              repository: ghcr.io/onedr0p/sonarr-develop
+              tag: '4.0.1.1096'
+            env:
+              TZ: "${TIMEZONE}"
+              SONARR__INSTANCE_NAME: Sonarr
+              SONARR__PORT: &port 8989
+              SONARR__APPLICATION_URL: "https://sonarr.home.${SECRET_DOMAIN}"
+              SONARR__LOG_LEVEL: info
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: false
+            resources:
+              requests:
+                cpu: 22m
+                memory: 1G
+              limits:
+                memory: 4G
 
     service:
       main:
         ports:
           http:
             port: *port
-
-    probes:
-      liveness: &probes
-        enabled: true
-        custom: true
-        spec:
-          httpGet:
-            path: /ping
-            port: *port
-          initialDelaySeconds: 0
-          periodSeconds: 10
-          timeoutSeconds: 1
-          failureThreshold: 3
-      readiness: *probes
-      startup:
-        enabled: false
 
     ingress:
       main:
@@ -86,64 +92,41 @@ spec:
           - host: &host "sonarr.home.${SECRET_DOMAIN}"
             paths:
               - path: /
-                pathType: Prefix
+                service:
+                  name: main
+                  port: http
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
 
-    resources:
-      requests:
-        cpu: 22m
-        memory: 4065M
-      limits:
-        # memory: 5162M
-
     persistence:
       config:
         enabled: true
         existingClaim: sonarr-config
-
       downloads:
         enabled: true
-        mountPath: /downloads
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
-
       tv:
         enabled: true
-        mountPath: /TV
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: /volume1/Shared Videos/TV
-
+        globalMounts:
+          - path: /TV
       tv1:
         enabled: true
-        mountPath: /TV1
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: /volume2/TV1
-
+        globalMounts:
+          - path: /TV1
       backups:
         enabled: true
-        mountPath: /config/Backups
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/sonarr"
-
-    # metrics:
-    #   enabled: true
-    #   serviceMonitor:
-    #     interval: 3m
-    #     scrapeTimeout: 1m
-    #   prometheusRule:
-    #     enabled: true
-    #   exporter:
-    #     image:
-    #       repository: ghcr.io/onedr0p/exportarr
-    #       tag: v1.1.0
-    #     env:
-    #       port: 9794
-    #       additionalMetrics: false
-    #       unknownQueueItems: true
+        globalMounts:
+          - path: /config/Backups
