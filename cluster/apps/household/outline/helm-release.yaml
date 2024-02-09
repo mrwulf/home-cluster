@@ -36,38 +36,38 @@ spec:
       main:
         annotations:
           reloader.stakater.com/auto: "true"
-      pod:
-        dnsConfig:
-          options:
-            - name: ndots
-              value: "1"
-        topologySpreadConstraints:
-          - maxSkew: 1
-            topologyKey: kubernetes.io/hostname
-            whenUnsatisfiable: DoNotSchedule
-            labelSelector:
-              matchLabels:
-                app.kubernetes.io/name: *app
-      containers:
-        main:
-          image:
-            repository: docker.io/outlinewiki/outline
-            tag: 0.74.0
-          envFrom:
-            - secretRef:
-                name: outline-secret
-          command:
-            [
-              "/bin/sh",
-              "-c",
-              "yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled",
-            ]
-          resources:
-            requests:
-              cpu: 10m
-              memory: 50Mi
-            limits:
-              memory: 500Mi
+        pod:
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
+        containers:
+          main:
+            image:
+              repository: docker.io/outlinewiki/outline
+              tag: 0.74.0
+            envFrom:
+              - secretRef:
+                  name: outline-secret
+            command:
+              [
+                "/bin/sh",
+                "-c",
+                "yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled",
+              ]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                memory: 500Mi
 
     service:
       main:
