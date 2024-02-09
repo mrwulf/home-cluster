@@ -6,29 +6,34 @@ metadata:
   namespace: household
 spec:
   values:
-    initContainers:
-      init-db:
-        image: ghcr.io/onedr0p/postgres-initdb:14.8
-        env:
-          - name: POSTGRES_HOST
-            value: postgres-rw.databases.svc.cluster.local.
-          - name: POSTGRES_DB
-            value: *app
-          - name: POSTGRES_SUPER_PASS
-            valueFrom:
-              secretKeyRef:
-                name: postgres-superuser
-                key: password
-          - name: POSTGRES_SUPER_USER
-            valueFrom:
-              secretKeyRef:
-                name: postgres-superuser
-                key: username
-          - name: POSTGRES_PASS
-            valueFrom:
-              secretKeyRef:
-                name: outline-secret
-                key: POSTGRES_PASSWORD
-        envFrom:
-          - secretRef:
-              name: outline-secret
+    controllers:
+      main:
+        containers:
+          initContainers:
+            init-db:
+              image:
+                repository: ghcr.io/onedr0p/postgres-initdb
+                tag: 14.8
+              env:
+                - name: POSTGRES_HOST
+                  value: postgres-rw.databases.svc.cluster.local.
+                - name: POSTGRES_DB
+                  value: *app
+                - name: POSTGRES_SUPER_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-superuser
+                      key: password
+                - name: POSTGRES_SUPER_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-superuser
+                      key: username
+                - name: POSTGRES_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: outline-secret
+                      key: POSTGRES_PASSWORD
+              envFrom:
+                - secretRef:
+                    name: outline-secret
