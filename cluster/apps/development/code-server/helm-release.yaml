@@ -5,7 +5,7 @@ metadata:
   name: code-server
   namespace: development
 spec:
-  interval: 5m
+  interval: 30m
   chart:
     spec:
       # renovate: registryUrl=https://wrmilling.github.io/wrmilling-charts/
@@ -15,7 +15,6 @@ spec:
         kind: HelmRepository
         name: wrmilling-charts
         namespace: flux-system
-      interval: 5m
   values:
     controller:
       type: statefulset

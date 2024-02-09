@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.5.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -29,25 +29,45 @@ spec:
       namespace: databases
 
   values:
-    controller:
-      replicas: 3
-      strategy: RollingUpdate
-      annotations:
-        configmap.reloader.stakater.com/reload: &configMap immich-configmap
-        secret.reloader.stakater.com/reload: &secret immich-secret
+    controllers:
+      main:
+        replicas: 3
+        strategy: RollingUpdate
+        annotations:
+          configmap.reloader.stakater.com/reload: &configMap immich-configmap
+          secret.reloader.stakater.com/reload: &secret immich-secret
+        pod:
+          enableServiceLinks: false
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
 
-    image:
-      repository: ghcr.io/immich-app/immich-server
-      tag: v1.94.1
+        containers:
+          main:
+            image:
+              repository: ghcr.io/immich-app/immich-server
+              tag: v1.94.1
 
-    args: ["start-microservices.sh"]
-    env:
-      NODE_OPTIONS: "--max-old-space-size=8192"
-    envFrom:
-      - configMapRef:
-          name: *configMap
-      - secretRef:
-          name: *secret
+            args: ["start-microservices.sh"]
+            env:
+              NODE_OPTIONS: "--max-old-space-size=8192"
+            envFrom:
+              - configMapRef:
+                  name: *configMap
+              - secretRef:
+                  name: *secret
+            resources:
+              requests:
+                cpu: 100m
+                memory: 1G
+                gpu.intel.com/i915: 1
+              limits:
+                gpu.intel.com/i915: 1
+                memory: 12G
 
     service:
       main:
@@ -56,7 +76,6 @@ spec:
     persistence:
       library:
         enabled: true
-        mountPath: /usr/src/app/upload
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "/volume3/Pictures/immich"
@@ -65,9 +84,10 @@ spec:
           - nconnect=8
           - hard
           - noatime
+        globalMounts:
+          - path: /usr/src/app/upload
       memories:
         enabled: true
-        mountPath: /mnt/memories
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "/volume3/Pictures"
@@ -76,20 +96,5 @@ spec:
           - nconnect=8
           - hard
           - noatime
-
-    topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-            app.kubernetes.io/name: *app
-
-    resources:
-      requests:
-        cpu: 100m
-        memory: 16G
-        gpu.intel.com/i915: 1
-      limits:
-        gpu.intel.com/i915: 1
-        memory: 16G
+        globalMounts:
+          - path: /mnt/memories

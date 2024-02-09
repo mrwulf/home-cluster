@@ -5,15 +5,11 @@ https://web.archive.org/web/20230528055235/https://noted.lol/easy-off-site-monit
 > https://noted.lol/easy-off-site-monitoring-with-fly-io-and-uptime-kuma/
 
 # Recreate from fly.toml
-
-In this folder (with fly.toml)
-
-1. Create app (must be unique): `flyctl apps create`
-    * Enter app name `mrwulf-kuma`
-1. Create volume for uptime kuma: `fly volumes create kuma_data --region lax --size 1`
-1. Deploy: `fly deploy`
+1. `fly app destroy mrwulf-kuma`
+1. `task task monitoring:update-uptime-kuma`
 1. Add cloudflare tunnel id in settings
 1. Upload backup of monitors
+1. Reconfigure status page
 
 # Update
 ```

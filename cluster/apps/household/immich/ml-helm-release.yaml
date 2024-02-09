@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.5.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -32,33 +32,62 @@ spec:
       namespace: databases
 
   values:
-    controller:
-      replicas: 1
-      strategy: Recreate
-      annotations:
-        configmap.reloader.stakater.com/reload: &configMap immich-configmap
-        secret.reloader.stakater.com/reload: &secret immich-secret
+    controllers:
+      main:
+        replicas: 1
+        strategy: Recreate
+        annotations:
+          configmap.reloader.stakater.com/reload: &configMap immich-configmap
+          secret.reloader.stakater.com/reload: &secret immich-secret
+        pod:
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
+        containers:
+          main:
+            image:
+              repository: ghcr.io/immich-app/immich-machine-learning
+              tag: v1.94.1
 
-    image:
-      repository: ghcr.io/immich-app/immich-machine-learning
-      tag: v1.94.1
-
-    envFrom:
-      - configMapRef:
-          name: *configMap
-      - secretRef:
-          name: *secret
+            envFrom:
+              - configMapRef:
+                  name: *configMap
+              - secretRef:
+                  name: *secret
+            resources:
+              requests:
+                cpu: 500m
+                memory: 250Mi
+                gpu.intel.com/i915: 1
+              limits:
+                gpu.intel.com/i915: 1
+                memory: 3.5Gi
+            # this is necessary for the downloads to complete
+            probes:
+              startup:
+                custom: true
+                spec:
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 30
+                  successThreshold: 1
+                  tcpSocket:
+                    port: &port 3003
 
     service:
       main:
         ports:
           http:
-            port: &port 3003
+            port: *port
 
     persistence:
       library:
         enabled: true
-        mountPath: /usr/src/app/upload
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "/volume3/Pictures/immich"
@@ -67,9 +96,10 @@ spec:
           - nconnect=8
           - hard
           - noatime
+        globalMounts:
+          - path: /usr/src/app/upload
       memories:
         enabled: true
-        mountPath: /mnt/memories
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "/volume3/Pictures"
@@ -78,54 +108,8 @@ spec:
           - nconnect=8
           - hard
           - noatime
+        globalMounts:
+          - path: /mnt/memories
       cache:
         enabled: true
         existingClaim: immich-machine-learning-cache
-
-    # this is necessary for the downloads to complete
-    probes:
-      startup:
-        custom: true
-        spec:
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 30
-          successThreshold: 1
-          tcpSocket:
-            port: *port
-
-    topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-            app.kubernetes.io/name: *app
-
-    affinity:
-      nodeAntiAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: kubernetes.io/hostname
-                  operator: NotIn
-                  values:
-                    - epsilon
-
-    # affinity:
-    #   nodeAffinity:
-    #     preferredDuringSchedulingIgnoredDuringExecution:
-    #       nodeSelectorTerms:
-    #         - matchExpressions:
-    #             - key: node-role.kubernetes.io/control-plane
-    #               operator: DoesNotExist
-
-    resources:
-      requests:
-        cpu: 500m
-        memory: 250Mi
-        gpu.intel.com/i915: 1
-      limits:
-        gpu.intel.com/i915: 1
-        memory: 3.5Gi
