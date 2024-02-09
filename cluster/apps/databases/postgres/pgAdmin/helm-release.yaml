@@ -31,6 +31,12 @@ spec:
       main:
         annotations:
           reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsUser: 5050
+            runAsGroup: 5050
+            fsGroup: 5050
+            fsGroupChangePolicy: "OnRootMismatch"
         containers:
           main:
             image:
@@ -38,12 +44,6 @@ spec:
               tag: "8.3"
             env:
               PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
-            pod:
-              securityContext:
-                runAsUser: 5050
-                runAsGroup: 5050
-                fsGroup: 5050
-                fsGroupChangePolicy: "OnRootMismatch"
             envFrom:
               - secretRef:
                   name: pgadmin-secrets
