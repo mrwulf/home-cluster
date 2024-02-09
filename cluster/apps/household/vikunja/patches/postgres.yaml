@@ -10,7 +10,9 @@ spec:
       main:
         initContainers:
           init-db:
-            image: ghcr.io/haraldkoch/postgres-init:16.1
+            image:
+              repository: ghcr.io/haraldkoch/postgres-init
+              tag: 16.1
             env:
               - name: INIT_POSTGRES_HOST
                 value: postgres-rw.databases.svc.cluster.local
