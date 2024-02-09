@@ -4,4 +4,4 @@ kind: Kustomization
 resources:
   - dashboard
   - helm-release.yaml
-  - service-monitor.yaml
+  - prometheusrule.yaml
