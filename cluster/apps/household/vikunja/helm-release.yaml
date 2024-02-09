@@ -105,13 +105,6 @@ spec:
               limits:
                 memory: 512Mi
 
-        volumeMounts:
-          - name: files
-            mountPath: /app/vikunja/files
-          - name: config
-            mountPath: /app/vikunja/config.yml
-            subPath: config.yml
-
     service:
       main:
         ports:
@@ -156,23 +149,29 @@ spec:
       files:
         enabled: true
         existingClaim: vikunja-files-pvc
-        globalMounts:
-          - path: /app/vikunja/files
+        advancedMounts:
+          main:
+            api:
+              - path: /app/vikunja/files
       config:
         enabled: true
         type: custom
-        subPath: Vikunja.yaml
         volumeSpec:
           configMap:
             name: vikunja
-        globalMounts:
-          - path: /etc/vikunja/config.yml
+        advancedMounts:
+          main:
+            api:
+              - path: /etc/vikunja/config.yml
+                subPath: config.yml
       caddy-config:
         enabled: "true"
-        subPath: Caddyfile
         type: "custom"
         volumeSpec:
           configMap:
             name: vikunja
-        globalMounts:
-          - path: /etc/caddy/Caddyfile
+        advancedMounts:
+          main:
+            main:
+              - path: /etc/caddy/Caddyfile
+                subPath: Caddyfile
