@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.5.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -23,24 +23,38 @@ spec:
       retries: 3
   # See https://github.com/bjw-s/helm-charts/blob/main/charts/library/common/values.yaml
   values:
-    controller:
-      annotations:
-        reloader.stakater.com/auto: "true"
-    image:
-      repository: ghcr.io/onedr0p/radarr
-      tag: '5.2.6.8376'
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: "OnRootMismatch"
+        containers:
+          main:
+            image:
+              repository: ghcr.io/onedr0p/radarr
+              tag: '5.2.6.8376'
 
-    env:
-      TZ: "${TIMEZONE}"
-      SONARR__INSTANCE_NAME: Radarr
-      SONARR__PORT: &port 7878
-      SONARR__APPLICATION_URL: "https://radarr.home.${SECRET_DOMAIN}"
-      SONARR__LOG_LEVEL: info
-
-    dnsConfig:
-      options:
-        - name: ndots
-          value: "1"
+            env:
+              TZ: "${TIMEZONE}"
+              SONARR__INSTANCE_NAME: Radarr
+              SONARR__PORT: &port 7878
+              SONARR__APPLICATION_URL: "https://radarr.home.${SECRET_DOMAIN}"
+              SONARR__LOG_LEVEL: info
+            resources:
+              requests:
+                cpu: 15m
+                memory: 1312M
+              limits:
+                memory: 4655M
 
     service:
       main:
@@ -62,7 +76,9 @@ spec:
           - host: &host "radarr.home.${SECRET_DOMAIN}"
             paths:
               - path: /
-                pathType: Prefix
+                service:
+                  name: main
+                  port: http
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
@@ -74,49 +90,20 @@ spec:
         existingClaim: radarr-config
       downloads:
         enabled: true
-        mountPath: /downloads
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       movies:
         enabled: true
-        mountPath: /Movies
         type: nfs
         server: "${SECONDARY_NFS_SERVER}"
         path: /volume1/Shared Videos/Movies
-
+        globalMounts:
+          - path: /Movies
       backups:
         enabled: true
-        mountPath: /config/Backups
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/radarr"
-
-    podSecurityContext:
-      runAsUser: 568
-      runAsGroup: 568
-      fsGroup: 568
-      fsGroupChangePolicy: "OnRootMismatch"
-
-    resources:
-      requests:
-        cpu: 15m
-        memory: 1312M
-      limits:
-        memory: 4655M
-
-    # metrics:
-    #   enabled: true
-    #   serviceMonitor:
-    #     interval: 3m
-    #     scrapeTimeout: 1m
-    #   prometheusRule:
-    #     enabled: true
-    #   exporter:
-    #     image:
-    #       repository: ghcr.io/onedr0p/exportarr
-    #       tag: v1.1.0
-    #     env:
-    #       port: 9794
-    #       additionalMetrics: true
-    #       unknownQueueItems: true
+        globalMounts:
+          - path: /config/Backups

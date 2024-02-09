@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.5.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -22,43 +22,39 @@ spec:
     remediation:
       retries: 3
   values:
-    controller:
-      annotations:
-        reloader.stakater.com/auto: "true"
-    image:
-      repository: ghcr.io/onedr0p/prowlarr-nightly
-      tag: 1.13.3.4259@sha256:c468ae81fbc7d59b98fd6ba7062c8d9168b2d683fb958dcb4c1540ac5829e136
-    env:
-      TZ: "${TIMEZONE}"
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+
+        containers:
+          main:
+            image:
+              repository: ghcr.io/onedr0p/prowlarr-nightly
+              tag: 1.13.3.4259@sha256:c468ae81fbc7d59b98fd6ba7062c8d9168b2d683fb958dcb4c1540ac5829e136
+            env:
+              TZ: "${TIMEZONE}"
+            resources:
+              requests:
+                cpu: 15m
+                memory: 443M
+              limits:
+                memory: 454M
+
     service:
       main:
         ports:
           http:
             port: 9696
-
-    dnsConfig:
-      options:
-        - name: ndots
-          value: "1"
-
-    podSecurityContext:
-      runAsUser: 0
-      runAsGroup: 0
-    persistence:
-      config:
-        enabled: true
-        existingClaim: prowlarr-config
-      shared:
-        enabled: true
-        type: emptyDir
-        mountPath: /shared
-      backups:
-        enabled: true
-        mountPath: /config/Backups
-        # mountOptions: nolock
-        type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
-        path: "${NFS_KUBERNETES_PATH}/backups/prowlarr"
 
     ingress:
       main:
@@ -74,14 +70,25 @@ spec:
           - host: &host "prowlarr.home.${SECRET_DOMAIN}"
             paths:
               - path: /
+                service:
+                  name: main
+                  port: http
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
 
-    resources:
-      requests:
-        cpu: 15m
-        memory: 443M
-      limits:
-        memory: 454M
+    persistence:
+      config:
+        enabled: true
+        existingClaim: prowlarr-config
+      shared:
+        enabled: true
+        type: emptyDir
+      backups:
+        enabled: true
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER}"
+        path: "${NFS_KUBERNETES_PATH}/backups/prowlarr"
+        globalMounts:
+          - path: /config/Backups
