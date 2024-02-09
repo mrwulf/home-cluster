@@ -28,14 +28,15 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         replicas: 1
-        # pod:
-        #   securityContext:
-        #     runAsUser: 568
-        #     runAsGroup: 568
-        #     fsGroup: 568
-        #     fsGroupChangePolicy: "OnRootMismatch"
-        #     supplementalGroups:
-        #       - 100
+        pod:
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: "OnRootMismatch"
+            supplementalGroups:
+              - 100
+              - 65539
         containers:
           main:
             image:

@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.5.1
+      version: 2.5.0
       interval: 30m
       sourceRef:
         kind: HelmRepository
@@ -23,49 +23,44 @@ spec:
     remediation:
       retries: 3
   values:
-    controller:
-      annotations:
-        reloader.stakater.com/auto: "true"
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: "OnRootMismatch"
+            supplementalGroups:
+              - 44
+              - 100
+              - 109
+              - 65539
 
-    image:
-      # https://github.com/onedr0p/container-images/pkgs/container/plex
-      repository: ghcr.io/onedr0p/plex
-      tag: 1.32.8.7639-fb6452ebf
+        containers:
+          main:
+            image:
+              repository: ghcr.io/onedr0p/plex
+              tag: 1.32.8.7639-fb6452ebf
 
-    # Add this to start the container, but not plex:
-    #   command:
-    #     - bash
-    #     - -c
-    #     - while :; do echo 'sleeping'; sleep 30; done;
-    # probes:
-    #   startup:
-    #     enabled: false
-    #   readiness:
-    #     enabled: false
-    #   liveness:
-    #     enabled: false
-
-    podSecurityContext:
-      runAsUser: 568
-      runAsGroup: 568
-      fsGroup: 568
-      fsGroupChangePolicy: "OnRootMismatch"
-      supplementalGroups:
-        - 44
-        - 100
-        - 109
-        - 65539
-
-    env:
-      TZ: "${TIMEZONE}"
-      ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,http://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
-      # CLAIM_TOKEN: ''
-      # ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,https://plex.media.home.${SECRET_DOMAIN}:32400/,https://plex.${SECRET_DOMAIN}:443/"
-
-    dnsConfig:
-      options:
-        - name: ndots
-          value: "1"
+            env:
+              TZ: "${TIMEZONE}"
+              ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,http://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
+              # CLAIM_TOKEN: ''
+            resources:
+              requests:
+                cpu: 1
+                memory: 5254M
+                gpu.intel.com/i915: 1
+              limits:
+                gpu.intel.com/i915: 1
+                memory: 9248M
 
     service:
       main:
@@ -116,7 +111,9 @@ spec:
           - host: &host "plex.${SECRET_DOMAIN}"
             paths:
               - path: /
-                pathType: Prefix
+                service:
+                  name: main
+                  port: http
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
             hosts:
@@ -126,63 +123,36 @@ spec:
       config:
         enabled: true
         existingClaim: plex-config
+        globalMounts:
+          - path: /config
 
       transcode:
-        enabled: true
         type: emptyDir
 
       backups:
-        enabled: true
-        mountPath: /plex-backups
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/plex-database-backups"
+        globalMounts:
+          - path: /plex-backups
 
       movies:
-        enabled: true
-        mountPath: /mnt/OurShare/Movies
         type: nfs
         server: "${SECONDARY_NFS_SERVER}"
         path: /volume1/Shared Videos/Movies
+        globalMounts:
+          - path: /mnt/OurShare/Movies
 
       tv:
-        enabled: true
-        mountPath: /mnt/OurBackup/TV
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: /volume1/Shared Videos/TV
+        globalMounts:
+          - path: /mnt/OurBackup/TV
 
       tv1:
-        enabled: true
-        mountPath: /mnt/OurBackup/TV1
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: /volume2/TV1
-
-    resources:
-      requests:
-        cpu: 1
-        memory: 5254M
-        gpu.intel.com/i915: 1
-      limits:
-        gpu.intel.com/i915: 1
-        memory: 9248M
-
-    # addons:
-    #   promtail:
-    #     enabled: true
-    #     image:
-    #       repository: grafana/promtail
-    #       tag: 2.8.0
-    #     loki: http://loki-stack.monitoring:3100/loki/api/v1/push
-    #     logs:
-    #       - name: promtail/plex
-    #         path: "/config/Library/Application Support/Plex Media Server/Logs/*.log"
-    #       - name: promtail/plex/plugins
-    #         path: "/config/Library/Application Support/Plex Media Server/Logs/PMS Plugin Logs/*.log"
-    #     volumeMounts:
-    #       - name: config
-    #         mountPath: /config
-    #         readOnly: true
-    #     securityContext:
-    #       runAsUser: 0
+        globalMounts:
+          - path: /mnt/OurBackup/TV1
