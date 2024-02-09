@@ -46,7 +46,9 @@ spec:
                   app.kubernetes.io/name: *app
         initContainers:
           01-init-db:
-            image: ghcr.io/haraldkoch/postgres-init:16.1
+            image:
+              repository: ghcr.io/haraldkoch/postgres-init
+              tag: 16.1
             imagePullPolicy: IfNotPresent
             envFrom:
               - configMapRef:
