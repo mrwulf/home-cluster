@@ -6,3 +6,15 @@ resources:
   - dashboard
   - monitoring/service-monitor.yaml
   - monitoring/prometheusrules.yaml
+
+configMapGenerator:
+  - name: traefik-dashboard
+    files:
+      - traefik-dashboard.json=https://raw.githubusercontent.com/external-secrets/external-secrets/main/docs/snippets/dashboard.json
+generatorOptions:
+  disableNameSuffixHash: true
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+    grafana_folder: "System"
+  labels:
+    grafana_dashboard: "1"
