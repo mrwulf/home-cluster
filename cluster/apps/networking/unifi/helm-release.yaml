@@ -53,6 +53,8 @@ spec:
         type: LoadBalancer
         loadBalancerIP: "${UNIFI_ADDR}"
         externalTrafficPolicy: Local
+        annotations:
+          traefik.ingress.kubernetes.io/service.serversscheme: https
         ports:
           http:
             port: 8443
