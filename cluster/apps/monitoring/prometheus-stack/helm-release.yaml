@@ -305,16 +305,26 @@ spec:
         ruleSelectorNilUsesHelmValues: false
         ruleSelector: {}
         additionalScrapeConfigs:
-          - job_name: firewall-node
+          - job_name: firewall02-node
             honor_timestamps: true
             static_configs:
               - targets:
-                  - "firewall.${SECRET_DOMAIN}:9100"
-          - job_name: firewall-haproxy
+                  - "firewall02.${SECRET_DOMAIN}:9100"
+          - job_name: firewall02-haproxy
             honor_timestamps: true
             static_configs:
               - targets:
-                  - "firewall.${SECRET_DOMAIN}:8404"
+                  - "firewall02.${SECRET_DOMAIN}:8404"
+          - job_name: firewall03-node
+            honor_timestamps: true
+            static_configs:
+              - targets:
+                  - "firewall03.${SECRET_DOMAIN}:9100"
+          - job_name: firewall03-haproxy
+            honor_timestamps: true
+            static_configs:
+              - targets:
+                  - "firewall03.${SECRET_DOMAIN}:8404"
     alertmanager:
       ingress:
         enabled: true
