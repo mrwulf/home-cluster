@@ -40,3 +40,4 @@ resources:
   - vaultwarden-charts.yaml
   - vector-charts.yaml
   - wrmilling-charts.yaml
+  - xenitab-charts.yaml
