@@ -5,7 +5,6 @@ resources:
   - external-dns
   - k8s-dns-gateway
   - kube-cleanup-operator
-  - kube-fledged
   - metrics-server
   - reflector
   - reloader
