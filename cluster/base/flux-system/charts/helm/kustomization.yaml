@@ -7,7 +7,6 @@ resources:
   - bjw-s-charts.yaml
   - cilium-charts.yaml
   - cloudnative-pg-charts.yaml
-  - dcardellino-charts.yaml
   - deliveryhero-charts.yaml
   - descheduler-charts.yaml
   - emberstack-charts.yaml
