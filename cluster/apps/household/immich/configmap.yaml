@@ -18,6 +18,7 @@ data:
   OAUTH_AUTO_REGISTER: "true"
   OAUTH_BUTTON_TEXT: "Login with Authentik"
   PUBLIC_IMMICH_SERVER_URL: "https://photos.${SECRET_DOMAIN}"
+  SERVER_PORT: "3001"
   TZ: "${TIMEZONE}"
 ---
 apiVersion: v1
