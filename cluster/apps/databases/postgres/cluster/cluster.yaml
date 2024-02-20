@@ -7,7 +7,7 @@ metadata:
   annotations:
     kyverno.io/ignore: "true"
 spec:
-  imageName: ghcr.io/bo0tzz/cnpgvecto.rs:15-v0.1.11
+  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:15-v0.2.0
   instances: 3
   primaryUpdateStrategy: unsupervised
   storage:
