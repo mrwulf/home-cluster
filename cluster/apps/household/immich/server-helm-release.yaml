@@ -68,11 +68,21 @@ spec:
                   name: *configMap
               - secretRef:
                   name: *secret
-            # probes:
-            #   liveness:
-            #     enabled: false
-            #   startup:
-            #     enabled: false
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /server-info/ping
+                    port: http
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probe
+              startup:
+                enabled: false
             resources:
               requests:
                 cpu: 100m
