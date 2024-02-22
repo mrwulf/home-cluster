@@ -28,30 +28,55 @@ spec:
     - name: smtp-relay
       namespace: system
   values:
-    replicas: 2
-
-    initContainers:
-      init-db:
-        image: ghcr.io/onedr0p/postgres-initdb:14.8
-        env:
-          - name: POSTGRES_HOST
-            value: postgres-rw.databases.svc.cluster.local.
-          - name: POSTGRES_DB
-            value: authentik
-          - name: POSTGRES_SUPER_PASS
-            valueFrom:
-              secretKeyRef:
-                name: postgres-superuser
-                key: password
-          - name: POSTGRES_SUPER_USER
-            valueFrom:
-              secretKeyRef:
-                name: postgres-superuser
-                key: username
-          - name: POSTGRES_USER
-            value: 'authentik'
-          - name: POSTGRES_PASS
-            value: "${AUTHENTIK_DB_PASS}"
+    server:
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+      replicas: 2
+      initContainers:
+        init-db:
+          image: ghcr.io/onedr0p/postgres-initdb:14.8
+          env:
+            - name: POSTGRES_HOST
+              value: postgres-rw.databases.svc.cluster.local.
+            - name: POSTGRES_DB
+              value: authentik
+            - name: POSTGRES_SUPER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-superuser
+                  key: password
+            - name: POSTGRES_SUPER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-superuser
+                  key: username
+            - name: POSTGRES_USER
+              value: 'authentik'
+            - name: POSTGRES_PASS
+              value: "${AUTHENTIK_DB_PASS}"
+      metrics:
+        rules:
+          enabled: true
+        serviceMonitor:
+          enabled: true
+      ingress:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
+          external-dns/is-public: "true"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "shield-lock"
+          hajimari.io/group: "Home"
+        hosts:
+          - &host "auth.${SECRET_DOMAIN}"
+        tls:
+          - hosts:
+              - *host
+            secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
 
     authentik:
       secret_key: "${AUTHENTIK_KEY}"
@@ -73,32 +98,10 @@ spec:
         use_ssl: true
         from: "Authentik <auth@${SECRET_DOMAIN}>"
 
-    ingress:
-      enabled: true
-      ingressClassName: "traefik"
-      annotations:
-        external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
-        external-dns/is-public: "true"
-        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-        traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
-        hajimari.io/enable: "true"
-        hajimari.io/icon: "shield-lock"
-        hajimari.io/group: "Home"
-      hosts:
-        - host: &host "auth.${SECRET_DOMAIN}"
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - *host
-          secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-
-    prometheus:
-      rules:
-        create: true
-      serviceMonitor:
-        create: true
+    worker:
+      autoscaling:
+        enabled: true
+        minReplicas: 2
 
     postgresql:
       enabled: false
