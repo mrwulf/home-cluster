@@ -1,8 +1,8 @@
 # example: https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
-talosVersion: v1.6.4
-kubernetesVersion: v1.29.1
+talosVersion: v1.6.5
+kubernetesVersion: v1.29.2
 endpoint: https://kubernetes.home:6443
 
 additionalApiServerCertSans:
@@ -30,7 +30,7 @@ nodes:
         dhcp: true
         # mtu: 9000
     nodeLabels: &workerNodeLabels
-      node.home.arpa/physical: true
+      node.home.arpa/physical: "true"
   - hostname: zeta.home
     ipAddress: 10.0.1.41
     installDiskSelector:
