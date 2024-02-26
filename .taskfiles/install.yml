@@ -11,7 +11,7 @@ tasks:
       - task: yq
       - task: age
       - task: sops
-      - task: kubestr
+      # - task: kubestr # Doesn't return version info --- downloads each run
       # - task: kubectl
       - task: flux
       - task: helm
