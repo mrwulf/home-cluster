@@ -1,0 +1,16 @@
+{
+    "devices": [
+        {
+            "screen_id": "${SHIELD_ID}",
+            "name": "YouTube on TV"
+        }
+    ],
+    "apikey": "",
+    "skip_categories": [
+        "sponsor"
+    ],
+    "channel_whitelist": [],
+    "skip_count_tracking": true,
+    "mute_ads": true,
+    "skip_ads": true
+}
