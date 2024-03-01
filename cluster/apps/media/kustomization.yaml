@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - audiobookshelf
   - flaresolverr
-  - issponsorblocktv
+  - isponsorblocktv
   - ombi
   - plex
   - prowlarr
