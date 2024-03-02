@@ -58,8 +58,8 @@ spec:
     persistence:
       config:
         enabled: true
-        type: configMap
-        name: isponsorblocktv-configmap
+        type: secret
+        name: isponsorblocktv-config
         globalMounts:
           - path: /app/data/config.json
             subPath: config.json
