@@ -51,9 +51,9 @@ spec:
               LD_DISABLE_BACKGROUND_TASKS: false
               LD_DISABLE_URL_VALIDATION: false
               LD_ENABLE_AUTH_PROXY: true
-              LD_AUTH_PROXY_USERNAME_HEADER: X-authentik-username
+              LD_AUTH_PROXY_USERNAME_HEADER: HTTP_X_AUTHENTIK_USERNAME
               LD_AUTH_PROXY_LOGOUT_URL: "https://auth.${SECRET_DOMAIN}/logout"
-              LD_CSRF_TRUSTED_ORIGINS: "https://links.${SECRET_DOMAIN}"
+              LD_CSRF_TRUSTED_ORIGINS: "https://links.${SECRET_DOMAIN},https://auth.${SECRET_DOMAIN}"
             probes:
               liveness: &probes
                 enabled: true
