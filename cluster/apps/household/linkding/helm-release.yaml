@@ -50,12 +50,10 @@ spec:
               TZ: "${TIMEZONE}"
               LD_DISABLE_BACKGROUND_TASKS: false
               LD_DISABLE_URL_VALIDATION: false
-              # LD_ENABLE_AUTH_PROXY: true
-              # LD_AUTH_PROXY_USERNAME_HEADER: X-authentik-username
-              # LD_AUTH_PROXY_LOGOUT_URL: "https://auth.${SECRET_DOMAIN}/logout"
-              # LD_CSRF_TRUSTED_ORIGINS: "https://links.${SECRET_DOMAIN}"
-              # LD_FAVICON_PROVIDER:
-              #   value: https://t1.gstatic.com/faviconV2?url={url}&client=SOCIAL&type=FAVICON
+              LD_ENABLE_AUTH_PROXY: true
+              LD_AUTH_PROXY_USERNAME_HEADER: X-authentik-username
+              LD_AUTH_PROXY_LOGOUT_URL: "https://auth.${SECRET_DOMAIN}/logout"
+              LD_CSRF_TRUSTED_ORIGINS: "https://links.${SECRET_DOMAIN}"
             probes:
               liveness: &probes
                 enabled: true
@@ -86,7 +84,7 @@ spec:
         className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-authentik@kubernetescrd@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-authentik@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
           external-dns/is-public: "true"
           hajimari.io/enable: "true"
