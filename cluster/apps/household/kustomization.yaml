@@ -5,6 +5,7 @@ resources:
   - home-assistant
   - immich
   - libreddit
+  - linkding
   - mealie
   - outline
   - vikunja
