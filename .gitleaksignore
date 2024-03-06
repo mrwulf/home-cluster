@@ -7,3 +7,6 @@ cluster/apps/household/linkding/externalsecret.yaml:generic-api-key:40
 cluster/apps/household/linkding/externalsecret.yaml:generic-api-key:49
 cluster/apps/household/linkding/externalsecret.yaml:generic-api-key:58
 cluster/apps/household/linkding/externalsecret.yaml:generic-api-key:67
+cluster/apps/system/smtp-relay/externalsecret.yaml:generic-api-key:20
+cluster/apps/system/smtp-relay/externalsecret.yaml:generic-api-key:29
+cluster/apps/system/smtp-relay/externalsecret.yaml:generic-api-key:38
