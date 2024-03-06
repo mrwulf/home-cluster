@@ -191,7 +191,7 @@ tasks:
         echo "Target Version: {{.TARGET_VERSION}}"
         echo "Target Version Image: {{.TARGET_VERSION_IMAGE}}"
         echo "Target Node: {{.NODE}}"
-        # talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}}
+        talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}}
         {{if .INCLUDE_SLEEP}}echo "Sleeping..." && sleep 90{{end}}
 
   upgrade-all:
@@ -205,7 +205,7 @@ tasks:
         vars:
           NODE: '{{.ITEM}}'
           INCLUDE_SLEEP: true
-      - task: cluster:cleanup
+      - task: ::cluster:cleanup
       - kubectl -n kube-system rollout restart cilium
 
   refresh-certificates:

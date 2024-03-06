@@ -134,6 +134,7 @@ worker:
         officialExtensions:
           - siderolabs/intel-ucode
           - siderolabs/i915-ucode
+          - siderolabs/realtek-firmware
 
 controlPlane:
   schematic: *schematic
