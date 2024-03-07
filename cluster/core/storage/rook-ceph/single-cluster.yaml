@@ -82,6 +82,9 @@ spec:
           requests:
             cpu: "100m"
             memory: "1000Mi"
+          tolerations:
+            - key: node-role.kubernetes.io/storage-only
+              operator: Exists
       storage:
         useAllNodes: false
         useAllDevices: false
