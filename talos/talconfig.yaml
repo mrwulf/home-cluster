@@ -1,7 +1,7 @@
 # example: https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
 
 clusterName: talos-v1
-talosVersion: v1.6.5
+talosVersion: v1.6.6
 kubernetesVersion: v1.29.2
 endpoint: https://kubernetes.home:6443
 
