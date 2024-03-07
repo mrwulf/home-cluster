@@ -26,14 +26,30 @@ spec:
     keepHistory: false
   values:
     installCRDs: true
+    replicaCount: 3
+    leaderElect: true
+    grafana:
+      enabled: true
     serviceMonitor:
       enabled: true
       interval: 1m
-    webhook:
+    backgroundController:
       serviceMonitor:
         enabled: true
         interval: 1m
     certController:
+      serviceMonitor:
+        enabled: true
+        interval: 1m
+    cleanupController:
+      serviceMonitor:
+        enabled: true
+        interval: 1m
+    reportsController:
+      serviceMonitor:
+        enabled: true
+        interval: 1m
+    webhook:
       serviceMonitor:
         enabled: true
         interval: 1m
