@@ -28,6 +28,8 @@ spec:
     controllers:
       main:
         replicas: 2
+        annotations:
+          reloader.stakater.com/auto: "true"
         containers:
           main:
             image:
