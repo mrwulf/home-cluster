@@ -205,8 +205,8 @@ tasks:
         vars:
           NODE: '{{.ITEM}}'
           INCLUDE_SLEEP: true
-      - task: ::cluster:cleanup
-      - kubectl -n kube-system rollout restart cilium
+      - task: :cluster:cleanup
+      - kubectl -n kube-system rollout restart daemonset cilium
 
   refresh-certificates:
     # https://www.talos.dev/v1.3/talos-guides/configuration/managing-pki/
