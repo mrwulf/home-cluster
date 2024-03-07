@@ -65,6 +65,11 @@ spec:
         allowMultiplePerNode: false
       mgr:
         count: 2
+      placement:
+        osd:
+          tolerations:
+            - key: node-role.kubernetes.io/storage-only
+              operator: Exists
       resources:
         api:
           requests:
@@ -82,9 +87,6 @@ spec:
           requests:
             cpu: "100m"
             memory: "1000Mi"
-          tolerations:
-            - key: node-role.kubernetes.io/storage-only
-              operator: Exists
       storage:
         useAllNodes: false
         useAllDevices: false
