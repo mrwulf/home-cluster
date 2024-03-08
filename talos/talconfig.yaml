@@ -71,6 +71,8 @@ nodes:
       type: ssd
     networkInterfaces: *workerNetwork
     nodeLabels: *workerNodeLabels
+    nodeTaints:
+      node-role.kubernetes.io/storage-only: True:NoSchedule
   - hostname: epsilon.home
     ipAddress: 10.0.1.45
     controlPlane: false
