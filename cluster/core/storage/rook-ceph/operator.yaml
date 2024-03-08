@@ -37,6 +37,9 @@ spec:
             requests:
               memory: 128Mi
               cpu: 100m
+      pluginTolerations:
+        - key: node-role.kubernetes.io/storage-only
+          operator: Exists
     crds:
       enabled: true
     resources:

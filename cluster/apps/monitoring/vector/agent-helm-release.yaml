@@ -92,5 +92,9 @@ spec:
     service:
       enabled: false
 
+    tolerations:
+      - key: node-role.kubernetes.io/storage-only
+        operator: Exists
+
     # securityContext:
     #   privileged: true
