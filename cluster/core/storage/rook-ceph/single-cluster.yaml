@@ -70,6 +70,10 @@ spec:
           tolerations:
             - key: node-role.kubernetes.io/storage-only
               operator: Exists
+        parepareosd:
+          tolerations:
+            - key: node-role.kubernetes.io/storage-only
+              operator: Exists
       resources:
         api:
           requests:
