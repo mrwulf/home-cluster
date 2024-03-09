@@ -27,3 +27,9 @@ spec:
     config:
       data:
         INHERITED_LABELS: kasten.io/backup-volume=disabled
+    monitoring:
+      grafanaDashboard:
+        create: true
+        sidecarLabelValue: '1'
+      podMonitor:
+        enabled: true

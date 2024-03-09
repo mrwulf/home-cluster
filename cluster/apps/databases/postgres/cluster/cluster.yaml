@@ -20,11 +20,16 @@ spec:
     enablePodMonitor: true
   postgresql:
     parameters:
+      auto_explain.log_min_duration: '10s'
       max_connections: "300"
-      shared_buffers: 512MB
       max_wal_size: 512MB
+      shared_buffers: 512MB
+      pg_stat_statements.max: "10000"
+      pg_stat_statements.track: all
     shared_preload_libraries:
       - "vectors.so"
+  stopDelay: 300
+  smartShutdownTimeout: 30
   backup:
     retentionPolicy: 30d
     barmanObjectStore:
