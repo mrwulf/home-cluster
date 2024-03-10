@@ -6,6 +6,7 @@ resources:
   - cluster
   - pgAdmin
   - backups/cronjob.yaml
+  - backups/cronjob16.yaml
 configMapGenerator:
   - name: cloudnative-pg-dashboard
     namespace: monitoring
