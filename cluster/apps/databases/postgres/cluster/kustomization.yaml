@@ -5,7 +5,9 @@ kind: Kustomization
 resources:
   - secret.sops.yaml
   - cluster.yaml
+  - cluster16.yaml
   # https://github.com/auricom/home-ops/tree/main/kubernetes/apps/default/cloudnative-pg/cluster
   # - external-backup
   - scheduledbackup.yaml
+  - scheduledbackup16.yaml
   - prometheusrule.yaml

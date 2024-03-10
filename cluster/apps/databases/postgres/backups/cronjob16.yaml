@@ -1,0 +1,58 @@
+---
+# For Reference: https://github.com/prodrigestivill/docker-postgres-backup-local
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres16-backup
+  namespace: databases
+spec:
+  schedule: '0 */2 * * *'
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          automountServiceAccountToken: false
+          enableServiceLinks: false
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+
+          containers:
+            - name: postgres16-backup
+              image: docker.io/prodrigestivill/postgres-backup-local:16@sha256:c577b0d62673d4dce0471c75d21e3e08e4e9789903f5a3fd6613c410442e9670
+              imagePullPolicy: IfNotPresent
+              command:
+                - '/backup.sh'
+              env:
+                - name: POSTGRES_HOST
+                  value: postgres16-ro.databases.svc.cluster.local
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-superuser
+                      key: username
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-superuser
+                      key: password
+                - name: POSTGRES_DB
+                  value: 'authentik,immich,linkding,outline,paperless,vikunja'
+                - name: BACKUP_KEEP_MINS
+                  value: '1440'
+                - name: TZ
+                  value: "${TIMEZONE}"
+
+              volumeMounts:
+                - name: nas-backups
+                  mountPath: /backups
+
+          restartPolicy: OnFailure
+
+          volumes:
+            - name: nas-backups
+              nfs:
+                server: '${PRIMARY_NFS_SERVER}'
+                path: '${NFS_KUBERNETES_PATH}/backups/postgres-backup'

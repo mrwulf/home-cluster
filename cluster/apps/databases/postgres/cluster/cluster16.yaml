@@ -1,0 +1,66 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres16
+  namespace: databases
+  annotations:
+    kyverno.io/ignore: "true"
+spec:
+  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:16-v0.2.0
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 50Gi
+    storageClass: ceph-block
+  superuserSecret:
+    name: postgres-superuser
+  enableSuperuserAccess: true
+  monitoring:
+    enablePodMonitor: true
+  postgresql:
+    parameters:
+      auto_explain.log_min_duration: '10s'
+      max_connections: "300"
+      max_wal_size: 512MB
+      shared_buffers: 512MB
+      pg_stat_statements.max: "10000"
+      pg_stat_statements.track: all
+    shared_preload_libraries:
+      - "vectors.so"
+  stopDelay: 300
+  smartShutdownTimeout: 30
+  backup:
+    retentionPolicy: 30d
+    barmanObjectStore:
+      wal:
+        compression: bzip2
+        maxParallel: 8
+      destinationPath: s3://postgresql/
+      endpointURL: https://cdn.${SECRET_DOMAIN}
+      serverName: postgres-16
+      s3Credentials:
+        accessKeyId:
+          name: postgres-minio
+          key: MINIO_ACCESS_KEY
+        secretAccessKey:
+          name: postgres-minio
+          key: MINIO_SECRET_KEY
+  # bootstrap:
+  #   recovery:
+  #     source: postgres-backup
+  # externalClusters:
+  #   - name: postgres-backup
+  #     barmanObjectStore:
+  #       destinationPath: s3://postgresql/
+  #       endpointURL: https://cdn.${SECRET_DOMAIN}
+  #       serverName: postgres-v4
+  #       s3Credentials:
+  #         accessKeyId:
+  #           name: postgres-minio
+  #           key: MINIO_ACCESS_KEY
+  #         secretAccessKey:
+  #           name: postgres-minio
+  #           key: MINIO_SECRET_KEY
+  #       wal:
+  #         maxParallel: 8
