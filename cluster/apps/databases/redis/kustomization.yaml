@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - secret.sops.yaml
   - helm-release.yaml
+  - paperless-redis.yaml
