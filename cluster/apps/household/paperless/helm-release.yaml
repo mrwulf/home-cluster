@@ -43,10 +43,10 @@ spec:
               PAPERLESS_OCR_LANGUAGES: eng
               PAPERLESS_OCR_LANGUAGE: eng
               PAPERLESS_PORT: 8000
-              PAPERLESS_REDIS: redis://redis.databases.svc.cluster.local.:6379
+              PAPERLESS_REDIS: redis://paperless-redis.databases.svc.cluster.local.:6379
               PAPERLESS_TASK_WORKERS: "2"
               PAPERLESS_TIME_ZONE: "${TIMEZONE}"
-              PAPERLESS_URL: https://paperless.${SECRET_DOMAIN}
+              PAPERLESS_URL: https://paperless.home.${SECRET_DOMAIN}
               PAPERLESS_WEBSERVER_WORKERS: "2"
               PAPERLESS_CONSUMPTION_DIR: /data/nas/consume
               PAPERLESS_DATA_DIR: /data/local/data
@@ -54,6 +54,9 @@ spec:
               PAPERLESS_MEDIA_ROOT: /data/local/media
               USERMAP_GID: "65543"
             envFrom: *envFrom
+            probes:
+              startup:
+                enabled: false
             # resources:
             #   requests:
             #     cpu: 25m
@@ -79,7 +82,8 @@ spec:
         className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-authentik@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
+          # traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-authentik@kubernetescrd"
           hajimari.io/enable: "true"
           hajimari.io/icon: mdi:barcode-scan
           hajimari.io/appName: "Paperless"
