@@ -30,6 +30,5 @@ spec:
     monitoring:
       grafanaDashboard:
         create: true
-        sidecarLabelValue: '1'
       podMonitor:
         enabled: true
