@@ -11,6 +11,7 @@
     ":automergeBranch",
     "github>mrwulf/home-cluster//.github/renovate/disabledDatasources.json5",
     "github>mrwulf/home-cluster//.github/renovate/autoMerge.json5",
+    "github>mrwulf/home-cluster//.github/renovate/customManagers.json5",
     "github>mrwulf/home-cluster//.github/renovate/groups.json5"
   ],
   "enabled": true,
