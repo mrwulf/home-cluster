@@ -11,7 +11,7 @@ spec:
   instances: 3
   primaryUpdateStrategy: unsupervised
   storage:
-    size: 100Gi
+    size: 50Gi
     storageClass: ceph-block
   superuserSecret:
     name: postgres-superuser
