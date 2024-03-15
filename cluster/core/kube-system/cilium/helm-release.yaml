@@ -30,21 +30,26 @@ spec:
     autoDirectNodeRoutes: true
     k8sServiceHost: localhost
     k8sServicePort: 7445
+    bgpControlPlane:
+      enabled: true
+    cgroup:
+      autoMount:
+        enabled: false
+      hostRoot: /sys/fs/cgroup
+    containerRuntime:
+      integration: containerd
     bpf:
       masquerade: true
+      preallocateMaps: true
       tproxy: true
-
     loadBalancer:
       algorithm: "maglev"
       mode: "dsr"
-    tunnel: "disabled"
-    routing-mode: "native"
+    routingMode: "native"
     ipam:
       mode: "kubernetes"
     operator:
       rollOutPods: true
-    containerRuntime:
-      integration: containerd
     endpointRoutes:
       enabled: true
     hubble:
@@ -52,6 +57,11 @@ spec:
       serviceMonitor:
         enabled: true
       metrics:
+        dashboards:
+          enabled: true
+          namespace: monitoring
+          annotations:
+            grafana_folder: Cilium
         enabled:
           - dns:query;ignoreAAAA
           - drop
@@ -85,31 +95,16 @@ spec:
             - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
               hosts:
                 - *host
-
       dashboards:
         enabled: true
-        label: grafana_dashboard
         namespace: monitoring
-        labelValue: "1"
         annotations:
           grafana_folder: Cilium
-
-    bgpControlPlane:
-      enabled: true
-    bgp:
-      enabled: false
-      announce:
-        loadbalancerIP: true
-        podCIDR: false
-    cgroup:
-      autoMount:
-        enabled: false
-      hostRoot: /sys/fs/cgroup
-
     socketLB:
       enabled: true
       hostNamespaceOnly: true
-
+    wellKnownIdentities:
+      enabled: true
     securityContext:
       # -- Run the pod with elevated privileges
       privileged: false
