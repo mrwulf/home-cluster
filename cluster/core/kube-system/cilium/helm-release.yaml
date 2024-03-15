@@ -38,6 +38,9 @@ spec:
       hostRoot: /sys/fs/cgroup
     containerRuntime:
       integration: containerd
+    bandwidthManager:
+      enabled: true
+      bbr: true
     bpf:
       masquerade: true
       preallocateMaps: true
@@ -49,6 +52,15 @@ spec:
     ipam:
       mode: "kubernetes"
     operator:
+      dashboards:
+        enabled: true
+        namespace: monitoring
+        annotations:
+          grafana_folder: Cilium
+      prometheus:
+        enabled: true
+        serviceMonitor:
+          enabled: true
       rollOutPods: true
     endpointRoutes:
       enabled: true
