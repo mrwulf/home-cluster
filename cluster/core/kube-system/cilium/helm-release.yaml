@@ -41,6 +41,8 @@ spec:
     bandwidthManager:
       enabled: true
       bbr: true
+    devices: 'eth+'
+    enableRuntimeDeviceDetection: true
     bpf:
       masquerade: true
       preallocateMaps: true
