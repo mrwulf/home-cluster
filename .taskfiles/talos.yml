@@ -224,6 +224,15 @@ tasks:
       - task: :cluster:cleanup
       - kubectl -n kube-system rollout restart daemonset cilium
 
+  upgrade-k8s:
+    vars:
+      TARGET_VERSION:
+        sh: yq '.kubernetesVersion' talos/talconfig.yaml
+    cmds:
+      - talosctl -n {{.ONE_MASTER}} upgrade-k8s --to={{.TARGET_VERSION}}
+    preconditions:
+      - talosctl -n {{.ONE_MASTER}} upgrade-k8s --to={{.TARGET_VERSION}} --dry-run
+
   refresh-certificates:
     # https://www.talos.dev/v1.3/talos-guides/configuration/managing-pki/
     desc: Renew Administrator Certificate
