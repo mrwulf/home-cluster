@@ -23,8 +23,10 @@ spec:
     remediation:
       retries: 3
   values:
+    enableDiscoveryDaemon: true
     csi:
       enableCephfsDriver: false
+      enableMetadata: true
       enableSnapshotter: true
       csiRBDProvisionerResource:
         - name: csi-provisioner

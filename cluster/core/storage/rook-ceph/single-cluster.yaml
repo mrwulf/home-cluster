@@ -68,6 +68,9 @@ spec:
         allowMultiplePerNode: false
       mgr:
         count: 2
+        modules:
+          - name: rook
+            enabled: true
       placement:
         osd:
           tolerations:
