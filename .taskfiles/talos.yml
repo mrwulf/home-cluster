@@ -171,7 +171,10 @@ tasks:
     # silent: true
     vars:
       NODE: '{{default .CLI_ARGS | default .NODE}}'
-      INCLUDE_SLEEP: false
+      NODE_NAME:
+        sh: WHOLE={{.NODE}} && echo "${WHOLE%.home}"
+      CURRENT_VERSION:
+        sh: kubectl get node "{{.NODE_NAME}}" --output jsonpath='{.status.nodeInfo.osImage}' | grep -oP 'v[0-9]+.[0-9]+.[0-9]+'
       TARGET_VERSION:
         sh: yq '.talosVersion' talos/talconfig.yaml
       TARGET_VERSION_IMAGE: "ghcr.io/siderolabs/installer:{{.TARGET_VERSION}}"
@@ -188,23 +191,36 @@ tasks:
     #     msg: Node config has changed - apply new config first!
     cmds:
       - |
+        echo "Current Version: {{.CURRENT_VERSION}}"
         echo "Target Version: {{.TARGET_VERSION}}"
         echo "Target Version Image: {{.TARGET_VERSION_IMAGE}}"
         echo "Target Node: {{.NODE}}"
-        talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}}
-        {{if .INCLUDE_SLEEP}}echo "Sleeping..." && sleep 90{{end}}
+        if [ "{{.CURRENT_VERSION}}" == "{{.TARGET_VERSION}}" ]; then
+            echo "Talos is already up to date on version '{{.CURRENT_VERSION}}', skipping upgrade ..."
+        else
+            talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}} --preserve=true
+        fi
+        #
+        echo "Waiting for Talos to be healthy on node '{{.NODE}}' ..."
+        talosctl --nodes {{.NODE}} health --wait-timeout=10m --server=false
+        #
+        echo "Waiting for Ceph health to be OK on node '{{.NODE}}' ..."
+        until kubectl wait --timeout=5m \
+            --for=jsonpath=.status.ceph.health=HEALTH_OK cephcluster \
+                --all --all-namespaces;
+        do
+            echo "Waiting for Ceph health to be OK on node '{{.NODE}}' ..."
+            sleep 10
+        done
 
   upgrade-all:
     desc: Upgrade Talos on all the nodes to the version in talconfig.yaml
-    vars:
-      NODE_LIST: "{{ .NODE_LIST_MASTERSFIRST | splitList \",\" | join \" \" }}"
     cmds:
-      - for: { var: NODE_LIST }
+      - for: { var: NODE_LIST_MASTERSFIRST, split: "," }
         cmds:
         task: upgrade
         vars:
           NODE: '{{.ITEM}}'
-          INCLUDE_SLEEP: true
       - task: :cluster:cleanup
       - kubectl -n kube-system rollout restart daemonset cilium
 
