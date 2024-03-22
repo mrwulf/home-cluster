@@ -60,11 +60,14 @@ spec:
         enabled: true
         urlPrefix: /
         ssl: false
+        port: 7777
+        prometheusEndpoint: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090"
+        prometheusEndpointSSLVerify: false
       mon:
         count: 3
         allowMultiplePerNode: false
       mgr:
-        count: 1
+        count: 2
       placement:
         osd:
           tolerations:
