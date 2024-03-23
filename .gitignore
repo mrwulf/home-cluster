@@ -22,3 +22,5 @@ testing.sops.yaml
 # go-task build cache
 .task/
 image_list.txt
+
+bootstrap/

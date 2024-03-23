@@ -1,5 +1,5 @@
-# example: https://github.com/budimanjojo/talhelper/blob/master/pkg/config/config.go
-
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 clusterName: talos-v1
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
 talosVersion: v1.6.7
@@ -105,6 +105,19 @@ patches:
                 enable_unprivileged_icmp = true
           path: /etc/cri/conf.d/20-customization.part
           op: create
+        # Configure nfs mount options
+        - op: overwrite
+          path: /etc/nfsmount.conf
+          permissions: 0o644
+          content: |
+            [ NFSMount_Global_Options ]
+            nfsvers=4
+            hard=True
+            noatime=True
+            nodiratime=True
+            rsize=131072
+            wsize=131072
+            nconnect=8
       kubelet:
         extraArgs:
           rotate-server-certificates: true

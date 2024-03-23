@@ -4,8 +4,6 @@ version: "3"
 vars:
   CLUSTER_NAME:
     sh: yq '.clusterName' talos/talconfig.yaml
-  NODE_ARRAY:
-    sh: yq '.nodes[].hostname' talos/talconfig.yaml
   NODE_LIST:
     sh: yq '.nodes[].hostname' talos/talconfig.yaml | tr '\n' ',' | head -c -1
   ONE_NODE:
@@ -133,8 +131,8 @@ tasks:
 
   diff-config:
     desc: Diff config against running node config
-    vars:
-      NODE: '{{default .CLI_ARGS | default .NODE | default .ONE_MASTER}}'
+    requires:
+      vars: ["NODE", "CLUSTER_NAME"]
     cmds:
       - |
         talosctl apply-config --dry-run -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml
@@ -142,7 +140,7 @@ tasks:
   diff-all-configs:
     desc: Diff config for all nodes
     cmds:
-      - for: { var: NODE_ARRAY, as: NODE }
+      - for: { var: NODE_LIST, split: ",", as: NODE }
         task: diff-config
         vars:
           NODE: '{{.NODE}}'
@@ -150,18 +148,19 @@ tasks:
   apply-config:
     desc: Apply config against running node config
     vars:
-      NODE: '{{default .CLI_ARGS | default .NODE}}'
-    preconditions:
-      - sh: "[ '' -eq {{.NODE}} ]"
-        msg: Node Required!
+      MODE: '{{.MODE | default "no-reboot"}}'
+    requires:
+      vars: ["NODE", "CLUSTER_NAME"]
+    deps:
+      - task: generate-configs
     cmds:
       - |
-        talosctl apply-config -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml -m=no-reboot
+        talosctl apply-config -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml -m={{.MODE}}
 
   apply-all-configs:
     desc: Apply config for all nodes
     cmds:
-      - for: { var: NODE_ARRAY, as: NODE }
+      - for: { var: NODE_LIST, split: ",", as: NODE }
         task: apply-config
         vars:
           NODE: '{{.NODE}}'
@@ -170,7 +169,6 @@ tasks:
     desc: Upgrade Talos on a single node to the version in talconfig.yaml
     # silent: true
     vars:
-      NODE: '{{default .CLI_ARGS | default .NODE}}'
       NODE_NAME:
         sh: WHOLE={{.NODE}} && echo "${WHOLE%.home}"
       CURRENT_VERSION:
@@ -178,6 +176,8 @@ tasks:
       TARGET_VERSION:
         sh: yq '.talosVersion' talos/talconfig.yaml
       TARGET_VERSION_IMAGE: "ghcr.io/siderolabs/installer:{{.TARGET_VERSION}}"
+    requires:
+      vars: ["NODE"]
     deps:
       - task: generate-configs
       - task: diff-config
@@ -186,9 +186,6 @@ tasks:
       - task: apply-config
         vars:
           NODE: "{{.NODE}}"
-    # preconditions:
-    #   - sh: "talosctl apply-config --dry-run -n {{.NODE}} -f {{.PROJECT_DIR}}/talos/clusterconfig/{{.CLUSTER_NAME}}-{{.NODE}}.yaml | grep -q 'No changes.'"
-    #     msg: Node config has changed - apply new config first!
     cmds:
       - |
         echo "Current Version: {{.CURRENT_VERSION}}"
@@ -216,11 +213,11 @@ tasks:
   upgrade-all:
     desc: Upgrade Talos on all the nodes to the version in talconfig.yaml
     cmds:
-      - for: { var: NODE_LIST_MASTERSFIRST, split: "," }
+      - for: { var: NODE_LIST_MASTERSFIRST, split: ",", as: NODE }
         cmds:
         task: upgrade
         vars:
-          NODE: '{{.ITEM}}'
+          NODE: '{{.NODE}}'
       - task: :cluster:cleanup
       - kubectl -n kube-system rollout restart daemonset cilium
 

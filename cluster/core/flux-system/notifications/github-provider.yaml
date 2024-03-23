@@ -7,4 +7,4 @@ spec:
   type: github
   address: https://github.com/mrwulf/home-cluster
   secretRef:
-    name: github
+    name: github-apikey
