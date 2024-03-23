@@ -41,8 +41,8 @@ tasks:
       - sh: '[ -n "{{.CLI_ARGS}}" ]'
         msg: 'Volume Name Required!'
       - sh: '[ -z "{{.CHILDREN}}" ]'
-        msg: "These children must be removed first: (probably volumesnapshots)\n {{.CHILDREN}}"
-
+        msg: "These children must be removed first: (probably volumesnapshots)\n{{.CHILDREN}}"
+        # Delete most of the children: kubectl get volumesnapshot --sort-by='.status.creationTime' -A | grep -v backups | grep -P 'd$' | awk '{print $1, $2}' | xargs -r -L1  kubectl  delete volumesnapshot -n
   clean-up-img:
     vars:
       IMG: "{{.CLI_ARGS}}"
