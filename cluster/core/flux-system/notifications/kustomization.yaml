@@ -4,4 +4,4 @@ resources:
   - token.sops.yaml
   - alert-manager.yaml
   - github-provider.yaml
-  - alert.yaml
+  - github-alert.yaml
