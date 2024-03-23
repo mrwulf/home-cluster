@@ -4,6 +4,8 @@ kind: Kustomization
 resources:
   - pvc.yaml
   - externalsecret.yaml
+  - helm-release-tika.yaml
+  - helm-release-gotenberg.yaml
   - helm-release.yaml
 labels:
   - pairs:
