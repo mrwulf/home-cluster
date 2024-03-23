@@ -53,6 +53,9 @@ spec:
               PAPERLESS_EXPORT_DIR: /data/nas/export
               PAPERLESS_MEDIA_ROOT: /data/local/media
               USERMAP_GID: "65543"
+              PAPERLESS_TIKA_ENABLED: true
+              PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+              PAPERLESS_TIKA_ENDPOINT: http://tika:9998
             envFrom: *envFrom
             probes:
               startup:
