@@ -12,7 +12,7 @@ tasks:
       - task: age
       - task: sops
       # - task: kubestr # Doesn't return version info --- downloads each run
-      # - task: kubectl
+      - task: kubectl
       - task: flux
       - task: helm
       - task: pre-commit
@@ -73,7 +73,8 @@ tasks:
     cmds:
       - |
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
-        sudo dnf install -y https://github.com/{{.OWNER}}/{{.APP_NAME}}/releases/download/v{{.RELEASE_VERSION}}/{{.APP_NAME}}-{{.RELEASE_VERSION}}.x86_64.rpm
+        wget -qnv --show-progress -O ~/bin/sops https://github.com/getsops/sops/releases/download/v{{.RELEASE_VERSION}}/sops-v{{.RELEASE_VERSION}}.linux.amd64
+        chmod +x ~/bin/sops
     status:
       - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
     silent: true
@@ -161,6 +162,27 @@ tasks:
         tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components=0 -C ~/bin/ {{.TASK_NAME}}
         # chmod +x ~/bin/{{.TASK_NAME}}
         rm -rf $TEMP_DIR
+
+  kubectl:
+    desc: Install kubectl
+    vars:
+      APP_NAME:
+        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+      OWNER: mozilla
+      RELEASE_VERSION:
+        sh: curl -L -s https://dl.k8s.io/release/stable.txt
+      CURRENT_VERSION:
+        sh: "{{.APP_NAME}} version | grep Client | grep -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+    cmds:
+      - |
+        echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
+
+        wget -qnv --show-progress -O ~/bin/kubectl dl.k8s.io/{{.RELEASE_VERSION}}/bin/linux/amd64/kubectl
+        chmod +x ~/bin/kubectl
+    status:
+      - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
+    silent: true
+    ignore_errors: true
 
   flux:
     desc: Install flux
