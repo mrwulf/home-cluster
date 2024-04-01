@@ -16,7 +16,7 @@ tasks:
       - task: flux
       - task: helm
       - task: pre-commit
-      # - task: krew & plugins
+      # - task: krew & plugins (ns, cilium, cnpg, stern)
       # - task: dyff
       # - task: kustomize
       - task: cilium
