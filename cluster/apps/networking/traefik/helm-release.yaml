@@ -72,8 +72,7 @@ spec:
     ports:
       traefik:
         expose:
-          default: false
-          internal: true
+          default: true
       web:
         redirectTo:
           port: websecure
@@ -84,8 +83,7 @@ spec:
       metrics:
         port: 8082
         expose:
-          default: false
-          internal: true
+          default: true
     tlsOptions:
       default:
         minVersion: VersionTLS12
