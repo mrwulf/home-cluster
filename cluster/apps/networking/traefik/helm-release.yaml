@@ -71,7 +71,7 @@ spec:
         value: "${TIMEZONE}"
     ports:
       traefik:
-        expose: 
+        expose:
           default: false
           internal: true
       web:
@@ -83,7 +83,7 @@ spec:
           options: "default"
       metrics:
         port: 8082
-        expose: 
+        expose:
           default: false
           internal: true
     tlsOptions:
