@@ -71,7 +71,9 @@ spec:
         value: "${TIMEZONE}"
     ports:
       traefik:
-        expose: true
+        expose: 
+          default: false
+          internal: true
       web:
         redirectTo:
           port: websecure
@@ -81,8 +83,9 @@ spec:
           options: "default"
       metrics:
         port: 8082
-        expose: true
-        exposedPort: 8082
+        expose: 
+          default: false
+          internal: true
     tlsOptions:
       default:
         minVersion: VersionTLS12
