@@ -44,7 +44,7 @@ spec:
           main:
             image:
               repository: sissbruecker/linkding
-              tag: 1.27.0
+              tag: 1.27.0-plus
             envFrom: *envFrom
             env:
               TZ: "${TIMEZONE}"
@@ -71,8 +71,8 @@ spec:
                 enabled: false
             resources:
               requests:
-                cpu: 10m
-                memory: 256Mi
+                cpu: 500m
+                memory: 1Gi
     service:
       main:
         ports:
