@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: ghcr.io/flaresolverr/flaresolverr
-              tag: v3.3.16
+              tag: v3.3.17
             env:
               TZ: "${TZ}"
               LOG_LEVEL: info
