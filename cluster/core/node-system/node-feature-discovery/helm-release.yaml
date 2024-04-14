@@ -9,7 +9,7 @@ spec:
     spec:
       # renovate: registryUrl=https://kubernetes-sigs.github.io/node-feature-discovery/charts
       chart: node-feature-discovery
-      version: 0.15.3
+      version: 0.15.4
       sourceRef:
         kind: HelmRepository
         name: node-feature-discovery-charts
@@ -29,9 +29,6 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    image:
-      repository: gcr.io/k8s-staging-nfd/node-feature-discovery
-      tag: v0.15.3
     master:
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
