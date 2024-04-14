@@ -65,7 +65,9 @@ spec:
           enabled: true
       rollOutPods: true
     prometheus:
+      enabled: true
       serviceMonitor:
+        enabled: true
         trustCRDsExist: true
     endpointRoutes:
       enabled: true
