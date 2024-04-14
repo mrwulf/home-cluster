@@ -63,8 +63,10 @@ spec:
         enabled: true
         serviceMonitor:
           enabled: true
-          trustCRDsExist: true
       rollOutPods: true
+    prometheus:
+      serviceMonitor:
+        trustCRDsExist: true
     endpointRoutes:
       enabled: true
     hubble:
