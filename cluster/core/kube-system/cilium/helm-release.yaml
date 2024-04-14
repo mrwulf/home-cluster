@@ -63,6 +63,7 @@ spec:
         enabled: true
         serviceMonitor:
           enabled: true
+          trustCRDsExist: true
       rollOutPods: true
     endpointRoutes:
       enabled: true
