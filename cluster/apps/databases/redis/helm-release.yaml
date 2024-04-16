@@ -33,7 +33,7 @@ spec:
           cpu: 500m
           memory: 512Mi
         limits:
-          memory: 1024Mi
+          memory: 2Gi
     replica:
       persistence:
         enabled: false
@@ -42,10 +42,10 @@ spec:
           cpu: 500m
           memory: 512Mi
         limits:
-          memory: 1024Mi
+          memory: 2Gi
     commonConfiguration: |-
-      maxmemory 94371840
-      maxmemory-policy allkeys-lru
+      maxmemory 2048m
+      maxmemory-policy noeviction
     sentinel:
       enabled: true
       masterSet: redis-master
