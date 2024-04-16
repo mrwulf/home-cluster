@@ -44,6 +44,8 @@ spec:
         limits:
           memory: 2Gi
     commonConfiguration: |-
+      appendonly no
+      save ""
       maxmemory 2048m
       maxmemory-policy noeviction
     sentinel:
