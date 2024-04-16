@@ -15,10 +15,10 @@ spec:
         name: bitnami-charts
         namespace: flux-system
   install:
-    createNamespace: true
     remediation:
       retries: 3
   upgrade:
+    cleanupOnFail: true
     remediation:
       retries: 3
   values:
@@ -28,9 +28,24 @@ spec:
     master:
       persistence:
         enabled: false
+      resources:
+        requests:
+          cpu: 500m
+          memory: 512Mi
+        limits:
+          memory: 1024Mi
     replica:
       persistence:
         enabled: false
+      resources:
+        requests:
+          cpu: 500m
+          memory: 512Mi
+        limits:
+          memory: 1024Mi
+    commonConfiguration: |-
+      maxmemory 94371840
+      maxmemory-policy allkeys-lru
     sentinel:
       enabled: true
       masterSet: redis-master
@@ -39,10 +54,10 @@ spec:
         enabled: false
       resources:
         requests:
-          cpu: 15m
-          memory: 100Mi
+          cpu: 100m
+          memory: 10Mi
         limits:
-          memory: 1500Mi
+          memory: 50Mi
     metrics:
       enabled: true
       serviceMonitor:
