@@ -133,6 +133,7 @@ patches:
       sysctls:
         fs.inotify.max_user_watches: "1048576"
         fs.inotify.max_user_instances: "8192"
+        net.core.somaxconn: "65535"
       time:
         disabled: false
         servers:
