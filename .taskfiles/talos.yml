@@ -131,6 +131,8 @@ tasks:
 
   diff-config:
     desc: Diff config against running node config
+    ignore_error: true
+    silent: true
     requires:
       vars: ["NODE", "CLUSTER_NAME"]
     cmds:
@@ -139,6 +141,7 @@ tasks:
 
   diff-all-configs:
     desc: Diff config for all nodes
+    silent: true
     cmds:
       - for: { var: NODE_LIST, split: ",", as: NODE }
         task: diff-config
@@ -147,6 +150,8 @@ tasks:
 
   apply-config:
     desc: Apply config against running node config
+    ignore_error: true
+    silent: true
     vars:
       MODE: '{{.MODE | default "no-reboot"}}'
     requires:
@@ -159,6 +164,7 @@ tasks:
 
   apply-all-configs:
     desc: Apply config for all nodes
+    silent: true
     cmds:
       - for: { var: NODE_LIST, split: ",", as: NODE }
         task: apply-config
@@ -167,7 +173,7 @@ tasks:
 
   upgrade:
     desc: Upgrade Talos on a single node to the version in talconfig.yaml
-    # silent: true
+    silent: true
     vars:
       NODE_NAME:
         sh: WHOLE={{.NODE}} && echo "${WHOLE%.home}"
@@ -212,9 +218,9 @@ tasks:
 
   upgrade-all:
     desc: Upgrade Talos on all the nodes to the version in talconfig.yaml
+    silent: true
     cmds:
       - for: { var: NODE_LIST_MASTERSFIRST, split: ",", as: NODE }
-        cmds:
         task: upgrade
         vars:
           NODE: '{{.NODE}}'
@@ -240,5 +246,5 @@ tasks:
       FILE: '{{.TALOSCONFIG | default "$HOME/.talos/config"}}'
     cmds:
       - |
-        yq -i '. *= load("{{.PROJECT_DIR}}//talos/clusterconfig/talosconfig")'  {{.FILE}}
+        yq -i '. *= load("{{.PROJECT_DIR}}//talos/clusterconfig/talosconfig")' {{.FILE}}
         talosctl kubeconfig -n {{.ONE_MASTER}} --force

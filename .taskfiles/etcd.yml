@@ -18,7 +18,7 @@ tasks:
     desc: Backup etcd to local file
     silent: true
     cmds:
-      - task: defrag
+      - task: compact-all
       - |
         mkdir -p {{.PROJECT_DIR}}/talos/backups
         DATE=$(date +'%Y%m%d-%H%M%S')
@@ -71,20 +71,11 @@ tasks:
 
       - defer: rm -rf {{.TEMP_DIR}}
 
-  defrag:
-    desc: Defrag all etcd members
-    interactive: false
-    cmds:
-      - task: compact-all
-      - |
-        talosctl -n {{.ONE_MASTER}} etcd defrag
-      # - task: client
-      #   vars:
-      #     COMMAND: etcdctl defrag --cluster=true
-
   command:
     desc: Run a command in an etcd client
     interactive: false
+    requires:
+      vars: [ "NODE" ]
     cmds:
       - task: client
         vars:
@@ -92,21 +83,8 @@ tasks:
           CLI_ARGS: null
 
   compact-all:
-    desc: Compact an etcd member
+    desc: Compact all etcd members
     silent: true
-    interactive: false
     cmds:
-      - task: client
-        vars:
-          COMMAND: |
-            echo "Working on: {{.MASTER_LIST}}"
-            {{range $i, $line := splitList "," .MASTER_LIST}}
-            ETCDCTL_ENDPOINTS={{$line}}:2379
-            echo "Compacting {{$line}}..."
-            rev=$(/usr/local/bin/etcdctl endpoint status --write-out=json | egrep -o '"revision":[0-9]*' | egrep -o '[0-9].*')
-            sleep 1
-            [[ $rev != '' ]] && etcdctl compact $(($rev - 3))
-            {{end}}
-            # echo "Compacting ${NODE}..."
-            # rev=$(/usr/local/bin/etcdctl endpoint status --write-out=json | egrep -o '"revision":[0-9]*' | egrep -o '[0-9].*')
-            # etcdctl compact $rev
+      - for: { var: MASTER_LIST, split: ",", as: NODE }
+        cmd: talosctl -n {{.NODE}} etcd defrag
