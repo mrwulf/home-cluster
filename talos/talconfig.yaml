@@ -2,9 +2,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 clusterName: talos-v1
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
-talosVersion: v1.6.7
+talosVersion: v1.7.0
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
-kubernetesVersion: v1.29.3
+kubernetesVersion: v1.30.0
 endpoint: https://kubernetes.home:6443
 
 additionalApiServerCertSans:
