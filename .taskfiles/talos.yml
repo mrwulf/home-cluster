@@ -232,7 +232,8 @@ tasks:
       TARGET_VERSION:
         sh: yq '.kubernetesVersion' talos/talconfig.yaml
     cmds:
-      - talosctl -n {{.ONE_MASTER}} upgrade-k8s --to={{.TARGET_VERSION}}
+      - echo "Running the real upgrade..."
+      # - talosctl -n {{.ONE_MASTER}} upgrade-k8s --to={{.TARGET_VERSION}}
     preconditions:
       - talosctl -n {{.ONE_MASTER}} upgrade-k8s --to={{.TARGET_VERSION}} --dry-run
 

@@ -79,3 +79,11 @@ tasks:
     silent: true
     cmds:
       - kubectl -n system create job rebalance-`date '+%H%M%d'` --from=cronjob/descheduler
+
+  watch:
+    desc: Watch the cluster
+    aliases: 
+      - :watch
+    interactive: true
+    cmds:
+      - watch -n2 "kubectl get po -A -owide | grep -v Running && echo '' && kubectl get ks -A | grep -v Applied && echo '' && kubectl get hr -A | grep -v succeeded"

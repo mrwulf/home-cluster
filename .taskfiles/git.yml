@@ -1,0 +1,24 @@
+---
+version: "3"
+
+tasks:
+  rebase:
+    desc: Rebase
+    aliases:
+      - :git-rebase
+    dir: '{{.PROJECT_DIR}}'
+    cmds:
+      - git stash push -u
+      - git pull --rebase --stat
+      - git stash apply
+
+  sync:
+    desc: Rebase and push
+    aliases:
+      - :git-sync
+    dir: '{{.PROJECT_DIR}}'
+    cmds:
+      - git stash push -u
+      - git pull --rebase --stat
+      - git push origin HEAD --
+      - git stash apply
