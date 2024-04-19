@@ -54,7 +54,11 @@ tasks:
     cmds:
       - |
         echo "Go-Task released: v{{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
-        sudo dnf install -y https://github.com/go-task/task/releases/download/v{{.RELEASE_VERSION}}/task_linux_amd64.rpm
+        if [ command -v dnf ]; then
+          sudo dnf install -y https://github.com/go-task/task/releases/download/v{{.RELEASE_VERSION}}/task_linux_amd64.rpm
+        else
+          sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/bin
+        fi
     status:
       - '[ "v{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
     silent: true
@@ -258,9 +262,13 @@ tasks:
     cmds:
       - |
         echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}"
-        pip install pre-commit --upgrade
-        pre-commit autoupdate
-        pre-commit gc
+        if [ command -v pip ]; then
+          pip install pre-commit --upgrade
+          pre-commit autoupdate
+          pre-commit gc
+        else
+          echo "pre-commit unavailable in this context"
+        fi
 
   cilium:
     desc: Install ciliumcli
