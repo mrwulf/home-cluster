@@ -6,11 +6,6 @@ metadata:
   namespace: networking
 spec:
   headers:
-    # accessControlAllowMethods:
-    #   - GET
-    #   - OPTIONS
-    #   - PUT
-    #   - POST
     accessControlMaxAge: 100
     accessControlAllowOriginListRegex:
       - "https://(.*?)${SECRET_DOMAIN}"
