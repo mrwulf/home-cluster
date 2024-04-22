@@ -4,7 +4,7 @@ name: Flux differ
 on:
   pull_request:
     branches: ['*']
-    paths: ['cluster/**.yaml']
+    paths: ['cluster/**.yaml', '.github/workflows/flux-differ.yaml']
 
 jobs:
   flux-differ:
