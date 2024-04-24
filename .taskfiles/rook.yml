@@ -23,26 +23,40 @@ tasks:
 
 # Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
   clean-up-pv:
+    requires:
+      vars: ["PV"]
     vars:
-      PV: "{{.CLI_ARGS}}"
+      PVNAME: '{{.PV | default "invalid"}}'
       IMG:
-        sh: kubectl describe pv {{.PV}} | grep imageName | awk -F= '{print $2}'
+        sh: kubectl describe pv {{.PVNAME}} | grep imageName | awk -F= '{print $2}'
       CHILDREN:
-        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}}
+        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}} | tr '\n' ',' | head -c -1
     cmds:
       - |
-        echo -e "PV: {{.PV}}\nIMG: $IMG"
-
-        kubectl delete pv {{.PV}}
-        kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p {{.POOL}} {{.IMG}}
+        echo -e "PVNAME: {{.PVNAME}}\nIMG: {{.IMG}}"
+        if [ -z "{{.CHILDREN}}" ]; then
+          kubectl delete pv {{.PVNAME}}
+          kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p {{.POOL}} {{.IMG}}
+        else
+          echo "Ignoring: This volume still has children! ({{.CHILDREN}})"
+        fi
     preconditions:
       - sh: kubectl get po -n {{.NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
         msg: Rook tools pod isn't running.
-      - sh: '[ -n "{{.CLI_ARGS}}" ]'
-        msg: 'Volume Name Required!'
-      - sh: '[ -z "{{.CHILDREN}}" ]'
-        msg: "These children must be removed first: (probably volumesnapshots)\n{{.CHILDREN}}"
-        # Delete most of the children: kubectl get volumesnapshot --sort-by='.status.creationTime' -A | grep -v backups | grep -P 'd$' | awk '{print $1, $2}' | xargs -r -L1  kubectl  delete volumesnapshot -n
+      # - sh: '[ -z "{{.CHILDREN}}" ]'
+      #   msg: "These children must be removed first: (probably volumesnapshots)\n{{.CHILDREN}}"
+        # Delete most of the older children: kubectl get volumesnapshot --sort-by='.status.creationTime' -A | grep -v backups | grep -P 'd$' | awk '{print $1, $2}' | xargs -r -L1  kubectl  delete volumesnapshot -n
+
+  clean-up-all-pv:
+    vars:
+      PV_LIST:
+        sh: kubectl get pv --no-headers | grep -v Bound | awk '{print $1}' | tr '\n' ',' | head -c -1
+    cmds:
+      - for: { var: PV_LIST, split: ",", as: PV }
+        task: clean-up-pv
+        vars:
+          PV: '{{.PV}}'
+
   clean-up-img:
     vars:
       IMG: "{{.CLI_ARGS}}"
