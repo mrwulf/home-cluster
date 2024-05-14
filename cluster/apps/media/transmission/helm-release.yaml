@@ -119,21 +119,19 @@ spec:
   postRenderers:
     - kustomize:
         patches:
-          - apiVersion: apps/v1
-            kind: Deployment
-            metadata:
+          - target:
+              version: apps/v1
+              kind: Deployment
               name: transmission-transmission-openvpn
-            spec:
-              template:
-                spec:
-                  containers:
-                    - name: transmission-openvpn
-                      livenessProbe:
-                        exec:
-                          command:
-                            - sh
-                            - -c
-                            - /etc/scripts/healthcheck.sh
-                        initialDelaySeconds: 15
-                        periodSeconds: 20
-                        timeoutSeconds: 5
+            patch:
+              - op: replace
+                path: /spec/containers[0]/livenessProbe
+                value:
+                  exec:
+                    command:
+                      - sh
+                      - -c
+                      - /etc/scripts/healthcheck.sh
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                  timeoutSeconds: 5
