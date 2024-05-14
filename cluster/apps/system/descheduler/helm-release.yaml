@@ -63,11 +63,11 @@ spec:
 
   postRenderers:
     - kustomize:
-        patchesJson6902:
+        patches:
           - target:
               kind: CronJob
               name: descheduler
-            patch:
+            patch: |
               - op: add
                 path: /spec/jobTemplate/metadata
                 value:

@@ -1,5 +1,5 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta2
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: vector-aggregator
@@ -260,11 +260,11 @@ spec:
 
   postRenderers:
     - kustomize:
-        patchesJson6902:
+        patches:
           - target:
               kind: Service
               name: vector-aggregator
-            patch:
+            patch: |
               - op: add
                 path: /spec/loadBalancerIP
                 value: ${VECTOR_AGGREGATOR_ADDR}
