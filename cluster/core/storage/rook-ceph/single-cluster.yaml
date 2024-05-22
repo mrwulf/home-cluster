@@ -55,6 +55,9 @@ spec:
     cephObjectStores: []
     cephFileSystems: []
     cephClusterSpec:
+      csi:
+        readAffinity:
+          enabled: true
       dataDirHostPath: /var/lib/rook
       dashboard:
         enabled: true
@@ -71,6 +74,8 @@ spec:
         modules:
           - name: rook
             enabled: true
+          - name: pg_autoscaler
+            enabled: true
       placement:
         osd:
           tolerations:
@@ -80,6 +85,15 @@ spec:
           tolerations:
             - key: node-role.kubernetes.io/storage-only
               operator: Exists
+        mgr: &placement
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+        mon:
+          <<: *placement
       resources:
         api:
           requests:
@@ -129,7 +143,7 @@ spec:
           enabled: true
           name: ceph-block
           isDefault: true
-          reclaimPolicy: Retain
+          reclaimPolicy: Delete
           allowVolumeExpansion: true
           mountOptions: ["discard"]
           # see https://github.com/rook/rook/blob/master/Documentation/ceph-block.md#provision-storage for available configuration
