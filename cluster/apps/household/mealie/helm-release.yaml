@@ -21,7 +21,7 @@ spec:
           main:
             image:
               repository: ghcr.io/mealie-recipes/mealie
-              tag: v1.6.0
+              tag: v1.7.0
               pullPolicy: IfNotPresent
 
             env:
