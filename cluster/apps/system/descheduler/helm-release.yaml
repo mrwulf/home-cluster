@@ -23,53 +23,73 @@ spec:
     remediation:
       retries: 3
   values:
-    schedule: "*/15 * * * *"
+    replicas: 2
+    kind: Deployment
+    deschedulerPolicyAPIVersion: descheduler/v1alpha2
 
-    podAnnotations:
-      botkube.io/disable: "true"
+    service:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+    leaderElection:
+      enabled: true
 
     deschedulerPolicy:
-      strategies:
-        RemoveDuplicates:
-          enabled: true
-        RemovePodsHavingTooManyRestarts:
-          enabled: true
-          params:
-            podsHavingTooManyRestarts:
-              podRestartThreshold: 10
-              includingInitContainers: true
-        RemovePodsViolatingNodeAffinity:
-          enabled: true
-          params:
-            nodeAffinityType:
-              - requiredDuringSchedulingIgnoredDuringExecution
-        RemovePodsViolatingInterPodAntiAffinity:
-          enabled: true
-        RemovePodsViolatingNodeTaints:
-          enabled: true
-        LowNodeUtilization:
-          enabled: true
-          params:
-            nodeFit: true
-            nodeResourceUtilizationThresholds:
-              targetThresholds:
-                cpu: 35
-                memory: 30
-                pods: 50
-              thresholds:
-                cpu: 25
-                memory: 20
-                pods: 25
+      # https://github.com/kubernetes-sigs/descheduler/blob/release-1.30/README.md
+      profiles:
+        - name: default
+          pluginConfig:
+            - name: DefaultEvictor
+              args:
+                nodeFit: true
+                evictLocalStoragePosts: true
+                evictSystemCriticalPods: true
+            - name: LowNodeUtilization
+              args:
+                targetThresholds:
+                  cpu: 35
+                  memory: 30
+                  pods: 50
+                thresholds:
+                  cpu: 25
+                  memory: 20
+                  pods: 25
+                useDeviationThresholds: true
+            - name: RemoveDuplicates
+              args:
+                excludeOwnerKinds:
+                  - ReplicaSet
+            - name: RemovePodsHavingTooManyRestarts
+              args:
+                podRestartThreshold: 10
+                includingInitContainers: true
+            - name: RemovePodsViolatingNodeAffinity
+              args:
+                nodeAffinityType:
+                  - requiredDuringSchedulingIgnoredDuringExecution
+            - name: RemovePodsViolatingNodeTaints
+            - name: RemovePodsViolatingInterPodAntiAffinity
+              args:
+                labelSelector:
+                  matchExpressions:
+                    - key: "app.kubernetes.io/name"
+                      operator: Exists
+                      # operator: In
+                      # values:
+                      #   - prometheus
+                      #   - loki
 
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: CronJob
-              name: descheduler
-            patch: |
-              - op: add
-                path: /spec/jobTemplate/metadata
-                value:
-                  annotations:
-                    botkube.io/disable: "true"
+            - name: RemovePodsViolatingTopologySpreadConstraint
+
+          plugins:
+            balance:
+              enabled:
+                - RemovePodsViolatingTopologySpreadConstraint
+                - LowNodeUtilization
+                # - RemoveDuplicates
+            deschedule:
+              enabled:
+                - RemovePodsHavingTooManyRestarts
+                - RemovePodsViolatingNodeTaints
+                - RemovePodsViolatingNodeAffinity
+                - RemovePodsViolatingInterPodAntiAffinity
