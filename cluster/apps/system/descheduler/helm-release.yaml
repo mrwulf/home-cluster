@@ -42,7 +42,7 @@ spec:
             - name: DefaultEvictor
               args:
                 nodeFit: true
-                evictLocalStoragePosts: true
+                evictLocalStoragePods: true
                 evictSystemCriticalPods: true
             - name: LowNodeUtilization
               args:
