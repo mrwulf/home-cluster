@@ -108,7 +108,7 @@ spec:
       secret.reloader.stakater.com/reload: cloudflare-api-key
 
     crd:
-      create: true
+      create: false
 
     annotationFilter: "external-dns/is-public in (true)"
 
