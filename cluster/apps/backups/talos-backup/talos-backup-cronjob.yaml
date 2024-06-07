@@ -39,7 +39,7 @@ spec:
               # talos.default.svc.cluster.local
               args:
                 - -n
-                - "${CONTROL_PLANE_ENDPOINT}"
+                - talos.default.svc.cluster.local
                 - etcd
                 - snapshot
                 - /backups/latest
