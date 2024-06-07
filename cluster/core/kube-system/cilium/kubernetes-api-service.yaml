@@ -13,6 +13,6 @@ spec:
     tier: control-plane
   ports:
     - name: https
-      port: 443
+      port: 6443
       protocol: TCP
       targetPort: 6443
