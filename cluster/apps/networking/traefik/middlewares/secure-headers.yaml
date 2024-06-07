@@ -7,8 +7,6 @@ metadata:
 spec:
   headers:
     accessControlMaxAge: 100
-    accessControlAllowOriginListRegex:
-      - "https://(.*?)${SECRET_DOMAIN}"
     hostsProxyHeaders:
       - "X-Forwarded-Host"
       - "X-Forwarded-For"
@@ -22,7 +20,7 @@ spec:
     stsIncludeSubdomains: true
     contentSecurityPolicy: "block-all-mixed-content;upgrade-insecure-requests;"
     frameDeny: true
-    customFrameOptionsValue: "allow-from https:${SECRET_DOMAIN}"
+    customFrameOptionsValue: "SAMEORIGIN"
     contentTypeNosniff: true
     browserXssFilter: true
     customResponseHeaders:
@@ -31,5 +29,5 @@ spec:
       X-Robots-Tag: "none,noindex,nofollow,noarchive,nosnippet,notranslate,noimageindex"
       X-Permitted-Cross-Domain-Policies: "none"
       X-Forwarded-Proto: "https"
-      City: X-GEO-City
       server: ""
+      City: X-GEO-City
