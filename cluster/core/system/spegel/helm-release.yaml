@@ -18,6 +18,7 @@ spec:
     spegel:
       containerdSock: /run/containerd/containerd.sock
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
+      resolveLatestTag: false
     service:
       registry:
         hostPort: 29999
