@@ -88,29 +88,16 @@ spec:
 
     persistence:
       library:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "/volume3/Pictures/immich"
-        mountOptions:
-          - nfsvers=4
-          - nconnect=8
-          - hard
-          - noatime
         globalMounts:
           - path: /usr/src/app/upload
       memories:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "/volume3/Pictures"
-        mountOptions:
-          - nfsvers=4
-          - nconnect=8
-          - hard
-          - noatime
         globalMounts:
           - path: /mnt/memories
       cache:
-        enabled: true
         existingClaim: immich-machine-learning-cache

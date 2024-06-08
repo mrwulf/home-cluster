@@ -124,14 +124,12 @@ spec:
 
     persistence:
       library:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "/volume3/Pictures/immich"
         globalMounts:
           - path: /usr/src/app/upload
       memories:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "/volume3/Pictures"
