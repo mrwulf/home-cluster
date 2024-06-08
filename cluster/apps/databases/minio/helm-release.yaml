@@ -73,7 +73,7 @@ spec:
     # https://min.io/docs/minio/linux/reference/minio-mc-admin/mc-admin-prometheus.html
     serviceMonitor:
       main:
-        enabled: true
+        serviceName: main
         endpoints:
           - port: api
             scheme: http
