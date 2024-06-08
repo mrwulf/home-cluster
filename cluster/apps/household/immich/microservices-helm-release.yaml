@@ -69,10 +69,6 @@ spec:
                 gpu.intel.com/i915: 1
                 memory: 12G
 
-    service:
-      main:
-        enabled: false
-
     persistence:
       library:
         enabled: true

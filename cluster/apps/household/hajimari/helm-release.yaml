@@ -97,10 +97,16 @@ spec:
           bookmarks:
             - name: Search
               url: https://nanne.dev/k8s-at-home-search
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: 80
     ingress:
       main:
         enabled: true
-        ingressClassName: "traefik"
+        className: "traefik"
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "weather-sunset"
@@ -111,6 +117,9 @@ spec:
             paths:
               - path: /
                 pathType: Prefix
+                service:
+                  identifier: main
+                  port: http
         tls:
           - hosts:
               - *host

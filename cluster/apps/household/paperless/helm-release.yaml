@@ -75,6 +75,7 @@ spec:
 
     service:
       main:
+        controller: main
         ports:
           http:
             port: 8000
@@ -96,7 +97,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - hosts:
