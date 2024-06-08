@@ -79,12 +79,10 @@ spec:
 
     persistence:
       api-data:
-        enabled: true
         existingClaim: mealie-api-data
         globalMounts:
           - path: /app/data/
       backups:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/mealie"
