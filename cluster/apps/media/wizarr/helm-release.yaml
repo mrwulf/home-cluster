@@ -53,13 +53,13 @@ spec:
                 memory: 300M
     service:
       main:
+        controller: main
         ports:
           http:
             port: 5690
     ingress:
       main:
-        enabled: true
-        ingressClassName: traefik
+        className: traefik
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           # traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
@@ -75,7 +75,7 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - secretname: "wildcard-${SECRET_DOMAIN/./-}-tls"

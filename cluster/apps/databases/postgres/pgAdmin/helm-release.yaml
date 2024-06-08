@@ -55,6 +55,7 @@ spec:
                 memory: 236M
     service:
       main:
+        controller: main
         ports:
           http:
             port: 80
@@ -75,8 +76,7 @@ spec:
 
     ingress:
       main:
-        enabled: true
-        ingressClassName: "traefik"
+        className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
@@ -87,7 +87,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - hosts:

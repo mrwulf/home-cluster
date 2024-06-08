@@ -64,6 +64,7 @@ spec:
 
     service:
       main:
+        controller: main
         type: LoadBalancer
         annotations:
           traefik.ingress.kubernetes.io/service.serversscheme: https
@@ -96,8 +97,7 @@ spec:
 
     ingress:
       main:
-        enabled: true
-        ingressClassName: "traefik"
+        className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: websecure
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
@@ -112,7 +112,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"

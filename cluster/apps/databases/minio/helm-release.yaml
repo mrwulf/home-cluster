@@ -62,7 +62,7 @@ spec:
 
     service:
       main:
-        enabled: true
+        controller: main
         ports:
           http:
             port: &console-port 9001
@@ -86,8 +86,7 @@ spec:
 
     ingress:
       main:
-        enabled: true
-        ingressClassName: traefik
+        className: traefik
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
@@ -99,15 +98,14 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
-                  name: main
+                  identifier: main
                   port: *console-port
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *console-host
       s3:
-        enabled: true
-        ingressClassName: traefik
+        className: traefik
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           # traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
@@ -121,7 +119,7 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
-                  name: main
+                  identifier: main
                   port: *api-port
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
@@ -134,11 +132,5 @@ spec:
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/active/minio"
-        mountOptions:
-          - nfsvers=4
-          - nconnect=8
-          - hard
-          - noatime
-          # - nfsvers=4.2
         globalMounts:
           - path: /data

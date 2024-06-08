@@ -50,6 +50,7 @@ spec:
 
     service:
       main:
+        controller: main
         type: LoadBalancer
         loadBalancerIP: "${UNIFI_ADDR}"
         externalTrafficPolicy: Local
@@ -90,8 +91,7 @@ spec:
 
     ingress:
       main:
-        enabled: true
-        ingressClassName: "traefik"
+        className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: websecure
           traefik.ingress.kubernetes.io/router.middlewares: networking-rfc1918-ips@kubernetescrd
@@ -102,7 +102,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"

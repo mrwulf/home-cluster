@@ -45,12 +45,12 @@ spec:
                 memory: 32Mi
     service:
       main:
+        controller: main
         ports:
           http:
             port: 80
     ingress:
       main:
-        enabled: true
         className: traefik
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -64,15 +64,14 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - hosts:
               - *host
             secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
       internal:
-        enabled: true
-        ingressClassName: traefik
+        className: traefik
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
@@ -81,7 +80,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - hosts:
