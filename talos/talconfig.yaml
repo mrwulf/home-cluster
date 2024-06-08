@@ -42,13 +42,9 @@ nodes:
       - interface: eth0
         dhcp: true
         # mtu: 9000
-        vip:
-          ip: ${clusterEndpointIP}
       - interface: eth1
         dhcp: true
         # mtu: 9000
-        vip:
-          ip: ${clusterEndpointIP}
     nodeLabels: &controllerNodeLabels
       <<: *workerNodeLabels
       node-role.kubernetes.io/control-plane: ''
