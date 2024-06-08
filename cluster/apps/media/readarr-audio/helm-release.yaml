@@ -91,20 +91,16 @@ spec:
 
     persistence:
       config:
-        enabled: true
         existingClaim: readarr-audio-config
       downloads:
-        enabled: true
         type: nfs
         server: ${PRIMARY_NFS_SERVER}
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       audiobooks:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
       backups:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/readarr-audio"

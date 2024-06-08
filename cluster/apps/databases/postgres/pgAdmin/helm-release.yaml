@@ -61,12 +61,10 @@ spec:
             port: 80
     persistence:
       config:
-        enabled: true
         existingClaim: pgadmin-config
         globalMounts:
           - path: "/var/lib/pgadmin"
       oauthconfig:
-        enabled: true
         type: configMap
         name: pgadmin-oauth-configmap
         subPath: config_local.py

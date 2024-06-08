@@ -137,14 +137,12 @@ spec:
 
     persistence:
       files:
-        enabled: true
         existingClaim: vikunja-files-pvc
         advancedMounts:
           main:
             api:
               - path: /app/vikunja/files
       config:
-        enabled: true
         type: custom
         volumeSpec:
           configMap:
@@ -155,7 +153,6 @@ spec:
               - path: /etc/vikunja/config.yml
                 subPath: config.yml
       caddy-config:
-        enabled: true
         type: "custom"
         volumeSpec:
           configMap:

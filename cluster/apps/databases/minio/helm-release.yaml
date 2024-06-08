@@ -128,7 +128,6 @@ spec:
 
     persistence:
       config:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/active/minio"

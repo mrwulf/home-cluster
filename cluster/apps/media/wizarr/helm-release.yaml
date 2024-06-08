@@ -83,7 +83,6 @@ spec:
               - *host
     persistence:
       config:
-        enabled: true
         existingClaim: wizarr-config
         globalMounts:
           - path: /data/database

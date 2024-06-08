@@ -102,29 +102,24 @@ spec:
 
     persistence:
       config:
-        enabled: true
         existingClaim: sonarr-config
       downloads:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       tv:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: /volume1/Shared Videos/TV
         globalMounts:
           - path: /TV
       tv1:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: /volume2/TV1
         globalMounts:
           - path: /TV1
       backups:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/sonarr"

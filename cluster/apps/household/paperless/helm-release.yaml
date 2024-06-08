@@ -106,7 +106,6 @@ spec:
 
     persistence:
       data:
-        enabled: true
         existingClaim: paperless-data
         globalMounts:
           - path: /data/local/

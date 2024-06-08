@@ -86,22 +86,18 @@ spec:
 
     persistence:
       config:
-        enabled: true
         existingClaim: radarr-config
       downloads:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       movies:
-        enabled: true
         type: nfs
         server: "${SECONDARY_NFS_SERVER}"
         path: /volume1/Shared Videos/Movies
         globalMounts:
           - path: /Movies
       backups:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/radarr"

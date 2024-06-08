@@ -69,6 +69,7 @@ spec:
                 memory: 512Mi
     service:
       main:
+        controller: main
         ports:
           http:
             port: 8087

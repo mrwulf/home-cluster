@@ -67,7 +67,6 @@ spec:
             scrapeTimeout: 10s
     persistence:
       config:
-        enabled: true
         type: configMap
         name: smtp-relay-configmap
         globalMounts:
@@ -75,7 +74,6 @@ spec:
             subPath: maddy.conf
             readOnly: true
       data:
-        enabled: true
         type: emptyDir
         medium: Memory
         sizeLimit: 1Gi

@@ -99,7 +99,6 @@ spec:
 
     persistence:
       config:
-        enabled: true
         type: configMap
         name: obsidian-couchdb-configmap
         advancedMounts:
@@ -108,7 +107,6 @@ spec:
               - path: /tmp/config
 
       config-storage:
-        enabled: true
         type: emptyDir
         globalMounts:
           - path: /opt/couchdb/etc/default.d

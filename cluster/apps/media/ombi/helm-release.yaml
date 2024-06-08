@@ -78,7 +78,6 @@ spec:
 
     persistence:
       config:
-        enabled: true
         existingClaim: ombi-config
         globalMounts:
           - path: /config

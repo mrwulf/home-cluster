@@ -91,20 +91,16 @@ spec:
 
     persistence:
       config:
-        enabled: true
         existingClaim: readarr-books-config
       downloads:
-        enabled: true
         type: nfs
         server: ${PRIMARY_NFS_SERVER}
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       books:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/active/books"
       backups:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/readarr-books"

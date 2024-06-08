@@ -111,12 +111,10 @@ spec:
 
     persistence:
       data:
-        enabled: true
         existingClaim: unifi-data
         globalMounts:
           - path: /unifi
       backups:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/unifi"

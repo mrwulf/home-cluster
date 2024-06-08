@@ -80,13 +80,10 @@ spec:
 
     persistence:
       config:
-        enabled: true
         existingClaim: prowlarr-config
       shared:
-        enabled: true
         type: emptyDir
       backups:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/prowlarr"

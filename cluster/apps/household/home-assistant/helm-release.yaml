@@ -117,10 +117,8 @@ spec:
 
     persistence:
       config:
-        enabled: true
         existingClaim: homeassistant-config
       backups:
-        enabled: true
         type: nfs
         server: "${PRIMARY_NFS_SERVER}"
         path: "${NFS_KUBERNETES_PATH}/backups/homeassistant"
