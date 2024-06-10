@@ -78,9 +78,9 @@ spec:
     months:
       - 1
   retention:
-    daily: 7
-    weekly: 0
-    monthly: 0
+    daily: 3
+    weekly: 2
+    monthly: 1
     yearly: 0
   selector:
     matchExpressions:
