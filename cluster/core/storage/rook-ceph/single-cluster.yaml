@@ -134,7 +134,7 @@ spec:
           enabled: true
           name: ceph-block
           isDefault: true
-          reclaimPolicy: Delete
+          reclaimPolicy: Retain
           allowVolumeExpansion: true
           mountOptions: ["discard"]
           # see https://github.com/rook/rook/blob/master/Documentation/ceph-block.md#provision-storage for available configuration

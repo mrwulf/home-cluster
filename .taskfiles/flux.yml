@@ -23,6 +23,11 @@ tasks:
       - flux -n flux-system suspend kustomization apps
     silent: true
 
+  restart:
+    cmds:
+      - flux -n {{.CURRENT_NAMESPACE}} suspend {{.CLI_ARGS}}
+      - flux -n {{.CURRENT_NAMESPACE}} resume {{.CLI_ARGS}}
+
   resume:
     cmds:
       - flux -n flux-system resume source git flux-system
