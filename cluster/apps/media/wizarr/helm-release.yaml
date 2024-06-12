@@ -39,12 +39,11 @@ spec:
               TZ: "${TIMEZONE}"
               APP_URL: "https://wizarr.${SECRET_DOMAIN}"
               DISABLE_BUILTIN_AUTH: "true"
-            pod:
-              securityContext:
-                runAsUser: 568
-                runAsGroup: 568
-                fsGroup: 568
-                fsGroupChangePolicy: OnRootMismatch
+            podSecurityContext:
+              runAsUser: 568
+              runAsGroup: 568
+              fsGroup: 568
+              fsGroupChangePolicy: OnRootMismatch
             resources:
               requests:
                 cpu: 15m
@@ -78,7 +77,7 @@ spec:
                   identifier: main
                   port: http
         tls:
-          - secretname: "wildcard-${SECRET_DOMAIN/./-}-tls"
+          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
     persistence:
