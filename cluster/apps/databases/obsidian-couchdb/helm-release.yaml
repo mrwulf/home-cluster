@@ -29,7 +29,7 @@ spec:
             fsGroup: 568
             fsGroupChangePolicy: "OnRootMismatch"
 
-        statefuleset:
+        statefulset:
           volumeClaimTemplates:
             - name: data
               accessMode: ReadWriteOnce
