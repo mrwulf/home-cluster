@@ -35,10 +35,8 @@ spec:
               accessMode: ReadWriteOnce
               size: 10Gi
               storageClass: ceph-block
-              advancedMounts:
-                main:
-                  main:
-                    - path: /opt/couchdb/data
+              globalMounts:
+                - path: /opt/couchdb/data
 
         initContainers:
           init-config:
