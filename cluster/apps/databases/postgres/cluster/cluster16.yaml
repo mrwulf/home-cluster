@@ -23,7 +23,7 @@ spec:
       auto_explain.log_min_duration: '10s'
       max_connections: "300"
       max_wal_size: 512MB
-      shared_buffers: 512MB
+      shared_buffers: 2048MB
       pg_stat_statements.max: "10000"
       pg_stat_statements.track: all
     shared_preload_libraries:

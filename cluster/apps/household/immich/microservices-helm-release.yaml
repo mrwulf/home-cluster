@@ -50,11 +50,11 @@ spec:
           main:
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: v1.105.1
+              tag: v1.106.2
 
-            args: ["start-microservices.sh"]
             env:
               NODE_OPTIONS: "--max-old-space-size=8192"
+              IMMICH_WORKERS_EXCLUDE: "api"
             envFrom:
               - configMapRef:
                   name: *configMap

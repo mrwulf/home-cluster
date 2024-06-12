@@ -43,10 +43,11 @@ spec:
           main:
             image:
               repository: ghcr.io/onedr0p/sonarr-develop
-              tag: '4.0.5.1719'
+              tag: '4.0.5.1740'
             env:
               TZ: "${TIMEZONE}"
               SONARR__INSTANCE_NAME: Sonarr
+              SONARR__AUTH__APIKEY: "${SONARR_APIKEY}"
               SONARR__PORT: &port 8989
               SONARR__APPLICATION_URL: "https://sonarr.home.${SECRET_DOMAIN}"
               SONARR__LOG_LEVEL: info
