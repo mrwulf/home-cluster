@@ -85,12 +85,12 @@ spec:
               key: MINIO_PROMETHEUS_TOKEN
 
     ingress:
-      main:
+      minio:
         className: traefik
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          hajimari.io/icon: mdi:pail
+          hajimari.io/icon: "mdi:pail"
           hajimari.io/enable: "true"
         hosts:
           - host: &console-host "minio.home.${SECRET_DOMAIN}"
@@ -108,7 +108,7 @@ spec:
         className: traefik
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
+          external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN:=domain}"
           external-dns/is-public: "true"
           hajimari.io/enable: "false"
         hosts:
