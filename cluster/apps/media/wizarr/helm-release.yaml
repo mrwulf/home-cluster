@@ -30,6 +30,12 @@ spec:
       main:
         annotations:
           reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: "OnRootMismatch"
         containers:
           main:
             image:
@@ -39,11 +45,6 @@ spec:
               TZ: "${TIMEZONE}"
               APP_URL: "https://wizarr.${SECRET_DOMAIN}"
               DISABLE_BUILTIN_AUTH: "true"
-            podSecurityContext:
-              runAsUser: 568
-              runAsGroup: 568
-              fsGroup: 568
-              fsGroupChangePolicy: OnRootMismatch
             resources:
               requests:
                 cpu: 15m
