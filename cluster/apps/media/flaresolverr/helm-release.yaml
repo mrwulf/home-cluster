@@ -71,7 +71,7 @@ spec:
             port: *metricsPort
     serviceMonitor:
       main:
-        enabled: true
+        serviceName: main
         endpoints:
           - port: metrics
             scheme: http
