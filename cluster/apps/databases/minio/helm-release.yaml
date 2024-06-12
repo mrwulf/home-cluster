@@ -129,7 +129,7 @@ spec:
     persistence:
       config:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/active/minio"
         globalMounts:
           - path: /data

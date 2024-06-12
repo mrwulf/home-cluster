@@ -94,15 +94,15 @@ spec:
         existingClaim: readarr-books-config
       downloads:
         type: nfs
-        server: ${PRIMARY_NFS_SERVER}
+        server: ${PRIMARY_NFS_SERVER:=nas}
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       books:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/active/books"
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/backups/readarr-books"
         globalMounts:
           - path: /config/Backups

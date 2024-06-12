@@ -130,7 +130,7 @@ spec:
 
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/backups/plex-database-backups"
         globalMounts:
           - path: /plex-backups
@@ -144,14 +144,14 @@ spec:
 
       tv:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: /volume1/Shared Videos/TV
         globalMounts:
           - path: /mnt/OurBackup/TV
 
       tv1:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: /volume2/TV1
         globalMounts:
           - path: /mnt/OurBackup/TV1

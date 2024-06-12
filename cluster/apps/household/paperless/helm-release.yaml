@@ -111,7 +111,7 @@ spec:
           - path: /data/local/
       nas:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/active/paperless"
         advancedMounts:
           main:

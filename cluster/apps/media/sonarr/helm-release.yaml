@@ -105,23 +105,23 @@ spec:
         existingClaim: sonarr-config
       downloads:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       tv:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: /volume1/Shared Videos/TV
         globalMounts:
           - path: /TV
       tv1:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: /volume2/TV1
         globalMounts:
           - path: /TV1
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/backups/sonarr"
         globalMounts:
           - path: /config/Backups

@@ -125,13 +125,13 @@ spec:
     persistence:
       library:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "/volume3/Pictures/immich"
         globalMounts:
           - path: /usr/src/app/upload
       memories:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "/volume3/Pictures"
         globalMounts:
           - path: /mnt/memories

@@ -79,17 +79,17 @@ spec:
         enabled: true
         mountPath: /audiobooks
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
       books:
         enabled: true
         mountPath: /books
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/active/books"
       backups:
         enabled: true
         mountPath: /metadata/backups
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/backups/audiobookshelf"

@@ -94,15 +94,15 @@ spec:
         existingClaim: readarr-audio-config
       downloads:
         type: nfs
-        server: ${PRIMARY_NFS_SERVER}
+        server: ${PRIMARY_NFS_SERVER:=nas}
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       audiobooks:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/backups/readarr-audio"
         globalMounts:
           - path: /config/Backups

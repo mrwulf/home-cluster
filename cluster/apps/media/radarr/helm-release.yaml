@@ -89,7 +89,7 @@ spec:
         existingClaim: radarr-config
       downloads:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       movies:
         type: nfs
@@ -99,7 +99,7 @@ spec:
           - path: /Movies
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/backups/radarr"
         globalMounts:
           - path: /config/Backups
