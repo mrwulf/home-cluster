@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: ghcr.io/larivierec/bitwarden-cli
-              tag: 2024.4.1
+              tag: 2024.6.0
             envFrom:
               - secretRef:
                   name: bitwarden-cli
