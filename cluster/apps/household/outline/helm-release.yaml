@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.2.1
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -95,6 +95,7 @@ spec:
 
     service:
       main:
+        controller: main
         ports:
           http:
             port: 8080
@@ -102,10 +103,10 @@ spec:
     ingress:
       main:
         enabled: true
-        ingressClassName: "traefik"
+        className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
+          external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN:=domain}"
           external-dns/is-public: "true"
           hajimari.io/enable: "true"
           hajimari.io/icon: "book"
@@ -116,7 +117,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"

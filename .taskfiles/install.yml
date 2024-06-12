@@ -157,10 +157,10 @@ tasks:
         sh: "{{.TASK_NAME}} version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
       FILENAME: "kubestr_{{.RELEASE_VERSION}}_Linux_amd64.tar.gz"
     status:
-      - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
+      - '[ "{{.RELEASE_VERSION}}" = "{{.CURRENT_VERSION}}" ]'
     cmds:
       - |
-        echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
+        echo '{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}'
         TEMP_DIR=$(mktemp -d)
         wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.TASK_NAME}}/releases/download/v{{.RELEASE_VERSION}}/{{.FILENAME}}
         tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components=0 -C ~/bin/ {{.TASK_NAME}}
@@ -232,10 +232,10 @@ tasks:
       FILENAME: "{{.TASK_NAME}}-v{{.DESIRED_VERSION}}-linux-amd64.tar.gz"
       STRIP_COMPONENTS: 1
     status:
-      - '[ "{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
+      - '[ "{{.DESIRED_VERSION}}" = "{{.CURRENT_VERSION}}" ]'
     cmds:
       - |
-        echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}"
+        echo '{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}'
         TEMP_DIR=$(mktemp -d)
         wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://get.helm.sh/{{.FILENAME}}
         tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components={{.STRIP_COMPONENTS}} -C ~/bin/ linux-amd64/{{.TASK_NAME}}

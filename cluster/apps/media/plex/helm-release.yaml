@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.2.1
       interval: 30m
       sourceRef:
         kind: HelmRepository
@@ -64,6 +64,7 @@ spec:
 
     service:
       main:
+        controller: main
         type: LoadBalancer
         annotations:
           traefik.ingress.kubernetes.io/service.serversscheme: https
@@ -96,8 +97,7 @@ spec:
 
     ingress:
       main:
-        enabled: true
-        ingressClassName: "traefik"
+        className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: websecure
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
@@ -112,7 +112,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
@@ -121,7 +121,6 @@ spec:
 
     persistence:
       config:
-        enabled: true
         existingClaim: plex-config
         globalMounts:
           - path: /config
@@ -131,7 +130,7 @@ spec:
 
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/backups/plex-database-backups"
         globalMounts:
           - path: /plex-backups
@@ -145,14 +144,14 @@ spec:
 
       tv:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: /volume1/Shared Videos/TV
         globalMounts:
           - path: /mnt/OurBackup/TV
 
       tv1:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: /volume2/TV1
         globalMounts:
           - path: /mnt/OurBackup/TV1
