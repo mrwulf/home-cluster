@@ -54,7 +54,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/group: "Media"
           # external-dns/is-public: "true"
-          # external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
+          # external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN:=domain}"
           # external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
         hosts:
           - host: &host "audiobookshelf.home.${SECRET_DOMAIN}"

@@ -105,7 +105,7 @@ spec:
           hajimari.io/group: "Home"
           hajimari.io/icon: heroicons:photo
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-immich@kubernetescrd"
-          external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
+          external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN:=domain}"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
           external-dns/is-public: "true"
         hosts:
