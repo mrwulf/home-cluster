@@ -51,7 +51,7 @@ spec:
           main:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
-              tag: v1.106.2
+              tag: v1.106.3
 
             envFrom:
               - configMapRef:
