@@ -93,7 +93,7 @@ spec:
           hajimari.io/icon: mdi:pail
           hajimari.io/enable: "true"
         hosts:
-          - host: &console-host "{{ .Release.Name }}.home.${SECRET_DOMAIN}"
+          - host: &console-host "minio.home.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -108,8 +108,6 @@ spec:
         className: traefik
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          # traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          # traefik.ingress.kubernetes.io/router.middlewares: "networking-authentik@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN}"
           external-dns/is-public: "true"
           hajimari.io/enable: "false"

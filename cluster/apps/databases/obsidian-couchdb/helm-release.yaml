@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.2.1
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -29,15 +29,16 @@ spec:
             fsGroup: 568
             fsGroupChangePolicy: "OnRootMismatch"
 
-        volumeClaimTemplates:
-          - name: data
-            accessMode: ReadWriteOnce
-            size: 10Gi
-            storageClass: ceph-block
-            advancedMounts:
-              main:
+        statefuleset:
+          volumeClaimTemplates:
+            - name: data
+              accessMode: ReadWriteOnce
+              size: 10Gi
+              storageClass: ceph-block
+              advancedMounts:
                 main:
-                  - path: /opt/couchdb/data
+                  main:
+                    - path: /opt/couchdb/data
 
         initContainers:
           init-config:
