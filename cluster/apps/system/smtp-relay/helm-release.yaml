@@ -47,6 +47,7 @@ spec:
 
     service:
       main:
+        controller: main
         type: LoadBalancer
         # loadBalancerIP: "${CLUSTER_LB_SMTP_RELAY}"
         externalTrafficPolicy: Local

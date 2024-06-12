@@ -63,6 +63,7 @@ spec:
                 memory: 1Gi
     service:
       main:
+        controller: main
         ports:
           http:
             port: *port
