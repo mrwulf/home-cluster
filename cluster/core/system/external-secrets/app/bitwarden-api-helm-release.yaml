@@ -49,18 +49,18 @@ spec:
                   failureThreshold: 3
                   timeoutSeconds: 1
                   periodSeconds: 120
-                readinessProbe:
-                  tcpSocket:
-                    port: 8087
-                  failureThreshold: 3
-                  timeoutSeconds: 1
-                  periodSeconds: 10
-                startupProbe:
-                  tcpSocket:
-                    port: 8087
-                  failureThreshold: 30
-                  timeoutSeconds: 1
-                  periodSeconds: 5
+              readinessProbe:
+                tcpSocket:
+                  port: 8087
+                failureThreshold: 3
+                timeoutSeconds: 1
+                periodSeconds: 10
+              startupProbe:
+                tcpSocket:
+                  port: 8087
+                failureThreshold: 30
+                timeoutSeconds: 1
+                periodSeconds: 5
             resources:
               requests:
                 memory: 256Mi
