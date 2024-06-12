@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.2.1
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -75,14 +75,14 @@ spec:
 
     service:
       main:
+        controller: main
         ports:
           http:
             port: *port
 
     ingress:
       main:
-        enabled: true
-        ingressClassName: "traefik"
+        className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
@@ -94,7 +94,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
@@ -103,31 +103,26 @@ spec:
 
     persistence:
       config:
-        enabled: true
         existingClaim: sonarr-config
       downloads:
-        enabled: true
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       tv:
-        enabled: true
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: /volume1/Shared Videos/TV
         globalMounts:
           - path: /TV
       tv1:
-        enabled: true
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: /volume2/TV1
         globalMounts:
           - path: /TV1
       backups:
-        enabled: true
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/backups/sonarr"
         globalMounts:
           - path: /config/Backups

@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.2.1
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -63,14 +63,14 @@ spec:
 
     service:
       main:
+        controller: main
         ports:
           http:
             port: 8787
 
     ingress:
       main:
-        enabled: true
-        ingressClassName: "traefik"
+        className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
@@ -82,7 +82,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: main
                   port: http
         tls:
           - secretName: &tls "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
@@ -91,22 +91,18 @@ spec:
 
     persistence:
       config:
-        enabled: true
         existingClaim: readarr-audio-config
       downloads:
-        enabled: true
         type: nfs
-        server: ${PRIMARY_NFS_SERVER}
+        server: ${PRIMARY_NFS_SERVER:=nas}
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
       audiobooks:
-        enabled: true
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
       backups:
-        enabled: true
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "${NFS_KUBERNETES_PATH}/backups/readarr-audio"
         globalMounts:
           - path: /config/Backups

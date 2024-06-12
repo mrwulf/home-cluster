@@ -1,4 +1,8 @@
 # Ignore vaultwarden IDs
+cluster/apps/databases/postgres/cluster/external-secret.yaml:generic-api-key:22
+cluster/apps/databases/postgres/cluster/external-secret.yaml:generic-api-key:30
+cluster/apps/databases/postgres/cluster/external-secret.yaml:generic-api-key:43
+cluster/apps/databases/postgres/cluster/external-secret.yaml:generic-api-key:51
 cluster/apps/networking/cloudflare-ddns/external-secret.yaml:generic-api-key:27
 cluster/apps/networking/cloudflare-ddns/external-secret.yaml:generic-api-key:35
 cluster/apps/system/external-dns/external-secret.yaml:generic-api-key:24
