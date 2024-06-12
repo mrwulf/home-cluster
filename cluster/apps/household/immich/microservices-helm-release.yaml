@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.2.1
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -50,11 +50,11 @@ spec:
           main:
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: v1.105.1
+              tag: v1.106.2
 
-            args: ["start-microservices.sh"]
             env:
               NODE_OPTIONS: "--max-old-space-size=8192"
+              IMMICH_WORKERS_EXCLUDE: "api"
             envFrom:
               - configMapRef:
                   name: *configMap
@@ -69,32 +69,16 @@ spec:
                 gpu.intel.com/i915: 1
                 memory: 12G
 
-    service:
-      main:
-        enabled: false
-
     persistence:
       library:
-        enabled: true
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "/volume3/Pictures/immich"
-        mountOptions:
-          - nfsvers=4
-          - nconnect=8
-          - hard
-          - noatime
         globalMounts:
           - path: /usr/src/app/upload
       memories:
-        enabled: true
         type: nfs
-        server: "${PRIMARY_NFS_SERVER}"
+        server: "${PRIMARY_NFS_SERVER:=nas}"
         path: "/volume3/Pictures"
-        mountOptions:
-          - nfsvers=4
-          - nconnect=8
-          - hard
-          - noatime
         globalMounts:
           - path: /mnt/memories

@@ -11,21 +11,10 @@ data:
   IMMICH_WEB_URL: http://immich-web.household.svc.cluster.local:3000
   LOG_LEVEL: verbose
   REDIS_URL: ioredis://eyJkYiI6MTUsInNlbnRpbmVscyI6W3siaG9zdCI6InJlZGlzLW5vZGUtMC5yZWRpcy1oZWFkbGVzcy5kYXRhYmFzZXMuc3ZjLmNsdXN0ZXIubG9jYWwiLCJwb3J0IjoyNjM3OX0seyJob3N0IjoicmVkaXMtbm9kZS0xLnJlZGlzLWhlYWRsZXNzLmRhdGFiYXNlcy5zdmMuY2x1c3Rlci5sb2NhbCIsInBvcnQiOjI2Mzc5fSx7Imhvc3QiOiJyZWRpcy1ub2RlLTIucmVkaXMtaGVhZGxlc3MuZGF0YWJhc2VzLnN2Yy5jbHVzdGVyLmxvY2FsIiwicG9ydCI6MjYzNzl9XSwibmFtZSI6InJlZGlzLW1hc3RlciJ9
-  TYPESENSE_DATA_DIR: /config
-  TYPESENSE_HOST: immich-typesense.household.svc.cluster.local
   OAUTH_ENABLED: "true"
   OAUTH_ISSUER_URL: "https://auth.${SECRET_DOMAIN}/application/o/immich/.well-known/openid-configuration"
   OAUTH_AUTO_REGISTER: "true"
   OAUTH_BUTTON_TEXT: "Login with Authentik"
   PUBLIC_IMMICH_SERVER_URL: "https://photos.${SECRET_DOMAIN}"
-  SERVER_PORT: "3001"
+  IMMICH_PORT: "3001"
   TZ: "${TIMEZONE}"
----
-apiVersion: v1
-data:
-  nodes: immich-typesense-0.headless.household.svc.cluster.local:8107:8108,immich-typesense-1.headless.household.svc.cluster.local:8107:8108,immich-typesense-2.headless.household.svc.cluster.local:8107:8108
-  # ,immich-typesense-3.headless.household.svc.cluster.local:8107:8108,immich-typesense-4.headless.household.svc.cluster.local:8107:8108
-kind: ConfigMap
-metadata:
-  name: immich-typesense-nodes
-  namespace: household
