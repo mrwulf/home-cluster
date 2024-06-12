@@ -45,22 +45,9 @@ spec:
                 spec:
                   exec:
                     command: ["sh", "-c", "curl -X POST -s http://127.0.0.1:8087/sync | jq -e '.success == true'"]
-                  initialDelaySeconds: 20
-                  failureThreshold: 3
-                  timeoutSeconds: 1
-                  periodSeconds: 120
-              readinessProbe:
-                tcpSocket:
-                  port: 8087
-                failureThreshold: 3
-                timeoutSeconds: 1
-                periodSeconds: 10
-              startupProbe:
-                tcpSocket:
-                  port: 8087
-                failureThreshold: 30
-                timeoutSeconds: 1
-                periodSeconds: 5
+                  timeoutSeconds: 5
+              readiness:
+                enabled: false
             resources:
               requests:
                 memory: 256Mi
