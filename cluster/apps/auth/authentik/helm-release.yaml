@@ -62,7 +62,7 @@ spec:
           enabled: true
       ingress:
         enabled: true
-        className: "traefik"
+        ingressClassName: "traefik"
         annotations:
           external-dns.alpha.kubernetes.io/target: "${SECRET_DOMAIN:=domain}"
           external-dns/is-public: "true"
