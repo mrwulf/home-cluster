@@ -32,6 +32,7 @@ nodes:
         # mtu: 9000
     nodeLabels: &workerNodeLabels
       node.home.arpa/physical: "true"
+      node-role.kubernetes.io/worker: ''
   - hostname: worker-02.home
     ipAddress: 10.0.1.47
     installDiskSelector:
@@ -51,7 +52,7 @@ nodes:
         dhcp: true
         # mtu: 9000
     nodeLabels: &controllerNodeLabels
-      <<: *workerNodeLabels
+      node.home.arpa/physical: "true"
       node-role.kubernetes.io/control-plane: ''
   - hostname: eta.home
     ipAddress: 10.0.1.42
