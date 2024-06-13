@@ -122,6 +122,9 @@ spec:
           - name: "worker-01"
             devices:
               - name: "nvme0n1"
+          - name: "worker-02"
+            devices:
+              - name: "nvme0n1"
     cephBlockPools:
       - name: ceph-block
         # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
