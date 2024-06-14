@@ -76,12 +76,6 @@ nodes:
     nodeLabels: *workerNodeLabels
     nodeTaints:
       node-role.kubernetes.io/storage-only: True:NoSchedule
-  - hostname: epsilon.home
-    ipAddress: 10.0.1.45
-    installDiskSelector:
-      model: "SanDisk*"
-    networkInterfaces: *workerNetwork
-    nodeLabels: *workerNodeLabels
 
 patches:
   - |-

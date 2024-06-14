@@ -110,9 +110,6 @@ spec:
           - name: "delta"
             devices:
               - name: "nvme0n1"
-          - name: "epsilon"
-            devices:
-              - name: "sda"
           - name: "zeta"
             devices:
               - name: "nvme0n1"
