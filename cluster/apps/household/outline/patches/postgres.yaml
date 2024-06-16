@@ -11,7 +11,7 @@ spec:
         initContainers:
           init-db:
             image:
-              repository: ghcr.io/onedr0p/postgres-initdb
+              repository: ghcr.io/onedr0p/postgres-init
               tag: 15.5
             env:
               - name: POSTGRES_HOST
