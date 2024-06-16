@@ -99,7 +99,6 @@ spec:
               url: https://nanne.dev/k8s-at-home-search
     service:
       main:
-        controller: main
         ports:
           http:
             port: 80
