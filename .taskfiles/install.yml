@@ -262,7 +262,7 @@ tasks:
     cmds:
       - |
         echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}"
-        if [ command -v pip ]; then
+        if [ $( command -v pip ) ]; then
           pip install pre-commit --upgrade
           pre-commit autoupdate
           pre-commit gc

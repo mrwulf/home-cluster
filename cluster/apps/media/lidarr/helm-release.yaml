@@ -1,0 +1,133 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app lidarr
+  namespace: media
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+    controllers:
+      lidarr:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16
+            envFrom: &envFrom
+              - secretRef:
+                  name: lidarr-secret
+        containers:
+          app:
+            image:
+              repository: ghcr.io/onedr0p/lidarr-develop
+              tag: 2.3.3.4204
+            env:
+              TZ: ${CONFIG_TIMEZONE}
+              LIDARR__INSTANCE_NAME: Lidarr
+              LIDARR__PORT: &port 8686
+              LIDARR__LOG_LEVEL: info
+              LIDARR__AUTHENTICATION_METHOD: External
+              LIDARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
+              LIDARR__THEME: dark
+            envFrom:
+              - secretRef:
+                  name: lidarr-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+    service:
+      app:
+        controller: lidarr
+        ports:
+          http:
+            port: 8686
+    ingress:
+      app:
+        enabled: true
+        className: traefik
+        hosts:
+          - host: &host "{{ .Release.Name }}.home.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+    persistence:
+      config:
+        existingClaim: lidarr-config
+      tmp:
+        type: emptyDir
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /config/logs
+      media:
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER:=nas}"
+        path: ${NFS_KUBERNETES_PATH}/active/music
+        globalMounts:
+          - path: /media
+      downloads:
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER:=nas}"
+        path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
+        globalMounts:
+          - path: /downloads
+      backup:
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER:=nas}"
+        path: "${NFS_KUBERNETES_PATH}/backups/lidarr"
+        globalMounts:
+          - path: /config/Backups

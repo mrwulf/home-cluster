@@ -4,6 +4,7 @@ resources:
   - audiobookshelf
   - flaresolverr
   - isponsorblocktv
+  - lidarr
   - ombi
   - plex
   - prowlarr
