@@ -95,7 +95,7 @@ spec:
           - path: /downloads
       movies:
         type: nfs
-        server: "${SECONDARY_NFS_SERVER}"
+        server: "${SECONDARY_NFS_SERVER:=nas2}"
         path: /volume1/Shared Videos/Movies
         globalMounts:
           - path: /Movies
