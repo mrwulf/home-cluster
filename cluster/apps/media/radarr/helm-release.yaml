@@ -35,7 +35,7 @@ spec:
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      radarr:
+      app:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
@@ -58,8 +58,8 @@ spec:
                 memory: 4655M
 
     service:
-      main:
-        controller: radarr
+      app:
+        controller: app
         ports:
           http:
             port: *port
@@ -78,7 +78,7 @@ spec:
             paths:
               - path: /
                 service:
-                  identifier: radarr
+                  identifier: app
                   port: http
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
