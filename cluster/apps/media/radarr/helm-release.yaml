@@ -91,6 +91,8 @@ spec:
         type: nfs
         server: "${PRIMARY_NFS_SERVER:=nas}"
         path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
+        globalMounts:
+          - path: /downloads
       movies:
         type: nfs
         server: "${SECONDARY_NFS_SERVER}"
