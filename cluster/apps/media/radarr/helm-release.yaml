@@ -19,24 +19,25 @@ spec:
     remediation:
       retries: 3
   upgrade:
+    cleanupOnFail: true
     remediation:
+      strategy: rollback
       retries: 3
-  # See https://github.com/bjw-s/helm-charts/blob/main/charts/library/common/values.yaml
   values:
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
     controllers:
-      main:
+      radarr:
         annotations:
           reloader.stakater.com/auto: "true"
-        pod:
-          dnsConfig:
-            options:
-              - name: ndots
-                value: "1"
-          securityContext:
-            runAsUser: 568
-            runAsGroup: 568
-            fsGroup: 568
-            fsGroupChangePolicy: "OnRootMismatch"
         containers:
           main:
             image:
@@ -58,7 +59,7 @@ spec:
 
     service:
       main:
-        controller: main
+        controller: radarr
         ports:
           http:
             port: *port
@@ -77,7 +78,7 @@ spec:
             paths:
               - path: /
                 service:
-                  identifier: main
+                  identifier: radarr
                   port: http
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
