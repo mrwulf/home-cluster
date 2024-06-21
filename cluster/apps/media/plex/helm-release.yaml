@@ -137,10 +137,17 @@ spec:
 
       movies:
         type: nfs
-        server: "${SECONDARY_NFS_SERVER}"
+        server: "${SECONDARY_NFS_SERVER:=nas2}"
         path: /volume1/Shared Videos/Movies
         globalMounts:
           - path: /mnt/OurShare/Movies
+
+      music:
+        type: nfs
+        server: "${PRIMARY_NFS_SERVER:=nas}"
+        path: ${NFS_KUBERNETES_PATH}/active/music
+        globalMounts:
+          - path: /music
 
       tv:
         type: nfs
