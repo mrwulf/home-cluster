@@ -46,7 +46,7 @@ spec:
                 cpu: 15m
                 memory: 588M
               limits:
-                memory: 618M
+                memory: 2G
 
     service:
       main:
