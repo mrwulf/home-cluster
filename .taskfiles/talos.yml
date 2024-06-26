@@ -11,7 +11,7 @@ vars:
   MASTER_LIST:
     sh: yq '.nodes[] | select(.controlPlane==true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | head -c -1
   WORKER_LIST:
-    sh: yq '.nodes[] | select(.controlPlane==false) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | head -c -1
+    sh: yq '.nodes[] | select(.controlPlane!=true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | head -c -1
   NODE_LIST_MASTERSFIRST: "{{.MASTER_LIST}},{{.WORKER_LIST}}"
   ONE_MASTER:
     sh: echo '{{.MASTER_LIST}}' | tr ',' '\n' | shuf | head -n1
@@ -205,7 +205,11 @@ tasks:
         fi
         #
         echo "Waiting for Talos to be healthy on node '{{.NODE}}' ..."
-        talosctl --nodes {{.NODE}} health --wait-timeout=10m --server=false
+        until talosctl --nodes {{.NODE}} health --wait-timeout=10m --server=false
+        do
+            echo "Waiting for talos health to be OK on node '{{.NODE}}' ..."
+            sleep 10
+        done
         #
         echo "Waiting for Ceph health to be OK on node '{{.NODE}}' ..."
         until kubectl wait --timeout=5m \
@@ -249,3 +253,51 @@ tasks:
       - |
         yq -i '. *= load("{{.PROJECT_DIR}}//talos/clusterconfig/talosconfig")' {{.FILE}}
         talosctl kubeconfig -n {{.ONE_MASTER}} --force
+
+  reboot:
+    desc: Safely restart a talos node
+    silent: true
+    vars:
+      NODE_NAME:
+        sh: WHOLE={{.NODE}} && echo "${WHOLE%.home}"
+    requires:
+      vars: ["NODE"]
+    deps:
+      - task: generate-configs
+      - task: diff-config
+        vars:
+          NODE: "{{.NODE}}"
+      - task: apply-config
+        vars:
+          NODE: "{{.NODE}}"
+    cmds:
+      - |
+        echo "Target Node: {{.NODE}}"
+        talosctl reboot -n {{.NODE}} --mode=powercycle
+        #
+        echo "Waiting for Talos to be healthy on node '{{.NODE}}' ..."
+        until talosctl --nodes {{.NODE}} health --wait-timeout=10m --server=false
+        do
+            echo "Waiting for talos health to be OK on node '{{.NODE}}' ..."
+            sleep 10
+        done
+        #
+        echo "Waiting for Ceph health to be OK on node '{{.NODE}}' ..."
+        until kubectl wait --timeout=5m \
+            --for=jsonpath=.status.ceph.health=HEALTH_OK cephcluster \
+                --all --all-namespaces;
+        do
+            echo "Waiting for Ceph health to be OK on node '{{.NODE}}' ..."
+            sleep 10
+        done
+
+  reboot-all:
+    desc: Reboot Talos on all the nodes
+    silent: true
+    cmds:
+      - for: { var: NODE_LIST_MASTERSFIRST, split: ",", as: NODE }
+        task: reboot
+        vars:
+          NODE: '{{.NODE}}'
+      - task: :cluster:cleanup
+      - kubectl -n kube-system rollout restart daemonset cilium
