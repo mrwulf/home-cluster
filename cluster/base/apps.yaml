@@ -8,7 +8,7 @@ spec:
   interval: 10m0s
   dependsOn:
     - name: core
-    - name: cluster-core-external-secrets-stores
+    # - name: cluster-core-external-secrets-stores
   path: ./cluster/apps
   prune: true
   sourceRef:
