@@ -33,7 +33,7 @@ spec:
 
     image:
       repository: ghcr.io/advplyr/audiobookshelf
-      tag: 2.10.1
+      tag: 2.11.0
 
     env:
       TZ: "${TIMEZONE}"
