@@ -7,8 +7,13 @@ talosVersion: v1.7.5
 kubernetesVersion: v1.30.2
 endpoint: https://kubernetes.home:6443
 
-additionalApiServerCertSans:
+additionalApiServerCertSans: &sans
   - ${clusterEndpointIP}
+  - 127.0.0.1
+
+additionalMachineCertSans: *sans
+
+domain: cluster.local
 
 cniConfig:
   name: none
@@ -125,6 +130,7 @@ patches:
           - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
             format: json_lines
       network:
+        disableSearchDomain: true
         extraHostEntries:
           - ip: ${clusterEndpointIP}
             aliases:
