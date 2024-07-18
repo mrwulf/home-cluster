@@ -47,7 +47,7 @@ spec:
 
     serviceMonitor:
       main:
-        serviceName: main
+        serviceName: speedtest-exporter
         endpoints:
           - port: http
             scheme: http
