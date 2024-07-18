@@ -26,10 +26,10 @@ nodes:
     networkInterfaces: &workerNetwork
       - interface: eth0
         dhcp: true
-        # mtu: 9000
+        mtu: 9000
       - interface: eth1
         dhcp: true
-        # mtu: 9000
+        mtu: 9000
     nodeLabels: &workerNodeLabels
       node.home.arpa/physical: "true"
       node-role.kubernetes.io/worker: ''
@@ -47,10 +47,10 @@ nodes:
     networkInterfaces: &controllerNetwork
       - interface: eth0
         dhcp: true
-        # mtu: 9000
+        mtu: 9000
       - interface: eth1
         dhcp: true
-        # mtu: 9000
+        mtu: 9000
     nodeLabels: &controllerNodeLabels
       node.home.arpa/physical: "true"
       node-role.kubernetes.io/control-plane: ''
