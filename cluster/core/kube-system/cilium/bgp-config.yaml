@@ -28,8 +28,11 @@ spec:
       neighbors:
         - peerAddress: 10.0.0.2/32
           peerASN: 65402
+          gracefulRestart:
+            enabled: true
+            restartTimeSeconds: 90
         - peerAddress: 10.0.0.3/32
           peerASN: 65403
-          # gracefulRestart:
-          #   enabled: true
-          #   restartTime: "90s"
+          gracefulRestart:
+            enabled: true
+            restartTimeSeconds: 90
