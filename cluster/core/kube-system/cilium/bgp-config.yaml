@@ -5,7 +5,7 @@ metadata:
   name: main-pool
   namespace: kube-system
 spec:
-  cidrs:
+  blocks:
     - cidr: "${NETWORK_LB_RANGE}"
     - cidr: "${NETWORK_LB_RANGE_OLD}"
 ---
