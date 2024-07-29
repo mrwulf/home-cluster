@@ -41,7 +41,7 @@ spec:
           main:
             image:
               repository: dpage/pgadmin4
-              tag: "8.9"
+              tag: "8.10"
             env:
               PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
             envFrom:
