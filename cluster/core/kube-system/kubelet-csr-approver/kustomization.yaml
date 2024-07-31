@@ -1,4 +1,4 @@
-# kustomize --enable-helm  cluster/core/kube-system/kubelet-csr-approver/ | kubectl apply -f -
+# kustomize build --enable-helm  cluster/core/kube-system/kubelet-csr-approver/ | kubectl apply -f -
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
