@@ -11,7 +11,7 @@ helmCharts:
     namespace: kube-system
     valuesInline:
       providerRegex: |
-        ^(eta|zeta|talos-cp-01|delta|worker-01|worker-02)$
+        ^(eta|zeta|talos-cp-01|delta|worker-01|worker-02|control-01)$
 commonAnnotations:
   meta.helm.sh/release-name: kubelet-csr-approver
   meta.helm.sh/release-namespace: kube-system

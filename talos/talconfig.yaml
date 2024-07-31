@@ -59,6 +59,13 @@ nodes:
     nodeLabels: &controllerNodeLabels
       node.home.arpa/physical: "true"
       node-role.kubernetes.io/control-plane: ''
+  - hostname: control-01.home
+    ipAddress: 10.0.1.48
+    controlPlane: true
+    installDiskSelector:
+      size: '< 1TB'
+    networkInterfaces: *controllerNetwork
+    nodeLabels: *controllerNodeLabels
   - hostname: eta.home
     ipAddress: 10.0.1.42
     controlPlane: true
