@@ -231,15 +231,26 @@ tasks:
       - task: :cluster:cleanup
       - kubectl -n kube-system rollout restart daemonset cilium
 
+  upgrade-k8s-precheck:
+    requires: 
+      vars: [ TARGET_VERSION ]
+    cmds:
+      - echo "Running a dry-run upgrade..."
+      - talosctl -n {{.ONE_MASTER}} upgrade-k8s --to={{.TARGET_VERSION}} --dry-run
+
   upgrade-k8s:
     vars:
       TARGET_VERSION:
         sh: yq '.kubernetesVersion' talos/talconfig.yaml
+    deps: 
+      - task: upgrade-k8s-precheck
+        vars: 
+          TARGET_VERSION: "{{.TARGET_VERSION}}"
+        silent: false
+    prompt: 'Are you sure you want to upgrade kubernetes?'
     cmds:
       - echo "Running the real upgrade..."
       - talosctl -n {{.ONE_MASTER}} upgrade-k8s --to={{.TARGET_VERSION}}
-    preconditions:
-      - talosctl -n {{.ONE_MASTER}} upgrade-k8s --to={{.TARGET_VERSION}} --dry-run
 
   refresh-certificates:
     # https://www.talos.dev/v1.3/talos-guides/configuration/managing-pki/
