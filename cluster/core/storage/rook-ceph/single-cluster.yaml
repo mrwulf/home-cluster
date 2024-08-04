@@ -107,9 +107,6 @@ spec:
         useAllDevices: false
         onlyApplyOSDPlacement: false
         nodes:
-          - name: "delta"
-            devices:
-              - name: "nvme0n1"
           - name: "zeta"
             devices:
               - name: "nvme0n1"
