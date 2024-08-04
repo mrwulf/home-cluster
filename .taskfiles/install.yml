@@ -28,14 +28,14 @@ tasks:
         sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       OWNER: FiloSottile
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
         sh: "{{.APP_NAME}} --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
         TEMP_DIR=$(mktemp -d)
-        wget -qnv --show-progress -O $TEMP_DIR/{{.APP_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.APP_NAME}}/releases/download/v{{.RELEASE_VERSION}}/{{.APP_NAME}}-v{{.RELEASE_VERSION}}-linux-amd64.tar.gz
+        wget -qnv --progress=bar -O $TEMP_DIR/{{.APP_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.APP_NAME}}/releases/download/v{{.RELEASE_VERSION}}/{{.APP_NAME}}-v{{.RELEASE_VERSION}}-linux-amd64.tar.gz
         tar -xzf ${TEMP_DIR}/{{.APP_NAME}}.tar.gz --strip-components=1 -C ~/bin/ age/{{.APP_NAME}} age/{{.APP_NAME}}-keygen
         # chmod +x ~/bin/{{.APP_NAME}}
         rm -rf $TEMP_DIR
@@ -48,7 +48,7 @@ tasks:
     desc: Update go-task
     vars:
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/go-task/task/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/go-task/task/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
         sh: "task  --version | grep -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
@@ -71,13 +71,13 @@ tasks:
         sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       OWNER: mozilla
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
         sh: "{{.APP_NAME}} --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
-        wget -qnv --show-progress -O ~/bin/sops https://github.com/getsops/sops/releases/download/v{{.RELEASE_VERSION}}/sops-v{{.RELEASE_VERSION}}.linux.amd64
+        wget -qnv --progress=bar -O ~/bin/sops https://github.com/getsops/sops/releases/download/v{{.RELEASE_VERSION}}/sops-v{{.RELEASE_VERSION}}.linux.amd64
         chmod +x ~/bin/sops
     status:
       - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
@@ -91,7 +91,7 @@ tasks:
         sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       OWNER: budimanjojo
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
         sh: "{{.TASK_NAME}} --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
@@ -99,7 +99,7 @@ tasks:
       - |
         echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: v{{.DESIRED_VERSION}}"
         TEMP_DIR=$(mktemp -d)
-        wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.TASK_NAME}}/releases/download/v{{.DESIRED_VERSION}}/talhelper_linux_amd64.tar.gz
+        wget -qnv --progress=bar -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.TASK_NAME}}/releases/download/v{{.DESIRED_VERSION}}/talhelper_linux_amd64.tar.gz
         tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components=0 -C ~/bin/ {{.TASK_NAME}}
         # chmod +x ~/bin/{{.TASK_NAME}}
         rm -rf $TEMP_DIR
@@ -112,14 +112,14 @@ tasks:
     desc: Install talosctl
     vars:
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/siderolabs/talos/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/siderolabs/talos/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
         sh: "talosctl version --client | grep 'Tag:' | grep -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
         echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: v{{.DESIRED_VERSION}}"
-        wget -qnv --show-progress -O ~/bin/talosctl https://github.com/siderolabs/talos/releases/download/v{{.DESIRED_VERSION}}/talosctl-linux-amd64
+        wget -qnv --progress=bar -O ~/bin/talosctl https://github.com/siderolabs/talos/releases/download/v{{.DESIRED_VERSION}}/talosctl-linux-amd64
         chmod +x ~/bin/talosctl
     status:
       - '[ "v{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
@@ -130,13 +130,13 @@ tasks:
     desc: Install yq
     vars:
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/mikefarah/yq/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/mikefarah/yq/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
         sh: "yq --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
         echo "yq released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
-        wget -qnv --show-progress -O ~/bin/yq https://github.com/mikefarah/yq/releases/download/v{{.RELEASE_VERSION}}/yq_linux_amd64
+        wget -qnv --progress=bar -O ~/bin/yq https://github.com/mikefarah/yq/releases/download/v{{.RELEASE_VERSION}}/yq_linux_amd64
         chmod +x ~/bin/yq
     status:
       - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
@@ -152,7 +152,7 @@ tasks:
         sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       OWNER: kastenhq
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
         sh: "{{.TASK_NAME}} version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
       FILENAME: "kubestr_{{.RELEASE_VERSION}}_Linux_amd64.tar.gz"
@@ -162,7 +162,7 @@ tasks:
       - |
         echo '{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}'
         TEMP_DIR=$(mktemp -d)
-        wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.TASK_NAME}}/releases/download/v{{.RELEASE_VERSION}}/{{.FILENAME}}
+        wget -qnv --progress=bar -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.TASK_NAME}}/releases/download/v{{.RELEASE_VERSION}}/{{.FILENAME}}
         tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components=0 -C ~/bin/ {{.TASK_NAME}}
         # chmod +x ~/bin/{{.TASK_NAME}}
         rm -rf $TEMP_DIR
@@ -181,7 +181,7 @@ tasks:
       - |
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
 
-        wget -qnv --show-progress -O ~/bin/kubectl dl.k8s.io/{{.RELEASE_VERSION}}/bin/linux/amd64/kubectl
+        wget -qnv --progress=bar -O ~/bin/kubectl dl.k8s.io/{{.RELEASE_VERSION}}/bin/linux/amd64/kubectl
         chmod +x ~/bin/kubectl
     status:
       - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
@@ -198,7 +198,7 @@ tasks:
       OWNER: fluxcd
       PROJECT: flux2 # '{{.PROJECT | default .TASK_NAME}}'
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
         sh: "{{.TASK_NAME}} version | grep -oPm1 '[0-9]+.[0-9]+.[0-9]+(-.+)?$' || echo 0.0.0"
@@ -209,7 +209,7 @@ tasks:
       - |
         echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}"
         TEMP_DIR=$(mktemp -d)
-        wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.PROJECT}}/releases/download/v{{.DESIRED_VERSION}}/{{.FILENAME}}
+        wget -qnv --progress=bar -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.PROJECT}}/releases/download/v{{.DESIRED_VERSION}}/{{.FILENAME}}
         tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components=0 -C ~/bin/ {{.TASK_NAME}}
         # chmod +x ~/bin/{{.TASK_NAME}}
         rm -rf $TEMP_DIR
@@ -225,7 +225,7 @@ tasks:
       OWNER: helm
       PROJECT: '{{.PROJECT | default .TASK_NAME}}'
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
         sh: '{{.TASK_NAME}} version | grep -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | head -1 || echo 0.0.0'
@@ -237,7 +237,7 @@ tasks:
       - |
         echo '{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}'
         TEMP_DIR=$(mktemp -d)
-        wget -qnv --show-progress -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://get.helm.sh/{{.FILENAME}}
+        wget -qnv --progress=bar -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://get.helm.sh/{{.FILENAME}}
         tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components={{.STRIP_COMPONENTS}} -C ~/bin/ linux-amd64/{{.TASK_NAME}}
         # chmod +x ~/bin/{{.TASK_NAME}}
         rm -rf $TEMP_DIR
@@ -253,7 +253,7 @@ tasks:
       OWNER: pre-commit
       PROJECT: '{{.PROJECT | default .TASK_NAME}}'
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\": \"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
         sh: '{{.TASK_NAME}} -V | grep -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | head -1 || echo 0.0.0'
@@ -289,8 +289,8 @@ tasks:
       - |
         echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}"
         TEMP_DIR=$(mktemp -d)
-        wget -qnv --show-progress -O $TEMP_DIR/cilium-linux-{{.CLI_ARCH}}.tar.gz https://github.com/cilium/cilium-cli/releases/download/{{.DESIRED_VERSION}}/cilium-linux-{{.CLI_ARCH}}.tar.gz
-        wget -qnv --show-progress -O $TEMP_DIR/cilium-linux-{{.CLI_ARCH}}.tar.gz.sha256sum https://github.com/cilium/cilium-cli/releases/download/{{.DESIRED_VERSION}}/cilium-linux-{{.CLI_ARCH}}.tar.gz.sha256sum
+        wget -qnv --progress=bar -O $TEMP_DIR/cilium-linux-{{.CLI_ARCH}}.tar.gz https://github.com/cilium/cilium-cli/releases/download/{{.DESIRED_VERSION}}/cilium-linux-{{.CLI_ARCH}}.tar.gz
+        wget -qnv --progress=bar -O $TEMP_DIR/cilium-linux-{{.CLI_ARCH}}.tar.gz.sha256sum https://github.com/cilium/cilium-cli/releases/download/{{.DESIRED_VERSION}}/cilium-linux-{{.CLI_ARCH}}.tar.gz.sha256sum
         (cd $TEMP_DIR && sha256sum --check cilium-linux-{{.CLI_ARCH}}.tar.gz.sha256sum)
         tar xzvfC $TEMP_DIR/cilium-linux-{{.CLI_ARCH}}.tar.gz ~/bin/
         rm -rf $TEMP_DIR
