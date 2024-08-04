@@ -113,9 +113,6 @@ spec:
           - name: "zeta"
             devices:
               - name: "nvme0n1"
-          - name: "eta"
-            devices:
-              - name: "sda"
           - name: "worker-01"
             devices:
               - name: "nvme0n1"
