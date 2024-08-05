@@ -140,14 +140,11 @@ spec:
 
         # Nodes
         - module: icmp
-          name: delta-icmp
-          url: delta.home
+          name: control-01-icmp
+          url: control-01.home
         - module: icmp
           name: zeta-icmp
           url: zeta.home
-        - module: icmp
-          name: eta-icmp
-          url: eta.home
         - module: icmp
           name: talos-cp-01-icmp
           url: talos-cp-01.home
