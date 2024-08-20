@@ -21,6 +21,27 @@ spec:
     # - nfsvers=4.1
 ---
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: k10-unraid
+  labels:
+    type: nfs-backups
+spec:
+  storageClassName: k10-backup-nfs
+  capacity:
+    storage: 500Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.1.15
+    path: /mnt/user/shared/backups/kasten-k10
+  mountOptions:
+    - nconnect=8
+    - hard
+    - noatime
+    # - nfsvers=4.1
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: k10-backups
@@ -35,3 +56,19 @@ spec:
     requests:
       storage: 500Gi
   volumeName: k10-backups
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: k10-unraid
+  namespace: backups
+  labels:
+    kasten.io/backup-volume: disabled
+spec:
+  storageClassName: k10-backup-nfs
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Gi
+  volumeName: k10-unraid

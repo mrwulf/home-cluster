@@ -43,7 +43,7 @@ spec:
                   values:
                     - disabled
         profile:
-          name: synology-backups
+          name: k10-unraid
           namespace: backups
     - action: export
       exportParameters:
@@ -52,7 +52,7 @@ spec:
           name: backup-everything-migration-token-m5mtn
           namespace: backups
         profile:
-          name: synology-backups
+          name: k10-unraid
           namespace: backups
         receiveString: bIzAPpoanmEFyDJrpT1GhcdRTTImPlGV5yyhp0EjQ7MpMr4FsW22W7meZtGttqAQIkrCzKuNGU+u7zELhTr9wQoAtT45bbu+QoC82uKniIaYoaxCzEdNIzGJ2of0IoNHSK0dvHx15Ml9jbOQ7NzFw0uxB/viwUNs4yzyLEqf8OejlokNKmuFlj3PlW7ZCDVg+6ZSYNmJpCdu00o3MTiL9929XXSzHSjrpihO/IrbWJdep4bOOnTYbsUDs6SuidqyZJbfIPjMK9NzS3Dooksp7mDI4OOZKrOO1lXSTmF1GWcrASeR9jFlrCH25IaWoYQ1lxlwZY8Z0SYPkposzG7LQK9D/7NTagkK5ZlripKqtbLnzBvQjMrOpnByzgS/zDJ7uYSwP9sJj9ikHTlO2YK7PQj03/4FFPbErlqhiNASfGlQnO5DJNKYfCh5IlfdjuL0KEbJuusVQt29/V+QuK4UQKhA7Zit
         exportData:
@@ -115,7 +115,7 @@ spec:
             - resource: persistentvolumeclaims
         ignoreExceptions: true
         profile:
-          name: synology-backups
+          name: k10-unraid
           namespace: backups
   createdBy: backups:k10-k10
   frequency: '@monthly'
@@ -143,7 +143,7 @@ spec:
       backupParameters:
         filters: {}
         profile:
-          name: synology-backups
+          name: k10-unraid
           namespace: backups
   createdBy: backups:k10-k10
   frequency: '@daily'
