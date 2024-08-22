@@ -52,3 +52,4 @@ spec:
                     values:
                       - k8s-dns-gateway
               topologyKey: kubernetes.io/hostname
+    watchedResources: ["Ingress", "Service"]
