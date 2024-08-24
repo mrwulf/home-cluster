@@ -91,5 +91,5 @@ spec:
         enabled: true
         mountPath: /metadata/backups
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/backups/audiobookshelf"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/audiobookshelf"

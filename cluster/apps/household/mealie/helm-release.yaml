@@ -84,7 +84,7 @@ spec:
           - path: /app/data/
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/backups/mealie"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/mealie"
         globalMounts:
           - path: /app/data/backups

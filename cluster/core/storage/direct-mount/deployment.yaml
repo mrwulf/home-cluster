@@ -72,8 +72,8 @@ spec:
                 path: mon-endpoints
         - name: nas-backup
           nfs:
-            server: "${PRIMARY_NFS_SERVER}"
-            path: "${NFS_KUBERNETES_PATH}/backups"
+            server: "${CORE_NFS_SERVER:=nas0}"
+            path: "/mnt/user/backups"
         - name: direct-mount-scripts
           projected:
             defaultMode: 0775

@@ -107,8 +107,8 @@ spec:
           - path: /data
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/backups/vaultwarden"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/vaultwarden"
         globalMounts:
           - path: /backups
       tmp:

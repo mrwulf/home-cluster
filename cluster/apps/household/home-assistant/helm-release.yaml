@@ -120,8 +120,8 @@ spec:
         existingClaim: homeassistant-config
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/backups/homeassistant"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/homeassistant"
         globalMounts:
           - path: /config/backups
       tmp:
