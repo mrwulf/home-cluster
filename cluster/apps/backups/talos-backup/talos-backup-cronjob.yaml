@@ -24,6 +24,7 @@ spec:
           containers:
             - name: talos-backup
               image: ghcr.io/siderolabs/talosctl:latest
+              dnsPolicy: ClusterFirstWithHostNet
               workingDir: /tmp
               imagePullPolicy: IfNotPresent
               securityContext:
@@ -52,8 +53,8 @@ spec:
           volumes:
             - name: backups
               nfs:
-                path: "${NFS_KUBERNETES_PATH}/backups/talos-etcd"
-                server: "${PRIMARY_NFS_SERVER}"
+                path: "/mnt/user/backups/talos-etcd"
+                server: "${CORE_NFS_SERVER:=nas0}"
             - name: talos-secrets
               secret:
                 secretName: talos-backup-secrets

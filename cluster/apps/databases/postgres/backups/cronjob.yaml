@@ -54,5 +54,5 @@ spec:
           volumes:
             - name: nas-backups
               nfs:
-                server: '${PRIMARY_NFS_SERVER}'
-                path: '${NFS_KUBERNETES_PATH}/backups/postgres-backup'
+                server: '${CORE_NFS_SERVER:=nas0}'
+                path: '/mnt/user/backups/postgres-backup'

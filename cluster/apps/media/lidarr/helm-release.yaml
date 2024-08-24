@@ -127,7 +127,7 @@ spec:
           - path: /downloads
       backup:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/backups/lidarr"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/lidarr"
         globalMounts:
           - path: /config/Backups

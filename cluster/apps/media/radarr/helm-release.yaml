@@ -96,13 +96,13 @@ spec:
           - path: /downloads
       movies:
         type: nfs
-        server: "${SECONDARY_NFS_SERVER:=nas2}"
-        path: /volume1/Shared Videos/Movies
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/Movies
         globalMounts:
           - path: /Movies
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/backups/radarr"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/radarr"
         globalMounts:
           - path: /config/Backups

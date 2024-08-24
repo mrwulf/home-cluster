@@ -122,7 +122,7 @@ spec:
           - path: /TV1
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/backups/sonarr"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/sonarr"
         globalMounts:
           - path: /config/Backups

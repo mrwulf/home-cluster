@@ -102,7 +102,7 @@ spec:
         path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/backups/readarr-audio"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/readarr-audio"
         globalMounts:
           - path: /config/Backups

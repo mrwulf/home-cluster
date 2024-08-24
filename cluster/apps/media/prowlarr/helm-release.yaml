@@ -85,7 +85,7 @@ spec:
         type: emptyDir
       backups:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/backups/prowlarr"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/prowlarr"
         globalMounts:
           - path: /config/Backups

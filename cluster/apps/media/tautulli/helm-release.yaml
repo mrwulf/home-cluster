@@ -72,8 +72,8 @@ spec:
         enabled: true
         mountPath: /config/backups
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/backups/tautulli"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/tautulli"
 
     resources:
       requests:
