@@ -16,14 +16,6 @@ spec:
         name: bjw-s-charts
         namespace: flux-system
   values:
-    defaultPodOptions:
-      automountServiceAccountToken: false
-      securityContext:
-        runAsUser: 568
-        runAsGroup: 568
-        fsGroup: 568
-        supplementalGroups: [65534]
-        fsGroupChangePolicy: "OnRootMismatch"
     controllers:
       main:
         annotations:
@@ -60,7 +52,7 @@ spec:
               PAPERLESS_DATA_DIR: /data/local/data
               PAPERLESS_EXPORT_DIR: /data/nas/export
               PAPERLESS_MEDIA_ROOT: /data/local/media
-              USERMAP_GID: "65534"
+              USERMAP_GID: "65543"
               PAPERLESS_TIKA_ENABLED: true
               PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
               PAPERLESS_TIKA_ENDPOINT: http://tika:9998
