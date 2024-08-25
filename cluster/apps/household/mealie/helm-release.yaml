@@ -33,6 +33,8 @@ spec:
               pullPolicy: IfNotPresent
 
             env:
+              PUID: 568
+              PGID: 568
               TZ: "${TIMEZONE}"
               DEFAULT_EMAIL: "${SECRET_CLOUDFLARE_EMAIL}"
               ALLOW_SIGNUP: false
