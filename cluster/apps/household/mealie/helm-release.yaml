@@ -17,6 +17,14 @@ spec:
   values:
     controllers:
       main:
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
         containers:
           main:
             image:
@@ -37,13 +45,17 @@ spec:
               SMTP_AUTH_STRATEGY: none
               SMTP_FROM_EMAIL: meals@${SECRET_DOMAIN}
               TOKEN_TIME: 720
-
             resources:
               requests:
                 cpu: 10m
                 memory: 411M
               limits:
                 memory: 512M
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+
 
     service:
       main:
