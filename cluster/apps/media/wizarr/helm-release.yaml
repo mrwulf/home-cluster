@@ -26,16 +26,17 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: "OnRootMismatch"
     controllers:
       main:
         annotations:
           reloader.stakater.com/auto: "true"
-        # pod:
-        #   securityContext:
-        #     runAsUser: 568
-        #     runAsGroup: 568
-        #     fsGroup: 568
-        #     fsGroupChangePolicy: "OnRootMismatch"
         containers:
           main:
             image:

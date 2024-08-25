@@ -40,7 +40,7 @@ spec:
               # talos.default.svc.cluster.local
               args:
                 - -n
-                - talos
+                - talos.default
                 - etcd
                 - snapshot
                 - /backups/latest

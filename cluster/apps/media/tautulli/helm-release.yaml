@@ -23,27 +23,27 @@ spec:
     remediation:
       retries: 3
   values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: "OnRootMismatch"
     controller:
       annotations:
         reloader.stakater.com/auto: "true"
     image:
       repository: ghcr.io/k8s-at-home/tautulli
       tag: v2.10.5
-    podSecurityContext:
-      runAsUser: 985
-      runAsGroup: 977
-      fsGroup: 977
-
     env:
       TZ: "${TIMEZONE}"
-      PUID: 985
-      PGID: 977
-
+      PUID: 568
+      PGID: 568
     dnsConfig:
       options:
         - name: ndots
           value: "1"
-
     ingress:
       main:
         enabled: true

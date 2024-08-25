@@ -18,6 +18,14 @@ spec:
     - name: traefik
       namespace: networking
   values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        supplementalGroups: [10000]
+        fsGroupChangePolicy: "OnRootMismatch"
     controllers:
       main:
         annotations:
@@ -27,9 +35,6 @@ spec:
             options:
               - name: ndots
                 value: "1"
-          securityContext:
-            fsGroup: 1000
-            fsGroupChangePolicy: OnRootMismatch
         containers:
           main:
             image:
@@ -38,8 +43,8 @@ spec:
 
             env:
               TZ: "${TIMEZONE}"
-              PUID: "1000"
-              PGID: "1000"
+              PUID: "568"
+              PGID: "568"
 
             resources:
               requests:
