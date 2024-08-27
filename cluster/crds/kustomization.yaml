@@ -6,4 +6,4 @@ resources:
   - rook-ceph
   - prometheus-stack
   - snapshot-controller/crds.yaml
-  - traefik
+  # - traefik
