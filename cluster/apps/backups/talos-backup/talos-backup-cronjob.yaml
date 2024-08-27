@@ -17,10 +17,12 @@ metadata:
 spec:
   schedule: "15/60 * * * *"
   suspend: false
+  failedJobsHistoryLimit: 10
   jobTemplate:
     spec:
       template:
         spec:
+          dnsPolicy: ClusterFirstWithHostNet
           containers:
             - name: talos-backup
               image: ghcr.io/siderolabs/talosctl:latest
