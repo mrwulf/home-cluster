@@ -136,7 +136,7 @@ spec:
           url: ${PRIMARY_NFS_SERVER}
         - module: icmp
           name: secondary-nfs-icmp
-          url: ${SECONDARY_NFS_SERVER}
+          url: ${CORE_NFS_SERVER}
 
         # Nodes
         - module: icmp
