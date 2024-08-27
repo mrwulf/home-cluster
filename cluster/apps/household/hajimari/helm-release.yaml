@@ -78,9 +78,9 @@ spec:
               url: https://status.${SECRET_DOMAIN}/
         - group: storage
           apps:
-            - name: OurShare
+            - name: NAS
               icon: 'mdi:nas'
-              url: https://ourshare.home:5001/
+              url: https://${CORE_NFS_SERVER}/
             - name: OurBackup
               icon: 'mdi:nas'
               url: https://ourbackup.home:5001/

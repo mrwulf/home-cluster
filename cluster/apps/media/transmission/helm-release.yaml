@@ -89,8 +89,8 @@ spec:
           path: "${NFS_KUBERNETES_PATH}/active/media-downloaded"
       - name: "transmission-other"
         nfs:
-          server: ${SECONDARY_NFS_SERVER}
-          path: "/volume1/OtherStorage"
+          server: ${CORE_NFS_SERVER:=nas0}
+          path: "/mnt/user/OtherStorage"
 
     volumeMounts:
       - name: "transmission-config"
