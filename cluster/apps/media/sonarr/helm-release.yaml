@@ -125,7 +125,7 @@ spec:
         server: "${CORE_NFS_SERVER:=nas0}"
         path: "/mnt/user/TV"
         globalMounts:
-          - path: /mnt/TV
+          - path: /TVShows
       backups:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
