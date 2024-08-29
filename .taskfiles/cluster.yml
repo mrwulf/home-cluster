@@ -71,7 +71,7 @@ tasks:
     silent: true
     cmds:
       - kubectl get sts,deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.kind + "/" + .metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale --replicas=1 -n
-      - kubectl -n household scale deploy immich-server immich-web --replicas 2
+      - kubectl -n household scale deploy immich-server --replicas 2
       - kubectl -n household scale deploy immich-microservices --replicas 4
 
   rebalance:
@@ -82,7 +82,7 @@ tasks:
 
   watch:
     desc: Watch the cluster
-    aliases: 
+    aliases:
       - :watch
     interactive: true
     cmds:
