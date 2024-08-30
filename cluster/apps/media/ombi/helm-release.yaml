@@ -18,14 +18,13 @@ spec:
     - name: traefik
       namespace: networking
   values:
-    defaultPodOptions:
-      automountServiceAccountToken: false
-      securityContext:
-        runAsUser: 568
-        runAsGroup: 568
-        fsGroup: 568
-        supplementalGroups: [10000]
-        fsGroupChangePolicy: "OnRootMismatch"
+    # defaultPodOptions:
+    #   automountServiceAccountToken: false
+    #   securityContext:
+    #     runAsUser: 568
+    #     runAsGroup: 568
+    #     fsGroup: 568
+    #     fsGroupChangePolicy: "OnRootMismatch"
     controllers:
       main:
         annotations:
