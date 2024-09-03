@@ -115,14 +115,14 @@ spec:
           - path: /config/logs
       media:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: ${NFS_KUBERNETES_PATH}/active/music
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/k8s/music
         globalMounts:
           - path: /media
       downloads:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/k8s/media-downloaded
         globalMounts:
           - path: /downloads
       backup:

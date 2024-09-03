@@ -97,12 +97,12 @@ spec:
         existingClaim: readarr-books-config
       downloads:
         type: nfs
-        server: ${PRIMARY_NFS_SERVER:=nas}
-        path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
+        server: ${CORE_NFS_SERVER:=nas0}
+        path: /mnt/user/k8s/media-downloaded
       books:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/active/books"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/k8s/books"
       backups:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"

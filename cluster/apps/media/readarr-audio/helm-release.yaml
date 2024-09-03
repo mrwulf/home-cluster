@@ -97,12 +97,12 @@ spec:
         existingClaim: readarr-audio-config
       downloads:
         type: nfs
-        server: ${PRIMARY_NFS_SERVER:=nas}
-        path: ${NFS_KUBERNETES_PATH}/active/media-downloaded
+        server: ${CORE_NFS_SERVER:=nas0}
+        path: /mnt/user/k8s/media-downloaded
       audiobooks:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/active/audiobooks"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/k8s/audiobooks"
       backups:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
