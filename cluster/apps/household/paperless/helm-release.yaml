@@ -111,8 +111,8 @@ spec:
           - path: /data/local/
       nas:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "${NFS_KUBERNETES_PATH}/active/paperless"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/k8s/paperless"
         advancedMounts:
           main:
             main:

@@ -10,6 +10,7 @@ endpoint: https://kubernetes.home:6443
 additionalApiServerCertSans: &sans
   - ${clusterEndpointIP}
   - 127.0.0.1
+  - 10.0.0.201
 
 additionalMachineCertSans: *sans
 

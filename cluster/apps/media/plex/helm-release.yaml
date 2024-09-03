@@ -144,8 +144,8 @@ spec:
 
       music:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: ${NFS_KUBERNETES_PATH}/active/music
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/k8s/music
         globalMounts:
           - path: /music
 
@@ -156,12 +156,6 @@ spec:
         globalMounts:
           - path: /mnt/OurBackup/TV
 
-      tv1:
-        type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: /volume2/TV1
-        globalMounts:
-          - path: /mnt/OurBackup/TV1
       tv:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"

@@ -17,8 +17,8 @@ spec:
         namespace: flux-system
   values:
     nfs:
-      server: ${PRIMARY_NFS_SERVER}
-      path: ${NFS_KUBERNETES_PATH}/active
+      server: ${CORE_NFS_SERVER:=nas0}
+      path: ${NFS_KUBERNETES_PATH}
     storageClass:
       name: nfs
       reclaimPolicy: Retain
