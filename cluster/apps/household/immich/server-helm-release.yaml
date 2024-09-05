@@ -123,13 +123,13 @@ spec:
     persistence:
       library:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "/volume3/Pictures/immich"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/Photos/immich"
         globalMounts:
           - path: /usr/src/app/upload
       memories:
         type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: "/volume3/Pictures"
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/Photos"
         globalMounts:
           - path: /mnt/memories
