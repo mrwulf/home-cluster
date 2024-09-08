@@ -132,9 +132,6 @@ spec:
           name: gateway-icmp
           url: &gateway ${GATEWAY_ADDR}
         - module: icmp
-          name: primary-nfs-icmp
-          url: ${PRIMARY_NFS_SERVER}
-        - module: icmp
           name: secondary-nfs-icmp
           url: ${CORE_NFS_SERVER}
 
