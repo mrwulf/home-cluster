@@ -13,5 +13,6 @@ data:
   PLEX_ADDR: 10.0.10.13
   LOCAL_DNS_ADDR: 10.0.10.14
   VECTOR_AGGREGATOR_ADDR: 10.0.10.15
+  FORGEJO_ADDR: 10.0.10.16
   TRAEFIK_ADDR: 10.0.10.20
   UNIFI_ADDR: 10.0.10.213 # there is a dns override for unifi on this IP

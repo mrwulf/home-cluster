@@ -149,13 +149,6 @@ spec:
         globalMounts:
           - path: /music
 
-      synologytv:
-        type: nfs
-        server: "${PRIMARY_NFS_SERVER:=nas}"
-        path: /volume1/Shared Videos/TV
-        globalMounts:
-          - path: /mnt/OurBackup/TV
-
       tv:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
