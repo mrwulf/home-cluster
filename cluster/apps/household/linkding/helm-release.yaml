@@ -44,7 +44,7 @@ spec:
           main:
             image:
               repository: sissbruecker/linkding
-              tag: 1.31.1-plus
+              tag: 1.32.0-plus
             envFrom: *envFrom
             env:
               TZ: "${TIMEZONE}"
