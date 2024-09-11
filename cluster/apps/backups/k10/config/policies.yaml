@@ -18,6 +18,8 @@ spec:
           excludeClusterResources:
             - name: flux-managed-storage-class
               resource: storageclasses
+            - name: k10-backup-nfs
+              resource: storageclasses
             - name: nfs
               resource: storageclasses
             - name: immich-nfs
