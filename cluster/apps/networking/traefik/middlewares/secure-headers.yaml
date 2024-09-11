@@ -6,6 +6,11 @@ metadata:
   namespace: networking
 spec:
   headers:
+    accessControlAllowMethods:
+      - GET
+      - OPTIONS
+      - PUT
+      - POST
     accessControlMaxAge: 100
     hostsProxyHeaders:
       - "X-Forwarded-Host"
@@ -18,6 +23,7 @@ spec:
     forceSTSHeader: true
     stsSeconds: 31536000
     stsIncludeSubdomains: true
+    referrerPolicy: "same-origin"
     contentSecurityPolicy: "block-all-mixed-content;upgrade-insecure-requests;"
     frameDeny: true
     customFrameOptionsValue: "SAMEORIGIN"
@@ -29,5 +35,6 @@ spec:
       X-Robots-Tag: "none,noindex,nofollow,noarchive,nosnippet,notranslate,noimageindex"
       X-Permitted-Cross-Domain-Policies: "none"
       X-Forwarded-Proto: "https"
+      X-Powered-By: ""
       server: ""
       City: X-GEO-City
