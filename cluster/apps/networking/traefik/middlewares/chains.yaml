@@ -35,6 +35,6 @@ spec:
   chain:
     middlewares:
       - name: networking-traefik-middleware-secure-headers@kubernetescrd
-      - name: networking-traefik-middleware-cloudflare-tunnel@kubernetescrd
-      # - name: networking-traefik-middleware-compress@kubernetescrd
+      - name: networking-traefik-middleware-compress@kubernetescrd
+      # - name: networking-traefik-middleware-cloudflare-tunnel@kubernetescrd
       # - name: networking-traefik-middleware-rate-limit@kubernetescrd
