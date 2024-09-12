@@ -135,12 +135,19 @@ spec:
         globalMounts:
           - path: /plex-backups
 
-      movies:
+      movies_old:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
         path: /mnt/user/Movies
         globalMounts:
           - path: /mnt/OurShare/Movies
+
+      movies:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/Movies
+        globalMounts:
+          - path: /mnt/Movies
 
       music:
         type: nfs
