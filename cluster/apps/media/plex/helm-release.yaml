@@ -135,7 +135,7 @@ spec:
         globalMounts:
           - path: /plex-backups
 
-      movies_old:
+      oldmoviesold:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
         path: /mnt/user/Movies
