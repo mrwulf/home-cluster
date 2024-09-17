@@ -22,8 +22,6 @@ spec:
               resource: storageclasses
             - name: nfs
               resource: storageclasses
-            - name: immich-nfs
-              resource: storageclasses
             - group: ""
               version: ""
               resource: persistentvolumes
@@ -65,7 +63,7 @@ spec:
               enabled: false
             - storageClassName: flux-managed-storage-class
               enabled: false
-            - storageClassName: immich-nfs
+            - storageClassName: k10-backup-nfs
               enabled: false
       retention: {}
   subFrequency:
