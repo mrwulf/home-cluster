@@ -1,6 +1,6 @@
 ---
 apiVersion: storage.k8s.io/v1
-kind: storageClass
+kind: StorageClass
 metadata:
   name: k10-backup-nfs
 provisioner: kubernetes.io/no-provisioner
