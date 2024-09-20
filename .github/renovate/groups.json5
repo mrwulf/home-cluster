@@ -12,7 +12,7 @@
       "description": "Traefik chart and CRD",
       "groupName": "Traefik",
       "matchPackagePatterns": ["traefik", "traefik-crd-source"],
-      "matchDatasources": ["helm"],
+      "matchDatasources": ["helm", "regex", "github-tags"],
       "group": { "commitMessageTopic": "{{{groupName}}} group" },
       "separateMinorPatch": true
     },
