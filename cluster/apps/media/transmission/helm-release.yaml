@@ -101,7 +101,7 @@ spec:
       - name: "transmission-downloads"
         mountPath: "/downloads"
       - name: "transmission-other"
-        mountPath: "/downloads/other"
+        mountPath: "/other"
       - name: "dev-tun"
         mountPath: "/dev/net/tun" # Needed for VPN
 
