@@ -135,3 +135,12 @@ spec:
                   initialDelaySeconds: 15
                   periodSeconds: 20
                   timeoutSeconds: 5
+          - target:
+              version: apps/v1
+              kind: Deployment
+              name: transmission-transmission-openvpn
+            patch: |
+              - op: replace
+                path: /spec/strategy
+                value:
+                  type: Recreate
