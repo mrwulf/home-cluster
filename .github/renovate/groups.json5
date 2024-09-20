@@ -9,6 +9,14 @@
       "separateMinorPatch": true
     },
     {
+      "description": "Traefik chart and CRD",
+      "groupName": "Traefik",
+      "matchPackagePatterns": ["traefik", "traefik-crd-source"],
+      "matchDatasources": ["helm"],
+      "group": { "commitMessageTopic": "{{{groupName}}} group" },
+      "separateMinorPatch": true
+    },
+    {
       matchDatasources: ["helm", "docker"],
       matchPackageNames: [
         "quay.io/cilium/cilium",
