@@ -53,3 +53,40 @@ spec:
                       - k8s-dns-gateway
               topologyKey: kubernetes.io/hostname
     watchedResources: ["Ingress", "Service"]
+  postRenderers:
+    - kustomize:
+        patches:
+          - patch: |-
+              apiVersion: rbac.authorization.k8s.io/v1
+              kind: ClusterRole
+              metadata:
+                name: k8s-dns-gateway-k8s-gateway
+                labels:
+                  app.kubernetes.io/name: k8s-gateway
+                  app.kubernetes.io/instance: k8s-dns-gateway
+              rules: []
+          - patch: |-
+              apiVersion: rbac.authorization.k8s.io/v1
+              kind: ClusterRole
+              metadata:
+                name: k8s-dns-gateway-k8s-gateway
+                labels:
+                  app.kubernetes.io/name: k8s-gateway
+                  app.kubernetes.io/instance: k8s-dns-gateway
+              rules:
+                - apiGroups:
+                  - ""
+                  resources:
+                  - services
+                  - namespaces
+                  verbs:
+                  - list
+                  - watch
+                - apiGroups:
+                  - extensions
+                  - networking.k8s.io
+                  resources:
+                  - ingresses
+                  verbs:
+                  - list
+                  - watch
