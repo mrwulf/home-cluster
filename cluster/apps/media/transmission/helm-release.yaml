@@ -73,9 +73,6 @@ spec:
       runAsUser: 0
       runAsGroup: 0
     volumes:
-      - name: "dev-tun" # Needed for VPN
-        hostPath:
-          path: "/dev/net/tun"
       - name: "transmission-config"
         persistentVolumeClaim:
           claimName: "transmission-config"
@@ -102,20 +99,19 @@ spec:
         mountPath: "/downloads"
       - name: "transmission-other"
         mountPath: "/other"
-      - name: "dev-tun"
-        mountPath: "/dev/net/tun" # Needed for VPN
 
     securityContext:
       capabilities: # Needed for VPN
         add:
           - NET_ADMIN
-
     resources:
       requests:
         cpu: 48m
         memory: 1555M
+        my.home/tun: 1
       limits:
         memory: 3778M
+        my.home/tun: 1
   postRenderers:
     - kustomize:
         patches:
