@@ -46,11 +46,10 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/onedr0p/kubernetes-kubectl
-              tag: 1.29.2@sha256:6324f99979877f3ded7647f4efa4df6d73f11bb9d8302dc81ab4a5d38e406867
+              repository: ghcr.io/onedr0p/kubanetics
+              tag: '2024.9.2'
 
             command:
-              - "/bin/bash"
               - "/app/cloudflare-ddns.sh"
 
             envFrom:
@@ -65,3 +64,4 @@ spec:
         globalMounts:
           - path: /app/cloudflare-ddns.sh
             subPath: cloudflare-ddns.sh
+            readOnly: true

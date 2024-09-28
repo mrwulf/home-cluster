@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 clusterName: talos-v1
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
-talosVersion: v1.7.6
+talosVersion: v1.8.0
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
 kubernetesVersion: v1.30.5
 endpoint: https://kubernetes.home:6443
@@ -88,6 +88,8 @@ patches:
         kubePrism:
           enabled: true
           port: 7445
+        hostDNS:
+          forwardKubeDNSToHost: false
       files:
         # configure containerd for spegel
         - content: |
