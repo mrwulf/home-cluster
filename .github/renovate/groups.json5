@@ -9,6 +9,14 @@
       "separateMinorPatch": true
     },
     {
+      "description": "Intel Device Plugin",
+      "groupName": "Intel Device Plugin",
+      "matchPackagePatterns": ["intel-device-plugins-operator", "intel-device-plugins-gpu"],
+      "matchDatasources": ["helm", "regex", "github-tags"],
+      "group": { "commitMessageTopic": "{{{groupName}}} group" },
+      "separateMinorPatch": true
+    },
+    {
       "description": "Traefik chart and CRD",
       "groupName": "Traefik",
       "matchPackagePatterns": ["traefik", "traefik-crd-source"],
