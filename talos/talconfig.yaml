@@ -67,6 +67,13 @@ nodes:
       size: '< 1TB'
     networkInterfaces: *controllerNetwork
     nodeLabels: *controllerNodeLabels
+  - hostname: control-02.home
+    ipAddress: 10.0.1.42
+    controlPlane: true
+    installDiskSelector:
+      size: '< 1TB'
+    networkInterfaces: *controllerNetwork
+    nodeLabels: *controllerNodeLabels
   - hostname: talos-cp-01.home
     ipAddress: 10.0.1.43
     controlPlane: true
