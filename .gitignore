@@ -24,3 +24,4 @@ testing.sops.yaml
 image_list.txt
 
 bootstrap/
+cluster/core/kube-system/kubelet-csr-approver/charts/
