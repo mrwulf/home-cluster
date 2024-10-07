@@ -15,9 +15,6 @@ spec:
         name: spegel-charts
         namespace: flux-system
   values:
-    image:
-      repository: ghcr.io/deedee-ops/spegel
-      tag: 0.0.25
     spegel:
       containerdSock: /run/containerd/containerd.sock
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
