@@ -34,9 +34,9 @@ resources:
   - pihole-charts.yaml
   - prometheus-community-charts.yaml
   - rook-ceph-charts.yaml
+  - spegel-charts.yaml
   - stakater-charts.yaml
   - traefik-charts.yaml
   - vaultwarden-charts.yaml
   - vector-charts.yaml
   - wrmilling-charts.yaml
-  - xenitab-charts.yaml
