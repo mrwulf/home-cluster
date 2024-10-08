@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.raspbernetes.com/source.toolkit.fluxcd.io/helmrepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: backube-charts
+  namespace: flux-system
+spec:
+  interval: 120m0s
+  url: https://backube.github.io/helm-charts/

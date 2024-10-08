@@ -35,6 +35,7 @@ tasks:
       - |
         echo -e "PVNAME: {{.PVNAME}}\nIMG: {{.IMG}}"
         if [ -z "{{.CHILDREN}}" ]; then
+          kubectl get pv {{.PVNAME}}
           kubectl delete pv {{.PVNAME}}
           kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p {{.POOL}} {{.IMG}}
         else
@@ -104,11 +105,11 @@ tasks:
       - kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- ceph crash archive-all
 
   debug-pvc:
-    desc: Attach a volume to a container for debugging, ex. VOLUME=zigbee2mqtt-config-v1 VNAMESPACE=home task debug-volume
+    desc: Attach a volume to a container for debugging, ex. VOLUME=zigbee2mqtt-config-v1 task debug-volume
     interactive: true
     silent: false
     vars:
-      VOLUME: "{{.CLI_ARGS}}"
+      # VOLUME: "{{.CLI_ARGS}}"
       VOL:
         sh: "echo {{.VOLUME}} | cut -c -52"
       NAMESPACE:
@@ -118,11 +119,11 @@ tasks:
       NAS_PATH:
         sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_KUBERNETES_PATH'"
     preconditions:
-      - sh: '[ -n "{{.CLI_ARGS}}" ]'
+      - sh: '[ -n "{{.VOL}}" ]'
         msg: 'PVC Name Required!'
     cmds:
       - |
-        kubectl run debug-pvc-{{.VOL}} -n {{.NAMESPACE}} -it --rm --image=null --overrides='
+        kubectl run debug-pvc-{{.VOL}} -n {{.NAMESPACE}} -it --image=null --overrides='
           {
             "spec": {
               "containers": [
@@ -163,7 +164,7 @@ tasks:
                   "name": "backups",
                   "nfs": {
                     "server": "{{.NAS_ADDRESS}}",
-                    "path": "{{.NAS_PATH}}/backups"
+                    "path": "{{.NAS_PATH}}"
                   }
                 },
                 {
