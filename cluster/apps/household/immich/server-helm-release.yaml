@@ -74,7 +74,7 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /server-info/ping
+                    path: /server/ping
                     port: 3001
                   initialDelaySeconds: 5
                   periodSeconds: 10
