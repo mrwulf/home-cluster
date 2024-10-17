@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: cert-manager
-      version: v1.15.3
+      version: v1.16.1
       sourceRef:
         kind: HelmRepository
         name: jetstack-charts
@@ -23,8 +23,6 @@ spec:
       retries: 3
   values:
     installCRDs: false
-    webhook:
-      enabled: true
     extraArgs:
       - --dns01-recursive-nameservers=10.0.0.1:53053
       - --dns01-recursive-nameservers-only
