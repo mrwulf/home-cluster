@@ -23,8 +23,6 @@ spec:
       retries: 3
   values:
     installCRDs: false
-    webhook:
-      enabled: true
     extraArgs:
       - --dns01-recursive-nameservers=10.0.0.1:53053
       - --dns01-recursive-nameservers-only
