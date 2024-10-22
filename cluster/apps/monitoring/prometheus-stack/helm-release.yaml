@@ -27,7 +27,7 @@ spec:
     kubeEtcd:
       enabled: true
       endpoints:
-        - 10.0.1.41
+        - 10.0.1.42
         - 10.0.1.48
         - 10.0.1.43
       service:
@@ -63,10 +63,9 @@ spec:
     kubelet:
       enabled: true
       endpoints:
-        - 10.0.1.41
+        - 10.0.1.42
         - 10.0.1.48
         - 10.0.1.43
-        - 10.0.1.45
         - 10.0.1.46
         - 10.0.1.47
       service:
