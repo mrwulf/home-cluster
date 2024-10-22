@@ -45,11 +45,11 @@ nodes:
       size: '< 1TB'
     networkInterfaces: *workerNetwork
     nodeLabels: *workerNodeLabels
-  - hostname: zeta.home
-    ipAddress: 10.0.1.41
-    installDiskSelector:
-      type: ssd
+  - hostname: control-01.home
+    ipAddress: 10.0.1.48
     controlPlane: true
+    installDiskSelector:
+      size: '< 1TB'
     networkInterfaces: &controllerNetwork
       - interface: eth0
         dhcp: true
@@ -60,13 +60,6 @@ nodes:
     nodeLabels: &controllerNodeLabels
       node.home.arpa/physical: "true"
       node-role.kubernetes.io/control-plane: ''
-  - hostname: control-01.home
-    ipAddress: 10.0.1.48
-    controlPlane: true
-    installDiskSelector:
-      size: '< 1TB'
-    networkInterfaces: *controllerNetwork
-    nodeLabels: *controllerNodeLabels
   - hostname: control-02.home
     ipAddress: 10.0.1.42
     controlPlane: true

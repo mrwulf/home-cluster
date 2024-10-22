@@ -67,12 +67,11 @@ The Git repository contains the following directories under `cluster` and are or
 
 | Node                                                   | Role                                                  | Specs                                                  |
 |--------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------|
-| zeta | Control Plane, Storage | Dell Optiplex 7040 MFF<br />Intel 6700t<br />32G |
-| eta | Control Plane, Storage | Dell Optiplex 7040 MFF<br />Intel 6700t<br />32G |
+| control-01 | Control Plane, Storage | HP EliteDesk 800 G6 MFF<br />Intel 10700t<br />32G |
+| control-02 | Control Plane, Storage | HP EliteDesk 800 G6 MFF<br />Intel 10700t<br />32G |
 | talos-cp-01 | Control Plane | Lenovo m710q Tiny<br /> Intel 8500t<br />32G |
 | worker-01 | Worker, Storage | Lenovo m80q Tiny<br /> Intel 10400t<br />32G |
 | worker-02 | Worker, Storage | HP EliteDesk 800 G6 MFF<br />Intel 10700t<br />16G |
-| delta | Worker, Storage | Dell Optiplex 7040 MFF<br />Intel 6700t<br />32G |
 
 
 # Other Stuff
