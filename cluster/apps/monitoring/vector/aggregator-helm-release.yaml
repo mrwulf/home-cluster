@@ -86,7 +86,7 @@ spec:
           inputs:
             - talos_kernel_logs
           source: |-
-            .__host = replace(.__host, r'10\.244\.0\..+', "control-01")
+            .__host = replace!(.__host, r'10\.244\.0\..+', "control-01")
             .__host = replace(.__host, r'10\.244\.1\..+', "control-02")
             .__host = replace(.__host, r'10\.244\.4\..+', "talos-cp-01")
             .__host = replace(.__host, r'10\.244\.5\..+', "worker-01")
@@ -96,7 +96,7 @@ spec:
           inputs:
             - talos_service_logs
           source: |-
-            .__host = replace(.__host, r'10\.244\.0\..+', "control-01")
+            .__host = replace!(.__host, r'10\.244\.0\..+', "control-01")
             .__host = replace(.__host, r'10\.244\.1\..+', "control-02")
             .__host = replace(.__host, r'10\.244\.4\..+', "talos-cp-01")
             .__host = replace(.__host, r'10\.244\.5\..+', "worker-01")
