@@ -107,16 +107,16 @@ spec:
         useAllDevices: false
         onlyApplyOSDPlacement: false
         nodes:
-          - name: "zeta"
+          - name: "control-01"
             devices:
               - name: "nvme0n1"
+          - name: "control-02"
+            devices:
+              - name: "nvme1n1"
           - name: "worker-01"
             devices:
               - name: "nvme0n1"
           - name: "worker-02"
-            devices:
-              - name: "nvme0n1"
-          - name: "control-01"
             devices:
               - name: "nvme0n1"
     cephBlockPools:
