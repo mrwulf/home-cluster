@@ -91,6 +91,7 @@ spec:
     sources:
       - ingress
       - service
+      - crd
 
     provider: cloudflare
 
