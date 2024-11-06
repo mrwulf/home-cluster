@@ -143,8 +143,8 @@ spec:
           name: control-02-icmp
           url: control-02.home
         - module: icmp
-          name: talos-cp-01-icmp
-          url: talos-cp-01.home
+          name: control-03-icmp
+          url: control-03.home
         - module: icmp
           name: worker-01-icmp
           url: worker-01.home
