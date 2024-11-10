@@ -14,4 +14,4 @@ resources:
   - sonarr
   - tautulli
   - transmission
-  - wizarr
+  # - wizarr
