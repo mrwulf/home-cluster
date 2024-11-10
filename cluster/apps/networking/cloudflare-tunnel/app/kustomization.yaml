@@ -11,3 +11,5 @@ configMapGenerator:
       - ./configs/config.yaml
 generatorOptions:
   disableNameSuffixHash: true
+  labels:
+    substitution.flux.home.arpa/enabled: "true"

@@ -1,10 +1,59 @@
 ---
 originRequest:
-  originServerName: "external.${SECRET_DOMAIN}"
+  http2Origin: true
+#   originServerName: "external.${SECRET_DOMAIN}"
 
 ingress:
-  - hostname: "${SECRET_DOMAIN}"
+  - hostname: "auth.${SECRET_DOMAIN}"
     service: https://traefik.networking.svc.cluster.local:443
-  - hostname: "*.${SECRET_DOMAIN}"
+    originRequest:
+      httpHostHeader: "auth.${SECRET_DOMAIN}"
+  - hostname: "bw.${SECRET_DOMAIN}"
     service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "bw.${SECRET_DOMAIN}"
+  - hostname: "cdn.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "cdn.${SECRET_DOMAIN}"
+  - hostname: "docs.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "docs.${SECRET_DOMAIN}"
+  - hostname: "flux-receiver.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "flux-receiver.${SECRET_DOMAIN}"
+  - hostname: "home-assistant.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "home-assistant.${SECRET_DOMAIN}"
+  - hostname: "links.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "links.${SECRET_DOMAIN}"
+  - hostname: "lists.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "lists.${SECRET_DOMAIN}"
+  - hostname: "meals.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "meals.${SECRET_DOMAIN}"
+  - hostname: "photos.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "photos.${SECRET_DOMAIN}"
+  - hostname: "plex.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "plex.${SECRET_DOMAIN}"
+  - hostname: "whoami.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "whoami.${SECRET_DOMAIN}"
+  - hostname: "wizarr.${SECRET_DOMAIN}"
+    service: https://traefik.networking.svc.cluster.local:443
+    originRequest:
+      httpHostHeader: "wizarr.${SECRET_DOMAIN}"
   - service: http_status:404

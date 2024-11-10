@@ -48,7 +48,7 @@ spec:
               - --config
               - /etc/cloudflared/config/config.yaml
               - run
-              - "$(TUNNEL_ID)"
+              - "${SECRET_CLOUDFLARE_TUNNEL_ID}"
             probes:
               liveness: &probes
                 enabled: true
