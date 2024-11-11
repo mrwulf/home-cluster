@@ -12,3 +12,17 @@ spec:
       storage: 5Gi
   storageClassName: ceph-block
   volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: transmission-incomplete
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+  storageClassName: ceph-block-mirrored-delete
+  volumeMode: Filesystem

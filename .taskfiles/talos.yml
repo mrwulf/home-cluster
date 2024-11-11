@@ -165,11 +165,14 @@ tasks:
   apply-all-configs:
     desc: Apply config for all nodes
     silent: true
+    vars:
+      MODE: '{{.MODE | default "no-reboot"}}'
     cmds:
       - for: { var: NODE_LIST, split: ",", as: NODE }
         task: apply-config
         vars:
           NODE: '{{.NODE}}'
+          MODE: '{{.MODE}}'
 
   upgrade:
     desc: Upgrade Talos on a single node to the version in talconfig.yaml
@@ -232,8 +235,8 @@ tasks:
       - kubectl -n kube-system rollout restart daemonset cilium
 
   upgrade-k8s-precheck:
-    requires: 
-      vars: [ TARGET_VERSION ]
+    requires:
+      vars: [TARGET_VERSION]
     cmds:
       - echo "Running a dry-run upgrade..."
       - talosctl -n {{.ONE_MASTER}} upgrade-k8s --to={{.TARGET_VERSION}} --dry-run
@@ -242,9 +245,9 @@ tasks:
     vars:
       TARGET_VERSION:
         sh: yq '.kubernetesVersion' talos/talconfig.yaml
-    deps: 
+    deps:
       - task: upgrade-k8s-precheck
-        vars: 
+        vars:
           TARGET_VERSION: "{{.TARGET_VERSION}}"
         silent: false
     prompt: 'Are you sure you want to upgrade kubernetes?'
