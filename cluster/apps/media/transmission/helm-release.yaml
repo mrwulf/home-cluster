@@ -79,9 +79,6 @@ spec:
       - name: "transmission-incomplete"
         persistentVolumeClaim:
           claimName: "transmission-incomplete"
-        nfs:
-          server: "${CORE_NFS_SERVER:=nas0}"
-          path: "/mnt/user/k8s/transmission-incomplete"
       - name: "transmission-downloads"
         nfs:
           server: "${CORE_NFS_SERVER:=nas0}"
