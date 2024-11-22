@@ -26,7 +26,7 @@ cniConfig:
 #     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/configmap.yaml
 nodes:
   - hostname: worker-01.home
-    ipAddress: 10.0.1.46
+    ipAddress: 10.0.1.45
     installDiskSelector:
       type: ssd
     networkInterfaces: &workerNetwork
