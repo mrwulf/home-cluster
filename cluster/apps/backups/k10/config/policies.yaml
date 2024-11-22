@@ -65,7 +65,11 @@ spec:
               enabled: false
             - storageClassName: k10-backup-nfs
               enabled: false
-      retention: {}
+      retention:
+        daily: 3
+        weekly: 2
+        monthly: 1
+        yearly: 0
   subFrequency:
     minutes:
       - 0
@@ -79,8 +83,8 @@ spec:
       - 1
   retention:
     daily: 3
-    weekly: 2
-    monthly: 1
+    weekly: 0
+    monthly: 0
     yearly: 0
   selector:
     matchExpressions:
