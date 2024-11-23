@@ -49,7 +49,7 @@ spec:
           01-init-db:
             image:
               repository: ghcr.io/haraldkoch/postgres-init
-              tag: 16.5
+              tag: 16.6
             envFrom:
               - configMapRef:
                   name: *configMap
