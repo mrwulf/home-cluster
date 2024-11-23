@@ -39,12 +39,6 @@ nodes:
     nodeLabels: &workerNodeLabels
       node.home.arpa/physical: "true"
       node-role.kubernetes.io/worker: ''
-  - hostname: worker-02.home
-    ipAddress: 10.0.1.47
-    installDiskSelector:
-      size: '< 1TB'
-    networkInterfaces: *workerNetwork
-    nodeLabels: *workerNodeLabels
   - hostname: control-01.home
     ipAddress: 10.0.1.48
     controlPlane: true
