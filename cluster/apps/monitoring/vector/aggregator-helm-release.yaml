@@ -90,7 +90,6 @@ spec:
             .__host = replace(.__host, r'10\.244\.1\..+', "control-02")
             .__host = replace(.__host, r'10\.244\.2\..+', "control-03")
             .__host = replace(.__host, r'10\.244\.5\..+', "worker-01")
-            .__host = replace(.__host, r'10\.244\.6\..+', "worker-02")
         talos_service_logs_xform:
           type: remap
           inputs:
@@ -100,7 +99,6 @@ spec:
             .__host = replace(.__host, r'10\.244\.1\..+', "control-02")
             .__host = replace(.__host, r'10\.244\.2\..+', "control-03")
             .__host = replace(.__host, r'10\.244\.5\..+', "worker-01")
-            .__host = replace(.__host, r'10\.244\.6\..+', "worker-02")
         opnsense_filterlog_remap:
           type: remap
           inputs:
