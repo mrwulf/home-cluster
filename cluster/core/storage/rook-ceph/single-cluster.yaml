@@ -112,10 +112,10 @@ spec:
           - name: "control-02"
             devices:
               - name: "nvme0n1"
-          - name: "worker-01"
+          - name: "control-03"
             devices:
               - name: "nvme0n1"
-          - name: "worker-02"
+          - name: "worker-01"
             devices:
               - name: "nvme0n1"
     cephBlockPools:
