@@ -148,9 +148,6 @@ spec:
         - module: icmp
           name: worker-01-icmp
           url: worker-01.home
-        - module: icmp
-          name: worker-02-icmp
-          url: worker-02.home
 
         # DNS
         - module: dns_public
