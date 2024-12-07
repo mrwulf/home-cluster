@@ -155,7 +155,7 @@ spec:
           parameters:
             compression_mode: aggressive
         storageClass:
-          enabled: true
+          enabled: false
       - name: ceph-block-ec-delete
         # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
         spec:
