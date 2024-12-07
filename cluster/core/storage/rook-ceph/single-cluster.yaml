@@ -148,9 +148,12 @@ spec:
         # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
         spec:
           failureDomain: host
-          replicated:
-            size: 2
+          erasureCoded:
+            dataChunks: 2
+            codingChunks: 1
           enableRBDStats: true
+          parameters:
+            compression_mode: aggressive
         storageClass:
           enabled: true
           name: ceph-block-mirrored-delete
