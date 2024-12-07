@@ -167,7 +167,7 @@ spec:
             compression_mode: aggressive
         storageClass:
           enabled: true
-          name: ceph-block-ec-data
+          name: ceph-block-ec-delete
           isDefault: false
           reclaimPolicy: Delete
           allowVolumeExpansion: true
@@ -175,7 +175,7 @@ spec:
           # see https://github.com/rook/rook/blob/master/Documentation/ceph-block.md#provision-storage for available configuration
           parameters:
             <<: *scparams
-            dataPool: ceph-block-ec-delete
+            dataPool: ceph-block-ec-data
       # - name: ceph-ecpool
       #   # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
       #   spec:
