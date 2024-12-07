@@ -162,7 +162,9 @@ spec:
           allowVolumeExpansion: true
           mountOptions: ["discard"]
           # see https://github.com/rook/rook/blob/master/Documentation/ceph-block.md#provision-storage for available configuration
-          parameters: *scparams
+          parameters:
+            <<: *scparams
+            dataPool: ceph-block-mirrored-delete
       # - name: ceph-ecpool
       #   # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
       #   spec:
