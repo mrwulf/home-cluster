@@ -144,7 +144,7 @@ spec:
             csi.storage.k8s.io/provisioner-secret-namespace: storage
             imageFeatures: layering
             imageFormat: "2"
-      - name: ceph-block-ec-delete
+      - name: ceph-block-ec-data
         # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
         spec:
           failureDomain: host
@@ -156,7 +156,18 @@ spec:
             compression_mode: aggressive
         storageClass:
           enabled: true
-          name: ceph-block-ec-delete
+      - name: ceph-block-ec-delete
+        # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
+        spec:
+          failureDomain: host
+          replicated:
+            size: 3
+          enableRBDStats: true
+          parameters:
+            compression_mode: aggressive
+        storageClass:
+          enabled: true
+          name: ceph-block-ec-data
           isDefault: false
           reclaimPolicy: Delete
           allowVolumeExpansion: true
