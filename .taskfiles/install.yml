@@ -9,6 +9,7 @@ tasks:
       - task: talhelper
       - task: go-task
       - task: yq
+      # - task: jq
       - task: age
       - task: sops
       # - task: kubestr # Doesn't return version info --- downloads each run
