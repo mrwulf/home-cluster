@@ -14,6 +14,7 @@ tasks:
       - task: sops
       # - task: kubestr # Doesn't return version info --- downloads each run
       - task: kubectl
+      - task: kustomize
       - task: flux
       - task: helm
       - task: pre-commit
@@ -42,6 +43,16 @@ tasks:
         rm -rf $TEMP_DIR
     status:
       - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
+    silent: true
+    ignore_errors: true
+
+  kustomize:
+    desc: Install kustomize
+    dir: "${HOME}/bin"
+    cmds:
+      - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+    status:
+      - 'command -v kustomize'
     silent: true
     ignore_errors: true
 
