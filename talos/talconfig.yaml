@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 clusterName: talos-v1
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
-talosVersion: v1.8.3
+talosVersion: v1.8.4
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
 kubernetesVersion: v1.31.3
 endpoint: https://kubernetes.home:6443
@@ -150,9 +150,18 @@ worker:
           - siderolabs/i915-ucode
           - siderolabs/realtek-firmware
           - siderolabs/intel-ice-firmware
+  #         - siderolabs/lldpd
+  # extensionServices: &extensionServices
+  #   - name: lldpd
+  #     configFiles:
+  #       - content: |
+  #           configure lldpd portidsubtype ifname
+  #           configure system description "Talos Node"
+  #         mountPath: /usr/local/etc/lldpd/lldpd.conf
 
 controlPlane:
   schematic: *schematic
+  # extensionServices: *extensionServices
   patches:
     - |-
       - op: replace

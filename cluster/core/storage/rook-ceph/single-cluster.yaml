@@ -111,6 +111,7 @@ spec:
               - name: "nvme0n1"
           - name: "control-02"
             devices:
+              - name: "nvme0n1"
               - name: "nvme1n1"
           - name: "control-03"
             devices:
