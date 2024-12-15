@@ -25,3 +25,4 @@ image_list.txt
 
 bootstrap/
 cluster/core/kube-system/kubelet-csr-approver/charts/
+talos/clusterconfig/
