@@ -64,7 +64,7 @@ spec:
             key: cloudflare_api_token
 
     extraArgs:
-      - --annotation-filter="external-dns/is-public in (true)"
+      - --annotation-filter=external-dns.alpha.kubernetes.io/target
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
       - --cloudflare-proxied

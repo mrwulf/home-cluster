@@ -118,7 +118,6 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
-          external-dns/is-public: "true"
           hajimari.io/enable: "true"
           hajimari.io/appName: "Lists"
           hajimari.io/icon: mdi:format-list-checkbox
