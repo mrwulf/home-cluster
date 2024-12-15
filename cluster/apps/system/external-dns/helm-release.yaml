@@ -10,10 +10,10 @@ spec:
   chart:
     spec:
       chart: external-dns
-      version: 8.7.0
+      version: 1.15.0
       sourceRef:
         kind: HelmRepository
-        name: bitnami-charts
+        name: external-dns-charts
         namespace: flux-system
       interval: 5m
   install:
@@ -26,7 +26,7 @@ spec:
       remediateLastFailure: true # remediate the last failure, when no retries remain
     cleanupOnFail: true
   values:
-    nameOverride: external-dns
+    interval: 2m
 
     sources:
       - ingress
@@ -35,25 +35,37 @@ spec:
 
     provider: cloudflare
 
-    cloudflare:
-      secretName: cloudflare-api-key
-      email: "${SECRET_CLOUDFLARE_EMAIL}"
-      proxied: true
-
     policy: sync
     txtPrefix: "k8s."
+    txtOwnerId: default
     domainFilters:
       - "${SECRET_DOMAIN}"
 
     podAnnotations:
       secret.reloader.stakater.com/reload: cloudflare-api-key
 
-    crd:
-      create: true
-
-    annotationFilter: "external-dns/is-public in (true)"
-
     resources:
       requests:
         memory: 100Mi
         cpu: 25m
+      limits:
+        memory: 250Mi
+
+    env:
+      - name: CF_API_EMAIL
+        valueFrom:
+          secretKeyRef:
+            name: cloudflare-api-key
+            key: cloudflare_email
+      - name: CF_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: cloudflare-api-key
+            key: cloudflare_api_token
+
+    extraArgs:
+      - --annotation-filter="external-dns/is-public in (true)"
+      - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
+      - --crd-source-kind=DNSEndpoint
+      - --cloudflare-proxied
+      #- --label-filter=ingress.home.arpa/type in (external, auth-external-only)
