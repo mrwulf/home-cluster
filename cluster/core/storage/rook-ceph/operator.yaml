@@ -27,7 +27,6 @@ spec:
     csi:
       enableCephfsDriver: false
       enableMetadata: true
-      enableSnapshotter: true
       csiRBDProvisionerResource:
         - name: csi-provisioner
           resource:
