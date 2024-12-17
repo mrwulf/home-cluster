@@ -8,3 +8,4 @@ spec:
   interval: 15m
   url: https://charts.bitnami.com/bitnami
   timeout: 3m
+  type: oci
