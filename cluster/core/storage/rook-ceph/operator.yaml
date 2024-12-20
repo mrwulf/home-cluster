@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
@@ -23,9 +24,13 @@ spec:
     remediation:
       retries: 3
   values:
+    image:
+      repositor: rook/ceph
+      tag: v1.16.0-4.g6da8ef89d
     enableDiscoveryDaemon: true
     csi:
       enableCephfsDriver: false
+      enableVolumeGroupSnapshot: false
       enableMetadata: true
       csiRBDProvisionerResource:
         - name: csi-provisioner

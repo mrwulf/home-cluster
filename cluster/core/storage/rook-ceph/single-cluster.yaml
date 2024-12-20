@@ -145,6 +145,11 @@ spec:
             csi.storage.k8s.io/provisioner-secret-namespace: storage
             imageFeatures: layering
             imageFormat: "2"
+    cephBlockPoolsVolumeSnapshotClass:
+      enabled: true
+      name: csi-ceph-blockpool
+      isDefault: false
+      deletionPolicy: Delete
       # - name: ceph-block-ec-data
       #   # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
       #   spec:
