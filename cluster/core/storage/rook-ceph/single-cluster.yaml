@@ -30,6 +30,9 @@ spec:
       bdev_enable_discard = true
       bdev_async_discard = true
       mon clock drift allowed = 0.8
+      [osd]
+      osd_mclock_override_recovery_settings = true
+      osd_max_backfills = 8
     operatorNamespace: storage
     toolbox:
       enabled: true
