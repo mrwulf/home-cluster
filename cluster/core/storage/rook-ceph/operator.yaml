@@ -24,6 +24,9 @@ spec:
     remediation:
       retries: 3
   values:
+    image:
+      registry: rook/ceph
+      tag: v1.16.0-4.g6da8ef89d
     enableDiscoveryDaemon: true
     csi:
       enableCephfsDriver: false
