@@ -127,16 +127,18 @@ patches:
         fs.inotify.max_user_watches: "1048576"
         fs.inotify.max_user_instances: "8192"
         net.core.somaxconn: "65535"
-        net.core.rmem_max: "7500000"
-        net.core.wmem_max: "7500000"
+        net.core.rmem_max: 67108864            # Cloudflared / QUIC
+        net.core.wmem_max: 67108864            # Cloudflared / QUIC
       time:
         disabled: false
         servers:
           - 10.0.0.1
       udev:
         rules:
+          # Intel GPU
+          - SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="44", MODE="0660"
+          # Realtec 2.5G USB Adapters
           - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
-          # - ACTION=="add", ATTR{idVendor}=="10ec", ATTR{idProduct}=="8125", ATTR{bConfigurationValue}="1"
 
 worker:
   schematic: &schematic
