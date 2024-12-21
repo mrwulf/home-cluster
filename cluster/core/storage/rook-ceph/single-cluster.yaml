@@ -105,20 +105,20 @@ spec:
         useAllNodes: false
         useAllDevices: false
         onlyApplyOSDPlacement: false
+        # Use the following command to get the device name by-id "talosctl ls /dev/disk/by-id -n <node-ip>"
         nodes:
           - name: "control-01"
             devices:
-              - name: "nvme0n1"
+              - name: "/dev/disk/by-id/nvme-T-FORCE_TM8FP7001T_TPBF2404260090101808"
           - name: "control-02"
             devices:
-              - name: "nvme0n1"
-              - name: "nvme1n1"
+              - name: "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_1TB_S6S1NJ0TB02681R"
           - name: "control-03"
             devices:
-              - name: "nvme0n1"
+              - name: "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5P2NL0W811711P"
           - name: "worker-01"
             devices:
-              - name: "nvme0n1"
+              - name: "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5P2NL0W811673V"
     cephBlockPools:
       - name: ceph-block
         # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration
