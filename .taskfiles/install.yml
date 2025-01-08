@@ -1,6 +1,13 @@
 ---
 version: "3"
 
+vars:
+  OS:
+    sh: "uname -s | tr '[:upper:]' '[:lower:]'"
+  ARCH_OS:
+    sh: "arch"
+  ARCH: '{{.ARCH_OS | default "amd64"}}'
+
 tasks:
   all:
     desc: Install all of the dependencies & tools
@@ -131,7 +138,7 @@ tasks:
     cmds:
       - |
         echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: v{{.DESIRED_VERSION}}"
-        wget -qnv --progress=bar -O ~/bin/talosctl https://github.com/siderolabs/talos/releases/download/v{{.DESIRED_VERSION}}/talosctl-linux-amd64
+        wget -qnv --progress=bar -O ~/bin/talosctl https://github.com/siderolabs/talos/releases/download/v{{.DESIRED_VERSION}}/talosctl-{{.OS}}-{{.ARCH}}
         chmod +x ~/bin/talosctl
     status:
       - '[ "v{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
@@ -214,7 +221,7 @@ tasks:
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
         sh: "{{.TASK_NAME}} version | grep -oPm1 '[0-9]+.[0-9]+.[0-9]+(-.+)?$' || echo 0.0.0"
-      FILENAME: "{{.TASK_NAME}}_{{.DESIRED_VERSION}}_Linux_amd64.tar.gz"
+      FILENAME: "{{.TASK_NAME}}_{{.DESIRED_VERSION}}_{{.OS}}_{{.ARCH}}.tar.gz"
     status:
       - '[ "{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
     cmds:
@@ -294,16 +301,15 @@ tasks:
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
         sh: 'echo -n "v" | cat - <({{.TASK_NAME}} version --client | grep "cli" | grep -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | head -1 ) || echo v0.0.0'
-      CLI_ARCH: amd64
     status:
       - '[ "{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
     cmds:
       - |
         echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: {{.DESIRED_VERSION}}"
         TEMP_DIR=$(mktemp -d)
-        wget -qnv --progress=bar -O $TEMP_DIR/cilium-linux-{{.CLI_ARCH}}.tar.gz https://github.com/cilium/cilium-cli/releases/download/{{.DESIRED_VERSION}}/cilium-linux-{{.CLI_ARCH}}.tar.gz
-        wget -qnv --progress=bar -O $TEMP_DIR/cilium-linux-{{.CLI_ARCH}}.tar.gz.sha256sum https://github.com/cilium/cilium-cli/releases/download/{{.DESIRED_VERSION}}/cilium-linux-{{.CLI_ARCH}}.tar.gz.sha256sum
-        (cd $TEMP_DIR && sha256sum --check cilium-linux-{{.CLI_ARCH}}.tar.gz.sha256sum)
-        tar xzvfC $TEMP_DIR/cilium-linux-{{.CLI_ARCH}}.tar.gz ~/bin/
+        wget -qnv --progress=bar -O $TEMP_DIR/cilium-{{.OS}}-{{.ARCH}}.tar.gz https://github.com/cilium/cilium-cli/releases/download/{{.DESIRED_VERSION}}/cilium-{{.OS}}-{{.ARCH}}.tar.gz
+        wget -qnv --progress=bar -O $TEMP_DIR/cilium-{{.OS}}-{{.ARCH}}.tar.gz.sha256sum https://github.com/cilium/cilium-cli/releases/download/{{.DESIRED_VERSION}}/cilium-{{.OS}}-{{.ARCH}}.tar.gz.sha256sum
+        (cd $TEMP_DIR && sha256sum --check cilium-{{.OS}}-{{.ARCH}}.tar.gz.sha256sum)
+        tar xzvfC $TEMP_DIR/cilium-{{.OS}}-{{.ARCH}}.tar.gz ~/bin/
         rm -rf $TEMP_DIR
         ~/bin/{{.TASK_NAME}} version
