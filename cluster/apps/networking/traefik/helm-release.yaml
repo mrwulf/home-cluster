@@ -81,11 +81,10 @@ spec:
           enabled: true
           options: "default"
         transport:
-          transport:
-            respondingTimeouts:
-              readTimeout: 3600s
-              idleTimeout: 3600s
-              writeTimeout: 3600s
+          respondingTimeouts:
+            readTimeout: 3600s
+            idleTimeout: 3600s
+            writeTimeout: 3600s
       metrics:
         port: 8082
         expose:
