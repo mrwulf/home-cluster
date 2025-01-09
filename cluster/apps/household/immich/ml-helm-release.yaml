@@ -53,7 +53,10 @@ spec:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
               tag: v1.124.2
-
+            env:
+              # Ports
+              MACHINE_LEARNING_HOST: 0.0.0.0
+              MACHINE_LEARNING_PORT: &port 3003
             envFrom:
               - configMapRef:
                   name: *configMap
@@ -78,7 +81,7 @@ spec:
                   failureThreshold: 30
                   successThreshold: 1
                   tcpSocket:
-                    port: &port 3003
+                    port: *port
 
     service:
       main:
