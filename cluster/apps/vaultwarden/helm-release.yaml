@@ -83,7 +83,7 @@ spec:
             #   tar -xJvf ./backup/data.tar.xz -C /data/
             image:
               repository: bruceforce/vaultwarden-backup
-              tag: 2.0.4
+              tag: 2.1.0
             env:
               TIMESTAMP: true
               DELETE_AFTER: 30
