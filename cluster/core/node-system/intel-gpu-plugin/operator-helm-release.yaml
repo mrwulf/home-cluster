@@ -30,3 +30,6 @@ spec:
   dependsOn:
     - name: node-feature-discovery
       namespace: node-system
+  values:
+    controllerExtraArgs: |
+      - --devices=gpu
