@@ -6,12 +6,14 @@ namespace: kube-system
 helmCharts:
   - name: kubelet-csr-approver
     repo: https://postfinance.github.io/kubelet-csr-approver
-    version: 1.2.3
+    version: 1.2.5
     releaseName: kubelet-csr-approver
     namespace: kube-system
     valuesInline:
       providerRegex: |
         ^(worker-01|control-01|control-02|control-03)$
+      providerIpPrefixes: ['10.0.1.0/24']
+      skipDenyStep: true
 commonAnnotations:
   meta.helm.sh/release-name: kubelet-csr-approver
   meta.helm.sh/release-namespace: kube-system
