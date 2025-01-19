@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 clusterName: talos-v1
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
-talosVersion: v1.8.4
+talosVersion: v1.9.2
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
 kubernetesVersion: v1.31.4
 endpoint: https://kubernetes.home:6443
@@ -129,6 +129,9 @@ patches:
         net.core.somaxconn: "65535"
         net.core.rmem_max: 67108864            # Cloudflared / QUIC
         net.core.wmem_max: 67108864            # Cloudflared / QUIC
+        net.ipv4.tcp_fastopen: 3               # TCP Fast Open
+        net.ipv4.tcp_mtu_probing: 1            # Jumbo frames
+        vm.nr_hugepages: 1024                  # Postgres
       time:
         disabled: false
         servers:
@@ -144,12 +147,20 @@ worker:
   schematic: &schematic
     customization:
       extraKernelArgs:
-        - talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/
-        - net.ifnames=0
+        - talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/   # Logging
+        - talos.auditd.disabled=1  # Less security, faster puter
+        - net.ifnames=0            # Expected names
+        - mitigations=off          # Less security, faster puter
+        - apparmor=0               # Less security, faster puter
+        - security=none            # Less security, faster puter
+        # - init_on_alloc=0          # Less security, faster puter
+        # - init_on_free=0           # Less security, faster puter
+        # - intel_iommu=on           # PCI Passthrough
+        # - iommu=pt                 # PCI Passthrough
       systemExtensions:
         officialExtensions:
           - siderolabs/intel-ucode
-          - siderolabs/i915-ucode
+          - siderolabs/i915
           - siderolabs/realtek-firmware
           - siderolabs/intel-ice-firmware
   #         - siderolabs/lldpd
@@ -165,10 +176,13 @@ controlPlane:
   schematic: *schematic
   # extensionServices: *extensionServices
   patches:
+    # Disable default API server admission plugins.
     - |-
       - op: replace
         path: /cluster/apiServer/admissionControl
         value: []
+
+    # Enable K8s Talos API Access
     - |-
       machine:
         features:
@@ -178,9 +192,14 @@ controlPlane:
               - os:etcd:backup
             allowedKubernetesNamespaces:
               - backups
+
+    # Cluster Configuration
+    - |-
       cluster:
         allowSchedulingOnControlPlanes: true
         apiServer:
+          extraArgs:
+            enable-aggregator-routing: true
           resources:
             requests:
               cpu: 400m

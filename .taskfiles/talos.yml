@@ -204,7 +204,7 @@ tasks:
         if [ "{{.CURRENT_VERSION}}" == "{{.TARGET_VERSION}}" ]; then
             echo "Talos is already up to date on version '{{.CURRENT_VERSION}}', skipping upgrade ..."
         else
-            talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}} --preserve=true
+            talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}} --preserve=true --reboot-mode=powercycle
         fi
         #
         echo "Waiting for Talos to be healthy on node '{{.NODE}}' ..."
