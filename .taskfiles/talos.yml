@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
 vars:
@@ -184,7 +185,8 @@ tasks:
         sh: kubectl get node "{{.NODE_NAME}}" --output jsonpath='{.status.nodeInfo.osImage}' | grep -oP 'v[0-9]+.[0-9]+.[0-9]+'
       TARGET_VERSION:
         sh: yq '.talosVersion' talos/talconfig.yaml
-      TARGET_VERSION_IMAGE: "ghcr.io/siderolabs/installer:{{.TARGET_VERSION}}"
+      TARGET_VERSION_IMAGE:
+        sh: "(cd talos; talhelper genurl installer -n {{.NODE}} -v {{.TARGET_VERSION}})"
     requires:
       vars: ["NODE"]
     deps:
@@ -201,12 +203,9 @@ tasks:
         echo "Target Version: {{.TARGET_VERSION}}"
         echo "Target Version Image: {{.TARGET_VERSION_IMAGE}}"
         echo "Target Node: {{.NODE}}"
-        if [ "{{.CURRENT_VERSION}}" == "{{.TARGET_VERSION}}" ]; then
-            echo "Talos is already up to date on version '{{.CURRENT_VERSION}}', skipping upgrade ..."
-        else
-            talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}} --preserve=true --reboot-mode=powercycle
-        fi
-        #
+
+        talosctl upgrade -n {{.NODE}} --image {{.TARGET_VERSION_IMAGE}}
+
         echo "Waiting for Talos to be healthy on node '{{.NODE}}' ..."
         until talosctl --nodes {{.NODE}} health --wait-timeout=10m --server=false
         do
