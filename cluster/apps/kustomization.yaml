@@ -5,6 +5,7 @@ resources:
   - backups
   - databases
   - development
+  - flux-system
   - household
   - media
   - monitoring
