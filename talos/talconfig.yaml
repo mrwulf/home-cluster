@@ -148,33 +148,33 @@ worker:
     customization:
       extraKernelArgs:
         - talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/   # Logging
-        - talos.auditd.disabled=1  # Less security, faster puter
+        - talos.auditd.disabled=1  # Less security, faster computer
         - net.ifnames=0            # Expected names
-        - mitigations=off          # Less security, faster puter
-        - apparmor=0               # Less security, faster puter
-        - security=none            # Less security, faster puter
-        # - init_on_alloc=0          # Less security, faster puter
-        # - init_on_free=0           # Less security, faster puter
-        # - intel_iommu=on           # PCI Passthrough
-        # - iommu=pt                 # PCI Passthrough
+        - mitigations=off          # Less security, faster computer
+        - apparmor=0               # Less security, faster computer
+        - security=none            # Less security, faster computer
+        - init_on_alloc=0          # Less security, faster computer
+        - init_on_free=0           # Less security, faster computer
+        - intel_iommu=on           # PCI Passthrough
+        - iommu=pt                 # PCI Passthrough
       systemExtensions:
         officialExtensions:
           - siderolabs/intel-ucode
           - siderolabs/i915
           - siderolabs/realtek-firmware
           - siderolabs/intel-ice-firmware
-  #         - siderolabs/lldpd
-  # extensionServices: &extensionServices
-  #   - name: lldpd
-  #     configFiles:
-  #       - content: |
-  #           configure lldpd portidsubtype ifname
-  #           configure system description "Talos Node"
-  #         mountPath: /usr/local/etc/lldpd/lldpd.conf
+          - siderolabs/lldpd
+  extensionServices: &extensionServices
+    - name: lldpd
+      configFiles:
+        - content: |
+            configure lldpd portidsubtype ifname
+            configure system description "Talos Node"
+          mountPath: /usr/local/etc/lldpd/lldpd.conf
 
 controlPlane:
   schematic: *schematic
-  # extensionServices: *extensionServices
+  extensionServices: *extensionServices
   patches:
     # Disable default API server admission plugins.
     - |-
