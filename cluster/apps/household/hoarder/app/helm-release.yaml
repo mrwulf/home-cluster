@@ -35,16 +35,16 @@ spec:
               repository: ghcr.io/hoarder-app/hoarder
               tag: 0.21.0
             env:
-              BROWSER_WEB_URL: http://hoarder-chrome.default.svc.cluster.local:9222
+              BROWSER_WEB_URL: http://hoarder-chrome.household.svc.cluster.local:9222
               CRAWLER_DOWNLOAD_BANNER_IMAGE: true
               CRAWLER_ENABLE_ADBLOCKER: true
               CRAWLER_STORE_SCREENSHOT: true
               CRAWLER_FULL_PAGE_SCREENSHOT: true
               DATA_DIR: /data
-              DISABLE_SIGNUPS: true
+              DISABLE_SIGNUPS: false
               MAX_ASSET_SIZE_MB: 50
-              MEILI_ADDR: http://hoarder-meilisearch.default.svc.cluster.local:7700
-              NEXTAUTH_URL: https://hoarder.${SECRET_DOMAIN}
+              MEILI_ADDR: http://hoarder-meilisearch.household.svc.cluster.local:7700
+              NEXTAUTH_URL: https://hoarder.home.${SECRET_DOMAIN}
               DISABLE_NEW_RELEASE_CHECK: true
             envFrom:
               - secretRef:
