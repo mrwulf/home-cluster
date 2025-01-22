@@ -41,7 +41,7 @@ spec:
               CRAWLER_STORE_SCREENSHOT: true
               CRAWLER_FULL_PAGE_SCREENSHOT: true
               DATA_DIR: /data
-              DISABLE_SIGNUPS: false
+              DISABLE_SIGNUPS: true
               MAX_ASSET_SIZE_MB: 50
               MEILI_ADDR: http://hoarder-meilisearch.household.svc.cluster.local:7700
               NEXTAUTH_URL: https://hoarder.home.${SECRET_DOMAIN}
