@@ -150,7 +150,7 @@ spec:
     cephBlockPoolsVolumeSnapshotClass:
       enabled: true
       name: csi-ceph-blockpool
-      isDefault: false
+      isDefault: true
       deletionPolicy: Delete
       # - name: ceph-block-ec-data
       #   # see https://github.com/rook/rook/blob/master/Documentation/ceph-pool-crd.md#spec for available configuration

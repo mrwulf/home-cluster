@@ -11,9 +11,9 @@ spec:
     copyMethod: "${VOLSYNC_COPY_METHOD:-Snapshot}"
     ### Source (backup repository)
     repository: ${APP}-volsync-backup
-    volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-csi-ceph-block}" # same as source
+    volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-csi-ceph-blockpool}" # same as source
     cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:-1Gi}"
-    cacheStorageClassName: "${VOLSYNC_CACHE_SNAPSHOTCLASS:-local-path}"
+    cacheStorageClassName: "${VOLSYNC_CACHE_SNAPSHOTCLASS:-ceph-block-delete}"
     cacheAccessModes: ["${VOLSYNC_CACHE_ACCESSMODES:-ReadWriteOnce}"]
     ### Destination (PVC-to-be-restored)
     storageClassName: "${VOLSYNC_STORAGECLASS:-ceph-block}"
