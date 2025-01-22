@@ -28,6 +28,11 @@ repos:
     rev: v2.1.1
     hooks:
       - id: forbid-secrets
+        exclude: |
+            (?x)^(
+                cluster/templates/volsync/restore/secret.yaml|
+                path/to/file3.py
+            )$
   # - repo: https://github.com/zricethezav/gitleaks
   #   rev: v8.22.0
   #   hooks:
