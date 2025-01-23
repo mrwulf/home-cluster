@@ -3,17 +3,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app hoarder
+  name: &app open-webui
   namespace: flux-system
 spec:
-  targetNamespace: household
+  targetNamespace: ai
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  # dependsOn:
-    # - name: rook-ceph-cluster
-    # - name: volsync
-  path: ./cluster/apps/household/hoarder/app
+  dependsOn:
+    - name: volsync
+  path: ./cluster/apps/ai/open-webui/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -24,12 +23,11 @@ spec:
       name: sops-age
   wait: false
   interval: 30m
-  retryInterval: 1m
   timeout: 5m
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 20Gi
+      VOLSYNC_CAPACITY: 5Gi
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
