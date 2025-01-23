@@ -10,8 +10,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: volsync
+  # dependsOn:
+  #   - name: volsync
   path: ./cluster/apps/ai/open-webui/app
   prune: true
   sourceRef:
