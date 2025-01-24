@@ -30,5 +30,5 @@ spec:
       namespace: node-system
   values:
     name: intel-device-plugin-gpu
-    sharedDevNum: 2
+    sharedDevNum: 3
     nodeFeatureRule: true
