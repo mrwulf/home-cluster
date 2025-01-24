@@ -44,7 +44,7 @@ spec:
               # - name: GLOBAL_LOG_LEVEL
               #   value: DEBUG
               - name: OLLAMA_BASE_URL
-                value: http://ollama.ai.home.${SECRET_DOMAIN}:11434
+                value: http://ollama.ai.home.svc.cluster.local:11434
               - name: WEBUI_URL
                 value: "https://chat.${SECRET_DOMAIN}"
               - name: ENABLE_RAG_WEB_SEARCH
