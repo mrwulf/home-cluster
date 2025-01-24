@@ -42,6 +42,7 @@ spec:
             - name: DefaultEvictor
               args:
                 nodeFit: true
+                evictFailedBarePods: true
                 evictLocalStoragePods: true
                 evictSystemCriticalPods: true
             - name: LowNodeUtilization
@@ -63,30 +64,23 @@ spec:
               args:
                 podRestartThreshold: 10
                 includingInitContainers: true
+            - name: RemovePodsViolatingInterPodAntiAffinity
             - name: RemovePodsViolatingNodeAffinity
               args:
                 nodeAffinityType:
                   - requiredDuringSchedulingIgnoredDuringExecution
             - name: RemovePodsViolatingNodeTaints
             - name: RemovePodsViolatingInterPodAntiAffinity
-              args:
-                labelSelector:
-                  matchExpressions:
-                    - key: "app.kubernetes.io/name"
-                      operator: Exists
-                      # operator: In
-                      # values:
-                      #   - prometheus
-                      #   - loki
-
             - name: RemovePodsViolatingTopologySpreadConstraint
-
+              args:
+                constraints:
+                  - DoNotSchedule
+                  - ScheduleAnyway
           plugins:
             balance:
               enabled:
                 - RemovePodsViolatingTopologySpreadConstraint
                 - LowNodeUtilization
-                # - RemoveDuplicates
             deschedule:
               enabled:
                 - RemovePodsHavingTooManyRestarts
