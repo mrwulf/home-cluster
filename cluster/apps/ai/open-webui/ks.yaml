@@ -10,7 +10,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  # dependsOn:
+  dependsOn:
+    - name: searxng
   #   - name: volsync
   path: ./cluster/apps/ai/open-webui/app
   prune: true

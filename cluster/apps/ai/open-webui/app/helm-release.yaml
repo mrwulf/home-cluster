@@ -46,11 +46,11 @@ spec:
               - name: OLLAMA_BASE_URL
                 value: http://ollama.ai.home.${SECRET_DOMAIN}:11434
               - name: ENABLE_RAG_WEB_SEARCH
-                value: false
+                value: true
               - name: RAG_WEB_SEARCH_ENGINE
                 value: searxng
               - name: SEARXNG_QUERY_URL
-                value: http://searxng.services.svc.cluster.local:8080/search?q=<query>
+                value: http://searxng.ai.svc.cluster.local:8080/search?q=<query>
             envFrom: *envFrom
             resources:
               requests:
