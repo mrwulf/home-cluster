@@ -5,7 +5,7 @@ kind: ReplicationSource
 metadata:
   name: "${APP}"
 spec:
-  sourcePVC: "${APP}"
+  sourcePVC: "${CLAIM:=${APP}}"
   trigger:
     schedule: "0 * * * *"
   restic:
@@ -17,7 +17,7 @@ spec:
       monthly: 3
     copyMethod: "${VOLSYNC_COPY_METHOD:-Snapshot}"
     ### Source (PVC-to-be-backed-up and its snapshot)
-    storageClassName: "${VOLSYNC_STORAGECLASS:-ceph-block}"
+    storageClassName: "${VOLSYNC_STORAGECLASS:-ceph-block-delete}"
     accessModes: ["${VOLSYNC_ACCESSMODES:-ReadWriteOnce}"]
     volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-csi-ceph-blockpool}" # same as source
     cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:-1Gi}"
