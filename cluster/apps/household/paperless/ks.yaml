@@ -3,26 +3,27 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app open-webui
+  name: &app paperless
   namespace: flux-system
 spec:
-  targetNamespace: ai
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: searxng
-    - name: volsync
     - name: external-secrets-stores
-  path: ./cluster/apps/ai/open-webui/app
+    # - name: rook-ceph-cluster
+  interval: 30m
+  path: ./cluster/apps/household/paperless/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: false
-  interval: 30m
+    namespace: flux-system
+  targetNamespace: household
   timeout: 5m
+  wait: false
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 5Gi
+      CLAIM: paperless-data
+      VOLSYNC_CAPACITY: 20Gi
