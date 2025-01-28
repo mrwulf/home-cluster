@@ -182,6 +182,14 @@ controlPlane:
         path: /cluster/apiServer/admissionControl
         value: []
 
+    # Enable MutatingAdmissionPolicy
+    - |-
+      cluster:
+        apiServer:
+          extraArgs:
+            runtime-config: admissionregistration.k8s.io/v1alpha1=true
+            feature-gates: MutatingAdmissionPolicy=true
+
     # Enable K8s Talos API Access
     - |-
       machine:
