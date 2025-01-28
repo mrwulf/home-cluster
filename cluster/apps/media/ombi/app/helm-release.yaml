@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: ombi
-  namespace: media
 spec:
   interval: 30m
   chart:
@@ -14,9 +13,6 @@ spec:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
-  dependsOn:
-    - name: traefik
-      namespace: networking
   values:
     # defaultPodOptions:
     #   automountServiceAccountToken: false
