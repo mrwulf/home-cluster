@@ -14,6 +14,7 @@ spec:
   wait: true
   interval: 30m
   retryInterval: 1m
+  targetNamespace: system
   timeout: 5m
 
 ---
@@ -34,4 +35,5 @@ spec:
   wait: true
   interval: 30m
   retryInterval: 1m
+  targetNamespace: system
   timeout: 5m
