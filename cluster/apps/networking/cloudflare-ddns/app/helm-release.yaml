@@ -47,7 +47,7 @@ spec:
           main:
             image:
               repository: ghcr.io/onedr0p/kubanetics
-              tag: '2025.1.2'
+              tag: '2025.1.3'
 
             command:
               - "/app/cloudflare-ddns.sh"
