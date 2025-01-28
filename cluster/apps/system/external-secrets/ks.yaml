@@ -26,7 +26,7 @@ metadata:
   namespace: flux-system
 spec:
   dependsOn:
-    - name: cluster-core-external-secrets
+    - name: external-secrets
   path: ./cluster/apps/system/external-secrets/stores
   prune: true
   sourceRef:

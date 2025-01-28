@@ -10,9 +10,9 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  # dependsOn:
+  dependsOn:
     # - name: rook-ceph-cluster
-    # - name: volsync
+    - name: volsync
   path: ./cluster/apps/household/hoarder/app
   prune: true
   sourceRef:
