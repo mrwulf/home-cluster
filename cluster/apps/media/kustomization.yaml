@@ -5,7 +5,7 @@ resources:
   - flaresolverr
   - isponsorblocktv
   - ./lidarr/ks.yaml
-  - ombi
+  - ./ombi/ks.yaml
   - plex
   - prowlarr
   - radarr
