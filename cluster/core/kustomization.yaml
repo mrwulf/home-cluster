@@ -8,3 +8,4 @@ resources:
   - node-system
   - security
   - storage
+  - ../../apps/system/external-secrets/ks.yaml
