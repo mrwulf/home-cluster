@@ -13,7 +13,7 @@ spec:
     - name: external-secrets-stores
     # - name: rook-ceph-cluster
   interval: 30m
-  path: ./cluster/apps/household/paperless/app
+  path: ./cluster/apps/media/lidarr/app
   prune: true
   sourceRef:
     kind: GitRepository
