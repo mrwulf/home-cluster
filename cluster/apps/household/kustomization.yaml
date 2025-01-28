@@ -9,5 +9,5 @@ resources:
   - ./linkding/ks.yaml
   - mealie
   - outline
-  - paperless
+  - ./paperless/ks.yaml
   - vikunja
