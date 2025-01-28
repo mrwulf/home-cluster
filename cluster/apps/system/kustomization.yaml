@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - descheduler
   - ./external-dns/ks.yaml
-  # - ./external-secrets/ks.yaml
+  - ./external-secrets/ks.yaml
   - k8s-dns-gateway
   - kube-cleanup-operator
   - metrics-server
