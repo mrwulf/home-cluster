@@ -6,7 +6,6 @@ resources:
   - home-assistant
   - immich
   - libreddit
-  - ./linkding/ks.yaml
   - mealie
   - outline
   - ./paperless/ks.yaml

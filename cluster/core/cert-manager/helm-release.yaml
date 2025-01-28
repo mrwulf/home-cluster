@@ -22,16 +22,11 @@ spec:
     remediation:
       retries: 3
   values:
-    installCRDs: false
+    installCRDs: true
     extraArgs:
       - --dns01-recursive-nameservers=10.0.0.1:53053
       - --dns01-recursive-nameservers-only
     replicaCount: 1
-    podDnsPolicy: "None"
-    podDnsConfig:
-      nameservers:
-        - "1.1.1.1"
-        - "9.9.9.9"
     prometheus:
       enabled: true
       servicemonitor:
