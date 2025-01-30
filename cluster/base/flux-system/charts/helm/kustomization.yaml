@@ -34,6 +34,7 @@ resources:
   - node-feature-discovery-charts.yaml
   - pihole-charts.yaml
   - piraeus-charts.yaml
+  - postfinance-charts.yaml
   - prometheus-community-charts.yaml
   - rook-ceph-charts.yaml
   - spegel-charts.yaml
