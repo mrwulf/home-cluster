@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - namespaces
   - kube-system
-  - cert-manager
   - flux-system
   - node-system
   - storage
