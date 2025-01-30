@@ -32,7 +32,7 @@ spec:
       app.kubernetes.io/name: *app
   interval: 30m
   timeout: 5m
-  path: ./kubernetes/apps/system/node-feature-discovery/rules
+  path: ./cluster/apps/system/node-feature-discovery/rules
   prune: true
   sourceRef:
     kind: GitRepository
