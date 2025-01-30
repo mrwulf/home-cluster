@@ -6,5 +6,4 @@ resources:
   - cert-manager
   - flux-system
   - node-system
-  - security
   - storage

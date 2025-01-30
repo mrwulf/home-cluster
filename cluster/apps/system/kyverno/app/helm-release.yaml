@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: kyverno
-  namespace: security
 spec:
   interval: 5m
   chart:
@@ -16,20 +15,31 @@ spec:
         namespace: flux-system
       interval: 5m
   install:
+    timeout: 10m
+    replace: true
+    crds: CreateReplace
     createNamespace: true
-    remediation: # perform remediation when helm install fails
-      retries: 5
+    remediation:
+      retries: 3
   upgrade:
     remediation: # perform remediation when helm upgrade fails
       retries: 5
       remediateLastFailure: true # remediate the last failure, when no retries remain
+      strategy: rollback
     cleanupOnFail: true
-  # dependsOn:
-  #   - name: kube-prometheus-stack
-  #     namespace: monitoring
+    crds: CreateReplace
+  test:
+    enable: true
+  rollback:
+    recreate: true
+    force: true
+    cleanupOnFail: true
+  uninstall:
+    keepHistory: false
+  driftDetection:
+    mode: enabled
+  maxHistory: 3
   values:
-    namespaceOverride: security
-
     admissionController:
       replicas: 3
       topologySpreadConstraints:
