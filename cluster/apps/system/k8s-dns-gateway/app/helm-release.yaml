@@ -29,6 +29,11 @@ spec:
     timeout: 10m
     recreate: true
     cleanupOnFail: true
+  uninstall:
+    keepHistory: false
+  driftDetection:
+    mode: enabled
+  maxHistory: 3
   values:
     annotations:
       io.cilium/lb-ipam-ips: "${LOCAL_DNS_ADDR}"

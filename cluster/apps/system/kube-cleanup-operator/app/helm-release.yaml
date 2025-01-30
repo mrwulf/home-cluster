@@ -23,6 +23,11 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  uninstall:
+    keepHistory: false
+  driftDetection:
+    mode: enabled
+  maxHistory: 3
   values:
     replicas: 2
     rbac:

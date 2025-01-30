@@ -15,7 +15,6 @@ spec:
         kind: HelmRepository
         name: external-secrets-charts
         namespace: flux-system
-  maxHistory: 2
   install:
     remediation:
       retries: 3
@@ -25,6 +24,9 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
+  driftDetection:
+    mode: enabled
+  maxHistory: 3
   values:
     installCRDs: true
     replicaCount: 3
