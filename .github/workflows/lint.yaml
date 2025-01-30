@@ -30,4 +30,4 @@ jobs:
           MARKDOWN_CONFIG_FILE: .markdownlint.yaml
           TERRAFORM_TFLINT_CONFIG_FILE: .tflint.hcl
           YAML_CONFIG_FILE: .yamllint.yaml
-          KUBERNETES_KUBECONFORM_OPTIONS: -ignore-missing-schemas -schema-location default -schema-location 'https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main'
+          KUBERNETES_KUBECONFORM_OPTIONS: --ignore-missing-schemas
