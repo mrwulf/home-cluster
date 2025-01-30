@@ -20,6 +20,11 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  uninstall:
+    keepHistory: false
+  driftDetection:
+    mode: enabled
+  maxHistory: 3
   values:
     controllers:
       main:

@@ -21,6 +21,11 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  uninstall:
+    keepHistory: false
+  driftDetection:
+    mode: enabled
+  maxHistory: 3
   values:
     args:
       - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
