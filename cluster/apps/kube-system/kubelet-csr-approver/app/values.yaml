@@ -1,0 +1,7 @@
+---
+providerRegex: |
+  ^(worker-01|control-01|control-02|control-03)$
+
+bypassDnsResolution: true
+providerIpPrefixes: ['10.0.1.0/24']
+skipDenyStep: true

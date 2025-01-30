@@ -4,10 +4,12 @@ resources:
   - ai
   - auth
   - backups
+  - cert-manager
   - databases
   - development
   - flux-system
   - household
+  - kube-system
   - media
   - monitoring
   - networking
