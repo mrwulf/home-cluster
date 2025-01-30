@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: minio
-  namespace: databases
 spec:
   interval: 30m
   chart:
@@ -41,7 +40,7 @@ spec:
           main:
             image:
               repository: quay.io/minio/minio
-              tag: RELEASE.2022-12-12T19-27-27Z
+              tag: RELEASE.2025-01-20T14-49-07Z
             env:
               TZ: "${TIMEZONE}"
               MINIO_UPDATE: "off"
@@ -58,7 +57,7 @@ spec:
                 memory: 100Mi
                 cpu: 100m
               limits:
-                memory: 750Mi
+                memory: 2Gi
 
     service:
       main:
@@ -69,6 +68,20 @@ spec:
           api:
             enabled: true
             port: &api-port 9000
+
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /minio/health/live
+                    port: *api-port
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 6
+              readiness: *probes
 
     # https://min.io/docs/minio/linux/reference/minio-mc-admin/mc-admin-prometheus.html
     serviceMonitor:

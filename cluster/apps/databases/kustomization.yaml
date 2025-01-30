@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
   - dragonfly/ks.yaml
   - redis
-  - minio
-  - obsidian-couchdb
+  - minio/ks.yaml
+  - obsidian-couchdb/ks.yaml
   - postgres
