@@ -35,13 +35,13 @@ spec:
     mode: enabled
   maxHistory: 3
   values:
-    annotations:
-      io.cilium/lb-ipam-ips: "${LOCAL_DNS_ADDR}"
     domain: "home.${SECRET_DOMAIN} ${SECRET_DOMAIN}"
     ttl: 1
     service:
       type: LoadBalancer
       externalTrafficPolicy: Local
+      annotations:
+        io.cilium/lb-ipam-ips: "${LOCAL_DNS_ADDR}"
 
     replicaCount: 2
     affinity:
