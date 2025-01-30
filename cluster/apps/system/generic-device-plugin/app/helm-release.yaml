@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: generic-device-plugin
-  namespace: kube-system
   labels:
     app.kubernetes.io/name: generic-device-plugin
 spec:
@@ -22,7 +21,7 @@ spec:
         - operator: "Exists"
           effect: "NoSchedule"
       containers:
-        - image: squat/generic-device-plugin
+        - image: ghcr.io/squat/generic-device-plugin:36bfc606bba2064de6ede0ff2764cbb52edff70d
           args:
             - --domain
             - my.home
@@ -44,7 +43,12 @@ spec:
             - containerPort: 8080
               name: http
           securityContext:
-            privileged: true
+            # privileged: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           volumeMounts:
             - name: device-plugin
               mountPath: /var/lib/kubelet/device-plugins
