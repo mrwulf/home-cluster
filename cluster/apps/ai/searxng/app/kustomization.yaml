@@ -11,6 +11,3 @@ configMapGenerator:
       - ./resources/settings.yml
 generatorOptions:
   disableNameSuffixHash: true
-
-components:
-  - ../../../_common
