@@ -26,3 +26,4 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 20Gi
+      VOLSYNC_START_MINUTE: "7"

@@ -54,7 +54,7 @@ spec:
         className: traefik
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-authentik@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-cloudflare-authentik@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           hajimari.io/appName: "Who Am I?"
           hajimari.io/icon: mdi:id-card-outline
