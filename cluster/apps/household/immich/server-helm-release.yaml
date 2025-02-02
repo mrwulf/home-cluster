@@ -105,7 +105,7 @@ spec:
           hajimari.io/appName: Immich
           hajimari.io/group: "Home"
           hajimari.io/icon: heroicons:photo
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-immich@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-direct@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=domain}"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
         hosts:
