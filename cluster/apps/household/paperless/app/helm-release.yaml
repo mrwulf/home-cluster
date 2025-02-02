@@ -95,7 +95,7 @@ spec:
         className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "traefik-middleware-chain-no-auth@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
           hajimari.io/enable: "true"
           hajimari.io/icon: mdi:barcode-scan
           hajimari.io/appName: "Paperless"
