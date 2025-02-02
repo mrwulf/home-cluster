@@ -40,7 +40,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: traefik-middleware-chain-immich
+  name: traefik-middleware-chain-direct
 spec:
   chain:
     middlewares:
