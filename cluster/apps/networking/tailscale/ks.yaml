@@ -10,7 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./cluster/apps/networking/tailscale/app
+  path: ./cluster/apps/networking/tailscale/operator
   prune: true
   sourceRef:
     kind: GitRepository
