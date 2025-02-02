@@ -4,7 +4,7 @@ resources:
   - cloudflare-ddns/ks.yaml
   - cloudflare-tunnel/ks.yaml
   - headscale/ks.yaml
-  - tailscale/ks.yaml
+  # - tailscale/ks.yaml
   - traefik/ks.yaml
   - unifi/ks.yaml
   - whoami/ks.yaml
