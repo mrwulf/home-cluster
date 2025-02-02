@@ -3,7 +3,6 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: traefik-middleware-chain-no-auth
-  namespace: networking
 spec:
   chain:
     middlewares:
@@ -16,7 +15,6 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: traefik-middleware-chain-cloudflare-authentik
-  namespace: networking
 spec:
   chain:
     middlewares:
@@ -31,7 +29,6 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: traefik-middleware-chain-authentik
-  namespace: networking
 spec:
   chain:
     middlewares:
@@ -44,7 +41,6 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: traefik-middleware-chain-immich
-  namespace: networking
 spec:
   chain:
     middlewares:

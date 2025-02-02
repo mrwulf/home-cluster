@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app unifi
+  namespace: flux-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: traefik
+  interval: 30m
+  path: ./cluster/apps/networking/unifi/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: networking
+  timeout: 5m
+  wait: false
+  postBuild:
+    substitute:
+      APP: *app
+      CLAIM: unifi-data
+      VOLSYNC_CAPACITY: 2Gi
+      VOLSYNC_START_MINUTE: "37"

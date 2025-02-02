@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./cloudflare-ddns/ks.yaml
-  - ./cloudflare-tunnel/ks.yaml
-  - wildcard-cert.yaml
-  - wildcard-cert-internal.yaml
-  - traefik
-  - unifi
-  - whoami
+  - cloudflare-ddns/ks.yaml
+  - cloudflare-tunnel/ks.yaml
+  - headscale/ks.yaml
+  # - tailscale/ks.yaml
+  - traefik/ks.yaml
+  - unifi/ks.yaml
+  - whoami/ks.yaml

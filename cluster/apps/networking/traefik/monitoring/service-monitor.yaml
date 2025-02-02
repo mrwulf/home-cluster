@@ -4,7 +4,6 @@ metadata:
   labels:
     app.kubernetes.io/name: traefik
   name: traefik
-  namespace: networking
 spec:
   endpoints:
     - path: /metrics

@@ -2,19 +2,18 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-  namespace: networking
+  name: "wildcard-${SECRET_DOMAIN/./-}-tls"
 spec:
-  secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+  secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
   secretTemplate:
     annotations:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
       reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
-      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "auth,backups,databases,development,household,media,monitoring,storage,vaultwarden,flux-system,kube-system,other"
+      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "auth,databases,household,media,monitoring,storage,vaultwarden,flux-system,kube-system,other"
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
   commonName: "${SECRET_DOMAIN}"
   dnsNames:
     - "${SECRET_DOMAIN}"
-    - "*.home.${SECRET_DOMAIN}"
+    - "*.${SECRET_DOMAIN}"
