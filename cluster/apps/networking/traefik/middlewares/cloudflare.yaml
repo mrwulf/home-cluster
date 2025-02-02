@@ -3,7 +3,6 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: cloudflare-ips
-  namespace: network
 spec:
   ipWhiteList:
     sourceRange:
@@ -38,7 +37,6 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: cloudflare
-  namespace: network
 spec:
   chain:
     middlewares:

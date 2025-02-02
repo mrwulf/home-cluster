@@ -6,7 +6,6 @@ metadata:
     app.kubernetes.io/managed-by: Flux
     app.kubernetes.io/name: traefik
   name: traefik
-  namespace: networking
 spec:
   groups:
     - name: traefik
