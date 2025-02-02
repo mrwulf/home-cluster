@@ -108,7 +108,7 @@ spec:
       headscale:
         className: traefik
         annotations:
-          traefik.ingress.kubernetes.io/router.middlewares: "traefik-middleware-chain-direct-authentik@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-direct-authentik@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=domain}"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
           # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
