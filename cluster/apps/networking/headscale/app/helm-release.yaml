@@ -33,7 +33,7 @@ spec:
               repository: ghcr.io/juanfont/headscale
               tag: v0.24.2
             command: [headscale]
-            args: [serve]
+            args: ["serve", "-c", "/etc/headscale/config.yaml"]
             probes:
               startup:
                 enabled: true
