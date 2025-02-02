@@ -39,6 +39,7 @@ resources:
   - rook-ceph-charts.yaml
   - spegel-charts.yaml
   - stakater-charts.yaml
+  - tailscale-charts.yaml
   - traefik-charts.yaml
   - vaultwarden-charts.yaml
   - vector-charts.yaml
