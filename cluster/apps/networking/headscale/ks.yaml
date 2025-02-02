@@ -20,7 +20,7 @@ spec:
   timeout: 5m
   wait: false
   components:
-    - ../../../templates/volsync/init
+    - ../../../../templates/volsync/init
 
   postBuild:
     substitute:
