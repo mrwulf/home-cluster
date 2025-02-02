@@ -72,7 +72,7 @@ spec:
         className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "traefik-middleware-chain-no-auth@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           hajimari.io/enable: "true"
           hajimari.io/icon: "food"
