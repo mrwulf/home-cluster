@@ -16,7 +16,7 @@ spec:
     - name: external-secrets-stores
   path: ./cluster/apps/ai/open-webui/app
   components:
-    - ../../_common
+    - ../../..  /_common
   prune: true
   sourceRef:
     kind: GitRepository

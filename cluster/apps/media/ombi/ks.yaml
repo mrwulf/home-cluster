@@ -14,7 +14,7 @@ spec:
   interval: 30m
   path: ./cluster/apps/media/ombi/app
   components:
-    - ../../_common
+    - ../../../_common
   prune: true
   sourceRef:
     kind: GitRepository
