@@ -10,12 +10,13 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  # dependsOn:
-    # - name: volsync
+  dependsOn:
+    - name: volsync
     # - name: rook-ceph-cluster
   path: ./cluster/apps/ai/ollama/app
   components:
-    - ../../../_common
+    - ./cluster/apps/_common
+    - ./cluster/templates/volsync/primary
   prune: true
   sourceRef:
     kind: GitRepository
