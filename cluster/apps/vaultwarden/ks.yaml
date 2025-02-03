@@ -9,8 +9,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: rook-ceph-cluster
+  # dependsOn:
+  #   - name: rook-ceph-cluster
   interval: 30m
   path: ./cluster/apps/vaultwarden/app
   components:
