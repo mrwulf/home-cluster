@@ -14,4 +14,4 @@ resources:
   - monitoring
   - networking
   - system
-  - vaultwarden
+  - vaultwarden/ks.yaml
