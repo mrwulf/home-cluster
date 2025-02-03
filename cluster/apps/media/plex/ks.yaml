@@ -29,3 +29,4 @@ spec:
       CLAIM: plex-config
       VOLSYNC_CAPACITY: 100Gi
       VOLSYNC_START_MINUTE: "11"
+      VOLSYNC_CACHE_CAPACITY: "5Gi"
