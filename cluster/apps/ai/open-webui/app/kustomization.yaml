@@ -7,6 +7,3 @@ resources:
   - ./helm-release.yaml
   - ../../../../templates/volsync/init
 # - ../../../../../shared/templates/gatus/guarded
-
-components:
-  - ../../../_common
