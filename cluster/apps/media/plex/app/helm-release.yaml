@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: plex
-  namespace: media
 spec:
   interval: 30m
   chart:
@@ -15,13 +14,6 @@ spec:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
   values:
     controllers:
       main:
@@ -56,11 +48,11 @@ spec:
             resources:
               requests:
                 cpu: 1
-                memory: 5254M
+                memory: 3Gi
                 gpu.intel.com/i915: 1
               limits:
                 gpu.intel.com/i915: 1
-                memory: 9248M
+                memory: 7Gi
 
     service:
       main:
