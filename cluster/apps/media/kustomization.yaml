@@ -4,9 +4,9 @@ resources:
   - audiobookshelf
   - flaresolverr
   - isponsorblocktv
-  - ./lidarr/ks.yaml
-  - ./ombi/ks.yaml
-  - plex
+  - lidarr/ks.yaml
+  - ombi/ks.yaml
+  - plex/ks.yaml
   - prowlarr
   - radarr
   - readarr-audio
