@@ -3,7 +3,7 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
-  name: "${APP}-bootstrap-restore"
+  name: "${APP}-dst"
 spec:
   trigger:
     manual: restore-once
@@ -23,3 +23,6 @@ spec:
       runAsUser: ${APP_UID:-568}
       runAsGroup: ${APP_GID:-568}
       fsGroup: ${APP_GID:-568}
+    enableFileDeletion: true
+    cleanupCachePVC: true
+    cleanupTempPVC: true
