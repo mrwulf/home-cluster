@@ -90,14 +90,14 @@ spec:
         type: configMap
         name: obsidian-couchdb-configmap
         advancedMounts:
-          main:
+          obsidian-couchdb:
             init-config:
               - path: /tmp/config
       data:
         enabled: true
         existingClaim: data-obsidian-couchdb-0
         advancedMounts:
-          main:
+          obsidian-couchdb:
             app:
               - path: /opt/couchdb/data
       config-storage:
