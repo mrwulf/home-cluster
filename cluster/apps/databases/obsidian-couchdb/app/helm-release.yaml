@@ -86,6 +86,7 @@ spec:
 
     persistence:
       config:
+        enabled: true
         type: configMap
         name: obsidian-couchdb-configmap
         advancedMounts:
@@ -96,7 +97,7 @@ spec:
         enabled: true
         existingClaim: data-obsidian-couchdb-0
         advancedMounts:
-          obsidian-couchdb:
+          main:
             app:
               - path: /opt/couchdb/data
       config-storage:
