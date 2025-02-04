@@ -5,4 +5,4 @@ kind: Kustomization
 resources:
   - secret.yaml
   - replicationsource.yaml
-  # - replicationdestination.yaml
+  - replicationdestination.yaml
