@@ -14,7 +14,8 @@ spec:
   interval: 30m
   path: ./cluster/apps/vaultwarden/app
   components:
-    - ../../_common
+    - ../../../_common
+    - ../../../../templates/volsync/first
   prune: true
   sourceRef:
     kind: GitRepository

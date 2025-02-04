@@ -21,9 +21,9 @@ spec:
   targetNamespace: networking
   timeout: 5m
   wait: false
-  # components:
-  #   - ../../../../templates/volsync/init
-
+  components:
+    - ../../../_common
+    - ../../../../templates/volsync/first
   postBuild:
     substitute:
       APP: *app
