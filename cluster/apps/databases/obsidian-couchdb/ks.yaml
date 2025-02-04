@@ -13,7 +13,7 @@ spec:
   path: ./cluster/apps/databases/obsidian-couchdb/app
   components:
     - ../../../_common
-    - ../../../../templates/volsync/first
+    - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
     kind: GitRepository
