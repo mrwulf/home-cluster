@@ -14,6 +14,9 @@ spec:
     # - name: rook-ceph-cluster
     - name: volsync
   path: ./cluster/apps/household/hoarder/app
+  components:
+    - ../../../_common
+    - ../../../../templates/volsync/first
   prune: true
   sourceRef:
     kind: GitRepository

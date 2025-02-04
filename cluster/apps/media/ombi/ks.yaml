@@ -15,6 +15,7 @@ spec:
   path: ./cluster/apps/media/ombi/app
   components:
     - ../../../_common
+    - ../../../../templates/volsync/first
   prune: true
   sourceRef:
     kind: GitRepository

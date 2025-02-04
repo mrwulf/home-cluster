@@ -11,9 +11,12 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: external-secrets-stores
-    # - name: rook-ceph-cluster
+    - name: volsync
   interval: 30m
   path: ./cluster/apps/household/paperless/app
+  components:
+    - ../../../_common
+    - ../../../../templates/volsync/first
   prune: true
   sourceRef:
     kind: GitRepository
