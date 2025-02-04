@@ -10,6 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: minio
     - name: external-secrets-stores
   interval: 30m
   path: ./cluster/apps/backups/volsync/app

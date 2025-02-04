@@ -11,6 +11,9 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   path: ./cluster/apps/databases/obsidian-couchdb/app
+  components:
+    - ../../../_common
+    - ../../../../templates/volsync/first
   prune: true
   sourceRef:
     kind: GitRepository
@@ -19,3 +22,8 @@ spec:
   interval: 30m
   retryInterval: 1m
   timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      CLAIM: data-obsidian-couchdb-0
+      VOLSYNC_CAPACITY: 10Gi
