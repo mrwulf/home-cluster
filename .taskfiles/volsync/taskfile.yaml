@@ -3,6 +3,7 @@ version: "3"
 
 x-task-vars: &task-vars
   app: '{{ .app }}'
+  dest: '{{ .dest }}'
   controller: '{{ .controller }}'
   ns: '{{ .ns }}'
   claim: '{{ .claim }}'
@@ -36,7 +37,7 @@ tasks:
 
   # --------------------------------------------------------------------------
   list:
-    desc: List all snapshots taken by restic for a given ReplicationSource (ex. task volsync:list app=plex [ns=default])
+    desc: List all snapshots taken by restic for a given ReplicationSource (ex. task volsync:list app=plex [ns=default] [dest=backup])
     silent: true
     cmds:
       - envsubst < <(cat {{ .listJobTemplate }}) | kubectl apply -f -
@@ -47,12 +48,38 @@ tasks:
     vars:
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
+      dest: '{{ .dest | default "backup" }}'
     env: *task-vars
     preconditions:
       - sh: test -f {{ .waitForJobScript }}
       - sh: test -f {{ .listJobTemplate }}
-      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-backup"
-        msg: Missing Secret - check the app & namespace
+      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
+        msg: "Missing Secret - check the app, dest & namespace: {{ .app }}-volsync-{{ .dest }}"
+
+  cleanup:
+    desc: Delete volume populator PVCs in all namespaces
+    cmds:
+      - for: { var: dest }
+        cmd: |
+          {{- $items := (split "/" .ITEM) }}
+          kubectl {{.context}} delete pvc -n {{ $items._0 }} {{ $items._1 }}
+      - for: { var: cache }
+        cmd: |
+          {{- $items := (split "/" .ITEM) }}
+          kubectl {{.context}} delete pvc -n {{ $items._0 }} {{ $items._1 }}
+      - for: { var: snaps }
+        cmd: |
+          {{- $items := (split "/" .ITEM) }}
+          kubectl {{.context}} delete volumesnapshot -n {{ $items._0 }} {{ $items._1 }}
+    env: *task-vars
+    vars:
+      dest:
+        sh: kubectl {{.cluster}} get pvc --all-namespaces --no-headers | grep -E "volsync-.*-dest" | awk '{print $1 "/" $2}'
+      cache:
+        sh: kubectl {{.context}} get pvc --all-namespaces --no-headers | grep -E "volsync-.*-cache" | awk '{print $1 "/" $2}'
+      snaps:
+        sh: kubectl {{.context}} get volumesnapshot --all-namespaces --no-headers | grep -E "volsync-.*-dest-.*" | awk '{print $1 "/" $2}'
+      context: "{{ if .cluster }}--context {{.cluster}}{{ end }}"
 
   unlock:
     desc: Unlocks restic repository for a given ReplicationSource (ex. task volsync:unlock app=plex [ns=default])
@@ -66,12 +93,13 @@ tasks:
     vars:
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
+      dest: '{{ .dest | default "backup" }}'
     env: *task-vars
     preconditions:
       - sh: test -f {{ .waitForJobScript }}
       - sh: test -f {{ .unlockJobTemplate }}
-      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-backup"
-        msg: Missing Secret - check the app & namespace
+      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
+        msg: Missing Secret - check the app, dest & namespace
 
   # To run backup jobs in parallel for all replicationsources:
   #  - kubectl get replicationsources --all-namespaces --no-headers | awk '{print $2, $1}' | xargs --max-procs=4 -l bash -c 'task volsync:snapshot app=$0 ns=$1'
@@ -88,13 +116,14 @@ tasks:
     vars:
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
+      dest: '{{ .dest | default "backup" }}'
     env: *task-vars
     preconditions:
       - sh: test -f {{ .waitForJobScript }}
       - sh: kubectl -n {{ .ns }} get replicationsources {{ .app }}
         msg: "ReplicationSource '{{ .app }}' not found in namespace '{{ .ns }}'"
-      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-backup"
-        msg: Missing Secret - check the app & namespace
+      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
+        msg: Missing Secret - check the app, dest & namespace
 
   # To run restore jobs in parallel for all replicationdestinations:
   #   - kubectl get replicationsources --all-namespaces --no-headers | awk '{print $2, $1}' | xargs --max-procs=2 -l bash -c 'task volsync:restore app=$0 ns=$1'
