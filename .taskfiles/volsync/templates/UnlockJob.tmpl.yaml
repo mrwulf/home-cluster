@@ -16,4 +16,12 @@ spec:
           args: ["unlock", "--remove-all"]
           envFrom:
             - secretRef:
-                name: "${app}-volsync-backup"
+                name: "${app}-volsync-${dest}"
+          volumeMounts:
+            - name: repository
+              mountPath: /repository
+      volumes:
+        - name: repository
+          nfs:
+            server: 10.0.1.15
+            path: /mnt/user/backups/volsync
