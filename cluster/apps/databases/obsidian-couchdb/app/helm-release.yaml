@@ -16,26 +16,9 @@ spec:
 
   values:
     controllers:
-      main:
-        type: statefulset
+      obsidian-couchdb:
         annotations:
           reloader.stakater.com/auto: "true"
-
-        pod:
-          securityContext:
-            runAsUser: 568
-            runAsGroup: 568
-            fsGroup: 568
-            fsGroupChangePolicy: "OnRootMismatch"
-
-        statefulset:
-          volumeClaimTemplates:
-            - name: data
-              accessMode: ReadWriteOnce
-              size: 10Gi
-              storageClass: ceph-block
-              globalMounts:
-                - path: /opt/couchdb/data
 
         initContainers:
           init-config:
@@ -46,7 +29,6 @@ spec:
               - "sh"
               - "-c"
               - "cp /tmp/config/*.ini /opt/couchdb/etc/default.d/; ls -lrt /opt/couchdb/etc/default.d;"
-
         containers:
           main:
             image:
@@ -68,11 +50,18 @@ spec:
                 cpu: 63m
                 memory: 256M
               limits:
-                memory: 512M
+                memory: 1Gi
+
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
 
     service:
       main:
-        controller: main
+        controller: obsidian-couchdb
         ports:
           http:
             port: 5984
@@ -103,7 +92,13 @@ spec:
           main:
             init-config:
               - path: /tmp/config
-
+      data:
+        enabled: true
+        existingClaim: data-obsidian-couchdb-0
+        advancedMounts:
+          obsidian-couchdb:
+            app:
+              - path: /opt/couchdb/data
       config-storage:
         type: emptyDir
         globalMounts:
