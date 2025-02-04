@@ -17,6 +17,7 @@ spec:
   path: ./cluster/apps/ai/open-webui/app
   components:
     - ../../../_common
+    - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
     kind: GitRepository
