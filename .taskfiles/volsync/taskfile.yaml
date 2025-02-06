@@ -10,6 +10,7 @@ x-task-vars: &task-vars
   ts: '{{ .ts }}'
   ks: '{{ .ks }}'
   previous: '{{ .previous }}'
+  restoreAsOf: '{{ .restoreAsOf }}'
 
 vars:
   destinationTemplate: "{{ .ROOT_DIR }}/.taskfiles/volsync/templates/ReplicationDestination.tmpl.yaml"
@@ -34,6 +35,74 @@ tasks:
     preconditions:
       - { msg: "Start file not found", sh: "test -f {{ .start }}" }
       - { msg: "End file not found", sh: "test -d {{ .end }}" }
+
+  # --------------------------------------------------------------------------
+  toolbox:
+    desc: Toolbox with restic for a given ReplicationSource (ex. task volsync:toolbox app=plex [ns=default] [dest=backup] )
+    preconditions:
+      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
+        msg: "Missing Secret - check the app, dest & namespace: {{ .app }}-volsync-{{ .dest }}"
+    interactive: true
+    silent: true
+    vars:
+      # VOLUME: "{{.CLI_ARGS}}"
+      NAS_ADDRESS:
+        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.CORE_NFS_SERVER'"
+      NAS_PATH:
+        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_VOLSYNC_PATH'"
+      app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
+      ns: '{{ .ns | default "default" }}'
+      dest: '{{ .dest | default "backup" }}'
+      SECRETREF: '{{ .app }}-volsync-{{ .dest }}'
+    cmds:
+      - |
+        kubectl run toolbox-volsync-{{ .app }}-{{ .ts }} -n {{.ns}} -it --rm --image=null --overrides='
+          {
+            "spec": {
+              "containers": [
+                {
+                  "name": "debug",
+                  "image": "docker.io/library/alpine:latest",
+                  "command": [
+                    "/bin/sh"
+                  ],
+                  "envFrom": [
+                    {"secretRef": {"name": "{{.SECRETREF}}" }}
+                  ],
+                  "stdin": true,
+                  "stdinOnce": true,
+                  "tty": true,
+                  "lifecycle": {
+                    "postStart": {
+                      "exec": {
+                        "command": [
+                          "/bin/sh",
+                          "-c",
+                          "apk add --no-cache restic bash &"
+                        ]
+                      }
+                    }
+                  },
+                  "volumeMounts": [
+                    {
+                      "name": "repository",
+                      "mountPath": "/repository"
+                    }
+                  ]
+                }
+              ],
+              "volumes": [
+                {
+                  "name": "repository",
+                  "nfs": {
+                    "server": "{{.NAS_ADDRESS}}",
+                    "path": "{{.NAS_PATH}}"
+                  }
+                }
+              ],
+              "restartPolicy": "Never"
+            }
+          }'
 
   # --------------------------------------------------------------------------
   list:
@@ -142,15 +211,17 @@ tasks:
     vars:
       app: '{{ or .app (fail "Variable `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
+      rs: '{{ .app }}{{ if .dest }}-{{ .dest }}{{ end }}'
+      dest: '{{ .dest | default "backup" }}'
       # 1) Query to find the Flux Kustomization associated with the ReplicationSource (app)
       ks:
         sh: |
-          kubectl -n {{ .ns }} get replicationsource {{ .app }} \
+          kubectl -n {{ .ns }} get replicationsource {{ .rs }} \
             -o jsonpath="{.metadata.labels.kustomize\.toolkit\.fluxcd\.io/name}"
       # 2) Query to find the Claim associated with the ReplicationSource (app)
       claim:
         sh: |
-          kubectl -n {{ .ns }} get replicationsource {{ .app }} \
+          kubectl -n {{ .ns }} get replicationsource {{ .rs }} \
             -o jsonpath="{.spec.sourcePVC}"
       # 3) Query to find the controller associated with the PersistentVolumeClaim (claim)
       controller:
@@ -162,12 +233,13 @@ tasks:
             echo "statefulset.apps/$app"
           fi
       previous: "{{ .previous | default 2 }}"
+      restoreAsOf: '{{ .restoreAsOf | default "2024-04-12T00:00:00-00:00" }}'
     env: *task-vars
     preconditions:
       - sh: test -f {{ .wipeJobTemplate }}
       - sh: test -f {{ .destinationTemplate }}
       - sh: test -f {{ .waitForJobScript }}
-      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-backup"
+      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-${dest}"
         msg: Missing Secret - check the app & namespace
 
   # Suspend the Flux ks and hr
@@ -180,7 +252,7 @@ tasks:
       - kubectl -n {{ .ns }} wait pod --for delete --selector="app.kubernetes.io/name={{ .app }}" --timeout=2m
     env: *task-vars
     preconditions:
-      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-backup"
+      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
         msg: Missing Secret - check the app & namespace
 
   # Wipe the PVC of all data
@@ -194,20 +266,21 @@ tasks:
       - kubectl -n {{ .ns }} delete job wipe-{{ .app }}-{{ .claim }}-{{ .ts }}
     env: *task-vars
     preconditions:
-      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-backup"
+      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
         msg: Missing Secret - check the app & namespace
 
   # Create VolSync replicationdestination CR to restore data
   restore-task:
     internal: true
     cmds:
-      - envsubst < <(cat {{ .destinationTemplate }}) | kubectl apply -f -
+      - |
+        envsubst < <(cat {{ .destinationTemplate }}) | kubectl apply -f -
       - bash {{ .waitForJobScript }} volsync-dst-{{ .app }}-{{ .claim }}-{{ .ts }} {{ .ns }}
       - kubectl -n {{ .ns }} wait job/volsync-dst-{{ .app }}-{{ .claim }}-{{ .ts }} --for condition=complete --timeout=120m
       - kubectl -n {{ .ns }} delete replicationdestination {{ .app }}-{{ .claim }}-{{ .ts }}
     env: *task-vars
     preconditions:
-      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-backup"
+      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
         msg: Missing Secret - check the app & namespace
 
   # Resume Flux ks and hr
@@ -218,5 +291,5 @@ tasks:
       - flux -n flux-system resume kustomization {{ .ks }}
     env: *task-vars
     preconditions:
-      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-backup"
+      - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
         msg: Missing Secret - check the app & namespace
