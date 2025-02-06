@@ -8,9 +8,10 @@ spec:
   trigger:
     manual: restore-once
   restic:
-    repository: "${app}-volsync-backup"
+    repository: "${app}-volsync-${dest}"
     destinationPVC: "${claim}"
     copyMethod: Direct
+    enableFileDeletion: true
     storageClassName: ceph-block
     # IMPORTANT NOTE:
     #   Set to the last X number of snapshots to restore from
@@ -22,4 +23,4 @@ spec:
     #   from a application that started with default data in the PVC.
     #   Do not restore snapshots made after the following RFC3339 Timestamp.
     #   date --rfc-3339=seconds (--utc)
-    restoreAsOf: "2024-04-12T00:00:00-00:00"
+    restoreAsOf: ${restoreAsOf}

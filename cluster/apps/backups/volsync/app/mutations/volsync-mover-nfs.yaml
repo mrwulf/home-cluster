@@ -47,7 +47,7 @@ spec:
                 name: "repository",
                 nfs: Object.spec.template.spec.volumes.nfs{
                   server: "${CORE_NFS_SERVER:=nas0}",
-                  path: "/mnt/user/backups/volsync"
+                  path: "${NFS_VOLSYNC_PATH:=/backups}"
                 }
               }
             }
