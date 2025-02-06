@@ -27,6 +27,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      APP_UID: "999"
+      APP_GID: "999"
       CLAIM: unifi-data
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_START_MINUTE: "37"
