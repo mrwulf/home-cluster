@@ -22,6 +22,13 @@ spec:
     remediation:
       retries: 3
   values:
+    defaultPodOptions:
+      securityContext:
+        runAsUser: "${APP_UID}"
+        runAsGroup: "${APP_GID}"
+        runAsNonRoot: true
+        fsGroup: "${APP_GID}"
+        fsGroupChangePolicy: "OnRootMismatch"
     controllers:
       main:
         annotations:
@@ -34,8 +41,8 @@ spec:
 
             env:
               RUNAS_UID0: "false"
-              UNIFI_UID: "999"
-              UNIFI_GID: "999"
+              UNIFI_UID: "${APP_UID}"
+              UNIFI_GID: "${APP_GID}"
               UNIFI_STDOUT: "true"
               JVM_INIT_HEAP_SIZE:
               JVM_MAX_HEAP_SIZE: 1024M
