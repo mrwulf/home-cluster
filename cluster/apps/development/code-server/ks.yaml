@@ -3,19 +3,18 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app open-webui
+  name: &app code-server
   namespace: flux-system
 spec:
-  targetNamespace: ai
+  targetNamespace: development
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: searxng
     - name: volsync
     - name: traefik
-    - name: external-secrets-stores
-  path: ./cluster/apps/ai/open-webui/app
+    # - name: rook-ceph-cluster
+  path: ./cluster/apps/development/code-server/app
   components:
     - ../../../_common
     - ../../../../templates/volsync/primary
@@ -29,5 +28,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_START_MINUTE: "48"
+      CLAIM: code-server-storage
+      VOLSYNC_CAPACITY: 20Gi
+      VOLSYNC_START_MINUTE: "55"
