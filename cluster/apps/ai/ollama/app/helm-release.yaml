@@ -23,6 +23,15 @@ spec:
       retries: 3
       strategy: rollback
   values:
+    defaultPodOptions:
+      securityContext:
+        runAsUser: "${APP_UID}"
+        runAsGroup: "${APP_GID}"
+        runAsNonRoot: true
+        fsGroup: "${APP_GID}"
+        fsGroupChangePolicy: "OnRootMismatch"
+        supplementalGroups:
+          - 44
     controllers:
       ollama:
         annotations:
@@ -47,8 +56,10 @@ spec:
               requests:
                 cpu: 500m
                 memory: 2Gi
+                gpu.intel.com/i915: 1
               limits:
                 memory: 16Gi
+                gpu.intel.com/i915: 1
     service:
       app:
         controller: ollama
