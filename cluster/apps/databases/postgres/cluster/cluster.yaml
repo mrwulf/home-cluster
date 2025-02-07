@@ -37,7 +37,7 @@ spec:
         maxParallel: 8
       destinationPath: s3://postgresql/
       endpointURL: https://cdn.${SECRET_DOMAIN}
-      serverName: postgres-v4
+      serverName: postgres-15
       s3Credentials:
         accessKeyId:
           name: postgres-minio
