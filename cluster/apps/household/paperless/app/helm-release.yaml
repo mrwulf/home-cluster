@@ -52,7 +52,7 @@ spec:
               PAPERLESS_OCR_LANGUAGES: eng
               PAPERLESS_OCR_LANGUAGE: eng
               PAPERLESS_PORT: 8000
-              PAPERLESS_REDIS: redis://paperless-redis.databases.svc.cluster.local.:6379
+              PAPERLESS_REDIS: redis://dragonfly.databases.svc.cluster.local.:6379/2
               PAPERLESS_TASK_WORKERS: "2"
               PAPERLESS_TIME_ZONE: "${TIMEZONE}"
               PAPERLESS_URL: https://paperless.home.${SECRET_DOMAIN}
