@@ -29,8 +29,6 @@ spec:
   dependsOn:
     - name: immich-server
       namespace: household
-    - name: redis
-      namespace: databases
 
   values:
     controllers:
