@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app authentic
+  namespace: flux-system
+spec:
+  targetNamespace: auth
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: volsync
+    - name: dragonfly-cluster
+    # - name: rook-ceph-cluster
+  path: ./cluster/apps/auth/authentik/app
+  components:
+    - ../../../_common
+    # - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 30m
+  timeout: 5m

@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: authentik
-  namespace: auth
 spec:
   interval: 30m
   chart:
@@ -97,6 +96,10 @@ spec:
         use_ssl: true
         from: "Authentik <auth@${SECRET_DOMAIN}>"
 
+      redis:
+        host: dragonfly.databases.svc.cluster.local
+        db: 1
+
     worker:
       autoscaling:
         enabled: true
@@ -104,9 +107,3 @@ spec:
 
     postgresql:
       enabled: false
-
-    redis:
-      enabled: true
-      master:
-        persistence:
-          existingClaim: authentik-redis-db
