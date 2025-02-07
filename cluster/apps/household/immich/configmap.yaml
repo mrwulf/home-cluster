@@ -10,7 +10,8 @@ data:
   IMMICH_SERVER_URL: http://immich-server.household.svc.cluster.local:3001
   IMMICH_WEB_URL: http://immich-web.household.svc.cluster.local:3000
   LOG_LEVEL: verbose
-  REDIS_URL: ioredis://eyJkYiI6MTUsInNlbnRpbmVscyI6W3siaG9zdCI6InJlZGlzLW5vZGUtMC5yZWRpcy1oZWFkbGVzcy5kYXRhYmFzZXMuc3ZjLmNsdXN0ZXIubG9jYWwiLCJwb3J0IjoyNjM3OX0seyJob3N0IjoicmVkaXMtbm9kZS0xLnJlZGlzLWhlYWRsZXNzLmRhdGFiYXNlcy5zdmMuY2x1c3Rlci5sb2NhbCIsInBvcnQiOjI2Mzc5fSx7Imhvc3QiOiJyZWRpcy1ub2RlLTIucmVkaXMtaGVhZGxlc3MuZGF0YWJhc2VzLnN2Yy5jbHVzdGVyLmxvY2FsIiwicG9ydCI6MjYzNzl9XSwibmFtZSI6InJlZGlzLW1hc3RlciJ9
+  REDIS_HOSTNAME: dragonfly.database.svc.cluster.local
+  REDIS_DBINDEX: "4"
   OAUTH_ENABLED: "true"
   OAUTH_ISSUER_URL: "https://auth.${SECRET_DOMAIN}/application/o/immich/.well-known/openid-configuration"
   OAUTH_AUTO_REGISTER: "true"

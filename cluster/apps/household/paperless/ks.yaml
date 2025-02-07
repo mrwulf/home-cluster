@@ -12,6 +12,7 @@ spec:
   dependsOn:
     - name: external-secrets-stores
     - name: volsync
+    - name: dragonfly-cluster
   interval: 30m
   path: ./cluster/apps/household/paperless/app
   components:

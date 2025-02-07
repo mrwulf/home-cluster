@@ -32,7 +32,7 @@ spec:
               SEARXNG_BASE_URL: "https://search.home.${SECRET_DOMAIN}"
               SEARXNG_URL: "https://search.home.${SECRET_DOMAIN}"
               SEARXNG_PORT: &httpPort 8080
-              SEARXNG_REDIS_URL: redis://dragonfly.databases.svc.cluster.local:6379
+              SEARXNG_REDIS_URL: redis://dragonfly.databases.svc.cluster.local:6379/3
               SEARXNG_SECRET: "${SECRET_SEARXNG_SECRET}"
             probes:
               liveness: &probes
