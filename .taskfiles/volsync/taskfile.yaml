@@ -176,15 +176,17 @@ tasks:
   snapshot:
     desc: Trigger a Restic ReplicationSource snapshot (ex. task volsync:snapshot app=plex [ns=default])
     cmds:
-      - kubectl -n {{ .ns }} patch replicationsources {{ .app }} --type merge -p '{"spec":{"trigger":{"manual":"{{ .ts }}"}}}'
-      - bash {{ .waitForJobScript }} volsync-src-{{ .app }} {{ .ns }}
-      - kubectl -n {{ .ns }} wait job/volsync-src-{{ .app }} --for condition=complete --timeout=120m
+      - kubectl -n {{ .ns }} patch replicationsources {{ .rs }} --type merge -p '{"spec":{"trigger":{"manual":"{{ .ts }}"}}}'
+      - bash {{ .waitForJobScript }} volsync-src-{{ .rs }} {{ .ns }}
+      - kubectl -n {{ .ns }} wait job/volsync-src-{{ .rs }} --for condition=complete --timeout=120m
       # TODO: Find a way to output logs
       # Error from server (NotFound): jobs.batch "volsync-src-zzztest" not found
       # - kubectl -n {{ .ns }} logs job/volsync-src-{{ .app }}
+      - kubectl -n {{ .ns }} patch replicationsources {{ .rs }} --type merge -p '{"spec":{"trigger":{"manual":null}}}'
     vars:
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
+      rs: '{{ .app }}{{ if .dest }}-{{ .dest }}{{ end }}'
       dest: '{{ .dest | default "backup" }}'
     env: *task-vars
     preconditions:
