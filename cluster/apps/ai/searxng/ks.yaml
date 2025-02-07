@@ -22,6 +22,3 @@ spec:
   wait: false
   interval: 30m
   timeout: 3m
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
