@@ -23,15 +23,6 @@ spec:
       retries: 3
       strategy: rollback
   values:
-    defaultPodOptions:
-      securityContext:
-        runAsUser: "${APP_UID}"
-        runAsGroup: "${APP_GID}"
-        runAsNonRoot: true
-        fsGroup: "${APP_GID}"
-        fsGroupChangePolicy: "OnRootMismatch"
-        supplementalGroups:
-          - 44
     controllers:
       ollama:
         annotations:
