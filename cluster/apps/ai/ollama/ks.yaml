@@ -10,8 +10,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  # dependsOn:
-    # - name: volsync
+  dependsOn:
+    - name: volsync
     # - name: rook-ceph-cluster
   path: ./cluster/apps/ai/ollama/app
   components:

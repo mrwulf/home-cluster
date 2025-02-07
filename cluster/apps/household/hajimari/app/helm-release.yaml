@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: hajimari
-  namespace: household
 spec:
   interval: 30m
   chart:
@@ -14,14 +13,6 @@ spec:
         kind: HelmRepository
         name: hajimari-charts
         namespace: flux-system
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
-
   values:
     image:
       repository: ghcr.io/toboshii/hajimari
@@ -81,9 +72,6 @@ spec:
             - name: NAS
               icon: 'mdi:nas'
               url: https://${CORE_NFS_SERVER}/
-            - name: OurBackup
-              icon: 'mdi:nas'
-              url: https://ourbackup.home:5001/
       globalBookmarks:
         - group: Talos
           bookmarks:
@@ -93,10 +81,10 @@ spec:
               url: "https://github.com/siderolabs/talos"
             - name: "Github: TalHelper"
               url: "https://github.com/budimanjojo/talhelper"
-        - group: k8s@home
+        - group: kubernetes
           bookmarks:
             - name: Search
-              url: https://nanne.dev/k8s-at-home-search
+              url: https://kubesearch.dev/
     ingress:
       main:
         enabled: true
@@ -116,10 +104,6 @@ spec:
               - *host
             secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
 
-    persistence:
-      data:
-        enabled: true
-        existingClaim: hajimari-config
     podAnnotations:
       configmap.reloader.stakater.com/reload: "hajimari-settings"
     resources:
