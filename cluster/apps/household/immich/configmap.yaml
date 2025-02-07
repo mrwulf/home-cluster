@@ -10,7 +10,7 @@ data:
   IMMICH_SERVER_URL: http://immich-server.household.svc.cluster.local:3001
   IMMICH_WEB_URL: http://immich-web.household.svc.cluster.local:3000
   LOG_LEVEL: verbose
-  REDIS_HOSTNAME: dragonfly.database.svc.cluster.local
+  REDIS_HOSTNAME: dragonfly.databases.svc.cluster.local
   REDIS_DBINDEX: "4"
   OAUTH_ENABLED: "true"
   OAUTH_ISSUER_URL: "https://auth.${SECRET_DOMAIN}/application/o/immich/.well-known/openid-configuration"

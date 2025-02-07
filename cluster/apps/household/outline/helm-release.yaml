@@ -72,8 +72,7 @@ spec:
               OIDC_USERINFO_URI: "https://auth.${SECRET_DOMAIN}/application/o/userinfo/"
               OIDC_USERNAME_CLAIM: email
               PORT: 8080
-              REDIS_HOST: dragonfly.database.svc.cluster.local
-              REDIS_DB: "6"
+              REDIS_URL: redis://dragonfly.databases.svc.cluster.local:6379/6
               SMTP_HOST: smtp-relay.system.svc.cluster.local.
               SMTP_PORT: 2525
               SMTP_FROM_EMAIL: "outline@${SECRET_DOMAIN}"
