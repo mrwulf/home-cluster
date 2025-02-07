@@ -45,21 +45,21 @@ spec:
         secretAccessKey:
           name: postgres-minio
           key: MINIO_SECRET_KEY
-  # bootstrap:
-  #   recovery:
-  #     source: postgres-backup
-  # externalClusters:
-  #   - name: postgres-backup
-  #     barmanObjectStore:
-  #       destinationPath: s3://postgresql/
-  #       endpointURL: https://cdn.${SECRET_DOMAIN}
-  #       serverName: postgres-v4
-  #       s3Credentials:
-  #         accessKeyId:
-  #           name: postgres-minio
-  #           key: MINIO_ACCESS_KEY
-  #         secretAccessKey:
-  #           name: postgres-minio
-  #           key: MINIO_SECRET_KEY
-  #       wal:
-  #         maxParallel: 8
+  bootstrap:
+    recovery:
+      source: postgres-backup
+  externalClusters:
+    - name: postgres-backup
+      barmanObjectStore:
+        destinationPath: s3://postgresql/
+        endpointURL: https://cdn.${SECRET_DOMAIN}
+        serverName: postgres-16
+        s3Credentials:
+          accessKeyId:
+            name: postgres-minio
+            key: MINIO_ACCESS_KEY
+          secretAccessKey:
+            name: postgres-minio
+            key: MINIO_SECRET_KEY
+        wal:
+          maxParallel: 8
