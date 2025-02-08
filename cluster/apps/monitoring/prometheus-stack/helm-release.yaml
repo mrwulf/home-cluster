@@ -185,6 +185,30 @@ spec:
               editable: true
               options:
                 path: /var/lib/grafana/dashboards/default
+            - name: "unifi"
+              orgId: 1
+              folder: ""
+              type: file
+              disableDeletion: false
+              editable: true
+              options:
+                path: /var/lib/grafana/dashboards/unifi
+            - name: "ceph"
+              orgId: 1
+              folder: ""
+              type: file
+              disableDeletion: false
+              editable: true
+              options:
+                path: /var/lib/grafana/dashboards/ceph
+            - name: "kubernetes"
+              orgId: 1
+              folder: ""
+              type: file
+              disableDeletion: false
+              editable: true
+              options:
+                path: /var/lib/grafana/dashboards/kubernetes
       dashboards:
         default:
           spegel:
