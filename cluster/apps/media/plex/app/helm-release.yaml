@@ -60,7 +60,7 @@ spec:
         type: LoadBalancer
         annotations:
           traefik.ingress.kubernetes.io/service.serversscheme: https
-        loadBalancerIP: ${PLEX_ADDR}
+        loadBalancerIP: ${PLEX_ADDR:=1.1.1.1}
         externalTrafficPolicy: Local
         ports:
           http:
