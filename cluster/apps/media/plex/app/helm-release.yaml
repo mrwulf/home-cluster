@@ -59,8 +59,8 @@ spec:
         controller: main
         type: LoadBalancer
         annotations:
+          lbipam.cilium.io/ips: "${PLEX_ADDR:=1.1.1.1}"
           traefik.ingress.kubernetes.io/service.serversscheme: https
-        loadBalancerIP: "${PLEX_ADDR:=1.1.1.1}"
         externalTrafficPolicy: Local
         ports:
           http:
@@ -91,10 +91,10 @@ spec:
       main:
         className: "traefik"
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
-          external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET}"
+          external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=base.domain}"
           hajimari.io/enable: "true"
           hajimari.io/group: "Media"
           hajimari.io/icon: "mdi:plex"
@@ -118,6 +118,17 @@ spec:
 
       transcode:
         type: emptyDir
+        advancedMounts:
+          main:
+            app:
+              - path: /transcode
+
+      logs:
+        type: emptyDir
+        advancedMounts:
+          main:
+            app:
+              - path: /config/Library/Application Support/Plex Media Server/Logs
 
       backups:
         type: nfs
