@@ -16,7 +16,7 @@ spec:
         namespace: flux-system
   values:
     controllers:
-      main:
+      plex:
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
@@ -45,6 +45,32 @@ spec:
               TZ: "${TIMEZONE}"
               ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,http://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
               # CLAIM_TOKEN: ''
+              
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /identity
+                    port: 32400
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+
             resources:
               requests:
                 cpu: 1
@@ -56,7 +82,7 @@ spec:
 
     service:
       main:
-        controller: main
+        controller: plex
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: "${PLEX_ADDR:=1.1.1.1}"
@@ -118,17 +144,13 @@ spec:
 
       transcode:
         type: emptyDir
-        advancedMounts:
-          main:
-            app:
-              - path: /transcode
+        globalMounts:
+          - path: /transcode
 
       logs:
         type: emptyDir
-        advancedMounts:
-          main:
-            app:
-              - path: /config/Library/Application Support/Plex Media Server/Logs
+        globalMounts:
+          - path: /config/Library/Application Support/Plex Media Server/Logs
 
       backups:
         type: nfs
