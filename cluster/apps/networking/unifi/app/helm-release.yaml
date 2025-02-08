@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 3.6.1
+      version: 3.7.0
       interval: 15m
       sourceRef:
         kind: HelmRepository
@@ -59,7 +59,7 @@ spec:
       main:
         controller: main
         type: LoadBalancer
-        loadBalancerIP: "${UNIFI_ADDR}"
+        loadBalancerIP: "${UNIFI_ADDR:=1.1.1.1}"
         externalTrafficPolicy: Local
         annotations:
           traefik.ingress.kubernetes.io/service.serversscheme: https
