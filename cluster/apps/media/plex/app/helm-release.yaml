@@ -92,26 +92,6 @@ spec:
           http:
             port: 32400
             protocol: TCP
-          companion:
-            enabled: true
-            port: 8324
-            protocol: TCP
-          gdm1:
-            enabled: true
-            port: 32410
-            protocol: UDP
-          gdm2:
-            enabled: true
-            port: 32412
-            protocol: UDP
-          gdm3:
-            enabled: true
-            port: 32413
-            protocol: UDP
-          gdm4:
-            enabled: true
-            port: 32414
-            protocol: UDP
 
     ingress:
       main:
