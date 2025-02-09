@@ -112,3 +112,7 @@ spec:
         memory: 64M
       limits:
         memory: 64M
+    persistence:
+      data:
+        enabled: true
+        type: emptyDir
