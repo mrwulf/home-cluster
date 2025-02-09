@@ -22,7 +22,7 @@ spec:
           main:
             image:
               repository: vaultwarden/server
-              tag: 1.33.1-alpine
+              tag: 1.33.2-alpine
             env:
               DATA_FOLDER: "data"
               ICON_CACHE_FOLDER: "data/icon_cache"
