@@ -141,10 +141,10 @@ spec:
           enabled: false
           # disable_login_form: false
         auth.anonymous:
-          enabled: true
-          org_name: HomeOps
-          org_id: 1
-          org_role: Viewer
+          enabled: false
+          # org_name: HomeOps
+          # org_id: 1
+          # org_role: Viewer
 
       datasources:
         datasource.yaml:
