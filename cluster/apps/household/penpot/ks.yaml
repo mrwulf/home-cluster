@@ -28,7 +28,7 @@ spec:
     substitute:
       APP: *app
       # CLAIM: "penpot-assets"
-      APP_UID: "568"
-      APP_GID: "568"
+      APP_UID: "1001"
+      APP_GID: "1001"
       # VOLSYNC_CAPACITY: 10Gi
       # VOLSYNC_START_MINUTE: "33"
