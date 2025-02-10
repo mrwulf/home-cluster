@@ -1,0 +1,153 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app penpot
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.7.0
+      interval: 30m
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+
+  values:
+    # https://github.com/degola/penpot-kubernetes/blob/main/secrets.yaml
+    defaultPodOptions:
+      securityContext:
+        runAsUser: "${APP_UID}"
+        runAsGroup: "${APP_GID}"
+        runAsNonRoot: true
+        fsGroup: "${APP_GID}"
+        fsGroupChangePolicy: "OnRootMismatch"
+
+    controllers:
+      frontend:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          01-init-db:
+            image:
+              repository: ghcr.io/haraldkoch/postgres-init
+              tag: 16.6
+            envFrom:
+              - secretRef:
+                  name: *app
+        containers:
+          app:
+            image:
+              repository: penpotapp/frontend
+              tag: latest
+            envFrom:
+              - secretRef:
+                  name: *app
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 2Gi
+      backend:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: penpotapp/backend
+              tag: latest
+            envFrom:
+              - secretRef:
+                  name: *app
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 2Gi
+      exporter:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: penpotapp/exporter
+              tag: latest
+            envFrom:
+              - secretRef:
+                  name: *app
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 2Gi
+
+    service:
+      frontend:
+        controller: frontend
+        ports:
+          http:
+            port: 80
+      backend:
+        controller: backend
+        ports:
+          http:
+            port: 6060
+      exporter:
+        controller: exporter
+        ports:
+          http:
+            port: 6061
+
+    ingress:
+      app:
+        className: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+        hosts:
+          - host: &host "{{ .Release.Name }}.home.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: frontend
+                  port: http
+              - path: /api/export
+                pathType: Prefix
+                service:
+                  identifier: exporter
+                  port: http
+              - path: /api
+                pathType: Prefix
+                service:
+                  identifier: backend
+                  port: http
+              - path: /assets
+                pathType: Prefix
+                service:
+                  identifier: backend
+                  port: http
+              - path: /webhooks
+                pathType: Prefix
+                service:
+                  identifier: backend
+                  port: http
+              - path: /ws/notifications
+                pathType: Prefix
+                service:
+                  identifier: backend
+                  port: http
+
+        tls:
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+
+    persistence:
+      data:
+        existingClaim: "${CLAIM}"
+        globalMounts:
+          - path: /opt/data/assets
