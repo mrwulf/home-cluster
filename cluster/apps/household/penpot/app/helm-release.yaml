@@ -89,7 +89,7 @@ spec:
         controller: frontend
         ports:
           http:
-            port: 80
+            port: 8080
       backend:
         controller: backend
         ports:
