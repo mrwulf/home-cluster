@@ -148,6 +148,6 @@ spec:
 
     persistence:
       data:
-        existingClaim: "${CLAIM}"
+        type: emptyDir
         globalMounts:
           - path: /opt/data/assets
