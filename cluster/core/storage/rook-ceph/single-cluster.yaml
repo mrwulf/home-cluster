@@ -226,6 +226,7 @@ spec:
               replicated:
                 size: 3
               name: data0
+          preserveFilesystemOnDelete: true
           metadataServer:
             activeCount: 1
             activeStandby: true

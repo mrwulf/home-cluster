@@ -29,7 +29,7 @@ spec:
       tag: v1.16.0-4.g6da8ef89d
     enableDiscoveryDaemon: true
     csi:
-      enableCephfsDriver: false
+      enableCephfsDriver: true
       enableVolumeGroupSnapshot: false
       cephFSKernelMountOptions: ms_mode=prefer-crc
       enableMetadata: true
