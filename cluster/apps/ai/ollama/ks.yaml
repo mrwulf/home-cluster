@@ -16,7 +16,7 @@ spec:
   path: ./cluster/apps/ai/ollama/app
   components:
     - ../../../_common
-    - ../../../../templates/volsync/primary
+    - ../../../../templates/volsync/first
   prune: true
   sourceRef:
     kind: GitRepository
@@ -30,5 +30,6 @@ spec:
       VOLSYNC_STORAGECLASS: ceph-filesystem
       VOLSYNC_SNAPSHOTCLASS: csi-ceph-filesystem
       VOLSYNC_ACCESSMODES: ReadWriteMany
+      VOLSYNC_COPY_METHOD: Direct
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_START_MINUTE: "18"
