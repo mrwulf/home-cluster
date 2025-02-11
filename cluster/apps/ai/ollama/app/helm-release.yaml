@@ -70,7 +70,9 @@ spec:
     persistence:
       models:
         enabled: true
-        existingClaim: ollama
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/k8s/ollama-models"
         advancedMounts:
           ollama:
             app:
