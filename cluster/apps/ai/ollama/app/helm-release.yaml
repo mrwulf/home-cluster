@@ -79,6 +79,10 @@ spec:
               - path: *modelPath
       config:
         enabled: true
-        type: emptyDir
-        globalMounts:
-          - path: /root/.ollama
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/k8s/ollama-home"
+        advancedMounts:
+          ollama:
+            app:
+              - path: /root/.ollama
