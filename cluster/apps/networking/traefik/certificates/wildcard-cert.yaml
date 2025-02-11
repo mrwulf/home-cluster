@@ -9,7 +9,7 @@ spec:
     annotations:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
       reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
-      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "auth,databases,household,media,monitoring,storage,vaultwarden,flux-system,kube-system,other"
+      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "ai,auth,databases,household,media,monitoring,storage,vaultwarden,flux-system,kube-system,other"
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
