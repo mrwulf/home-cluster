@@ -23,7 +23,7 @@ spec:
   values:
     defaultPodOptions:
       affinity:
-        podAffinity:
+        podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchLabels:
