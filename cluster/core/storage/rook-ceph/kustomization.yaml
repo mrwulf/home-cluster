@@ -5,4 +5,5 @@ resources:
   - single-cluster.yaml
   - role-for-servicemonitors.yaml
   - storage-policy-delete.yaml
+  # - ceph-mon-service.yaml
   # - prometheus-service-monitors.yaml
