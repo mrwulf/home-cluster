@@ -22,7 +22,7 @@ spec:
       retries: 3
   values:
     controllers:
-      main:
+      minio:
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
@@ -74,8 +74,8 @@ spec:
               readiness: *probes
 
     service:
-      main:
-        controller: main
+      minio:
+        controller: minio
         ports:
           http:
             port: &console-port 9001
@@ -86,16 +86,16 @@ spec:
     # https://min.io/docs/minio/linux/reference/minio-mc-admin/mc-admin-prometheus.html
     serviceMonitor:
       main:
-        serviceName: main
+        serviceName: minio
         endpoints:
           - port: api
             scheme: http
             path: /minio/v2/metrics/cluster
             interval: 1m
             scrapeTimeout: 10s
-            bearerTokenSecret:
-              name: minio-secret
-              key: MINIO_PROMETHEUS_TOKEN
+            # bearerTokenSecret:
+            #   name: minio-secret
+            #   key: MINIO_PROMETHEUS_TOKEN
 
     ingress:
       minio:
