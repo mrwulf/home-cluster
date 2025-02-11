@@ -22,12 +22,6 @@ spec:
       retries: 3
   values:
     defaultPodOptions:
-      securityContext:
-        runAsUser: 568
-        runAsGroup: 568
-        runAsNonRoot: true
-        fsGroup: 568
-        fsGroupChangePolicy: "OnRootMismatch"
       affinity:
         podAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
