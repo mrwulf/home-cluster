@@ -16,7 +16,7 @@ spec:
     - name: paperless
   components:
     - ../../../_common
-    - ../../../../templates/volsync/primary
+    - ../../../../templates/volsync/first
   prune: true
   sourceRef:
     kind: GitRepository
