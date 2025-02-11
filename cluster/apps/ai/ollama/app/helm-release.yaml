@@ -70,13 +70,13 @@ spec:
     persistence:
       models:
         enabled: true
-        existingClaim: ollama-models
+        existingClaim: ollama
         advancedMounts:
           ollama:
             app:
               - path: *modelPath
       config:
         enabled: true
-        existingClaim: ollama
+        type: emptyDir
         globalMounts:
           - path: /root/.ollama
