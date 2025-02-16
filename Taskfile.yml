@@ -14,6 +14,7 @@ includes:
   format: .taskfiles/format.yml
   git: .taskfiles/git.yml
   install: .taskfiles/install.yml
+  k: .taskfiles/kubernetes.yml
   lint: .taskfiles/lint.yml
   monitoring: .taskfiles/monitoring.yml
   pre-commit: .taskfiles/pre-commit.yml
