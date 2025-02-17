@@ -23,6 +23,7 @@ tasks:
 
 # Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
   clean-up-pv:
+    desc: Clean a single PV
     requires:
       vars: ["PV"]
     vars:
@@ -49,6 +50,7 @@ tasks:
         # Delete most of the older children: kubectl get volumesnapshot --sort-by='.status.creationTime' -A | grep -v backups | grep -P 'd$' | awk '{print $1, $2}' | xargs -r -L1  kubectl  delete volumesnapshot -n
 
   clean-up-all-pv:
+    desc: Clean up all PVs
     vars:
       PV_LIST:
         sh: kubectl get pv --no-headers | grep -v Bound | awk '{print $1}' | tr '\n' ',' | head -c -1
@@ -59,6 +61,7 @@ tasks:
           PV: '{{.PV}}'
 
   clean-up-img:
+    desc: Clean up an image
     vars:
       IMG: "{{.CLI_ARGS}}"
       CHILDREN:
@@ -84,6 +87,7 @@ tasks:
 # csi-vol-677b530e-f91a-11ec-bc39-0ed6f0913b1b
 
   get-unused-images:
+    desc: Collect unused images
     silent: true
     cmds:
       - |
