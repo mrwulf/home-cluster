@@ -2,8 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
-  name: loki-stack
-  namespace: monitoring
+  name: &app loki-stack
 spec:
   interval: 30m
   chart:
@@ -14,13 +13,6 @@ spec:
         kind: HelmRepository
         name: grafana-charts
         namespace: flux-system
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
   values:
     loki:
       enabled: true
