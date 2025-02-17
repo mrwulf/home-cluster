@@ -15,3 +15,6 @@ resources:
   - networking
   - system
   - vaultwarden/ks.yaml
+
+components:
+  - _common
