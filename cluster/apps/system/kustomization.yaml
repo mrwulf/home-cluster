@@ -2,17 +2,19 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./descheduler/ks.yaml
-  - ./external-dns/ks.yaml
-  - ./external-secrets/ks.yaml
-  - ./generic-device-plugin/ks.yaml
-  - ./intel-device-plugins/ks.yaml
-  - ./k8s-dns-gateway/ks.yaml
-  - ./kube-cleanup-operator/ks.yaml
-  - ./kyverno/ks.yaml
-  - ./metrics-server/ks.yaml
-  - ./node-feature-discovery/ks.yaml
-  - ./reflector/ks.yaml
-  - ./reloader/ks.yaml
-  - ./smtp-relay/ks.yaml
-  - ./spegel/ks.yaml
+  - descheduler/ks.yaml
+  - external-dns/ks.yaml
+  - external-secrets/ks.yaml
+  - generic-device-plugin/ks.yaml
+  - intel-device-plugins/ks.yaml
+  - k8s-dns-gateway/ks.yaml
+  - kube-cleanup-operator/ks.yaml
+  - kubelet-service-cert-approver/ks.yaml
+  - kyverno/ks.yaml
+  - metrics-server/ks.yaml
+  - node-feature-discovery/ks.yaml
+  - node-problem-detector/ks.yaml
+  - reflector/ks.yaml
+  - reloader/ks.yaml
+  - smtp-relay/ks.yaml
+  - spegel/ks.yaml
