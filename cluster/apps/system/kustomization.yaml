@@ -9,7 +9,7 @@ resources:
   - intel-device-plugins/ks.yaml
   - k8s-dns-gateway/ks.yaml
   - kube-cleanup-operator/ks.yaml
-  - kubelet-service-cert-approver/ks.yaml
+  - kubelet-serving-cert-approver/ks.yaml
   - kyverno/ks.yaml
   - metrics-server/ks.yaml
   - node-feature-discovery/ks.yaml
