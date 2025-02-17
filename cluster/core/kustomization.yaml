@@ -4,5 +4,4 @@ resources:
   - namespaces
   - kube-system
   - flux-system
-  - node-system
   - storage
