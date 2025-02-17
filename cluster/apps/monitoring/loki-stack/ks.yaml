@@ -12,7 +12,7 @@ spec:
   interval: 30m
   path: ./cluster/apps/monitoring/loki-stack/app
   components:
-    - ../../../templates/volsync/first
+    - ../../../../templates/volsync/first
   prune: true
   sourceRef:
     kind: GitRepository
