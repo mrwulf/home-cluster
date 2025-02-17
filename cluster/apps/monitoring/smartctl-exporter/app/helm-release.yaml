@@ -13,7 +13,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: &app smartctl-exporter
-  namespace: monitoring
 spec:
   interval: 30m
   chart:
@@ -24,12 +23,6 @@ spec:
         kind: HelmRepository
         name: prometheus-community-charts
         namespace: flux-system
-  install:
-    remediation:
-      retries: 5
-  upgrade:
-    remediation:
-      retries: 5
   values:
     fullnameOverride: *app
     serviceMonitor:
