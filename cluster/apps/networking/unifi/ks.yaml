@@ -23,7 +23,7 @@ spec:
   wait: false
   components:
     - ../../../_common
-    - ../../../../templates/volsync/first
+    - ../../../../templates/volsync/primary
   postBuild:
     substitute:
       APP: *app
