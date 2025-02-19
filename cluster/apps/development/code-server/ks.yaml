@@ -13,7 +13,6 @@ spec:
   dependsOn:
     - name: volsync
     - name: traefik
-    # - name: rook-ceph-cluster
   path: ./cluster/apps/development/code-server/app
   components:
     - ../../../_common
