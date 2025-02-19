@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/instance: *app
 spec:
   accessModes: ["${VOLSYNC_ACCESSMODES:-ReadWriteOnce}"]
+  # https://volsync.readthedocs.io/en/stable/usage/volume-populator/index.html
+  # Maybe easier to just set the `destinationPVC: "${CLAIM}"` on the replicationDestination
   dataSourceRef:
     kind: ReplicationDestination
     apiGroup: volsync.backube

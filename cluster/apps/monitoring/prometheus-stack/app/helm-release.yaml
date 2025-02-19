@@ -254,7 +254,11 @@ spec:
           flux-logs:
             url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/refs/heads/main/monitoring/configs/dashboards/logs.json
             datasource: Prometheus
-
+          # Ref: https://grafana.com/grafana/dashboards/21356-volsync-dashboard/
+          volsync:
+            gnetId: 21356
+            revision: 3
+            datasource: Prometheus
         unifi:
           unifi-insights:
             # renovate: depName="UniFi-Poller: Client Insights - Prometheus"
