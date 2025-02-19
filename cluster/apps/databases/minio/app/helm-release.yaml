@@ -13,13 +13,6 @@ spec:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
   values:
     defaultPodOptions:
       affinity:

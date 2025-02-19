@@ -11,13 +11,8 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: volsync
     - name: dragonfly-cluster
-    # - name: rook-ceph-cluster
   path: ./cluster/apps/auth/authentik/app
-  components:
-    - ../../../_common
-    # - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
     kind: GitRepository
