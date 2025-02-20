@@ -14,7 +14,6 @@ spec:
   interval: 30m
   path: ./cluster/apps/media/ombi/app
   components:
-    - ../../../_common
     - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
@@ -27,6 +26,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      CLAIM: ombi-config
+      VOLSYNC_CLAIM: ombi-config
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_START_MINUTE: "44"

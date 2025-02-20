@@ -14,7 +14,6 @@ spec:
   interval: 30m
   path: ./cluster/apps/media/plex/app
   components:
-    - ../../../_common
     - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
@@ -27,7 +26,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      CLAIM: plex-config
+      VOLSYNC_CLAIM: plex-config
       VOLSYNC_CAPACITY: 100Gi
       VOLSYNC_START_MINUTE: "11"
       VOLSYNC_CACHE_CAPACITY: "30Gi"

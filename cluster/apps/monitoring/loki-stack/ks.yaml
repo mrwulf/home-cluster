@@ -24,6 +24,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      CLAIM: loki-data
+      VOLSYNC_CLAIM: loki-data
       VOLSYNC_CAPACITY: 30Gi
       VOLSYNC_START_MINUTE: "22"
