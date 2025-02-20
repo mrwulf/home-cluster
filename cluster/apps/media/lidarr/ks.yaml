@@ -11,11 +11,9 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: external-secrets-stores
-    # - name: rook-ceph-cluster
   interval: 30m
   path: ./cluster/apps/media/lidarr/app
   components:
-    - ../../../_common
     - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
@@ -28,6 +26,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      CLAIM: lidarr-config
+      VOLSYNC_CLAIM: lidarr-config
       VOLSYNC_CAPACITY: 15Gi
       VOLSYNC_START_MINUTE: "5"

@@ -6,3 +6,4 @@ resources:
   - ../init/init_claim.yaml
   - ../primary/minio
   - ../primary/nfs
+  - ../primary/b2

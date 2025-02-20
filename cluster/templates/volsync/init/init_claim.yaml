@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: &app "${CLAIM:=${APP}}"
+  name: "${VOLSYNC_CLAIM:=${APP}}"
   labels:
-    app.kubernetes.io/name: *app
-    app.kubernetes.io/instance: *app
+    app.kubernetes.io/name: "${APP}"
+    app.kubernetes.io/instance: "${APP}"
 spec:
   accessModes: ["${VOLSYNC_ACCESSMODES:-ReadWriteOnce}"]
   resources:

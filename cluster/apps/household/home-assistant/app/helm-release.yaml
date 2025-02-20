@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: home-assistant
-  namespace: household
 spec:
   interval: 30m
   chart:
@@ -14,13 +13,6 @@ spec:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
   values:
     defaultPodOptions:
       automountServiceAccountToken: false
@@ -123,7 +115,7 @@ spec:
 
     persistence:
       config:
-        existingClaim: homeassistant-config
+        existingClaim: "${VOLSYNC_CLAIM}"
       backups:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"

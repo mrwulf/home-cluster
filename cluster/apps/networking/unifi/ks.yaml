@@ -22,13 +22,12 @@ spec:
   timeout: 5m
   wait: false
   components:
-    - ../../../_common
     - ../../../../templates/volsync/primary
   postBuild:
     substitute:
       APP: *app
       APP_UID: "999"
       APP_GID: "999"
-      CLAIM: unifi-data
+      VOLSYNC_CLAIM: unifi-data
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_START_MINUTE: "37"

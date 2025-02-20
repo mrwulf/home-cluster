@@ -38,7 +38,7 @@ tasks:
 
   # --------------------------------------------------------------------------
   toolbox:
-    desc: Toolbox with restic for a given ReplicationSource (ex. task volsync:toolbox app=plex [ns=default] [dest=backup] )
+    desc: Toolbox with restic for a given ReplicationSource (ex. task volsync:toolbox app=plex [ns=default] dest=nfs )
     preconditions:
       - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
         msg: "Missing Secret - check the app, dest & namespace: {{ .app }}-volsync-{{ .dest }}"
@@ -52,7 +52,7 @@ tasks:
         sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_VOLSYNC_PATH'"
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
-      dest: '{{ .dest | default "backup" }}'
+      dest: '{{ or .dest (fail "ReplicationSource `dest` is required") }}'
       SECRETREF: '{{ .app }}-volsync-{{ .dest }}'
     cmds:
       - |
@@ -106,7 +106,7 @@ tasks:
 
   # --------------------------------------------------------------------------
   list:
-    desc: List all snapshots taken by restic for a given ReplicationSource (ex. task volsync:list app=plex [ns=default] [dest=backup])
+    desc: List all snapshots taken by restic for a given ReplicationSource (ex. task volsync:list app=plex [ns=default] dest=nfs)
     silent: true
     cmds:
       - envsubst < <(cat {{ .listJobTemplate }}) | kubectl apply -f -
@@ -117,7 +117,7 @@ tasks:
     vars:
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
-      dest: '{{ .dest | default "backup" }}'
+      dest: '{{ or .dest (fail "ReplicationSource `dest` is required") }}'
     env: *task-vars
     preconditions:
       - sh: test -f {{ .waitForJobScript }}
@@ -151,7 +151,7 @@ tasks:
       context: "{{ if .cluster }}--context {{.cluster}}{{ end }}"
 
   unlock:
-    desc: Unlocks restic repository for a given ReplicationSource (ex. task volsync:unlock app=plex [ns=default])
+    desc: Unlocks restic repository for a given ReplicationSource (ex. task volsync:unlock app=plex dest=nfs [ns=default])
     silent: true
     cmds:
       - envsubst < <(cat {{ .unlockJobTemplate }}) | kubectl apply -f -
@@ -162,7 +162,7 @@ tasks:
     vars:
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
-      dest: '{{ .dest | default "backup" }}'
+      dest: '{{ or .dest (fail "ReplicationSource `dest` is required") }}'
     env: *task-vars
     preconditions:
       - sh: test -f {{ .waitForJobScript }}
@@ -174,7 +174,7 @@ tasks:
   #  - kubectl get replicationsources --all-namespaces --no-headers | awk '{print $2, $1}' | xargs --max-procs=4 -l bash -c 'task volsync:snapshot app=$0 ns=$1'
   #
   snapshot:
-    desc: Trigger a Restic ReplicationSource snapshot (ex. task volsync:snapshot app=plex [ns=default])
+    desc: Trigger a Restic ReplicationSource snapshot (ex. task volsync:snapshot app=plex dest=nfs [ns=default])
     cmds:
       - kubectl -n {{ .ns }} patch replicationsources {{ .rs }} --type merge -p '{"spec":{"trigger":{"manual":"{{ .ts }}"}}}'
       - bash {{ .waitForJobScript }} volsync-src-{{ .rs }} {{ .ns }}
@@ -186,8 +186,8 @@ tasks:
     vars:
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
-      rs: '{{ .app }}{{ if .dest }}-{{ .dest }}{{ end }}'
-      dest: '{{ .dest | default "backup" }}'
+      dest: '{{ or .dest (fail "ReplicationSource `dest` is required") }}'
+      rs: '{{ .app }}-{{ .dest }}'
     env: *task-vars
     preconditions:
       - sh: test -f {{ .waitForJobScript }}
@@ -213,8 +213,8 @@ tasks:
     vars:
       app: '{{ or .app (fail "Variable `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
-      rs: '{{ .app }}{{ if .dest }}-{{ .dest }}{{ end }}'
-      dest: '{{ .dest | default "backup" }}'
+      dest: '{{ or .dest (fail "ReplicationSource `dest` is required") }}'
+      rs: '{{ .app }}-{{ .dest }}'
       # 1) Query to find the Flux Kustomization associated with the ReplicationSource (app)
       ks:
         sh: |

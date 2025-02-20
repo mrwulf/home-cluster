@@ -3,13 +3,13 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: "${APP}"
+  name: "${APP}-minio"
 spec:
-  sourcePVC: "${CLAIM:=${APP}}"
+  sourcePVC: "${VOLSYNC_CLAIM:=${APP}}"
   trigger:
     schedule: "${VOLSYNC_START_MINUTE:=0} * * * *"
   restic:
-    repository: ${APP}-volsync-backup # secret name
+    repository: ${APP}-volsync-minio # secret name
     pruneIntervalDays: 10
     retain:
       daily: 5
