@@ -4,7 +4,7 @@ resources:
   # - adventurelog/ks.yaml
   - hajimari/ks.yaml
   - hoarder/ks.yaml
-  - home-assistant
+  - home-assistant/ks.yaml
   - immich
   - libreddit
   - mealie
