@@ -12,7 +12,7 @@ spec:
   interval: 30m
   path: ./cluster/apps/vaultwarden/app
   components:
-    - ../../../templates/volsync/first
+    - ../../../templates/volsync/primary
   prune: true
   sourceRef:
     kind: GitRepository
@@ -27,6 +27,3 @@ spec:
       VOLSYNC_CLAIM: vaultwarden-db
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_START_MINUTE: "3"
-      APP_UID: "0"
-      APP_GID: "0"
-      VOLSYNC_COPY_METHOD: Direct
