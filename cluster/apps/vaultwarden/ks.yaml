@@ -29,3 +29,4 @@ spec:
       VOLSYNC_START_MINUTE: "3"
       APP_UID: "0"
       APP_GID: "0"
+      VOLSYNC_COPY_METHOD: Direct
