@@ -14,7 +14,7 @@ spec:
     - name: volsync
   path: ./cluster/apps/household/home-assistant/app
   components:
-    - ../../../../templates/volsync/first
+    - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
     kind: GitRepository
