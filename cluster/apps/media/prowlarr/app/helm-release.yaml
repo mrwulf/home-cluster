@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: prowlarr
-  namespace: media
 spec:
   interval: 30m
   chart:
@@ -14,13 +13,6 @@ spec:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
   values:
     defaultPodOptions:
       automountServiceAccountToken: false
@@ -82,7 +74,9 @@ spec:
 
     persistence:
       config:
-        existingClaim: prowlarr-config
+        existingClaim: "${VOLSYNC_CLAIM}"
+        globalMounts:
+          - path: /config
       shared:
         type: emptyDir
       backups:

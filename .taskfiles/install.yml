@@ -96,7 +96,7 @@ tasks:
     cmds:
       - |
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
-        wget -qnv --progress=bar -O ~/bin/sops https://github.com/getsops/sops/releases/download/v{{.RELEASE_VERSION}}/sops-v{{.RELEASE_VERSION}}.linux.amd64
+        wget -qnv --progress=bar -O ~/bin/sops https://github.com/getsops/sops/releases/download/v{{.RELEASE_VERSION}}/sops-v{{.RELEASE_VERSION}}.{{.OS}}.amd64
         chmod +x ~/bin/sops
     status:
       - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
