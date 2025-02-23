@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: tautulli
-  namespace: media
 spec:
   interval: 30m
   chart:
@@ -67,7 +66,7 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: tautulli-config
+        existingClaim: "${VOLSYNC_CLAIM}"
       backups:
         enabled: true
         mountPath: /config/backups

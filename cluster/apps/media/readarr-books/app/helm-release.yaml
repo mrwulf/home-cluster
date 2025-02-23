@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: &app readarr-books
-  namespace: media
 spec:
   interval: 30m
   chart:
@@ -94,7 +93,7 @@ spec:
 
     persistence:
       config:
-        existingClaim: readarr-books-config
+        existingClaim: "${VOLSYNC_CLAIM}"
       downloads:
         type: nfs
         server: ${CORE_NFS_SERVER:=nas0}

@@ -2,8 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
-  name: sonarr
-  namespace: media
+  name: &app readarr-audio
 spec:
   interval: 30m
   chart:
@@ -17,68 +16,59 @@ spec:
   install:
     createNamespace: true
     remediation:
-      retries: 3
+      retries: 5
   upgrade:
     remediation:
-      retries: 3
-  uninstall:
-    keepHistory: false
+      retries: 5
   values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: "OnRootMismatch"
     controllers:
       main:
         annotations:
           reloader.stakater.com/auto: "true"
-        pod:
-          dnsConfig:
-            options:
-              - name: ndots
-                value: "1"
-          securityContext:
-            runAsUser: 568
-            runAsGroup: 568
-            fsGroup: 568
-            supplementalGroups: [10000]
-            fsGroupChangePolicy: "OnRootMismatch"
         containers:
           main:
             image:
-              repository: ghcr.io/onedr0p/sonarr-develop
-              tag: '4.0.13.2933'
+              repository: ghcr.io/onedr0p/readarr-nightly
+              tag: 0.4.0.2593@sha256:22154f5d5ea888c9bbc797e235d34c11cc8c89d49d7f3d6ec9c5c60220962ee6
             env:
               TZ: "${TIMEZONE}"
-              SONARR__INSTANCE_NAME: Sonarr
-              SONARR__AUTH__APIKEY: "${SONARR_APIKEY}"
-              SONARR__PORT: &port 8989
-              SONARR__APPLICATION_URL: "https://sonarr.home.${SECRET_DOMAIN}"
-              SONARR__LOG_LEVEL: info
             probes:
-              liveness: &probes
+              liveness:
                 enabled: true
                 custom: true
                 spec:
-                  httpGet:
-                    path: /ping
-                    port: *port
-                  initialDelaySeconds: 0
+                  exec:
+                    command:
+                      - /usr/bin/env
+                      - bash
+                      - -c
+                      - curl --fail localhost:8787/api/v1/system/status?apiKey=`IFS=\> && while
+                        read -d \< E C; do if [[ $E = "ApiKey" ]]; then echo $C; fi; done < /config/config.xml`
+                  failureThreshold: 5
+                  initialDelaySeconds: 60
                   periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              readiness: *probes
-              startup:
-                enabled: false
+                  successThreshold: 1
+                  timeoutSeconds: 10
             resources:
               requests:
-                cpu: 22m
-                memory: 1G
+                memory: 100Mi
+                cpu: 100m
               limits:
-                memory: 4G
+                memory: 1.5G
 
     service:
       main:
         controller: main
         ports:
           http:
-            port: *port
+            port: 8787
 
     ingress:
       main:
@@ -88,35 +78,33 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           hajimari.io/enable: "true"
           hajimari.io/group: "Media"
-          hajimari.io/icon: mdi:television-classic
+          hajimari.io/icon: "book-open"
         hosts:
-          - host: &host "sonarr.home.${SECRET_DOMAIN}"
+          - host: &host "readarr-audio.home.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
                   identifier: main
                   port: http
         tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+          - secretName: &tls "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
 
     persistence:
       config:
-        existingClaim: sonarr-config
+        existingClaim: "${VOLSYNC_CLAIM}"
       downloads:
         type: nfs
-        server: "${CORE_NFS_SERVER:=nas0}"
+        server: ${CORE_NFS_SERVER:=nas0}
         path: /mnt/user/k8s/media-downloaded
-      tv:
+      audiobooks:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
-        path: "/mnt/user/TV"
-        globalMounts:
-          - path: /TVShows
+        path: "/mnt/user/k8s/audiobooks"
       backups:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
-        path: "/mnt/user/backups/sonarr"
+        path: "/mnt/user/backups/readarr-audio"
         globalMounts:
           - path: /config/Backups

@@ -8,10 +8,10 @@ resources:
   - ombi/ks.yaml
   - plex/ks.yaml
   - prowlarr/ks.yaml
-  - radarr
-  - readarr-audio
-  - readarr-books
-  - sonarr
-  - tautulli
+  - radarr/ks.yaml
+  - readarr-audio/ks.yaml
+  - readarr-books/ks.yaml
+  - sonarr/ks.yaml
+  - tautulli/ks.yaml
   - transmission
   # - wizarr

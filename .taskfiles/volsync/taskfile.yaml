@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
 x-task-vars: &task-vars
@@ -19,6 +20,9 @@ vars:
   listJobTemplate: "{{ .ROOT_DIR }}/.taskfiles/volsync/templates/ListJob.tmpl.yaml"
   unlockJobTemplate: "{{ .ROOT_DIR }}/.taskfiles/volsync/templates/UnlockJob.tmpl.yaml"
   ts: '{{ now | date "150405" }}'
+  OS:
+    sh: "uname -s | tr '[:upper:]' '[:lower:]'"
+  realpath: '{{if eq .OS "darwin"}}g{{end}}realpath'
 
 tasks:
 
@@ -26,15 +30,54 @@ tasks:
     desc: Calculate relative path from one file to another
     summary: ...
     dir: "{{ .ROOT_DIR }}"
-    cmd: echo $(realpath --relative-to=$(dirname "{{ .start }}") "{{ .end }}")
+    cmd: echo $({{ .realpath }} --relative-to=$(dirname "{{ .start }}") "{{ .end }}")
     requires:
       vars: ["start"]
     vars:
       # start:
-      end: '{{ .end | default "./cluster/templates/volsync" }}'
+      end: '{{ .end | default "./cluster/templates/volsync/primary" }}'
     preconditions:
       - { msg: "Start file not found", sh: "test -f {{ .start }}" }
       - { msg: "End file not found", sh: "test -d {{ .end }}" }
+
+  # --------------------------------------------------------------------------
+  enroll:
+    desc: Enroll an app in volsync (app=plex), set the template to primary after first backup is complete
+    silent: true
+    vars:
+      app: '{{ or .app (fail "`app` is required") }}'
+      app_ks:
+        sh: "find . -type f -name \"*.yaml\" -o -name \"*.yml\" | while read file; do yq '.metadata.name' \"$file\" | grep -qx \"{{ .app }}\" && echo \"$file\" && break; done"
+      # Templates must have all asterisks in single quotes! Make sure all vars are passed in to ENV of this task!
+      secretTemplate: "{{ .ROOT_DIR }}/cluster/templates/volsync/primary/nfs/secret.yaml"
+      sourceTemplate: "{{ .ROOT_DIR }}/cluster/templates/volsync/primary/nfs/replicationsource.yaml"
+      ns:
+        sh: "yq '.spec.targetNamespace | explode(.)' {{ .app_ks }}"
+    env:
+      APP:
+        sh: "yq '.spec.postBuild.substitute.APP | explode(.)' {{ .app_ks }}"
+      VOLSYNC_CLAIM:
+        sh: "yq '.spec.postBuild.substitute.VOLSYNC_CLAIM | explode(.)' {{ .app_ks }}"
+      VOLSYNC_CAPACITY:
+        sh: "yq '.spec.postBuild.substitute.VOLSYNC_CAPACITY | explode(.)' {{ .app_ks }}"
+      VOLSYNC_START_MINUTE:
+        sh: "yq '.spec.postBuild.substitute.VOLSYNC_START_MINUTE | explode(.)' {{ .app_ks }}"
+      APP_UID:
+        sh: "yq '.spec.postBuild.substitute.APP_UID | explode(.)' {{ .app_ks }}"
+      APP_GID:
+        sh: "yq '.spec.postBuild.substitute.APP_GID | explode(.)' {{ .app_ks }}"
+      SECRET_RESTIC_PWD:
+        sh: "sops --decrypt {{ .ROOT_DIR }}/cluster/base/cluster-secrets.sops.yaml | yq '.stringData.SECRET_RESTIC_PWD'"
+    preconditions:
+      - sh: bash -c 'eval "echo \"$(envsubst < <(cat {{ .secretTemplate }}))\""' | yq '.' | kubectl -n {{ .ns }} apply -f - --dry-run
+        msg: "Secret can't be created, check the template: {{ .secretTemplate }}"
+      - sh: bash -c 'eval "echo \"$(envsubst < <(cat {{ .sourceTemplate }}))\""' | yq '.' | kubectl -n {{ .ns }} apply -f - --dry-run
+        msg: "ReplicationSource can't be created, check the template: {{ .sourceTemplate }}"
+    cmds:
+      - |
+        # Template needs to have all asterisks in single quotes!
+        bash -c 'eval "echo \"$(envsubst < <(cat {{ .secretTemplate }}))\""' | yq '.' | kubectl -n {{ .ns }} apply -f -
+        bash -c 'eval "echo \"$(envsubst < <(cat {{ .sourceTemplate }}))\""' | yq '.' | kubectl -n {{ .ns }} apply -f -
 
   # --------------------------------------------------------------------------
   toolbox:
@@ -191,7 +234,7 @@ tasks:
     env: *task-vars
     preconditions:
       - sh: test -f {{ .waitForJobScript }}
-      - sh: kubectl -n {{ .ns }} get replicationsources {{ .app }}
+      - sh: kubectl -n {{ .ns }} get replicationsources {{ .rs }}
         msg: "ReplicationSource '{{ .app }}' not found in namespace '{{ .ns }}'"
       - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
         msg: Missing Secret - check the app, dest & namespace

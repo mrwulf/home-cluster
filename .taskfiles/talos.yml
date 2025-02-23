@@ -3,16 +3,19 @@
 version: "3"
 
 vars:
+  OS:
+    sh: "uname -s | tr '[:upper:]' '[:lower:]'"
+  head: '{{if eq .OS "darwin"}}g{{end}}head'
   CLUSTER_NAME:
     sh: yq '.clusterName' talos/talconfig.yaml
   NODE_LIST:
-    sh: yq '.nodes[].hostname' talos/talconfig.yaml | tr '\n' ',' | head -c -1
+    sh: yq '.nodes[].hostname' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
   ONE_NODE:
     sh: echo '{{.NODE_LIST}}' | tr ',' '\n' | shuf | head -n1
   MASTER_LIST:
-    sh: yq '.nodes[] | select(.controlPlane==true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | head -c -1
+    sh: yq '.nodes[] | select(.controlPlane==true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
   WORKER_LIST:
-    sh: yq '.nodes[] | select(.controlPlane!=true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | head -c -1
+    sh: yq '.nodes[] | select(.controlPlane!=true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
   NODE_LIST_MASTERSFIRST: "{{.MASTER_LIST}},{{.WORKER_LIST}}"
   ONE_MASTER:
     sh: echo '{{.MASTER_LIST}}' | tr ',' '\n' | shuf | head -n1

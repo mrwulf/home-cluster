@@ -3,7 +3,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: radarr
-  namespace: media
 spec:
   interval: 30m
   chart:
@@ -14,15 +13,6 @@ spec:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      strategy: rollback
-      retries: 3
   values:
     defaultPodOptions:
       dnsConfig:
@@ -43,27 +33,24 @@ spec:
             image:
               repository: ghcr.io/onedr0p/radarr
               tag: '5.18.4.9674'
-
             env:
               TZ: "${TIMEZONE}"
-              SONARR__INSTANCE_NAME: Radarr
-              SONARR__PORT: &port 7878
-              SONARR__APPLICATION_URL: "https://radarr.home.${SECRET_DOMAIN}"
-              SONARR__LOG_LEVEL: info
+              RADARR__INSTANCE_NAME: Radarr
+              RADARR__PORT: &port 7878
+              RADARR__APPLICATION_URL: "https://radarr.home.${SECRET_DOMAIN}"
+              RADARR__LOG_LEVEL: info
             resources:
               requests:
                 cpu: 15m
                 memory: 1312M
               limits:
                 memory: 4655M
-
     service:
       app:
         controller: app
         ports:
           http:
             port: *port
-
     ingress:
       main:
         className: "traefik"
@@ -87,7 +74,7 @@ spec:
 
     persistence:
       config:
-        existingClaim: radarr-config
+        existingClaim: "${VOLSYNC_CLAIM}"
       downloads:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
