@@ -1,9 +1,9 @@
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: &app vikunja
-  namespace: household
 spec:
   interval: 30m
   chart:
@@ -14,16 +14,6 @@ spec:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  maxHistory: 3
-  uninstall:
-    keepHistory: false
   values:
     controllers:
       main:
@@ -136,7 +126,7 @@ spec:
 
     persistence:
       files:
-        existingClaim: vikunja-files-pvc
+        existingClaim: "${VOLSYNC_CLAIM}"
         advancedMounts:
           main:
             api:

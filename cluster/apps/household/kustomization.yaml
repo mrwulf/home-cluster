@@ -8,7 +8,7 @@ resources:
   - immich
   - libreddit/ks.yaml
   - mealie/ks.yaml
-  - outline
+  - outline/ks.yaml
   - paperless/ks.yaml
   - penpot/ks.yaml
-  - vikunja
+  - vikunja/ks.yaml
