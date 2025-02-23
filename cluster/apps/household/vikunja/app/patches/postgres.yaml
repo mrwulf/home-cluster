@@ -1,0 +1,39 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: vikunja
+spec:
+  values:
+    controllers:
+      main:
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/haraldkoch/postgres-init
+              tag: 16.8
+            env:
+              - name: INIT_POSTGRES_HOST
+                value: postgres-rw.databases.svc.cluster.local
+              - name: INIT_POSTGRES_DBNAME
+                value: vikunja
+              - name: INIT_POSTGRES_SUPER_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: postgres-superuser
+                    key: username
+              - name: INIT_POSTGRES_SUPER_PASS
+                valueFrom:
+                  secretKeyRef:
+                    name: postgres-superuser
+                    key: password
+              - name: INIT_POSTGRES_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: vikunja
+                    key: VIKUNJA_DATABASE_USER
+              - name: INIT_POSTGRES_PASS
+                valueFrom:
+                  secretKeyRef:
+                    name: vikunja
+                    key: VIKUNJA_DATABASE_PASSWORD
