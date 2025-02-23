@@ -7,6 +7,9 @@ vars:
     sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}'
   POOL: ceph-block
   VOLUMESNAPSHOTCLASS: csi-rbdplugin-snapclass
+  OS:
+    sh: "uname -s | tr '[:upper:]' '[:lower:]'"
+  head: '{{if eq .OS "darwin"}}g{{end}}head'
 
 tasks:
   toolbox:
@@ -32,7 +35,7 @@ tasks:
       IMG:
         sh: kubectl describe pv {{.PVNAME}} | grep imageName | awk -F= '{print $2}'
       CHILDREN:
-        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}} | tr '\n' ',' | head -c -1
+        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}} | tr '\n' ',' | ghead -c -1
     cmds:
       - |
         echo -e "PVNAME: {{.PVNAME}}\nIMG: {{.IMG}}"
@@ -54,7 +57,9 @@ tasks:
     desc: Clean up all PVs
     vars:
       PV_LIST:
-        sh: kubectl get pv --no-headers | grep -v Bound | awk '{print $1}' | tr '\n' ',' | head -c -1
+        sh: kubectl get pv --no-headers | grep -v Bound | awk '{print $1}' | tr '\n' ',' | {{ .head }} -c -1
+    NAMESPACE:
+      sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}'
     cmds:
       - for: { var: PV_LIST, split: ",", as: PV }
         task: clean-up-pv
