@@ -4,7 +4,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: &app immich-machine-learning
-  namespace: household
 spec:
   interval: 30m
   timeout: 15m
@@ -16,20 +15,6 @@ spec:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
-  maxHistory: 2
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  uninstall:
-    keepHistory: false
-  dependsOn:
-    - name: immich-server
-      namespace: household
-
   values:
     controllers:
       main:
@@ -101,4 +86,6 @@ spec:
         globalMounts:
           - path: /mnt/memories
       cache:
-        existingClaim: immich-machine-learning-cache
+        type: emptyDir
+        globalMounts:
+          - path: /cache
