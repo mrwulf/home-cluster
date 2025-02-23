@@ -4,7 +4,6 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: mealie
-  namespace: household
 spec:
   interval: 30m
   chart:
@@ -92,7 +91,7 @@ spec:
 
     persistence:
       api-data:
-        existingClaim: mealie-api-data
+        existingClaim: "${VOLSYNC_CLAIM}"
         globalMounts:
           - path: /app/data/
       backups:

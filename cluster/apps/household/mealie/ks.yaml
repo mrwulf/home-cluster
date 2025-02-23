@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app hoarder
+  name: &app mealie
   namespace: flux-system
 spec:
   targetNamespace: household
@@ -12,9 +12,9 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: volsync
-  path: ./cluster/apps/household/hoarder/app
+  path: ./cluster/apps/household/mealie/app
   components:
-    - ../../../../templates/volsync/primary
+    - ../../../../templates/volsync/first
   prune: true
   sourceRef:
     kind: GitRepository
@@ -26,5 +26,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 20Gi
-      VOLSYNC_START_MINUTE: "7"
+      VOLSYNC_CLAIM: mealie-api-data
+      VOLSYNC_CAPACITY: 10Gi
+      VOLSYNC_START_MINUTE: "33"

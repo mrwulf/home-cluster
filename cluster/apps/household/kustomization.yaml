@@ -6,8 +6,8 @@ resources:
   - hoarder/ks.yaml
   - home-assistant/ks.yaml
   - immich
-  - libreddit
-  - mealie
+  - libreddit/ks.yaml
+  - mealie/ks.yaml
   - outline
   - paperless/ks.yaml
   - penpot/ks.yaml
