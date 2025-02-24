@@ -47,7 +47,7 @@ tasks:
     vars:
       app: '{{ or .app (fail "`app` is required") }}'
       app_ks:
-        sh: "find . -type f -name \"*.yaml\" -o -name \"*.yml\" | while read file; do yq '.metadata.name' \"$file\" | grep -qx \"{{ .app }}\" && echo \"$file\" && break; done"
+        sh: "find {{ .CLUSTER_DIR }} -type f -name \"*.yaml\" -o -name \"*.yml\" | while read file; do yq '.metadata.name' \"$file\" | grep -qx \"{{ .app }}\" && echo \"$file\" && break; done"
       # Templates must have all asterisks in single quotes! Make sure all vars are passed in to ENV of this task!
       secretTemplate: "{{ .ROOT_DIR }}/cluster/templates/volsync/primary/nfs/secret.yaml"
       sourceTemplate: "{{ .ROOT_DIR }}/cluster/templates/volsync/primary/nfs/replicationsource.yaml"
@@ -67,7 +67,7 @@ tasks:
       APP_GID:
         sh: "yq '.spec.postBuild.substitute.APP_GID | explode(.)' {{ .app_ks }}"
       SECRET_RESTIC_PWD:
-        sh: "sops --decrypt {{ .ROOT_DIR }}/cluster/base/cluster-secrets.sops.yaml | yq '.stringData.SECRET_RESTIC_PWD'"
+        sh: "sops --decrypt {{ .CLUSTER_DIR }}/base/cluster-secrets.sops.yaml | yq '.stringData.SECRET_RESTIC_PWD'"
     preconditions:
       - sh: bash -c 'eval "echo \"$(envsubst < <(cat {{ .secretTemplate }}))\""' | yq '.' | kubectl -n {{ .ns }} apply -f - --dry-run
         msg: "Secret can't be created, check the template: {{ .secretTemplate }}"
