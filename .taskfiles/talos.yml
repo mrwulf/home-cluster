@@ -228,6 +228,11 @@ tasks:
   upgrade-all:
     desc: Upgrade Talos on all the nodes to the version in talconfig.yaml
     silent: true
+    deps:
+      - task: generate-configs
+      - task: diff-all-configs
+        silent: false
+    prompt: 'Are you sure you want to apply all configs and upgrade talos?'
     cmds:
       - for: { var: NODE_LIST_MASTERSFIRST, split: ",", as: NODE }
         task: upgrade

@@ -3,7 +3,7 @@ version: "3"
 
 
 vars:
-  NAMESPACE:
+  ROOK_NAMESPACE:
     sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}'
   POOL: ceph-block
   VOLUMESNAPSHOTCLASS: csi-rbdplugin-snapclass
@@ -16,14 +16,14 @@ tasks:
     desc: Exec into the Rook Ceph toolbox
     interactive: true
     cmds:
-      - kubectl -n {{ .NAMESPACE }} exec -it $(kubectl -n {{ .NAMESPACE }} get pod -l "app=rook-ceph-tools" -o jsonpath='{ .items[0].metadata.name }') -- bash
+      - kubectl -n {{ .ROOK_NAMESPACE }} exec -it $(kubectl -n {{ .ROOK_NAMESPACE }} get pod -l "app=rook-ceph-tools" -o jsonpath='{ .items[0].metadata.name }') -- bash
     silent: true
 
   rook-password:
     desc: Retrieve the rook-ceph password
     silent: true
     cmds:
-      - kubectl -n {{.NAMESPACE}} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+      - kubectl -n {{.ROOK_NAMESPACE}} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
 # Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
   clean-up-pv:
@@ -35,19 +35,19 @@ tasks:
       IMG:
         sh: kubectl describe pv {{.PVNAME}} | grep imageName | awk -F= '{print $2}'
       CHILDREN:
-        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}} | tr '\n' ',' | ghead -c -1
+        sh: kubectl exec -n {{.ROOK_NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}} | tr '\n' ',' | ghead -c -1
     cmds:
       - |
         echo -e "PVNAME: {{.PVNAME}}\nIMG: {{.IMG}}"
         if [ -z "{{.CHILDREN}}" ]; then
           kubectl get pv {{.PVNAME}}
           kubectl delete pv {{.PVNAME}}
-          kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p {{.POOL}} {{.IMG}}
+          kubectl exec -n {{.ROOK_NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p {{.POOL}} {{.IMG}}
         else
           echo "Ignoring: This volume still has children! ({{.CHILDREN}})"
         fi
     preconditions:
-      - sh: kubectl get po -n {{.NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
+      - sh: kubectl get po -n {{.ROOK_NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
         msg: Rook tools pod isn't running.
       # - sh: '[ -z "{{.CHILDREN}}" ]'
       #   msg: "These children must be removed first: (probably volumesnapshots)\n{{.CHILDREN}}"
@@ -58,8 +58,6 @@ tasks:
     vars:
       PV_LIST:
         sh: kubectl get pv --no-headers | grep -v Bound | awk '{print $1}' | tr '\n' ',' | {{ .head }} -c -1
-    NAMESPACE:
-      sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}'
     cmds:
       - for: { var: PV_LIST, split: ",", as: PV }
         task: clean-up-pv
@@ -71,13 +69,13 @@ tasks:
     vars:
       IMG: "{{.CLI_ARGS}}"
       CHILDREN:
-        sh: kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}}
+        sh: kubectl exec -n {{.ROOK_NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}}
     cmds:
       - |
-        # kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd snap purge -p {{.POOL}} {{.IMG}}
-        kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p {{.POOL}} {{.IMG}}
+        # kubectl exec -n {{.ROOK_NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd snap purge -p {{.POOL}} {{.IMG}}
+        kubectl exec -n {{.ROOK_NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd rm -p {{.POOL}} {{.IMG}}
     preconditions:
-      - sh: kubectl get po -n {{.NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
+      - sh: kubectl get po -n {{.ROOK_NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
         msg: Rook tools pod isn't running.
       - sh: '[ -n "{{.CLI_ARGS}}" ]'
         msg: 'Image Name Required!'
@@ -97,7 +95,7 @@ tasks:
     silent: true
     cmds:
       - |
-        kubectl exec -n {{.NAMESPACE}} -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd -p {{.POOL}} ls | grep 'csi-vol-' > image_list.txt
+        kubectl exec -n {{.ROOK_NAMESPACE}} -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd -p {{.POOL}} ls | grep 'csi-vol-' > image_list.txt
         for PV in $(kubectl get pv | grep {{.POOL}} | awk '{print $1}'); do
           IMG=$(kubectl describe pv $PV | grep imageName | awk -F= '{print $2}')
           if (! grep -q $IMG image_list.txt); then
@@ -112,7 +110,7 @@ tasks:
     desc: Archive all ceph crashes
     silent: true
     cmds:
-      - kubectl exec -n {{.NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- ceph crash archive-all
+      - kubectl exec -n {{.ROOK_NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- ceph crash archive-all
 
   debug-pvc:
     desc: Attach a volume to a container for debugging, ex. VOLUME=zigbee2mqtt-config-v1 task debug-volume
@@ -133,7 +131,7 @@ tasks:
         msg: 'PVC Name Required!'
     cmds:
       - |
-        kubectl run debug-pvc-{{.VOL}} -n {{.NAMESPACE}} -it --image=null --overrides='
+        kubectl run debug-pvc-{{.VOL}} -n {{.ROOK_NAMESPACE}} -it --image=null --overrides='
           {
             "spec": {
               "containers": [
@@ -193,8 +191,8 @@ tasks:
     interactive: true
     vars:
       PVC: '{{.CLI_ARGS}}'
-      NAMESPACE:
+      PVC_NAMESPACE:
         sh: 'kubectl get pvc -A -oyaml | yq ''.items[] | select(.metadata.name=="{{.PVC}}") | .metadata.namespace'''
     cmds:
-      - kubestr browse {{.PVC}} -n {{.NAMESPACE}} -v {{.VOLUMESNAPSHOTCLASS}}
+      - kubestr browse {{.PVC}} -n {{.PVC_NAMESPACE}} -v {{.VOLUMESNAPSHOTCLASS}}
       - echo "Don't forget to delete the left over PV"
