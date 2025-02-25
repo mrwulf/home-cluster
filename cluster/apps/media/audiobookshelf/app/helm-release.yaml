@@ -86,7 +86,7 @@ spec:
               - *host
     persistence:
       config:
-        existingClaim: audiobookshelf-config
+        existingClaim: "${VOLSYNC_CLAIM}"
       cache:
         type: emptyDir
         globalMounts:

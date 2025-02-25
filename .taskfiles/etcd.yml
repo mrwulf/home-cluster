@@ -17,6 +17,13 @@ vars:
     sh: echo '{{.MASTER_LIST}}' | tr ',' '\n' | shuf | head -n1
 
 tasks:
+  status:
+    desc: Show Cluster Status
+    silent: true
+    cmds:
+      - |
+        talosctl -n {{ .MASTER_LIST }} etcd status
+
   backup:
     desc: Backup etcd to local file
     silent: true
@@ -78,7 +85,8 @@ tasks:
     desc: Run a command in an etcd client
     interactive: false
     requires:
-      vars: [ "NODE" ]
+      vars:
+        - NODE
     cmds:
       - task: client
         vars:
