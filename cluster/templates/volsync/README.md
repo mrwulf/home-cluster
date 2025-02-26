@@ -10,19 +10,11 @@ If the specified PVC does not exist, VolSync will attempt to restore it from the
 
 ### Adding to new application
 
-1. Add the `/templates/volsync/first` directory into the application kustomization.yaml
-   (typically `../../../../templates/volsync/first` -- use `task volsync:relpath` to confirm the relative path from the application kustomization file).
+1. Add the `/templates/volsync/primary` directory into the application kustomization.yaml
+   (typically `../../../../templates/volsync/primary` -- use `task volsync:relpath` to confirm the relative path from the application kustomization file).
 2. Ensure the application `ks.yaml` is configured with `postBuild` variables
-3. Wait for at least one backup (_Note: data must be present in the PVC for a backup to occur_).
-
-   > If data exists in the pvc, and is not detected during automatic backups/snapshots, try resolving with:
-   >
-   > 1. Delete the app's ReplicationSource
-   > 2. Suspend the app ks
-   > 3. Resume the app ks
-
-4. During the first recovery, redirect to the `/templates/volsync/restore` location
-   (typically `../../../../templates/volsync/restore` -- use `task volsync:relpath` to confirm the relative path from the application kustomization file).
+3. Run `task volsync:enroll app=<appname>` to make an initial backup (adjust that task to target your local)
+4. Commit and push updated kustomization
 
 ## Configuration
 
