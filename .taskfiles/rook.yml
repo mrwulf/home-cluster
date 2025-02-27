@@ -35,7 +35,7 @@ tasks:
       IMG:
         sh: kubectl describe pv {{.PVNAME}} | grep imageName | awk -F= '{print $2}'
       CHILDREN:
-        sh: kubectl exec -n {{.ROOK_NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}} | tr '\n' ',' | ghead -c -1
+        sh: kubectl exec -n {{.ROOK_NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}} | tr '\n' ',' | {{ .head }} -c -1
     cmds:
       - |
         echo -e "PVNAME: {{.PVNAME}}\nIMG: {{.IMG}}"

@@ -93,6 +93,7 @@ tasks:
         sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.CORE_NFS_SERVER'"
       NAS_PATH:
         sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_VOLSYNC_PATH'"
+      nfs_path: '{{ .nfs_path | default .NAS_PATH }}'
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
       dest: '{{ or .dest (fail "ReplicationSource `dest` is required") }}'
@@ -139,7 +140,7 @@ tasks:
                   "name": "repository",
                   "nfs": {
                     "server": "{{.NAS_ADDRESS}}",
-                    "path": "{{.NAS_PATH}}"
+                    "path": "{{.nfs_path}}"
                   }
                 }
               ],
