@@ -34,7 +34,7 @@ spec:
               AUDIOBOOKSHELF_UID: 568
               AUDIOBOOKSHELF_GID: 568
               CONFIG_PATH: /config
-              METADATA_PATH: /config/metadata
+              METADATA_PATH: /metadata
               TZ: "${TIMEZONE}"
             probes:
               liveness: &probes
@@ -87,6 +87,15 @@ spec:
     persistence:
       config:
         existingClaim: "${VOLSYNC_CLAIM}"
+        advancedMounts:
+          audiobookshelf:
+            app:
+              - path: /config
+                readOnly: false
+                subPath: config
+              - path: /metadata
+                readOnly: false
+                subPath: config/metadata
       cache:
         type: emptyDir
         globalMounts:
