@@ -3,7 +3,7 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 resources:
-  - ../claim.yaml
+  - ../primary/claim.yaml
   # - ../primary/minio
   - ../primary/nfs
   # - ../primary/b2
