@@ -1,19 +1,9 @@
 # Based on https://github.com/siderolabs/talos-backup
 ---
-apiVersion: talos.dev/v1alpha1
-kind: ServiceAccount
-metadata:
-  name: talos-backup-secrets
-  namespace: backups
-spec:
-  roles:
-    - os:etcd:backup
----
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: talos-backup
-  namespace: backups
 spec:
   schedule: "15/60 * * * *"
   suspend: false
