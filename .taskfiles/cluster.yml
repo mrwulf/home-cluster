@@ -65,6 +65,7 @@ tasks:
     silent: true
     cmds:
       - kubectl get sts,deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.kind + "/" + .metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale --replicas=0 -n
+      - echo Need to suspend replicationsource objects going to NFS
 
   scale-nfs-workloads-up:
     desc: Scale all deployments with NFS volumes to one
@@ -73,6 +74,7 @@ tasks:
       - kubectl get sts,deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.kind + "/" + .metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale --replicas=1 -n
       - kubectl -n household scale deploy immich-server --replicas 2
       - kubectl -n household scale deploy immich-microservices --replicas 4
+      - echo Need to resume replicationsource objects going to NFS
 
   rebalance:
     desc: Run the descheduler to rebalance pods
