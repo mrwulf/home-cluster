@@ -343,12 +343,11 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              selector:
-                matchLabels:
-                  app.kubernetes.io/name: *app
+              storageClassName: ceph-block
+              accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
-                  storage: "${VOLSYNC_CAPACITY}"
+                  storage: 50Gi
         podMonitorNamespaceSelector: {}
         podMonitorSelectorNilUsesHelmValues: false
         podMonitorSelector: {}
