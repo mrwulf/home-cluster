@@ -18,7 +18,7 @@ spec:
     - noatime
   nfs:
     path: /mnt/user/Photos
-    server: "${CORE_NFS_SERVER:=0.0.0.0}"
+    server: "${CORE_NFS_SERVER:=nas0}"
   persistentVolumeReclaimPolicy: Retain
   storageClassName: nfs
   volumeMode: Filesystem
