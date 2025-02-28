@@ -2,7 +2,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - helm-release.yaml
-  - prometheusrule.yaml
-  - mutations
-  - plans/pictures
+  - volumes.yaml
+  - secret.sops.yaml
+  - replicationsource.yaml
+  # - replicationdestination.yaml

@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: "nfs-photos-b2-dst"
+spec:
+  trigger:
+    manual: restore-once
+  restic:
+    copyMethod: "Direct"
+    ### Source (backup repository)
+    repository: nfs-photos-volsync-b2
+    # volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-csi-ceph-blockpool}" # same as source
+    cacheCapacity: "20Gi"
+    cacheStorageClassName: "ceph-block-delete"
+    cacheAccessModes: ["ReadWriteOnce"]
+    ### Destination (PVC-to-be-restored)
+    destinationPVC: "nfs-photos"
+    # storageClassName: "${VOLSYNC_STORAGECLASS:-ceph-block}"
+    accessModes: ["ReadWriteMany"]
+    capacity: "1Gi"
+    cleanupCachePVC: true
+    cleanupTempPVC: true
+
+    # enableFileDeletion: true
+
+    # moverSecurityContext:
+    #   runAsUser: ${APP_UID:-568}
+    #   runAsGroup: ${APP_GID:-568}
+    #   fsGroup: ${APP_GID:-568}

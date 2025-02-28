@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-photos
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi # Unused
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: nfs-photos
+  mountOptions:
+    - nconnect=8
+    - hard
+    - noatime
+  nfs:
+    path: /mnt/user/Photos
+    server: "${CORE_NFS_SERVER:=0.0.0.0}"
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-photos
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi # Unused
+  storageClassName: nfs
+  volumeMode: Filesystem
+  volumeName: nfs-photos
