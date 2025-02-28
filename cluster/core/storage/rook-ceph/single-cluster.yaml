@@ -145,7 +145,7 @@ spec:
             csi.storage.k8s.io/node-stage-secret-namespace: storage
             csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
             csi.storage.k8s.io/provisioner-secret-namespace: storage
-            imageFeatures: layering
+            imageFeatures: layering # TODO: append on next cluster rebuild ,fast-diff,object-map,deep-flatten,exclusive-lock
             imageFormat: "2"
     cephBlockPoolsVolumeSnapshotClass:
       enabled: true

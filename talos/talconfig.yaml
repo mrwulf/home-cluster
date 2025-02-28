@@ -107,6 +107,10 @@ patches:
       kubelet:
         extraArgs:
           rotate-server-certificates: true
+        extraConfig:
+          imageGCLowThresholdPercent: 60
+          imageGCHighThresholdPercent: 70
+
       logging:
         destinations:
           - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
