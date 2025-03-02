@@ -25,6 +25,11 @@ tasks:
     cmds:
       - kubectl -n {{.ROOK_NAMESPACE}} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
+# Clean up all snapshots: https://community.veeam.com/veeam-kasten-kubernetes-data-protection-support-92/help-removing-orphaned-snapshot-images-ceph-rbd-3935
+## for x in $(rbd trash list --pool ceph-block ); do echo $x ; rbd snap purge ceph-block/$x  ; done
+## for x in $(rbd list --pool ceph-block ); do echo $x ; rbd snap purge ceph-block/$x  ; done
+
+
 # Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
   clean-up-pv:
     desc: Clean a single PV
