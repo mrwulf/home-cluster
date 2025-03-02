@@ -1,0 +1,53 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-certificates
+  annotations:
+    policies.kyverno.io/title: Sync Secrets
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Secret
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/description: >-
+      Secrets like registry credentials often need to exist in multiple
+      Namespaces so Pods there have access. Manually duplicating those Secrets
+      is time consuming and error prone. This policy will copy a
+      Secret called `regcred` which exists in the `default` Namespace to
+      new Namespaces when they are created. It will also push updates to
+      the copied Secrets should the source Secret be changed.
+spec:
+  rules:
+    - name: sync-internal-certificate-secrets
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names: [ai, databases, development, flux-system, household, kube-system, media, monitoring, other, storage] # networking excluded (since that's the source)
+      generate:
+        generateExisting: true
+        apiVersion: v1
+        kind: Secret
+        name: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+    - name: sync-external-certificate-secrets
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names: [ai, auth, databases, flux-system, household, media, vaultwarden] # networking excluded (since that's the source)
+      generate:
+        generateExisting: true
+        apiVersion: v1
+        kind: Secret
+        name: "wildcard-${SECRET_DOMAIN/./-}-tls"
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: "wildcard-${SECRET_DOMAIN/./-}-tls"

@@ -1,0 +1,36 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-postgres-creds
+  annotations:
+    policies.kyverno.io/title: Sync Secrets
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Secret
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/description: >-
+      Secrets like registry credentials often need to exist in multiple
+      Namespaces so Pods there have access. Manually duplicating those Secrets
+      is time consuming and error prone. This policy will copy a
+      Secret called `regcred` which exists in the `default` Namespace to
+      new Namespaces when they are created. It will also push updates to
+      the copied Secrets should the source Secret be changed.
+spec:
+  rules:
+    - name: sync-postgres-creds
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names: [auth, household] # databases ns excluded (since that's the source)
+      generate:
+        generateExisting: true
+        apiVersion: v1
+        kind: Secret
+        name: postgres-superuser
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: databases
+          name: postgres-superuser

@@ -5,11 +5,6 @@ metadata:
   name: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
 spec:
   secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-  secretTemplate:
-    annotations:
-      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
-      reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
-      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "ai,auth,backups,databases,development,household,media,monitoring,storage,vaultwarden,flux-system,kube-system,other"
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
