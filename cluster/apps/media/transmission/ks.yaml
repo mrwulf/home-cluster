@@ -44,7 +44,7 @@ spec:
       app.kubernetes.io/name: *app
   interval: 30m
   components:
-    - ../../../../templates/volsync/local-only
+    - ../../../../templates/volsync/local-only-pvc
   prune: true
   sourceRef:
     kind: GitRepository
