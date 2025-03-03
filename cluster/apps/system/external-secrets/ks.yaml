@@ -12,7 +12,7 @@ spec:
     kind: GitRepository
     name: flux-system
   wait: true
-  interval: 30m
+  interval: 10m
   retryInterval: 1m
   targetNamespace: system
   timeout: 5m
@@ -33,7 +33,7 @@ spec:
     kind: GitRepository
     name: flux-system
   wait: true
-  interval: 30m
+  interval: 10m
   retryInterval: 1m
   targetNamespace: system
   timeout: 5m
