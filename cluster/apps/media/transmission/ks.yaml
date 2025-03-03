@@ -13,6 +13,8 @@ spec:
   path: ./cluster/apps/media/transmission/app
   components:
     - ../../../../templates/volsync/primary
+  dependsOn:
+    - name: transmission-incomplete-pvc
   prune: true
   sourceRef:
     kind: GitRepository
@@ -44,8 +46,6 @@ spec:
   components:
     - ../../../../templates/volsync/local-only
   prune: true
-  dependsOn:
-    - name: transmission
   sourceRef:
     kind: GitRepository
     name: flux-system
