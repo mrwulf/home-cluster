@@ -52,20 +52,20 @@ tasks:
       secretTemplate: "{{ .ROOT_DIR }}/cluster/templates/volsync/primary/nfs/secret.yaml"
       sourceTemplate: "{{ .ROOT_DIR }}/cluster/templates/volsync/primary/nfs/replicationsource.yaml"
       ns:
-        sh: "yq '.spec.targetNamespace | explode(.)' {{ .app_ks }}"
+        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.targetNamespace | explode(.)' {{ .app_ks }}"
     env:
       APP:
-        sh: "yq '.spec.postBuild.substitute.APP | explode(.)' {{ .app_ks }}"
+        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.APP | explode(.)' {{ .app_ks }}"
       VOLSYNC_CLAIM:
-        sh: "yq '.spec.postBuild.substitute.VOLSYNC_CLAIM | explode(.)' {{ .app_ks }}"
+        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.VOLSYNC_CLAIM | explode(.)' {{ .app_ks }}"
       VOLSYNC_CAPACITY:
-        sh: "yq '.spec.postBuild.substitute.VOLSYNC_CAPACITY | explode(.)' {{ .app_ks }}"
+        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.VOLSYNC_CAPACITY | explode(.)' {{ .app_ks }}"
       VOLSYNC_START_MINUTE:
-        sh: "yq '.spec.postBuild.substitute.VOLSYNC_START_MINUTE | explode(.)' {{ .app_ks }}"
+        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.VOLSYNC_START_MINUTE | explode(.)' {{ .app_ks }}"
       APP_UID:
-        sh: "yq '.spec.postBuild.substitute.APP_UID | explode(.)' {{ .app_ks }}"
+        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.APP_UID | explode(.)' {{ .app_ks }}"
       APP_GID:
-        sh: "yq '.spec.postBuild.substitute.APP_GID | explode(.)' {{ .app_ks }}"
+        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.APP_GID | explode(.)' {{ .app_ks }}"
       SECRET_RESTIC_PWD:
         sh: "sops --decrypt {{ .CLUSTER_DIR }}/base/cluster-secrets.sops.yaml | yq '.stringData.SECRET_RESTIC_PWD'"
     preconditions:
