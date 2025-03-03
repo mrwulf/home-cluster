@@ -13,5 +13,5 @@ resources:
   - readarr-books/ks.yaml
   - sonarr/ks.yaml
   - tautulli/ks.yaml
-  - transmission
+  - transmission/ks.yaml
   # - wizarr

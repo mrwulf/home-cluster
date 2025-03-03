@@ -15,15 +15,9 @@ spec:
         kind: HelmRepository
         name: bananaspliff-charts
         namespace: flux-system
-  install:
-    createNamespace: true
-    remediation:
-      retries: 3
-  upgrade:
-    remediation:
-      retries: 3
   values:
     replicaCount: 1
+    strategy: Recreate
 
     image:
       repository: "haugene/transmission-openvpn"
