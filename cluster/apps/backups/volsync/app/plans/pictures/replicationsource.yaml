@@ -7,7 +7,7 @@ metadata:
 spec:
   sourcePVC: 'nfs-photos'
   trigger:
-    schedule: '30 4 */7 * *'  # Every 7 days at 4:30am
+    schedule: '30 4 * * *'  # Every day at 4:30am
   restic:
     repository: nfs-photos-volsync-b2 # secret name
     pruneIntervalDays: 30
