@@ -22,6 +22,7 @@ resources:
   - k8s-at-home-charts.yaml
   - k8s-gateway-charts.yaml
   - kasten-charts.yaml
+  - kro-charts.yaml
   - kube-fledged-charts.yaml
   - kubereboot-kured-charts.yaml
   - kyverno-charts.yaml
