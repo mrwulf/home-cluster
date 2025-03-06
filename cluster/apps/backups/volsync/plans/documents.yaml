@@ -4,7 +4,7 @@ metadata:
   name: documents
 spec:
   nfs:
-    path: /mnt/user/k8s/Documents
+    path: /mnt/user/Documents
     server: ${CORE_NFS_SERVER}
   restic:
     repository: "${B2_RESTIC_REPO}:home-backups"
