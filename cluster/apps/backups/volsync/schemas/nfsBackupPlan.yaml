@@ -16,6 +16,7 @@ spec:
         storageClass: string | default="nfs"
       restic:
         repository: string
+        subpath: string | default=${schema.metadata.name}
         password: string
         b2:
           id: string
@@ -41,7 +42,7 @@ spec:
           name: nfs-${schema.metadata.name}-volsync-${schema.spec.target}
         type: Opaque
         stringData:
-          RESTIC_REPOSITORY: ${schema.spec.restic.repository}/${schema.metadata.name}
+          RESTIC_REPOSITORY: ${schema.spec.restic.repository}/${schema.spec.restic.subpath}
           RESTIC_PASSWORD: ${schema.spec.restic.password}
           RESTIC_PACK_SIZE: "128"
           RESTIC_READ_CONCURRENCY: "16"
