@@ -20,6 +20,9 @@ spec:
       replicaCount: 2
     config:
       enableLeaderElection: true
+    image:
+      repository: ghcr.io/mrwulf/custom-images/kro/controller
+      tag: pr299
     metrics:
       serviceMonitor:
         enabled: true
