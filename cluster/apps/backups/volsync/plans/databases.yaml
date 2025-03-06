@@ -1,0 +1,14 @@
+apiVersion: kro.run/v1alpha1
+kind: NFSBackupPlan
+metadata:
+  name: databases
+spec:
+  nfs:
+    path: /mnt/user/backups/postgres-backup
+    server: ${CORE_NFS_SERVER}
+  restic:
+    repository: "${B2_RESTIC_REPO}:home-backups"
+    password: "${NFS_RESTIC_PWD}"
+    b2:
+      id: "${B2_ACCOUNT_ID}"
+      key: "${B2_ACCOUNT_KEY}"

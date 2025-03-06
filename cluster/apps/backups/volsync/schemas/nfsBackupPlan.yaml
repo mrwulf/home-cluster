@@ -1,0 +1,108 @@
+apiVersion: kro.run/v1alpha1
+kind: ResourceGraphDefinition
+metadata:
+  name: nfsbackupplan.kro.run
+spec:
+  schema:
+    apiVersion: v1alpha1
+    kind: NFSBackupPlan
+    spec:
+      target: string | default="b2"
+      nfs:
+        path: string
+        server: string
+        storageClass: string | default="nfs"
+      restic:
+        repository: string
+        password: string
+        b2:
+          id: string
+          key: string
+        pruneIntervalDays: integer | default=30
+        retain: 'map[string]integer | default={"daily": 3, "weekly": 6, "monthly": 12}'
+        cacheCapacity: string | default="20Gi"
+        cacheStorageClass: string | default="ceph-block-delete"
+      schedule: string | default="30 4 * * *"
+    status:
+      volumeStatus: ${pv.status.phase}
+      volumeClaimStatus: ${pvc.status.phase}
+      replicationSource:
+        lastSyncTime: ${replicationsource.status.lastSyncTime}
+        nextSyncTime: ${replicationsource.status.nextSyncTime}
+        conditions: ${replicationsource.status.conditions}
+  resources:
+    - id: secret
+      template:
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: nfs-${schema.metadata.name}-volsync-${schema.spec.target}
+        type: Opaque
+        stringData:
+          RESTIC_REPOSITORY: ${schema.spec.restic.repository}/${schema.metadata.name}
+          RESTIC_PASSWORD: ${schema.spec.restic.password}
+          RESTIC_PACK_SIZE: "128"
+          RESTIC_READ_CONCURRENCY: "16"
+          B2_ACCOUNT_ID: ${schema.spec.restic.b2.id}
+          B2_ACCOUNT_KEY: ${schema.spec.restic.b2.key}
+    - id: pv
+      template:
+        apiVersion: v1
+        kind: PersistentVolume
+        metadata:
+          name: nfs-${schema.metadata.name}
+        spec:
+          accessModes:
+            - ReadWriteMany
+          capacity:
+            storage: 1Gi # Unused
+          claimRef:
+            apiVersion: v1
+            kind: PersistentVolumeClaim
+            name: nfs-${schema.metadata.name}
+            namespace: ${schema.metadata.namespace}
+          mountOptions:
+            - nconnect=8
+            - hard
+            - noatime
+          nfs:
+            path: ${schema.spec.nfs.path}
+            server: ${schema.spec.nfs.server}
+          persistentVolumeReclaimPolicy: Retain
+          storageClassName: ${schema.spec.nfs.storageClass}
+          volumeMode: Filesystem
+    - id: pvc
+      template:
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: nfs-${schema.metadata.name}
+        spec:
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 1Gi # Unused
+          storageClassName: ${schema.spec.nfs.storageClass}
+          volumeMode: Filesystem
+          volumeName: nfs-${schema.metadata.name}
+    - id: replicationsource
+      template:
+        apiVersion: volsync.backube/v1alpha1
+        kind: ReplicationSource
+        metadata:
+          name: "${schema.metadata.name}-${schema.spec.target}"
+        spec:
+          sourcePVC: nfs-${schema.metadata.name}
+          trigger:
+            schedule: ${schema.spec.schedule}
+          restic:
+            repository: nfs-${schema.metadata.name}-volsync-${schema.spec.target}
+            pruneIntervalDays: ${schema.spec.restic.pruneIntervalDays}
+            retain: ${schema.spec.restic.retain}
+            copyMethod: 'Direct'
+            storageClassName: ${schema.spec.nfs.storageClass}
+            accessModes: ['ReadWriteMany']
+            cacheCapacity: ${schema.spec.restic.cacheCapacity}
+            cacheStorageClassName: ${schema.spec.restic.cacheStorageClass}
+            cacheAccessModes: ['ReadWriteOnce']
