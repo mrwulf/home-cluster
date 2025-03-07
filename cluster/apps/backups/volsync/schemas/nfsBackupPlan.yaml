@@ -10,6 +10,7 @@ spec:
     kind: NFSBackupPlan
     spec:
       target: string | default="b2"
+      source: string | default="nfs"
       nfs:
         path: string
         server: string
@@ -38,7 +39,7 @@ spec:
         apiVersion: v1
         kind: Secret
         metadata:
-          name: nfs-${schema.metadata.name}-volsync-${schema.spec.target}
+          name: ${schema.spec.source}-${schema.metadata.name}-volsync-${schema.spec.target}
         type: Opaque
         stringData:
           RESTIC_REPOSITORY: "${schema.spec.restic.repository}"
@@ -52,7 +53,7 @@ spec:
         apiVersion: v1
         kind: PersistentVolume
         metadata:
-          name: nfs-${schema.metadata.name}
+          name: ${schema.spec.source}-${schema.metadata.name}
         spec:
           accessModes:
             - ReadWriteMany
@@ -78,7 +79,7 @@ spec:
         apiVersion: v1
         kind: PersistentVolumeClaim
         metadata:
-          name: nfs-${schema.metadata.name}
+          name: ${schema.spec.source}-${schema.metadata.name}
         spec:
           accessModes:
             - ReadWriteMany
@@ -87,15 +88,18 @@ spec:
               storage: 1Gi # Unused
           storageClassName: ${schema.spec.nfs.storageClass}
           volumeMode: Filesystem
-          volumeName: nfs-${schema.metadata.name}
+          volumeName: ${pv.metadata.name}
     - id: replicationsource
       template:
         apiVersion: volsync.backube/v1alpha1
         kind: ReplicationSource
         metadata:
           name: "${schema.metadata.name}-${schema.spec.target}"
+          labels:
+            volsync.backube/backup-source: ${schema.spec.source}
+            volsync.backube/backup-target: ${schema.spec.target}
         spec:
-          sourcePVC: nfs-${schema.metadata.name}
+          sourcePVC: ${pvc.metadata.name}
           trigger:
             schedule: ${schema.spec.schedule}
           restic:
