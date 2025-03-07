@@ -1,14 +1,13 @@
 apiVersion: kro.run/v1alpha1
 kind: NFSBackupPlan
 metadata:
-  name: photos
+  name: Pictures
 spec:
   nfs:
     path: /mnt/user/Photos
     server: ${CORE_NFS_SERVER}
   restic:
     repository: "${B2_RESTIC_REPO}:home-backups"
-    subpath: Pictures
     password: "${NFS_RESTIC_PWD}"
     b2:
       id: "${B2_ACCOUNT_ID}"
