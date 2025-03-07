@@ -130,6 +130,8 @@ tasks:
   talosctl:
     desc: Install talosctl
     vars:
+      TASK_NAME:
+        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/siderolabs/talos/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
