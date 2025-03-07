@@ -32,12 +32,12 @@ spec:
               - --auth
               - none
               - --user-data-dir
-              - /config/.vscode
+              - /home/coder/.vscode
               - --extensions-dir
-              - /config/.vscode
+              - /home/coder/.vscode
               - --port
               - "8080"
-              - /config
+              - /home/coder
 
             env:
               DISABLE_TELEMETRY: "true"
@@ -88,4 +88,4 @@ spec:
       config:
         existingClaim: "${VOLSYNC_CLAIM}"
         globalMounts:
-          - path: /config
+          - path: /home/coder
