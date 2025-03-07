@@ -7,7 +7,7 @@ spec:
     path: /mnt/user/backups/postgres-backup
     server: ${CORE_NFS_SERVER}
   restic:
-    repository: "${B2_RESTIC_REPO}:home-backups"
+    repository: "${B2_RESTIC_REPO}:home-backups/databases"
     password: "${NFS_RESTIC_PWD}"
     b2:
       id: "${B2_ACCOUNT_ID}"

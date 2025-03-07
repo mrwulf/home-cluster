@@ -162,7 +162,7 @@ tasks:
       app_ks:
         sh: "find {{ .CLUSTER_DIR }} -type f -name \"*.yaml\" -o -name \"*.yml\" | while read file; do yq '.metadata.name' \"$file\" | grep -qx \"{{ .app }}\" && echo \"$file\" && break; done"
       ns:
-        sh: "yq '.spec.targetNamespace | explode(.)' {{ .app_ks }}"
+        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.targetNamespace | explode(.)' {{ .app_ks }}"
     preconditions:
       - '[[ "{{.STATE}}" == "suspend" || "{{.STATE}}" == "resume" ]]'
       - which flux kubectl

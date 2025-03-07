@@ -41,7 +41,7 @@ spec:
           name: nfs-${schema.metadata.name}-volsync-${schema.spec.target}
         type: Opaque
         stringData:
-          RESTIC_REPOSITORY: "${schema.spec.restic.repository}/${schema.metadata.name}"
+          RESTIC_REPOSITORY: "${schema.spec.restic.repository}"
           RESTIC_PASSWORD: ${schema.spec.restic.password}
           RESTIC_PACK_SIZE: "128"
           RESTIC_READ_CONCURRENCY: "16"
