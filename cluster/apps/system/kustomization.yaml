@@ -8,6 +8,7 @@ resources:
   - generic-device-plugin/ks.yaml
   - intel-device-plugins/ks.yaml
   - k8s-dns-gateway/ks.yaml
+  - k8tz/ks.yaml
   - kro/ks.yaml
   - kube-cleanup-operator/ks.yaml
   - kubelet-serving-cert-approver/ks.yaml
