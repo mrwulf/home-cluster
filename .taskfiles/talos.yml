@@ -242,6 +242,7 @@ tasks:
       - kubectl -n kube-system rollout restart daemonset cilium
 
   upgrade-k8s-precheck:
+    internal: true
     requires:
       vars: [TARGET_VERSION]
     cmds:
