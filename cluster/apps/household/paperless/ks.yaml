@@ -16,7 +16,6 @@ spec:
   interval: 30m
   path: ./cluster/apps/household/paperless/app
   components:
-    - ../../../_common
     - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
