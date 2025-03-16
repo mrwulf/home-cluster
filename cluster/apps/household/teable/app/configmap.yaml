@@ -18,11 +18,11 @@ data:
   # Same as above but with protocol
   STORAGE_PREFIX: "https://cdn.${SECRET_DOMAIN}"
   # Internal endpoint
-  BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT: "minio.databases.svc.cluster.local"
+  # BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT: "minio.databases.svc.cluster.local"
   # Public port, typically 443 or 9000
   BACKEND_STORAGE_MINIO_PORT: "443"
   # Internal port, typically 80 or 9000
-  BACKEND_STORAGE_MINIO_INTERNAL_PORT: "9000"
+  # BACKEND_STORAGE_MINIO_INTERNAL_PORT: "9000"
   # Enable HTTPS, note: if Teable uses HTTPS, MinIO must also use HTTPS to avoid CORS issues
   BACKEND_STORAGE_MINIO_USE_SSL: "true"
 
@@ -39,7 +39,7 @@ data:
   BACKEND_MAIL_HOST: smtp-proxy.system.svc.cluster.local
   BACKEND_MAIL_PORT: "2525"
   BACKEND_MAIL_SECURE: "false"
-  BACKEND_MAIL_SENDER: "noreply@${SECRET_DOMAIN}"
-  BACKEND_MAIL_SENDER_NAME: noreply
+  BACKEND_MAIL_SENDER: "teable@${SECRET_DOMAIN}"
+  BACKEND_MAIL_SENDER_NAME: teable
   # BACKEND_MAIL_AUTH_USER: username
   # BACKEND_MAIL_AUTH_PASS: usertoken
