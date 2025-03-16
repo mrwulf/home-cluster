@@ -14,17 +14,13 @@ data:
   # Storage configuration
   BACKEND_STORAGE_PROVIDER: "minio"
   # Public endpoint, important! Must be accessible by end users
-  BACKEND_STORAGE_MINIO_ENDPOINT: "cdn.${SECRET_DOMAIN}"
-  # Same as above but with protocol
   STORAGE_PREFIX: "https://cdn.${SECRET_DOMAIN}"
-  # Internal endpoint
-  # BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT: "minio.databases.svc.cluster.local"
-  # Public port, typically 443 or 9000
-  BACKEND_STORAGE_MINIO_PORT: "443"
-  # Internal port, typically 80 or 9000
-  # BACKEND_STORAGE_MINIO_INTERNAL_PORT: "9000"
-  # Enable HTTPS, note: if Teable uses HTTPS, MinIO must also use HTTPS to avoid CORS issues
   BACKEND_STORAGE_MINIO_USE_SSL: "true"
+  BACKEND_STORAGE_MINIO_ENDPOINT: "cdn.${SECRET_DOMAIN}"
+  BACKEND_STORAGE_MINIO_PORT: "443"
+  # Internal endpoint
+  BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT: "minio.databases.svc.cluster.local"
+  BACKEND_STORAGE_MINIO_INTERNAL_PORT: "9000"
 
   # Cache configuration, fixed value
   BACKEND_CACHE_PROVIDER: "redis"
@@ -33,7 +29,7 @@ data:
   NEXT_ENV_IMAGES_ALL_REMOTE: "true"
   PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
   # Keep this when using self-signed certificates
-  NODE_TLS_REJECT_UNAUTHORIZED: '0'
+  # NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
   # Email Configuration
   BACKEND_MAIL_HOST: smtp-proxy.system.svc.cluster.local

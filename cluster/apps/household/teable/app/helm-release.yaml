@@ -41,7 +41,7 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/teableio/teable-ee
+              repository: ghcr.io/teableio/teable
               tag: latest
             envFrom:
               - configMapRef:
@@ -79,7 +79,7 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/teableio/teable-db-migrate-ee
+              repository: ghcr.io/teableio/teable-db-migrate
               tag: latest
             envFrom:
               - configMapRef:
