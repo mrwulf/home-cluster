@@ -15,6 +15,7 @@ spec:
     - name: postgres-cluster
     - name: minio
     - name: smtp-relay
+    - name: authentik
   path: ./cluster/apps/household/teable/app
   prune: true
   sourceRef:
