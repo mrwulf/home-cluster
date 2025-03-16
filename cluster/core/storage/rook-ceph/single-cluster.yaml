@@ -101,8 +101,8 @@ spec:
             memory: "100Mi"
         osd:
           requests:
-            cpu: "100m"
-            memory: "1000Mi"
+            cpu: "1"
+            memory: "1500Mi"
       storage:
         useAllNodes: false
         useAllDevices: false

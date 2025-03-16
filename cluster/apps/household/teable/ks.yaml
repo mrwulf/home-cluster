@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app penpot
+  name: &app teable
   namespace: flux-system
 spec:
   targetNamespace: household
@@ -15,9 +15,7 @@ spec:
     - name: postgres-cluster
     - name: minio
     - name: smtp-relay
-  path: ./cluster/apps/household/penpot/app
-  # components:
-  #   - ../../../../templates/volsync/primary
+  path: ./cluster/apps/household/teable/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -29,8 +27,5 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      # VOLSYNC_CLAIM: "penpot-assets"
       APP_UID: "1001"
       APP_GID: "1001"
-      # VOLSYNC_CAPACITY: 10Gi
-      # VOLSYNC_START_MINUTE: "33"
