@@ -43,10 +43,10 @@ data:
   # BACKEND_MAIL_AUTH_PASS: usertoken
 
   # Authentik
-  SOCIAL_AUTH_PROVIDERS: oidc
-  BACKEND_OIDC_CALLBACK_URL: https://sheets.home.${SECRET_DOMAIN}/api/auth/oidc/callback
-  BACKEND_OIDC_USER_INFO_URL: https://auth.${SECRET_DOMAIN}/application/o/userinfo
-  BACKEND_OIDC_TOKEN_URL: https://auth.${SECRET_DOMAIN}/application/o/token
-  BACKEND_OIDC_AUTHORIZATION_URL: https://auth.${SECRET_DOMAIN}/application/o/authorize
-  BACKEND_OIDC_ISSUER: https://auth.${SECRET_DOMAIN}/application/o/teable
-  BACKEND_OIDC_OTHER: '{"scope": ["email", "profile"]}'
+  # SOCIAL_AUTH_PROVIDERS: oidc
+  # BACKEND_OIDC_CALLBACK_URL: https://sheets.home.${SECRET_DOMAIN}/api/auth/oidc/callback
+  # BACKEND_OIDC_USER_INFO_URL: https://auth.${SECRET_DOMAIN}/application/o/userinfo
+  # BACKEND_OIDC_TOKEN_URL: https://auth.${SECRET_DOMAIN}/application/o/token
+  # BACKEND_OIDC_AUTHORIZATION_URL: https://auth.${SECRET_DOMAIN}/application/o/authorize
+  # BACKEND_OIDC_ISSUER: https://auth.${SECRET_DOMAIN}/application/o/teable
+  # BACKEND_OIDC_OTHER: '{"scope": ["email", "profile"]}'
