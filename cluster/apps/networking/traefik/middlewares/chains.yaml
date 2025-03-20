@@ -43,6 +43,6 @@ metadata:
 spec:
   chain:
     middlewares:
-      - name: traefik-middleware-immich-rate-limit@kubernetescrd
+      - name: networking-traefik-middleware-immich-rate-limit@kubernetescrd
       - name: networking-traefik-middleware-secure-headers@kubernetescrd
       - name: networking-traefik-middleware-compress@kubernetescrd
