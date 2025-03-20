@@ -114,7 +114,6 @@ spec:
                 service:
                   identifier: teable
                   port: http
-
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
