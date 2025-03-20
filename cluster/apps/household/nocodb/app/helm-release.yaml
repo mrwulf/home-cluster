@@ -1,0 +1,86 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app nocodb
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.7.3
+      interval: 30m
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  values:
+    controllers:
+      nocodb:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16
+            envFrom: &envFrom
+              - secretRef:
+                  name: *app
+        containers:
+          app:
+            image:
+              repository: docker.io/nocodb/nocodb
+              tag: 0.262.2
+            env:
+              PORT: &port 8080
+              NC_JWT_EXPIRES_IN: 48h
+              NC_PUBLIC_URL: "https://{{ .Release.Name }}.home.${SECRET_DOMAIN}"
+              NC_REDIS_URL: redis://dragonfly.databases.svc.cluster.local:6379/9
+              NC_DISABLE_TELE: "true"
+            envFrom: *envFrom
+            resources:
+              requests:
+                cpu: 5m
+                memory: 128M
+              limits:
+                memory: 2G
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: "${APP_UID}"
+        runAsGroup: "${APP_GID}"
+        fsGroup: "${APP_GID}"
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: ["65568"]
+    service:
+      app:
+        controller: nocodb
+        ports:
+          http:
+            port: *port
+    ingress:
+      app:
+        className: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+        hosts:
+          - host: &host "{{ .Release.Name }}.home.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+    persistence:
+      data:
+        existingClaim: "${VOLSYNC_CLAIM}"
+        advancedMounts:
+          nocodb:
+            app:
+              - path: /usr/app/data

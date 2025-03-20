@@ -8,8 +8,8 @@ resources:
   - immich/ks.yaml
   - libreddit/ks.yaml
   - mealie/ks.yaml
+  - nocodb/ks.yaml
   - outline/ks.yaml
   - paperless/ks.yaml
   - penpot/ks.yaml
-  - teable/ks.yaml
   - vikunja/ks.yaml

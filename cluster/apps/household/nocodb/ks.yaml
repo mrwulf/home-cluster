@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app teable
+  name: &app nocodb
   namespace: flux-system
 spec:
   targetNamespace: household
@@ -15,9 +15,11 @@ spec:
     - name: postgres-cluster
     - name: minio
     - name: smtp-relay
-    - name: authentik
-  path: ./cluster/apps/household/teable/app
+    - name: volsync
+  path: ./cluster/apps/household/nocodb/app
   prune: true
+  components:
+    - ../../../../templates/volsync/init
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -28,5 +30,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      APP_UID: "1001"
-      APP_GID: "1001"
+      APP_UID: "568"
+      APP_GID: "568"
+      VOLSYNC_CLAIM: *app
+      VOLSYNC_CAPACITY: 5Gi
