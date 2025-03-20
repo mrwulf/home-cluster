@@ -53,7 +53,8 @@ spec:
         runAsGroup: "${APP_GID}"
         fsGroup: "${APP_GID}"
         fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups: ["65568"]
+        supplementalGroups:
+          - 65568
     service:
       app:
         controller: nocodb
