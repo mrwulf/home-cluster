@@ -8,5 +8,5 @@ resources:
   - plugin.yaml
   - rfc1918.yaml
   - secure-headers.yaml
-  - secure.yaml
+  - rate-limit.yaml
   - stripprefix-api.yaml

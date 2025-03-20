@@ -19,11 +19,10 @@ spec:
   chain:
     middlewares:
       - name: networking-traefik-middleware-rate-limit@kubernetescrd
-      # - name: traefik-middleware-secure-headers@kubernetescrd
+      - name: networking-traefik-middleware-secure-headers@kubernetescrd
       - name: networking-traefik-middleware-cloudflare-tunnel@kubernetescrd  # from the real-ip plugin
       - name: networking-traefik-middleware-compress@kubernetescrd
       - name: auth-ak-outpost-authentik-embedded-outpost@kubernetescrd
-      - name: networking-traefik-middleware-secure-headers@kubernetescrd
 ---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
@@ -33,9 +32,9 @@ spec:
   chain:
     middlewares:
       - name: networking-traefik-middleware-rate-limit@kubernetescrd
+      - name: networking-traefik-middleware-secure-headers@kubernetescrd
       - name: networking-traefik-middleware-compress@kubernetescrd
       - name: auth-ak-outpost-authentik-embedded-outpost@kubernetescrd
-      - name: networking-traefik-middleware-secure-headers@kubernetescrd
 ---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
@@ -44,7 +43,6 @@ metadata:
 spec:
   chain:
     middlewares:
+      - name: traefik-middleware-immich-rate-limit@kubernetescrd
       - name: networking-traefik-middleware-secure-headers@kubernetescrd
       - name: networking-traefik-middleware-compress@kubernetescrd
-      # - name: traefik-middleware-cloudflare-tunnel@kubernetescrd
-      # - name: traefik-middleware-rate-limit@kubernetescrd
