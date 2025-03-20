@@ -100,7 +100,7 @@ spec:
         path: "/mnt/user/backups/mealie"
         globalMounts:
           - path: /app/data/backups
-      ntlk-data:
+      nltk-data:
         type: emptyDir
         globalMounts:
-          - path: /ntlk_data
+          - path: /nltk_data
