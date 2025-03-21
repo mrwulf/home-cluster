@@ -32,8 +32,8 @@ spec:
     kubeEtcd:
       enabled: true
       endpoints:
-        - 10.0.1.42
         - 10.0.1.48
+        - 10.0.1.42
         - 10.0.1.44
       service:
         enabled: true
@@ -66,11 +66,10 @@ spec:
     kubelet:
       enabled: true
       endpoints:
-        - 10.0.1.42
         - 10.0.1.48
+        - 10.0.1.42
         - 10.0.1.44
-        - 10.0.1.46
-        - 10.0.1.47
+        - 10.0.1.45
       service:
         enabled: true
         port: 10250
