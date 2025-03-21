@@ -38,7 +38,8 @@ spec:
       - service
       - crd
 
-    provider: cloudflare
+    provider: 
+      name: cloudflare
 
     policy: sync
     txtPrefix: "k8s."
