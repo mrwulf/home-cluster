@@ -15,6 +15,7 @@ spec:
   path: ./cluster/apps/media/plex/app
   components:
     - ../../../../templates/volsync/primary
+    - ../../../../templates/gatus/external
   prune: true
   sourceRef:
     kind: GitRepository
@@ -26,6 +27,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_STATUS: '401'
       VOLSYNC_CLAIM: plex-config
       VOLSYNC_CAPACITY: 100Gi
       VOLSYNC_START_MINUTE: "11"

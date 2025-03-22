@@ -13,6 +13,7 @@ spec:
   path: ./cluster/apps/media/radarr/app
   components:
     - ../../../../templates/volsync/primary
+    - ../../../../templates/gatus/external
   prune: true
   sourceRef:
     kind: GitRepository
