@@ -115,7 +115,7 @@ spec:
       app:
         className: traefik
         hosts:
-          - host: &host status.home.${CLUSTER_DOMAIN}
+          - host: &host status.home.${SECRET_DOMAIN}
             paths:
               - path: /
                 service:
