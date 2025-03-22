@@ -22,10 +22,10 @@ ui:
 #       send-on-resolved: true
 #       failure-threshold: 3
 #       success-threshold: 3
-connectivity:
-  checker:
-    target: https://radar.cloudflare.com/ip
-    interval: 1m
+# connectivity:
+#   checker:
+#     target: https://radar.cloudflare.com/ip
+#     interval: 1m
 endpoints:
   - name: DNS status
     group: internal
