@@ -10,7 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: cloudnative-pg-cluster
+    - name: postgres-cluster
     - name: external-secrets-stores
   interval: 30m
   path: ./cluster/apps/monitoring/gatus/app
