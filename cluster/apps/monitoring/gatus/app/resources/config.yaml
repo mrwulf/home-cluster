@@ -22,32 +22,24 @@ ui:
 #       send-on-resolved: true
 #       failure-threshold: 3
 #       success-threshold: 3
-# connectivity:
-#   checker:
-#     target: 1.1.1.1:53
-#     interval: 1m
+connectivity:
+  checker:
+    target: https://radar.cloudflare.com/ip
+    interval: 1m
 endpoints:
-  - name: status
-    group: guarded
-    url: 1.1.1.1
+  - name: DNS status
+    group: internal
+    url: 10.0.10.14
     interval: 1m
     dns:
-      query-name: "status.${SECRET_DOMAIN}"
+      query-name: "status.home.${SECRET_DOMAIN}"
       query-type: A
     conditions:
-      - "len([BODY]) == 0"
+      - "[BODY] == 10.0.10.20"
+      - "[DNS_RCODE] == NOERROR"
   - name: flux-webhook
     group: external
     url: https://flux-receiver.${SECRET_DOMAIN}
     interval: 1m
     conditions:
       - "[STATUS] == 404"
-  - name: Minio
-    group: Services
-    url: https://minio.${SECRET_DOMAIN}/minio/health/live
-    interval: 1m
-    ui:
-      hide-hostname: true
-      hide-url: true
-    conditions:
-      - "[STATUS] == 200"

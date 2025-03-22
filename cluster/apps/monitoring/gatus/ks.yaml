@@ -14,6 +14,8 @@ spec:
     - name: external-secrets-stores
   interval: 30m
   path: ./cluster/apps/monitoring/gatus/app
+  components:
+    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -22,3 +24,6 @@ spec:
   targetNamespace: monitoring
   timeout: 5m
   wait: false
+  postBuild:
+    substitute:
+      APP: *app
