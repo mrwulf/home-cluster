@@ -13,6 +13,9 @@ spec:
     - name: traefik
   interval: 30m
   path: ./cluster/apps/networking/whoami/app
+  components:
+    - ../../../../templates/gatus/external
+    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -21,3 +24,6 @@ spec:
   targetNamespace: networking
   timeout: 5m
   wait: false
+  postBuild:
+    substitute:
+      APP: *app

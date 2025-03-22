@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: *app
   interval: 30m
   path: ./cluster/apps/monitoring/prometheus-stack/app
+  components:
+    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -19,3 +21,7 @@ spec:
   targetNamespace: monitoring
   timeout: 5m
   wait: false
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_SUBDOMAIN: prom

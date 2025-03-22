@@ -43,3 +43,26 @@ endpoints:
     interval: 1m
     conditions:
       - "[STATUS] == 404"
+  - name: certificate
+    group: external
+    url: "https://flux-receiver.${SECRET_DOMAIN}"
+    interval: 1h
+    conditions:
+      - "[DOMAIN_EXPIRATION] > 720h"
+      - "[CERTIFICATE_EXPIRATION] > 240h"
+  - name: certificate
+    group: internal
+    url: "https://status.home.${SECRET_DOMAIN}"
+    interval: 1h
+    conditions:
+      - "[DOMAIN_EXPIRATION] > 720h"
+      - "[CERTIFICATE_EXPIRATION] > 240h"
+  - name: unraid-ssh
+    url: "ssh://10.0.1.15:22" # port is optional. Default is 22.
+    ssh:
+      username: ""
+      password: ""
+    interval: 1m
+    conditions:
+      - "[CONNECTED] == true"
+      - "[STATUS] == 0"

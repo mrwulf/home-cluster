@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: *app
   interval: 30m
   path: ./cluster/apps/networking/traefik/app
+  components:
+    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -19,6 +21,9 @@ spec:
   targetNamespace: networking
   timeout: 5m
   wait: false
+  postBuild:
+    substitute:
+      APP: *app
 ---
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -81,6 +86,8 @@ spec:
     - name: cert-manager
   interval: 30m
   path: ./cluster/apps/networking/traefik/certificates
+  components:
+    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -89,3 +96,6 @@ spec:
   targetNamespace: networking
   timeout: 5m
   wait: false
+  postBuild:
+    substitute:
+      APP: *app
