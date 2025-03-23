@@ -25,8 +25,9 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      APP_UID: "568"
+      APP_GID: "568"
+      GATUS_STATUS: '404'
       VOLSYNC_CLAIM: tautulli-config
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_START_MINUTE: "22"
-      APP_UID: "568"
-      APP_GID: "568"
