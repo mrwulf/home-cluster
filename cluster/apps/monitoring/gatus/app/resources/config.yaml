@@ -38,6 +38,8 @@ endpoints:
       - "[BODY] == 10.0.10.20"
       - "[DNS_RCODE] == NOERROR"
   - name: flux-webhook
+    client:
+      dns-resolver: tcp://10.0.0.1:53053
     group: external
     url: https://flux-receiver.${SECRET_DOMAIN}
     interval: 1m
