@@ -15,7 +15,7 @@ spec:
   path: ./cluster/apps/media/plex/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/external
+    - ../../../../templates/gatus/direct
   prune: true
   sourceRef:
     kind: GitRepository

@@ -27,3 +27,4 @@ spec:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: reddit
+      GATUS_STATUS: '401'

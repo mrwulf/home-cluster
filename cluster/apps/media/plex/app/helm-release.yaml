@@ -45,7 +45,7 @@ spec:
               TZ: "${TIMEZONE}"
               ADVERTISE_IP: "http://${PLEX_ADDR}:32400/,http://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
               # CLAIM_TOKEN: ''
-              
+
             probes:
               liveness: &probes
                 enabled: true
@@ -138,13 +138,6 @@ spec:
         path: "/mnt/user/backups/plex-database-backups"
         globalMounts:
           - path: /plex-backups
-
-      oldmoviesold:
-        type: nfs
-        server: "${CORE_NFS_SERVER:=nas0}"
-        path: /mnt/user/Movies
-        globalMounts:
-          - path: /mnt/OurShare/Movies
 
       movies:
         type: nfs

@@ -60,6 +60,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 240h"
       # - "[DOMAIN_EXPIRATION] > 720h"
   - name: unraid
+    group: services
     url: "ssh://10.0.1.15:22" # port is optional. Default is 22.
     ssh:
       username: ""
