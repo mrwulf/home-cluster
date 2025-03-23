@@ -58,7 +58,7 @@ spec:
           hajimari.io/icon: mdi:web
           hajimari.io/group: "Home"
         hosts:
-          - host: &host "reddit.home.${SECRET_DOMAIN}"
+          - host: &host "${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:

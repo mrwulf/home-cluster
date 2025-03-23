@@ -40,7 +40,7 @@ spec:
               ALLOW_SIGNUP: false
               API_PORT: 9000
               AUTO_BACKUP_ENABLED: true
-              BASE_URL: https://meals.${SECRET_DOMAIN}
+              BASE_URL: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
               SMTP_HOST: smtp-relay.system.svc.cluster.local.
               SMTP_PORT: 2525
               SMTP_FROM_NAME: meals@${SECRET_DOMAIN}
@@ -83,7 +83,7 @@ spec:
           hajimari.io/appName: "Mealie"
           hajimari.io/group: "Home"
         hosts:
-          - host: &host "meals.${SECRET_DOMAIN}"
+          - host: &host "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:

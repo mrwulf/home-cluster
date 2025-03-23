@@ -27,6 +27,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_SUBDOMAIN: meals
       VOLSYNC_CLAIM: mealie-api-data
       VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_START_MINUTE: "33"
