@@ -18,7 +18,7 @@ endpoints:
     group: internal
     interval: 1m
     name: ${APP}
-    ui:
-      hide-hostname: true
-      hide-url: true
+    # ui:
+    #   hide-hostname: true
+    #   hide-url: true
     url: https://${GATUS_SUBDOMAIN:=${APP}}.home.${SECRET_DOMAIN}${GATUS_PATH:=/}

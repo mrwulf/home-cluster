@@ -56,7 +56,7 @@ endpoints:
     interval: 1h
     conditions:
       - "[DOMAIN_EXPIRATION] > 720h"
-      - "[CERTIFICATE_EXPIRATION] > 240h"
+      # - "[CERTIFICATE_EXPIRATION] > 240h"
   - name: unraid-ssh
     url: "ssh://10.0.1.15:22" # port is optional. Default is 22.
     ssh:
