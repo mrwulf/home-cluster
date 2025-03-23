@@ -60,7 +60,7 @@ spec:
               - name: VIKUNJA_DATABASE_DATABASE
                 value: vikunja
               - name: VIKUNJA_SERVICE_FRONTENDURL
-                value: https://lists.${SECRET_DOMAIN}
+                value: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
               - name: VIKUNJA_SERVICE_ENABLETASKCOMMENTS
                 value: "false"
               - name: VIKUNJA_MAILER_FROMEMAIL
@@ -113,7 +113,7 @@ spec:
           hajimari.io/icon: mdi:format-list-checkbox
           hajimari.io/group: "Home"
         hosts:
-          - host: &host "lists.${SECRET_DOMAIN}"
+          - host: &host "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:

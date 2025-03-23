@@ -13,7 +13,7 @@ metadata:
 spec:
   ingressClassName: "traefik"
   rules:
-    - host: &host "tms.home.${SECRET_DOMAIN}"
+    - host: &host "${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
       http:
         paths:
           - path: /

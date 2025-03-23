@@ -15,7 +15,7 @@ spec:
   path: ./cluster/apps/household/vikunja/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/internal
+    - ../../../../templates/gatus/external
   prune: true
   sourceRef:
     kind: GitRepository
@@ -27,6 +27,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_SUBDOMAIN: lists
       VOLSYNC_CLAIM: vikunja-files-pvc
       VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_START_MINUTE: "33"
