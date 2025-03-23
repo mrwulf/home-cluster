@@ -24,6 +24,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_STATUS: "404"
+      GATUS_PATH: "/dashboard/"
 ---
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
