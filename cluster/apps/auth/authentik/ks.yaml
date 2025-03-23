@@ -20,3 +20,9 @@ spec:
   wait: false
   interval: 30m
   timeout: 5m
+  components:
+    - ../../../../gatus/external
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_SUBDOMAIN: auth

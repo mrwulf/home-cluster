@@ -27,5 +27,6 @@ spec:
       APP: *app
       APP_UID: "0"
       APP_GID: "0"
+      GATUS_SUBDOMAIN: hs
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_START_MINUTE: "22"

@@ -16,8 +16,8 @@ spec:
     - name: minio
     - name: smtp-relay
   path: ./cluster/apps/household/penpot/app
-  # components:
-  #   - ../../../../templates/volsync/primary
+  components:
+    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository

@@ -13,6 +13,7 @@ spec:
   path: ./cluster/apps/vaultwarden/app
   components:
     - ../../../templates/volsync/primary
+    - ../../../templates/gatus/external
   prune: true
   sourceRef:
     kind: GitRepository

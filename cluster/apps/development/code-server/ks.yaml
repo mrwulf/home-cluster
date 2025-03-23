@@ -15,8 +15,8 @@ spec:
     - name: traefik
   path: ./cluster/apps/development/code-server/app
   components:
-    - ../../../_common
     - ../../../../templates/volsync/primary
+    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository

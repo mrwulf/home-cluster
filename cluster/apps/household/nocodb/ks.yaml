@@ -19,7 +19,8 @@ spec:
   path: ./cluster/apps/household/nocodb/app
   prune: true
   components:
-    - ../../../../templates/volsync/init
+    - ../../../../templates/volsync/primary
+    - ../../../../gatus/internal
   sourceRef:
     kind: GitRepository
     name: flux-system

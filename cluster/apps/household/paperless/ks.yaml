@@ -17,6 +17,7 @@ spec:
   path: ./cluster/apps/household/paperless/app
   components:
     - ../../../../templates/volsync/primary
+    - ../../../../gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository

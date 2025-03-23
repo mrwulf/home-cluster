@@ -23,3 +23,8 @@ spec:
   interval: 30m
   retryInterval: 1m
   timeout: 5m
+  components:
+    - ../../../../gatus/external
+  postBuild:
+    substitute:
+      APP: *app

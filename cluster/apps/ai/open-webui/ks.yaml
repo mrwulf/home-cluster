@@ -17,8 +17,8 @@ spec:
     - name: external-secrets-stores
   path: ./cluster/apps/ai/open-webui/app
   components:
-    - ../../../_common
     - ../../../../templates/volsync/primary
+    - ../../../../gatus/external
   prune: true
   sourceRef:
     kind: GitRepository
@@ -29,5 +29,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_SUBDOMAIN: chat
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_START_MINUTE: "48"
