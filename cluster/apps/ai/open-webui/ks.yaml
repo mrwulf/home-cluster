@@ -18,7 +18,7 @@ spec:
   path: ./cluster/apps/ai/open-webui/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../gatus/external
+    - ../../../../templates/gatus/external
   prune: true
   sourceRef:
     kind: GitRepository

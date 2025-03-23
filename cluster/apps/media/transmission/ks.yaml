@@ -13,7 +13,7 @@ spec:
   path: ./cluster/apps/media/transmission/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../gatus/internal
+    - ../../../../templates/gatus/internal
   dependsOn:
     - name: transmission-incomplete-pvc
   prune: true

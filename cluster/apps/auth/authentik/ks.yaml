@@ -21,7 +21,7 @@ spec:
   interval: 30m
   timeout: 5m
   components:
-    - ../../../../gatus/external
+    - ../../../../templates/gatus/external
   postBuild:
     substitute:
       APP: *app

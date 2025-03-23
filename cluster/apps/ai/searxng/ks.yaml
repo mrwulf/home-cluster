@@ -14,7 +14,7 @@ spec:
     - name: traefik
   path: "./cluster/apps/ai/searxng/app/"
   components:
-    - ../../../../gatus/external
+    - ../../../../templates/gatus/external
   prune: true
   sourceRef:
     kind: GitRepository

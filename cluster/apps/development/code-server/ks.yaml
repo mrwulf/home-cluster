@@ -27,6 +27,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_SUBDOMAIN: code
       VOLSYNC_CLAIM: code-server-storage
       VOLSYNC_CAPACITY: 20Gi
       VOLSYNC_START_MINUTE: "55"

@@ -25,6 +25,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_SUBDOMAIN: bw
       VOLSYNC_CLAIM: vaultwarden-db
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_START_MINUTE: "3"

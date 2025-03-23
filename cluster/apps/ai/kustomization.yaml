@@ -10,6 +10,3 @@ resources:
   - ./ollama/ks.yaml
   - ./paperless-ai/ks.yaml
   - ./searxng/ks.yaml
-
-# components:
-#   - ../_common

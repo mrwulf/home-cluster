@@ -13,7 +13,7 @@ spec:
   path: ./cluster/apps/media/tautulli/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../gatus/internal
+    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository

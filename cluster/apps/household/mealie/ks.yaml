@@ -15,7 +15,7 @@ spec:
   path: ./cluster/apps/household/mealie/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../gatus/external
+    - ../../../../templates/gatusexternal
   prune: true
   sourceRef:
     kind: GitRepository
