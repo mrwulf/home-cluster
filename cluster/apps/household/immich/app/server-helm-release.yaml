@@ -94,7 +94,7 @@ spec:
           external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=domain}"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
         hosts:
-          - host: &host photos.${SECRET_DOMAIN}
+          - host: &host ${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
             paths:
               - path: /
                 service:

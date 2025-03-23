@@ -29,8 +29,8 @@ spec:
               repository: docker.io/searxng/searxng
               tag: 2024.6.30-39aaac40d
             env:
-              SEARXNG_BASE_URL: "https://search.home.${SECRET_DOMAIN}"
-              SEARXNG_URL: "https://search.home.${SECRET_DOMAIN}"
+              SEARXNG_BASE_URL: "https://${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
+              SEARXNG_URL: "https://${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
               SEARXNG_PORT: &httpPort 8080
               SEARXNG_REDIS_URL: redis://dragonfly.databases.svc.cluster.local:6379/3
               SEARXNG_SECRET: "${SECRET_SEARXNG_SECRET}"
@@ -79,7 +79,7 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
         hosts:
-          - host: &host "search.home.${SECRET_DOMAIN}"
+          - host: &host "${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
