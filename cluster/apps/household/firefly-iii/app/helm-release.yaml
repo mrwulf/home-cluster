@@ -40,11 +40,10 @@ spec:
               APP_ENV: "production"
               DB_CONNECTION: "pgsql"
               DB_PORT: "5432"
-              MAIL_MAILER: log
               TRUSTED_PROXIES: "**" # TODO: This should be changed..
-              SEND_REGISTRATION_MAIL: false
-              SEND_ERROR_MESSAGE: false
-              SEND_LOGIN_NEW_IP_WARNING: false
+              SEND_REGISTRATION_MAIL: true
+              SEND_ERROR_MESSAGE: true
+              SEND_LOGIN_NEW_IP_WARNING: true
               COOKIE_DOMAIN: &host "${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
               COOKIE_SECURE: "true"
               COOKIE_SAMESITE: "strict"
