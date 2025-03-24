@@ -30,5 +30,6 @@ spec:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: money
+      VOLSYNC_CLAIM: *app
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_START_MINUTE: "37"
