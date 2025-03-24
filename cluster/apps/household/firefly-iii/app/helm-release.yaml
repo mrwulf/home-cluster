@@ -21,11 +21,10 @@ spec:
             reloader.stakater.com/auto: "true"
 
         initContainers:
-          01-init-db:
+          init-db:
             image:
               repository: ghcr.io/onedr0p/postgres-init
               tag: 16
-            imagePullPolicy: IfNotPresent
             envFrom:
               - secretRef:
                   name: firefly-secret
@@ -108,7 +107,6 @@ spec:
               - *host
     persistence:
       upload:
-        enabled: true
         existingClaim: "${VOLSYNC_CLAIM}"
         advancedMounts:
           firefly:
