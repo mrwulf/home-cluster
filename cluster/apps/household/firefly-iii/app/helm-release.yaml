@@ -60,25 +60,6 @@ spec:
               limits:
                 cpu: 100m
                 memory: 512Mi
-          cronjob:
-            image:
-              repository: alpine
-              tag: 3.21.3
-              pullPolicy: IfNotPresent
-            command:
-              - sh
-            args:
-              - -c
-              - >-
-                echo "0 */3 * * * wget -qO- http://firefly:8080/api/v1/cron/$(STATIC_CRON_TOKEN)"
-                | crontab -
-                && crond -f -L /dev/stdout
-            env:
-              - name: STATIC_CRON_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: firefly-secret
-                    key: STATIC_CRON_TOKEN
 
     service:
       firefly:

@@ -33,3 +33,37 @@ spec:
       VOLSYNC_CLAIM: *app
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_START_MINUTE: "37"
+---
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app firefly-iii-importer
+  namespace: flux-system
+spec:
+  targetNamespace: household
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: volsync
+    - name: postgres-cluster
+    - name: authentik
+    - name: firefly-iii
+  path: ./cluster/apps/household/firefly-iii/importer
+  components:
+    # - ../../../../templates/volsync/init
+    - ../../../../templates/gatus/internal
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 30m
+  retryInterval: 1m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_SUBDOMAIN: money-importer
