@@ -38,7 +38,7 @@ spec:
                       name: postgres-superuser
                       key: password
                 - name: POSTGRES_DB
-                  value: 'lidarr_main,lidarr_log,paperless,penpot'
+                  value: 'gatus,fireflyiii,lidarr_main,lidarr_log,paperless,nocodb,openwebui,paperless,penpot'
                 - name: BACKUP_KEEP_MINS
                   value: '1440'
                 - name: TZ
