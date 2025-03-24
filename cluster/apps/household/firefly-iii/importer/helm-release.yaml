@@ -32,11 +32,6 @@ spec:
               VANITY_URL: "https://money.home.${SECRET_DOMAIN}"
               CAN_AUTO_IMPORT: 'true'
               CAN_POST_FILES: 'true'
-              FIREFLY_III_ACCESS_TOKEN:
-                valueFrom:
-                  secretKeyRef:
-                    name: firefly-importer-secret
-                    key: IMPORTER
             envFrom:
               - secretRef:
                   name: firefly-importer-secret
