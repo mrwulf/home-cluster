@@ -34,7 +34,6 @@ spec:
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_START_MINUTE: "37"
 ---
----
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -52,9 +51,8 @@ spec:
     - name: authentik
     - name: firefly-iii
   path: ./cluster/apps/household/firefly-iii/importer
-  components:
-    # - ../../../../templates/volsync/init
-    - ../../../../templates/gatus/internal
+  # components:
+  #   - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
