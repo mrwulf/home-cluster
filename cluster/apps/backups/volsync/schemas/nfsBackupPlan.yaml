@@ -21,7 +21,7 @@ spec:
         b2:
           id: string
           key: string
-        pruneIntervalDays: integer | default=10
+        pruneIntervalDays: integer | default=30
         retain: 'map[string]integer | default={"daily": 3, "weekly": 6, "monthly": 12}'
         cacheCapacity: string | default="20Gi"
         cacheStorageClass: string | default="ceph-block-delete"
