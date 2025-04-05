@@ -5,8 +5,8 @@ metadata:
   name: traefik-middleware-rate-limit
 spec:
   rateLimit:
-    average: 10
-    burst: 20
+    average: 50
+    burst: 100
 ---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
@@ -14,5 +14,5 @@ metadata:
   name: traefik-middleware-immich-rate-limit
 spec:
   rateLimit:
-    average: 50
-    burst: 100
+    average: 100
+    burst: 500
