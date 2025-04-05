@@ -50,9 +50,10 @@ spec:
               OIDC_CLIENT_ID: outline
               OIDC_CLIENT_SECRET: "${SECRET_OUTLINE_OAUTH_CLIENT_SECRET}"
               OIDC_DISPLAY_NAME: Authentik
-              OIDC_SCOPES: "openid profile email"
+              OIDC_SCOPES: "openid profile email offline_access"
               OIDC_TOKEN_URI: "https://auth.${SECRET_DOMAIN}/application/o/token/"
               OIDC_USERINFO_URI: "https://auth.${SECRET_DOMAIN}/application/o/userinfo/"
+              OIDC_LOGOUT_URI: "https://auth.${SECRET_DOMAIN}/application/o/outline/end-session/"
               OIDC_USERNAME_CLAIM: email
               PORT: 8080
               REDIS_URL: redis://dragonfly.databases.svc.cluster.local:6379/6
