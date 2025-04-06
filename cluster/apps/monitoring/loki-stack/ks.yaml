@@ -11,8 +11,8 @@ spec:
       app.kubernetes.io/name: *app
   interval: 30m
   path: ./cluster/apps/monitoring/loki-stack/app
-  components:
-    - ../../../../templates/volsync/local-only
+  # components:
+  #   - ../../../../templates/volsync/local-only
   prune: true
   sourceRef:
     kind: GitRepository
