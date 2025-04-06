@@ -43,7 +43,7 @@ spec:
       replicas: 3
       initContainers:
         init-db:
-          image: ghcr.io/onedr0p/postgres-init:16
+          image: ghcr.io/home-operations/postgres-init:16
           env:
             - name: POSTGRES_HOST
               value: postgres-rw.databases.svc.cluster.local.
