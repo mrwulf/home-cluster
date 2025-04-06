@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: ghcr.io/home-operations/prowlarr
-              tag: 1.33.0.4991@sha256:d28c4bf4276143c5b9a51452ef9710f7d65944b32432aeb5443a0e1641d7eb5f
+              tag: 1.33.1.4997@sha256:3bb878cf5d447934f4f3848315f3cf393bdc269eee9f823df34e06768a55ddb3
             env:
               TZ: "${TIMEZONE}"
             resources:
