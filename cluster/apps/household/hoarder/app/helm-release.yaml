@@ -40,7 +40,7 @@ spec:
           app:
             image:
               repository: ghcr.io/hoarder-app/hoarder
-              tag: 0.23.1
+              tag: 0.23.2
             env:
               BROWSER_WEB_URL: http://hoarder-chrome.household.svc.cluster.local:9222
               COREPACK_INTEGRITY_KEYS: "0"
