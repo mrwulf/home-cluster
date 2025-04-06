@@ -42,27 +42,32 @@ spec:
     server:
       replicas: 3
       initContainers:
-        init-db:
+        - name: init-db
           image: ghcr.io/home-operations/postgres-init:17.4
           env:
-            - name: POSTGRES_HOST
+            - name: INIT_POSTGRES_HOST
               value: postgres-rw.databases.svc.cluster.local.
-            - name: POSTGRES_DB
+            - name: INIT_POSTGRES_DBNAME
               value: authentik
-            - name: POSTGRES_SUPER_PASS
+            - name: INIT_POSTGRES_SUPER_PASS
               valueFrom:
                 secretKeyRef:
                   name: postgres-superuser
                   key: password
-            - name: POSTGRES_SUPER_USER
+            - name: INIT_POSTGRES_SUPER_USER
               valueFrom:
                 secretKeyRef:
                   name: postgres-superuser
                   key: username
-            - name: POSTGRES_USER
+            - name: INIT_POSTGRES_USER
               value: 'authentik'
-            - name: POSTGRES_PASS
+            - name: INIT_POSTGRES_PASS
               value: "${AUTHENTIK_DB_PASS}"
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            memory: 1Gi
       metrics:
         serviceMonitor:
           enabled: true
