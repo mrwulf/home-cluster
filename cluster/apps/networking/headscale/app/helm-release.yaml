@@ -104,6 +104,8 @@ spec:
                 subPath: data
               - path: /home/appuser/.local
                 subPath: .local
+              - path: /home/appuser/.config
+                subPath: .config
     ingress:
       headscale:
         className: traefik
