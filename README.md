@@ -2,6 +2,7 @@
 ```
 # Install dependencies
 ## Install go-task on your own (https://taskfile.dev/installation/)
+## If using macos, `brew install grep,awk`
 ## Install all the other dependencies (reference just the install taskfile so VARS don't need the dependencies)
 task --taskfile .taskfiles/install.yml all
 

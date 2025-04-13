@@ -7,6 +7,8 @@ vars:
   ARCH_OS:
     sh: "arch"
   ARCH: '{{if eq .ARCH_OS "x86_64"}}amd64{{else}}{{.ARCH_OS}}{{end}}'
+  head: '{{if eq .OS "darwin"}}g{{end}}head'
+  grep: '{{if eq .OS "darwin"}}g{{end}}grep'
 
 tasks:
   all:
@@ -37,9 +39,9 @@ tasks:
         sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       OWNER: FiloSottile
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
-        sh: "{{.APP_NAME}} --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+        sh: "{{.APP_NAME}} --version | {{.grep}} -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
@@ -67,9 +69,9 @@ tasks:
     desc: Update go-task
     vars:
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/go-task/task/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/go-task/task/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
-        sh: "task  --version | grep -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+        sh: "task  --version | {{.grep}} -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
         echo "Go-Task released: v{{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
@@ -90,9 +92,9 @@ tasks:
         sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       OWNER: mozilla
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
-        sh: "{{.APP_NAME}} --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+        sh: "{{.APP_NAME}} --version | {{.grep}} -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
@@ -110,9 +112,9 @@ tasks:
         sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       OWNER: budimanjojo
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
-        sh: "{{.TASK_NAME}} --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+        sh: "{{.TASK_NAME}} --version | {{.grep}} -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
     cmds:
       - |
@@ -133,10 +135,10 @@ tasks:
       TASK_NAME:
         sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/siderolabs/talos/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/siderolabs/talos/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
-        sh: "talosctl version --client | grep 'Tag:' | grep -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+        sh: "talosctl version --client | {{.grep}} 'Tag:' | {{.grep}} -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
         echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: v{{.DESIRED_VERSION}}"
@@ -151,9 +153,9 @@ tasks:
     desc: Install yq
     vars:
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/mikefarah/yq/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/mikefarah/yq/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
-        sh: "yq --version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+        sh: "yq --version | {{.grep}} -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
         echo "yq released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
@@ -173,9 +175,9 @@ tasks:
         sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
       OWNER: kastenhq
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
-        sh: "{{.TASK_NAME}} version | grep -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+        sh: "{{.TASK_NAME}} version | {{.grep}} -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
       FILENAME: "kubestr_{{.RELEASE_VERSION}}_Linux_amd64.tar.gz"
     status:
       - '[ "{{.RELEASE_VERSION}}" = "{{.CURRENT_VERSION}}" ]'
@@ -197,7 +199,7 @@ tasks:
       RELEASE_VERSION:
         sh: curl -L -s https://dl.k8s.io/release/stable.txt
       CURRENT_VERSION:
-        sh: "~/bin/{{.APP_NAME}} version | grep Client | grep -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+        sh: "~/bin/{{.APP_NAME}} version | {{.grep}} Client | {{.grep}} -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
@@ -219,10 +221,10 @@ tasks:
       OWNER: fluxcd
       PROJECT: flux2 # '{{.PROJECT | default .TASK_NAME}}'
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
-        sh: "{{.TASK_NAME}} version | grep -oPm1 '[0-9]+.[0-9]+.[0-9]+(-.+)?$' || echo 0.0.0"
+        sh: "{{.TASK_NAME}} version | {{.grep}} -oPm1 '[0-9]+.[0-9]+.[0-9]+(-.+)?$' || echo 0.0.0"
       FILENAME: "{{.TASK_NAME}}_{{.DESIRED_VERSION}}_{{.OS}}_{{.ARCH}}.tar.gz"
     status:
       - '[ "{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
@@ -246,10 +248,10 @@ tasks:
       OWNER: helm
       PROJECT: '{{.PROJECT | default .TASK_NAME}}'
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
-        sh: '{{.TASK_NAME}} version | grep -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | head -1 || echo 0.0.0'
+        sh: '{{.TASK_NAME}} version | {{.grep}} -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | {{.head}} -1 || echo 0.0.0'
       FILENAME: "{{.TASK_NAME}}-v{{.DESIRED_VERSION}}-linux-amd64.tar.gz"
       STRIP_COMPONENTS: 1
     status:
@@ -274,10 +276,10 @@ tasks:
       OWNER: pre-commit
       PROJECT: '{{.PROJECT | default .TASK_NAME}}'
       RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | grep -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
+        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
-        sh: '{{.TASK_NAME}} -V | grep -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | head -1 || echo 0.0.0'
+        sh: '{{.TASK_NAME}} -V | {{.grep}} -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | {{.head}} -1 || echo 0.0.0'
     status:
       - '[ "{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
     cmds:
@@ -302,7 +304,7 @@ tasks:
         sh: 'curl -s https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt'
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
       CURRENT_VERSION:
-        sh: 'echo -n "v" | cat - <({{.TASK_NAME}} version --client | grep "cli" | grep -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | head -1 ) || echo v0.0.0'
+        sh: 'echo -n "v" | cat - <({{.TASK_NAME}} version --client | {{.grep}} "cli" | {{.grep}} -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | {{.head}} -1 ) || echo v0.0.0'
     status:
       - '[ "{{.DESIRED_VERSION}}" = {{.CURRENT_VERSION}} ]'
     cmds:
