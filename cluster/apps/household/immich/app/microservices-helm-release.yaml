@@ -36,7 +36,7 @@ spec:
           main:
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: v1.132.1
+              tag: v1.132.3
 
             env:
               NODE_OPTIONS: "--max-old-space-size=8192"
