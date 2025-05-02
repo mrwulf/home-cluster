@@ -12,7 +12,6 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: deliveryhero-charts
-        namespace: flux-system
       interval: 5m
   values:
     metrics:
