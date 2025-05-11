@@ -21,7 +21,7 @@ cniConfig:
   name: none
 
 nodes:
-  - hostname: node1
+  - hostname: node1.home
     controlPlane: true
     ipAddress: 10.0.1.51
     installDiskSelector:
@@ -54,7 +54,7 @@ nodes:
       node-role.kubernetes.io/control-plane: ''
     nodeAnnotations:
       installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
-  - hostname: node2
+  - hostname: node2.home
     controlPlane: true
     ipAddress: 10.0.1.52
     installDiskSelector:
@@ -87,7 +87,7 @@ nodes:
       node-role.kubernetes.io/control-plane: ''
     nodeAnnotations:
       installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
-  - hostname: node3
+  - hostname: node3.home
     controlPlane: true
     ipAddress: 10.0.1.53
     installDiskSelector:

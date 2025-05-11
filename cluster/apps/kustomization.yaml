@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   # - ai
   # - auth
-  # - backups
+  - backups
   - cert-manager
   # - databases
   # - development
@@ -13,7 +13,7 @@ resources:
   # - media
   - monitoring
   - networking
-  # - rook-ceph
+  - rook-ceph
   - system
   # - vaultwarden/ks.yaml
 

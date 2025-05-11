@@ -1,0 +1,120 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: rook-ceph-cluster
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: v1.17.2
+  url: oci://ghcr.io/rook/rook-ceph-cluster
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: rook-ceph-cluster
+spec:
+  interval: 1h
+  timeout: 15m
+  chartRef:
+    kind: OCIRepository
+    name: rook-ceph-cluster
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    configOverride: |
+      [global]
+      bdev_enable_discard = true
+      bdev_async_discard = true
+      mon clock drift allowed = 0.8
+      [osd]
+      osd_mclock_profile = high_recovery_ops
+    monitoring:
+      enabled: true
+      createPrometheusRules: true
+    ingress:
+      dashboard:
+        ingressClassName: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          hajimari.io/enable: "true"
+          hajimari.io/appName: "Rook/Ceph"
+          hajimari.io/group: "storage"
+        host:
+          name: &host "rook.home.${SECRET_DOMAIN}"
+          path: "/"
+        tls:
+          - hosts:
+              - *host
+            secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+    toolbox:
+      enabled: true
+    cephClusterSpec:
+      crashCollector:
+        disable: false
+      csi:
+        readAffinity:
+          enabled: true
+      dashboard:
+        enabled: true
+        urlPrefix: /
+        ssl: false
+        prometheusEndpoint: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090"
+      mgr:
+        modules:
+          - name: rook
+            enabled: true
+          - name: pg_autoscaler
+            enabled: true
+      network:
+        provider: host
+        addressRanges:
+          public: ["10.0.1.0/24"]
+          cluster: ["169.254.255.0/24"]
+        connections:
+          requireMsgr2: true
+      storage:
+        useAllNodes: true
+        useAllDevices: false
+        devicePathFilter: /dev/disk/by-id/nvme-SAMSUNG_MZQL23T8HCLS-00A07_.*
+    cephBlockPools:
+      - name: ceph-blockpool
+        spec:
+          failureDomain: host
+          replicated:
+            size: 3
+          enableRBDStats: true
+        storageClass:
+          enabled: true
+          name: ceph-block
+          isDefault: true
+          reclaimPolicy: Delete
+          allowVolumeExpansion: true
+          mountOptions: ["discard"]
+          parameters:
+            imageFormat: "2"
+            imageFeatures: layering,exclusive-lock,object-map,fast-diff,deep-flatten
+            csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
+            csi.storage.k8s.io/provisioner-secret-namespace: "{{ .Release.Namespace }}"
+            csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
+            csi.storage.k8s.io/controller-expand-secret-namespace: "{{ .Release.Namespace }}"
+            csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
+            csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
+            csi.storage.k8s.io/fstype: ext4
+    cephBlockPoolsVolumeSnapshotClass:
+      enabled: true
+      name: csi-ceph-block
+      isDefault: true
+      deletionPolicy: Delete
+    cephFileSystems: []
+    cephObjectStores: []
