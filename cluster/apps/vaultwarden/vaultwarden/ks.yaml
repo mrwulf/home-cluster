@@ -10,7 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./cluster/apps/vaultwarden/app
+  path: ./cluster/apps/vaultwarden/vaultwarden/app
   components:
     - ../../../../templates/volsync/primary
     - ../../../../templates/gatus/external
