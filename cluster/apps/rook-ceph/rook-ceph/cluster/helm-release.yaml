@@ -74,6 +74,23 @@ spec:
         modules:
           - name: pg_autoscaler
             enabled: true
+      resources:
+        api:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+        mgr:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+        mon:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+        osd:
+          requests:
+            cpu: "1"
+            memory: "1500Mi"
       network:
         provider: host
         addressRanges:

@@ -6,12 +6,12 @@ resources:
   - hajimari/ks.yaml
   - hoarder/ks.yaml
   - home-assistant/ks.yaml
-  - firefly-iii/ks.yaml
+  # - firefly-iii/ks.yaml
   - immich/ks.yaml
   - libreddit/ks.yaml
   - mealie/ks.yaml
-  - nocodb/ks.yaml
-  - outline/ks.yaml
+  # - nocodb/ks.yaml
+  # - outline/ks.yaml
   - paperless/ks.yaml
-  - penpot/ks.yaml
+  # - penpot/ks.yaml
   - vikunja/ks.yaml
