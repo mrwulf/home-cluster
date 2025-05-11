@@ -11,7 +11,7 @@ resources:
   # - household
   - kube-system
   # - media
-  # - monitoring
+  - monitoring
   - networking
   # - rook-ceph
   - system

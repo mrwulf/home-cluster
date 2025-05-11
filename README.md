@@ -35,8 +35,12 @@ kubectl get csr -o name | xargs kubectl certificate approve
 # Add age secret to the cluster
 sops -d age-key.secret.sops.yaml | kubectl apply -f -
 
+#
+gh auth token | helm registry login ghcr.io -u {my_github_user} --password-stdin
+
 # Install flux
 helmfile apply -f talos/flux-helmfile.yaml
+
 
 ```
 

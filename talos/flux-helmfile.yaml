@@ -1,9 +1,5 @@
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/helmfile
-# helmDefaults:
-#   cleanupOnFail: true
-#   wait: true
-#   waitForJobs: true
 
 releases:
   - name: flux-operator
