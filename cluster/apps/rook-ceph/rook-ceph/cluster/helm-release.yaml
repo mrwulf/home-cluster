@@ -72,8 +72,6 @@ spec:
         prometheusEndpoint: "http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090"
       mgr:
         modules:
-          - name: rook
-            enabled: true
           - name: pg_autoscaler
             enabled: true
       network:
