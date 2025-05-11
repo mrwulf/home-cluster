@@ -86,7 +86,8 @@ spec:
       storage:
         useAllNodes: true
         useAllDevices: false
-        devicePathFilter: /dev/disk/by-id/nvme-SAMSUNG_MZQL23T8HCLS-00A07_.*
+        # Use the following command to get the device name by-id "talosctl ls /dev/disk/by-id -n <node-ip>"
+        devicePathFilter: /dev/disk/by-id/nvme-(Samsung_SSD_970_EVO_Plus_1TB_S6S1NJ0TB02681R|SAMSUNG_MZVLB256HBHQ-000L7_S4ELNX1R323416)
     cephBlockPools:
       - name: ceph-blockpool
         spec:
