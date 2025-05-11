@@ -9,8 +9,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: external-secrets-stores
+  # dependsOn:
+  #   - name: external-secrets-stores
   interval: 30m
   path: ./cluster/apps/system/smtp-relay/app
   prune: true

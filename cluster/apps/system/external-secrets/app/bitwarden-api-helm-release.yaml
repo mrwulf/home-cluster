@@ -36,6 +36,8 @@ spec:
               runAsUser: 1000
               runAsGroup: 1000
               allowPrivilegeEscalation: false
+              fsGroup: 1000
+              fsGroupChangePolicy: "OnRootMismatch"
               runAsNonRoot: true
               capabilities:
                 drop:
@@ -64,3 +66,8 @@ spec:
         ports:
           http:
             port: 8087
+    persistence:
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /.config
