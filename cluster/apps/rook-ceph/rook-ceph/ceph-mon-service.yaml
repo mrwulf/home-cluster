@@ -1,0 +1,40 @@
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: rook-ceph-mon
+    app.kubernetes.io/component: cephclusters.ceph.rook.io
+    app.kubernetes.io/created-by: rook-ceph-operator
+    app.kubernetes.io/name: ceph-mon
+    app.kubernetes.io/part-of: rook-ceph
+    ceph_daemon_type: mon
+    mon_cluster: rook-ceph
+    mon_daemon: "true"
+    rook.io/operator-namespace: rook-ceph
+    rook_cluster: rook-ceph
+  name: ceph-mon
+  namespace: rook-ceph
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: tcp-msgr1
+      port: 6789
+      protocol: TCP
+      targetPort: 6789
+    - name: tcp-msgr2
+      port: 3300
+      protocol: TCP
+      targetPort: 3300
+  selector:
+    app: rook-ceph-mon
+    mon_cluster: rook-ceph
+    rook_cluster: rook-ceph
+  sessionAffinity: None
+  type: ClusterIP

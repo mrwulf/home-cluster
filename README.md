@@ -26,11 +26,17 @@ task talos:apply-config -- <node>
 # ONLY ONCE! Bootstrap a single node
 talos -n $(task talos:get-a-node) bootstrap
 
-# Add age secret to the cluster
+# Install cilium
+helmfile apply -f talos/cilium-helmfile.yaml
 
-# Configure flux base repo
+# Approve all of the certificates
+kubectl get csr -o name | xargs kubectl certificate approve
+
+# Add age secret to the cluster
+sops -d age-key.secret.sops.yaml | kubectl apply -f -
 
 # Install flux
+helmfile apply -f talos/flux-helmfile.yaml
 
 ```
 

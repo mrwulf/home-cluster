@@ -265,6 +265,8 @@ tasks:
         # chmod +x ~/bin/{{.TASK_NAME}}
         rm -rf $TEMP_DIR
         ~/bin/{{.TASK_NAME}} version
+        # Probably should be seperate
+        helm plugin install https://github.com/databus23/helm-diff
 
   pre-commit:
     desc: Install pre-commit

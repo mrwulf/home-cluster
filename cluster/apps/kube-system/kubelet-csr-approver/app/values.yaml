@@ -1,6 +1,6 @@
 ---
 providerRegex: |
-  ^(worker-01|control-01|control-02|control-03)$
+  ^node[1-3]$
 
 bypassDnsResolution: true
 providerIpPrefixes: ['10.0.1.0/24']
