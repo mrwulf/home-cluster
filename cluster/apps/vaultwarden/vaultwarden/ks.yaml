@@ -12,8 +12,8 @@ spec:
   interval: 30m
   path: ./cluster/apps/vaultwarden/app
   components:
-    - ../../../templates/volsync/primary
-    - ../../../templates/gatus/external
+    - ../../../../templates/volsync/primary
+    - ../../../../templates/gatus/external
   prune: true
   sourceRef:
     kind: GitRepository
