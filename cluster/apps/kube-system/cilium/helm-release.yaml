@@ -39,7 +39,7 @@ spec:
     bandwidthManager:
       enabled: true
       bbr: true
-    devices: 'eth+'
+    devices: 'bond0'
     bpf:
       masquerade: true
       preallocateMaps: true

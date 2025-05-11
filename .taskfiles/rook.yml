@@ -4,7 +4,7 @@ version: "3"
 
 vars:
   ROOK_NAMESPACE:
-    sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}'
+    sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
   POOL: ceph-block
   VOLUMESNAPSHOTCLASS: csi-rbdplugin-snapclass
   OS:
