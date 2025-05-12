@@ -24,11 +24,16 @@ nodes:
   - hostname: node1.home
     controlPlane: true
     ipAddress: 10.0.1.51
+    disableSearchDomain: true
+    nameservers:
+      - 10.0.0.1
     installDiskSelector:
       model: KINGSTON OM8PGP41024N-A0
     networkInterfaces:
       - interface: bond0
-        dhcp: true
+        addresses:
+          - 10.0.1.51/23
+        dhcp: false
         mtu: 9000
         bond:
           deviceSelectors:
@@ -39,6 +44,9 @@ nodes:
           xmitHashPolicy: layer3+4
           lacpRate: fast
           miimon: 1000
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
       - deviceSelector: { busPath: 0-1.0 } # power side
         dhcp: false
         mtu: 65520
@@ -57,11 +65,16 @@ nodes:
   - hostname: node2.home
     controlPlane: true
     ipAddress: 10.0.1.52
+    disableSearchDomain: true
+    nameservers:
+      - 10.0.0.1
     installDiskSelector:
       model: KINGSTON OM8PGP41024N-A0
     networkInterfaces:
       - interface: bond0
-        dhcp: true
+        addresses:
+          - 10.0.1.52/23
+        dhcp: false
         mtu: 9000
         bond:
           deviceSelectors:
@@ -72,6 +85,9 @@ nodes:
           xmitHashPolicy: layer3+4
           lacpRate: fast
           miimon: 1000
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
       - deviceSelector: { busPath: 0-1.0 } # power side
         dhcp: false
         mtu: 65520
@@ -90,11 +106,16 @@ nodes:
   - hostname: node3.home
     controlPlane: true
     ipAddress: 10.0.1.53
+    disableSearchDomain: true
+    nameservers:
+      - 10.0.0.1
     installDiskSelector:
       model: KINGSTON OM8PGP41024N-A0
     networkInterfaces:
       - interface: bond0
-        dhcp: true
+        addresses:
+          - 10.0.1.53/23
+        dhcp: false
         mtu: 9000
         bond:
           deviceSelectors:
@@ -105,6 +126,9 @@ nodes:
           xmitHashPolicy: layer3+4
           lacpRate: fast
           miimon: 1000
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
       - deviceSelector: { busPath: 0-1.0 } # power side
         dhcp: false
         mtu: 65520
