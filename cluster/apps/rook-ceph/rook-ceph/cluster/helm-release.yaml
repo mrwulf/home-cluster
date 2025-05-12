@@ -34,7 +34,7 @@ spec:
     configOverride: |
       [global]
       bdev_enable_discard = true
-      bdev_async_discard = true
+      bdev_async_discard_threads = "1"
       mon clock drift allowed = 0.8
       [osd]
       osd_mclock_profile = high_recovery_ops
