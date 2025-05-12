@@ -75,7 +75,7 @@ spec:
           inputs:
             - talos_kernel_logs
           source: |-
-            .__host = replace(.__host, r'10\.244\.3\..+', "node1")
+            .__host = replace!(.__host, r'10\.244\.3\..+', "node1")
             .__host = replace(.__host, r'10\.244\.4\..+', "node2")
             .__host = replace(.__host, r'10\.244\.5\..+', "node3")
         talos_service_logs_xform:
@@ -83,7 +83,7 @@ spec:
           inputs:
             - talos_service_logs
           source: |-
-            .__host = replace(.__host, r'10\.244\.3\..+', "node1")
+            .__host = replace!(.__host, r'10\.244\.3\..+', "node1")
             .__host = replace(.__host, r'10\.244\.4\..+', "node2")
             .__host = replace(.__host, r'10\.244\.5\..+', "node3")
         opnsense_filterlog_remap:
