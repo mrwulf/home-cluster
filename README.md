@@ -78,9 +78,9 @@ The Git repository contains the following directories under `cluster` and are or
 
 | Node                                                   | Role                                                  | Specs                                                  |
 |--------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------|
-| control-01 | Control Plane, Storage | HP EliteDesk 800 G6 MFF<br />Intel 10700t<br />32G |
-| control-02 | Control Plane, Storage | HP EliteDesk 800 G6 MFF<br />Intel 10700t<br />32G |
-| control-03 | Control Plane | Lenovo m70q Tiny<br /> Intel 10700t<br />32G |
-| worker-01 | Worker, Storage | Dell 7090 mini<br /> Intel 10700<br />32G |
+| node1 | Control Plane, Storage | MinisForum MS-01 12600H<br />96G |
+| node2 | Control Plane, Storage | MinisForum MS-01 12600H<br />96G |
+| node3 | Control Plane, Storage | MinisForum MS-01 12600H<br />96G |
+
 
 # Other Stuff
