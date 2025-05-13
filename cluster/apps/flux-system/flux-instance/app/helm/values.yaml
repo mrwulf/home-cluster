@@ -13,7 +13,7 @@ instance:
   sync:
     kind: GitRepository
     url: https://github.com/mrwulf/home-cluster
-    ref: refs/heads/next
+    ref: refs/heads/main
     path: ./cluster/flux/cluster
     interval: 1h
   kustomize:
