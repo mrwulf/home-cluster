@@ -37,7 +37,7 @@ spec:
         maxParallel: 8
       destinationPath: s3://postgresql/
       endpointURL: https://cdn.${SECRET_DOMAIN}
-      serverName: postgres-15-1
+      serverName: postgres-15-2
       s3Credentials:
         accessKeyId:
           name: postgres-minio
@@ -53,7 +53,7 @@ spec:
       barmanObjectStore:
         destinationPath: s3://postgresql/
         endpointURL: https://cdn.${SECRET_DOMAIN}
-        serverName: postgres-15
+        serverName: postgres-15-1
         s3Credentials:
           accessKeyId:
             name: postgres-minio

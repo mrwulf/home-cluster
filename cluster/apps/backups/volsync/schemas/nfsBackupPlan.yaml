@@ -24,7 +24,7 @@ spec:
         pruneIntervalDays: integer | default=30
         retain: 'map[string]integer | default={"daily": 3, "weekly": 6, "monthly": 12}'
         cacheCapacity: string | default="20Gi"
-        cacheStorageClass: string | default="ceph-block-delete"
+        cacheStorageClass: string | default="ceph-block"
       schedule: string | default="30 4 * * *"
     status:
       volumeStatus: ${pv.status.phase}

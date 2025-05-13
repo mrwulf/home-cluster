@@ -4,8 +4,8 @@ version: "3"
 
 vars:
   ROOK_NAMESPACE:
-    sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}'
-  POOL: ceph-block
+    sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
+  POOL: ceph-blockpool
   VOLUMESNAPSHOTCLASS: csi-rbdplugin-snapclass
   OS:
     sh: "uname -s | tr '[:upper:]' '[:lower:]'"
@@ -26,8 +26,8 @@ tasks:
       - kubectl -n {{.ROOK_NAMESPACE}} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
 # Clean up all snapshots: https://community.veeam.com/veeam-kasten-kubernetes-data-protection-support-92/help-removing-orphaned-snapshot-images-ceph-rbd-3935
-## for x in $(rbd trash list --pool ceph-block ); do echo $x ; rbd snap purge ceph-block/$x  ; done
-## for x in $(rbd list --pool ceph-block ); do echo $x ; rbd snap purge ceph-block/$x  ; done
+## for x in $(rbd trash list --pool ceph-blockpool ); do echo $x ; rbd snap purge ceph-blockpool/$x  ; done
+## for x in $(rbd list --pool ceph-blockpool ); do echo $x ; rbd snap purge ceph-blockpool/$x  ; done
 
 
 # Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done

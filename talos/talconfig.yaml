@@ -1,16 +1,17 @@
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
-clusterName: talos-v1
+clusterName: k8s
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
-talosVersion: v1.9.5
+talosVersion: v1.9.6
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
 kubernetesVersion: v1.32.4
-endpoint: https://kubernetes.home:6443
+endpoint: https://${clusterEndpointIP}:6443
 
 additionalApiServerCertSans: &sans
+  - k8s.home
   - ${clusterEndpointIP}
   - 127.0.0.1
-  - 10.0.0.201
+  # - ${clusterTalosVIP}
 
 additionalMachineCertSans: *sans
 
@@ -19,56 +20,160 @@ domain: cluster.local
 cniConfig:
   name: none
 
-# cniConfig:
-#   name: custom
-#   urls:
-#     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/cilium.yaml
-#     - https://raw.githubusercontent.com/budimanjojo/home-cluster/main/talos/configmap.yaml
 nodes:
-  - hostname: worker-01.home
-    ipAddress: 10.0.1.45
-    installDiskSelector:
-      type: ssd
-    networkInterfaces: &workerNetwork
-      - interface: eth0
-        dhcp: true
-        mtu: 9000
-      - interface: eth1
-        dhcp: true
-        mtu: 9000
-    nodeLabels: &workerNodeLabels
-      node.home.arpa/physical: "true"
-      node-role.kubernetes.io/worker: ''
-  - hostname: control-01.home
-    ipAddress: 10.0.1.48
+  - hostname: node1.home
     controlPlane: true
+    ipAddress: 10.0.1.51
+    disableSearchDomain: true
+    nameservers:
+      - 10.0.0.1
     installDiskSelector:
-      size: '< 1TB'
-    networkInterfaces: &controllerNetwork
-      - interface: eth0
-        dhcp: true
+      model: KINGSTON OM8PGP41024N-A0
+    networkInterfaces:
+      - interface: bond0
+        addresses:
+          - 10.0.1.51/23
+        dhcp: false
         mtu: 9000
-      - interface: eth1
-        dhcp: true
-        mtu: 9000
-    nodeLabels: &controllerNodeLabels
+        bond:
+          deviceSelectors:
+            # 2.5G Ports
+            - pciID: 8086:125*
+              driver: igc
+          mode: 802.3ad
+          xmitHashPolicy: layer3+4
+          lacpRate: fast
+          miimon: 1000
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
+      - deviceSelector: { busPath: 0-1.0 } # power side
+        dhcp: false
+        mtu: 65520
+        addresses: [169.254.255.11/32]
+        routes: [{ network: 169.254.255.12/32, metric: 2048 }]
+      - deviceSelector: { busPath: 1-1.0 } # nic side
+        dhcp: false
+        mtu: 65520
+        addresses: [169.254.255.11/32]
+        routes: [{ network: 169.254.255.13/32, metric: 2048 }]
+    nodeLabels:
       node.home.arpa/physical: "true"
       node-role.kubernetes.io/control-plane: ''
-  - hostname: control-02.home
-    ipAddress: 10.0.1.42
+    nodeAnnotations:
+      installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
+  - hostname: node2.home
     controlPlane: true
+    ipAddress: 10.0.1.52
+    disableSearchDomain: true
+    nameservers:
+      - 10.0.0.1
     installDiskSelector:
-      size: '< 1TB'
-    networkInterfaces: *controllerNetwork
-    nodeLabels: *controllerNodeLabels
-  - hostname: control-03.home
-    ipAddress: 10.0.1.44
+      model: KINGSTON OM8PGP41024N-A0
+    networkInterfaces:
+      - interface: bond0
+        addresses:
+          - 10.0.1.52/23
+        dhcp: false
+        mtu: 9000
+        bond:
+          deviceSelectors:
+            # 2.5G Ports
+            - pciID: 8086:125*
+              driver: igc
+          mode: 802.3ad
+          xmitHashPolicy: layer3+4
+          lacpRate: fast
+          miimon: 1000
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
+      - deviceSelector: { busPath: 0-1.0 } # power side
+        dhcp: false
+        mtu: 65520
+        addresses: [169.254.255.12/32]
+        routes: [{ network: 169.254.255.13/32, metric: 2048 }]
+      - deviceSelector: { busPath: 1-1.0 } # nic side
+        dhcp: false
+        mtu: 65520
+        addresses: [169.254.255.12/32]
+        routes: [{ network: 169.254.255.11/32, metric: 2048 }]
+    nodeLabels:
+      node.home.arpa/physical: "true"
+      node-role.kubernetes.io/control-plane: ''
+    nodeAnnotations:
+      installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
+  - hostname: node3.home
     controlPlane: true
+    ipAddress: 10.0.1.53
+    disableSearchDomain: true
+    nameservers:
+      - 10.0.0.1
     installDiskSelector:
-      size: '< 1TB'
+      model: KINGSTON OM8PGP41024N-A0
+    networkInterfaces:
+      - interface: bond0
+        addresses:
+          - 10.0.1.53/23
+        dhcp: false
+        mtu: 9000
+        bond:
+          deviceSelectors:
+            # 2.5G Ports
+            - pciID: 8086:125*
+              driver: igc
+          mode: 802.3ad
+          xmitHashPolicy: layer3+4
+          lacpRate: fast
+          miimon: 1000
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
+      - deviceSelector: { busPath: 0-1.0 } # power side
+        dhcp: false
+        mtu: 65520
+        addresses: [169.254.255.13/32]
+        routes: [{ network: 169.254.255.11/32, metric: 2048 }]
+      - deviceSelector: { busPath: 1-1.0 } # nic side
+        dhcp: false
+        mtu: 65520
+        addresses: [169.254.255.13/32]
+        routes: [{ network: 169.254.255.12/32, metric: 2048 }]
+    nodeLabels:
+      node.home.arpa/physical: "true"
+      node-role.kubernetes.io/control-plane: ''
+    nodeAnnotations:
+      installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
+  - hostname: replacement.home
+    controlPlane: true
+    ipAddress: 10.0.1.55
+    disableSearchDomain: true
+    nameservers:
+      - 10.0.0.1
+    installDiskSelector:
       type: ssd
-    networkInterfaces: *controllerNetwork
-    nodeLabels: *controllerNodeLabels
+    networkInterfaces:
+      - interface: bond0
+        addresses:
+          - 10.0.1.55/23
+        dhcp: false
+        mtu: 9000
+        bond:
+          deviceSelectors:
+            - driver: e1000e # native NIC 1gbe
+            - driver: r8152 # pluggable / wavlink 2.5gbe
+          mode: 802.3ad
+          xmitHashPolicy: layer3+4
+          lacpRate: fast
+          miimon: 1000
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
+    nodeLabels:
+      node.home.arpa/physical: "true"
+      node-role.kubernetes.io/control-plane: ''
+    nodeAnnotations:
+      installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
 patches:
   - |-
     machine:
@@ -78,20 +183,17 @@ patches:
           port: 7445
         hostDNS:
           enabled: true
+          # Incompatible with Cilium bpf masquerade. https://github.com/siderolabs/talos/issues/8836
           forwardKubeDNSToHost: false
       files:
         # configure containerd for spegel
         - content: |
-            [plugins]
-              [plugins."io.containerd.grpc.v1.cri"]
-                enable_unprivileged_ports = true
-                enable_unprivileged_icmp = true
-              [plugins."io.containerd.grpc.v1.cri".containerd]
-                discard_unpacked_layers = false
-              [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
-                discard_unpacked_layers = false
+            [plugins."io.containerd.cri.v1.images"]
+              discard_unpacked_layers = false
           path: /etc/cri/conf.d/20-customization.part
+          permissions: 0o644
           op: create
+
         # Configure nfs mount options
         - op: overwrite
           path: /etc/nfsmount.conf
@@ -110,7 +212,8 @@ patches:
         extraConfig:
           imageGCLowThresholdPercent: 60
           imageGCHighThresholdPercent: 70
-
+          maxParallelImagePulls: 10
+          serializeImagePulls: false
       logging:
         destinations:
           - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
@@ -120,7 +223,7 @@ patches:
         extraHostEntries:
           - ip: ${clusterEndpointIP}
             aliases:
-              - kubernetes.home
+              - k8s.home
       sysctls:
         fs.inotify.max_user_watches: "1048576"
         fs.inotify.max_user_instances: "8192"
@@ -129,7 +232,14 @@ patches:
         net.core.wmem_max: 67108864            # Cloudflared / QUIC
         net.ipv4.tcp_fastopen: 3               # TCP Fast Open
         net.ipv4.tcp_mtu_probing: 1            # Jumbo frames
+        net.ipv4.tcp_congestion_control: bbr   # 10Gb/s
+        net.core.default_qdisc: fq             # 10Gb/s
+        net.ipv4.tcp_rmem: 4096 87380 33554432 # 10Gb/s
+        net.ipv4.tcp_wmem: 4096 65536 33554432 # 10Gb/s
+        net.ipv4.tcp_window_scaling: 1         # 10Gb/s
         vm.nr_hugepages: 1024                  # Postgres
+      sysfs:
+        devices.system.cpu.intel_pstate.hwp_dynamic_boost: 1
       time:
         disabled: false
         servers:
@@ -138,19 +248,19 @@ patches:
         rules:
           # Intel GPU
           - SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="44", MODE="0660"
-          # Realtec 2.5G USB Adapters
-          - ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="815[2,3,5,6]", ATTR{bConfigurationValue}!="1", ATTR{bConfigurationValue}="1"
+          # Thunderbolt
+          - ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
           # Transmit queue length
           - SUBSYSTEM=="net", ACTION=="add", KERNEL=="tap*", ATTR{tx_queue_len}="10000"
           - SUBSYSTEM=="net", ACTION=="add", KERNEL=="tun*", ATTR{tx_queue_len}="10000"
-
+          # set all disks to `none` scheduler (optimal setting for Ceph and ZFS)
+          - SUBSYSTEM=="block", ENV{DEVTYPE}=="disk", ATTR{queue/scheduler}="none"
 worker:
   schematic: &schematic
     customization:
       extraKernelArgs:
         - talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/   # Logging
         - talos.auditd.disabled=1  # Less security, faster computer
-        - net.ifnames=0            # Expected names
         - mitigations=off          # Less security, faster computer
         - apparmor=0               # Less security, faster computer
         - security=none            # Less security, faster computer
@@ -162,9 +272,10 @@ worker:
         officialExtensions:
           - siderolabs/intel-ucode
           - siderolabs/i915
-          - siderolabs/realtek-firmware
-          - siderolabs/intel-ice-firmware
           - siderolabs/lldpd
+          - siderolabs/gasket-driver
+          - siderolabs/mei
+          - siderolabs/thunderbolt
   extensionServices: &extensionServices
     - name: lldpd
       configFiles:
@@ -176,7 +287,57 @@ worker:
 controlPlane:
   schematic: *schematic
   extensionServices: *extensionServices
+  # ingressFirewall:
+  #   defaultAction: block
+  #   rules:
+  #     - name: kubelet-ingress
+  #       portSelector:
+  #         ports:
+  #           - 10250
+  #         protocol: tcp
+  #       ingress:
+  #         - subnet: ${CLUSTER_SUBNET}
+  #     - name: apid-ingress
+  #       portSelector:
+  #         ports:
+  #           - 50000
+  #         protocol: tcp
+  #       ingress: &localnet
+  #         - subnet: 10.0.0.0/23
+  #         - subnet: 192.168.100.0/24
+  #     - name: trustd-ingress
+  #       portSelector:
+  #         ports:
+  #           - 50001
+  #         protocol: tcp
+  #       ingress:
+  #         - subnet: ${CLUSTER_SUBNET}
+  #     - name: kubernetes-api-ingress
+  #       portSelector:
+  #         ports:
+  #           - 6443
+  #         protocol: tcp
+  #       ingress: *localnet
+  #     - name: etcd-ingress
+  #       portSelector:
+  #         ports:
+  #           - 2379-2380
+  #         protocol: tcp
+  #       ingress:
+  #         - subnet: $CONTROL1/32
+  #         - subnet: $CONTROL2/32
+  #         - subnet: $CONTROL3/32
+
   patches:
+    # Enable thunderbolt + net
+    - |-
+      machine:
+        kernel:
+          modules:
+            - name: nbd
+            - name: thunderbolt
+            - name: thunderbolt_net
+
     # Disable default API server admission plugins.
     - |-
       - op: replace
@@ -242,3 +403,12 @@ controlPlane:
             limits:
               # cpu: 150m
               memory: 100Mi
+
+    # Bootstrap manifests
+    - |-
+      cluster:
+        extraManifests:
+          - # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
+            https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/experimental-install.yaml
+          - # renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
+            https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.82.0/stripped-down-crds.yaml

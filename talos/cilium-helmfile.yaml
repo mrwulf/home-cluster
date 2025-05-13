@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/helmfile
+helmDefaults:
+  cleanupOnFail: true
+  wait: true
+  waitForJobs: true
+
+repositories:
+  - name: cilium
+    url: https://helm.cilium.io
+
+releases:
+  - name: cilium
+    namespace: kube-system
+    chart: cilium/cilium
+    version: 1.17.3
+    values: ['../cluster/apps/kube-system/cilium/helm-values.yaml']
+    # hooks:
+    #   - events: ["postsync"]
+    #     command: kubectl
+    #     args:
+    #       - apply
+    #       - --server-side
+    #       - --namespace=kube-system
+    #       - --field-manager=kustomize-controller
+    #       - --kustomize
+    #       - ../cluster/apps/kube-system/cilium/config
+    #     showlogs: true

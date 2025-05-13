@@ -13,8 +13,9 @@ resources:
   - media
   - monitoring
   - networking
+  - rook-ceph
   - system
-  - vaultwarden/ks.yaml
+  - vaultwarden
 
 components:
   - _common

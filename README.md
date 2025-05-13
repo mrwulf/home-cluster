@@ -26,11 +26,21 @@ task talos:apply-config -- <node>
 # ONLY ONCE! Bootstrap a single node
 talos -n $(task talos:get-a-node) bootstrap
 
-# Add age secret to the cluster
+# Install cilium
+helmfile apply -f talos/cilium-helmfile.yaml
 
-# Configure flux base repo
+# Approve all of the certificates
+kubectl get csr -o name | xargs kubectl certificate approve
+
+# Add age secret to the cluster
+sops -d age-key.secret.sops.yaml | kubectl apply -f -
+
+#
+gh auth token | helm registry login ghcr.io -u {my_github_user} --password-stdin
 
 # Install flux
+helmfile apply -f talos/flux-helmfile.yaml
+
 
 ```
 
@@ -68,9 +78,9 @@ The Git repository contains the following directories under `cluster` and are or
 
 | Node                                                   | Role                                                  | Specs                                                  |
 |--------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------|
-| control-01 | Control Plane, Storage | HP EliteDesk 800 G6 MFF<br />Intel 10700t<br />32G |
-| control-02 | Control Plane, Storage | HP EliteDesk 800 G6 MFF<br />Intel 10700t<br />32G |
-| control-03 | Control Plane | Lenovo m70q Tiny<br /> Intel 10700t<br />32G |
-| worker-01 | Worker, Storage | Dell 7090 mini<br /> Intel 10700<br />32G |
+| node1 | Control Plane, Storage | MinisForum MS-01 12600H<br />96G |
+| node2 | Control Plane, Storage | MinisForum MS-01 12600H<br />96G |
+| node3 | Control Plane, Storage | MinisForum MS-01 12600H<br />96G |
+
 
 # Other Stuff

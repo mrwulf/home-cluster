@@ -132,17 +132,14 @@ spec:
 
         # Nodes
         - module: icmp
-          name: control-01-icmp
-          url: control-01.home
+          name: node1-icmp
+          url: node1.home
         - module: icmp
-          name: control-02-icmp
-          url: control-02.home
+          name: node2-icmp
+          url: node2.home
         - module: icmp
-          name: control-03-icmp
-          url: control-03.home
-        - module: icmp
-          name: worker-01-icmp
-          url: worker-01.home
+          name: node3-icmp
+          url: node3.home
 
         # DNS
         - module: dns_public

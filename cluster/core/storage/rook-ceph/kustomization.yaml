@@ -1,9 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - operator.yaml
-  - single-cluster.yaml
-  - role-for-servicemonitors.yaml
-  - storage-policy-delete.yaml
-  # - ceph-mon-service.yaml
-  # - prometheus-service-monitors.yaml
