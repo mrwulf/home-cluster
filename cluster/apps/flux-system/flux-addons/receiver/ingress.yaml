@@ -1,0 +1,27 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flux-receiver
+  namespace: flux-system
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    hajimari.io/enable: "false"
+spec:
+  ingressClassName: "traefik"
+  tls:
+    - hosts:
+        - &host "flux-receiver.${SECRET_DOMAIN}"
+      secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+  rules:
+    - host: *host
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: webhook-receiver
+                port:
+                  number: 80
