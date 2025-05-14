@@ -28,5 +28,5 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CLAIM: ombi-config
-      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_START_MINUTE: "44"

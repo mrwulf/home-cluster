@@ -30,5 +30,5 @@ spec:
       APP_UID: "999"
       APP_GID: "999"
       VOLSYNC_CLAIM: unifi-data
-      VOLSYNC_CAPACITY: 2Gi
+      VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_START_MINUTE: "37"
