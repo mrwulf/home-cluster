@@ -6,5 +6,5 @@ resources:
   - ../primary/init-claim.yaml
   # - ../primary/minio
   - ../primary/nfs/secret.yaml
-  - ../primary/nfs/replicationsourceyaml
+  - ../primary/nfs/replicationsource.yaml
   # - ../primary/b2
