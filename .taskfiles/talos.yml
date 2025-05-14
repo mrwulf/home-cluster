@@ -71,6 +71,9 @@ tasks:
   dashboard:
     desc: Show the Talos dashboard with all the hosts
     silent: true
+    vars:
+      NODE_LIST:
+        sh: yq '.nodes[].ipAddress' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
     cmds:
       - |
         talosctl -n {{.NODE_LIST}} dashboard

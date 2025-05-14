@@ -231,7 +231,7 @@ tasks:
       - sh: test -f {{ .waitForJobScript }}
       - sh: test -f {{ .unlockJobTemplate }}
       - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
-        msg: Missing Secret - check the app, dest & namespace
+        msg: "Missing Secret: {{ .app }}-volsync-{{ .dest }} - check the app, dest & namespace"
 
   unlock-all:
     desc: Unlock all restic source repos
