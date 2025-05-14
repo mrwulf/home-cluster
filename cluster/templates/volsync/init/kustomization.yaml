@@ -5,5 +5,6 @@ kind: Component
 resources:
   - ../primary/init-claim.yaml
   # - ../primary/minio
-  - ../primary/nfs
+  - ../primary/nfs/secret.yaml
+  - ../primary/nfs/replicationsourceyaml
   # - ../primary/b2
