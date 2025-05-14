@@ -45,7 +45,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./cluster/templates/volsync/local-only-pvc
+  path: ./cluster/templates/volsync/local-only
   prune: true
   sourceRef:
     kind: GitRepository
