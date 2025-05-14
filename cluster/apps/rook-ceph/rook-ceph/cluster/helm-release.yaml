@@ -81,6 +81,23 @@ spec:
           cluster: ["169.254.255.0/24", "10.0.1.55/24"]
         connections:
           requireMsgr2: true
+      resources:
+        api:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+        mgr:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+        mon:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
+        osd:
+          requests:
+            cpu: "1"
+            memory: "2Gi"
       storage:
         useAllNodes: true
         useAllDevices: false
