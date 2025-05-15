@@ -67,7 +67,7 @@ tasks:
       APP_GID:
         sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.APP_GID | explode(.)' {{ .app_ks }}"
       SECRET_RESTIC_PWD:
-        sh: "sops --decrypt {{ .CLUSTER_DIR }}/base/cluster-secrets.sops.yaml | yq '.stringData.SECRET_RESTIC_PWD'"
+        sh: "sops --decrypt {{ .CLUSTER_DIR }}/flux/meta/cluster-secrets.sops.yaml | yq '.stringData.SECRET_RESTIC_PWD'"
     preconditions:
       - sh: bash -c 'eval "echo \"$(envsubst < <(cat {{ .secretTemplate }}))\""' | yq '.' | kubectl -n {{ .ns }} apply -f - --dry-run
         msg: "Secret can't be created, check the template: {{ .secretTemplate }}"
@@ -90,9 +90,9 @@ tasks:
     vars:
       # VOLUME: "{{.CLI_ARGS}}"
       NAS_ADDRESS:
-        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.CORE_NFS_SERVER'"
+        sh: "sops --decrypt cluster/flux/meta/cluster-secrets.sops.yaml | yq '.stringData.CORE_NFS_SERVER'"
       NAS_PATH:
-        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_VOLSYNC_PATH'"
+        sh: "sops --decrypt cluster/flux/meta/cluster-secrets.sops.yaml | yq '.stringData.NFS_VOLSYNC_PATH'"
       nfs_path: '{{ .nfs_path | default .NAS_PATH }}'
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'

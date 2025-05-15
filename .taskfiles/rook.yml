@@ -128,9 +128,9 @@ tasks:
       NAMESPACE:
         sh: "kubectl get pvc -A | grep {{.VOLUME}} | awk '{print $1; exit}'"
       NAS_ADDRESS:
-        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.CORE_NFS_SERVER'"
+        sh: "sops --decrypt cluster/flux/meta/cluster-secrets.sops.yaml | yq '.stringData.CORE_NFS_SERVER'"
       NAS_PATH:
-        sh: "sops --decrypt cluster/base/cluster-secrets.sops.yaml | yq '.stringData.NFS_KUBERNETES_PATH'"
+        sh: "sops --decrypt cluster/flux/meta/cluster-secrets.sops.yaml | yq '.stringData.NFS_KUBERNETES_PATH'"
     preconditions:
       - sh: '[ -n "{{.VOL}}" ]'
         msg: 'PVC Name Required!'
