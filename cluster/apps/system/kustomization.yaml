@@ -12,7 +12,6 @@ resources:
   - k8tz/ks.yaml
   - kro/ks.yaml
   - kube-cleanup-operator/ks.yaml
-  - kubelet-serving-cert-approver/ks.yaml
   - kyverno/ks.yaml
   - metrics-server/ks.yaml
   - node-feature-discovery/ks.yaml

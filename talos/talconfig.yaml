@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 clusterName: k8s
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
-talosVersion: v1.9.6
+talosVersion: v1.10.2
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
 kubernetesVersion: v1.33.1
 endpoint: https://${clusterEndpointIP}:6443
@@ -403,6 +403,20 @@ controlPlane:
             limits:
               # cpu: 150m
               memory: 100Mi
+
+    # Spegel
+    - |
+      cluster:
+        scheduler:
+          config:
+            apiVersion: kubescheduler.config.k8s.io/v1
+            kind: KubeSchedulerConfiguration
+            profiles:
+              - schedulerName: default-scheduler
+                plugins:
+                  score:
+                    disabled:
+                      - name: ImageLocality
 
     # Bootstrap manifests
     - |-
