@@ -71,17 +71,17 @@ tasks:
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/go-task/task/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
-        sh: "task  --version | {{.grep}} -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
+        sh: "task  --version | {{.grep}} -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
       - |
-        echo "Go-Task released: v{{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
+        echo "Go-Task released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
         if [ command -v dnf ]; then
           sudo dnf install -y https://github.com/go-task/task/releases/download/v{{.RELEASE_VERSION}}/task_linux_amd64.rpm
         else
           sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/bin
         fi
     status:
-      - '[ "v{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
+      - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
     silent: true
     ignore_errors: true
 

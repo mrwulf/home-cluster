@@ -144,36 +144,36 @@ nodes:
       node-role.kubernetes.io/control-plane: ''
     nodeAnnotations:
       installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
-  - hostname: replacement.home
-    controlPlane: true
-    ipAddress: 10.0.1.55
-    disableSearchDomain: true
-    nameservers:
-      - 10.0.0.1
-    installDiskSelector:
-      type: ssd
-    networkInterfaces:
-      - interface: bond0
-        addresses:
-          - 10.0.1.55/23
-        dhcp: false
-        mtu: 9000
-        bond:
-          deviceSelectors:
-            - driver: e1000e # native NIC 1gbe
-            - driver: r8152 # pluggable / wavlink 2.5gbe
-          mode: 802.3ad
-          xmitHashPolicy: layer3+4
-          lacpRate: fast
-          miimon: 1000
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.0.0.1
-    nodeLabels:
-      node.home.arpa/physical: "true"
-      node-role.kubernetes.io/control-plane: ''
-    nodeAnnotations:
-      installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
+  # - hostname: replacement.home
+  #   controlPlane: true
+  #   ipAddress: 10.0.1.55
+  #   disableSearchDomain: true
+  #   nameservers:
+  #     - 10.0.0.1
+  #   installDiskSelector:
+  #     type: ssd
+  #   networkInterfaces:
+  #     - interface: bond0
+  #       addresses:
+  #         - 10.0.1.55/23
+  #       dhcp: false
+  #       mtu: 9000
+  #       bond:
+  #         deviceSelectors:
+  #           - driver: e1000e # native NIC 1gbe
+  #           - driver: r8152 # pluggable / wavlink 2.5gbe
+  #         mode: 802.3ad
+  #         xmitHashPolicy: layer3+4
+  #         lacpRate: fast
+  #         miimon: 1000
+  #       routes:
+  #         - network: 0.0.0.0/0
+  #           gateway: 10.0.0.1
+  #   nodeLabels:
+  #     node.home.arpa/physical: "true"
+  #     node-role.kubernetes.io/control-plane: ''
+  #   nodeAnnotations:
+  #     installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
 patches:
   - |-
     machine:
