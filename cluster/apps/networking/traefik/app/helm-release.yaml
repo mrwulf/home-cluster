@@ -30,6 +30,9 @@ spec:
     deployment:
       kind: Deployment
       replicas: 3
+    updateStrategy:
+      rollingUpdate:
+        maxUnavailable: 1
     service:
       enabled: true
       type: LoadBalancer
