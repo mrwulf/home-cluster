@@ -17,6 +17,8 @@ vars:
   WORKER_LIST:
     sh: yq '.nodes[] | select(.controlPlane!=true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
   NODE_LIST_MASTERSFIRST: "{{.MASTER_LIST}},{{.WORKER_LIST}}"
+  NODE_LIST_MASTERSLAST:
+    sh: echo '{{.NODE_LIST_MASTERSFIRST}}' | tr ',' '\n' | tac | tr '\n' ',' | sed 's/,$//' | sed 's/^,//'
   ONE_MASTER:
     sh: echo '{{.MASTER_LIST}}' | tr ',' '\n' | shuf | head -n1
 
@@ -326,3 +328,18 @@ tasks:
           NODE: '{{.NODE}}'
       - task: :cluster:cleanup
       - kubectl -n kube-system rollout restart daemonset cilium
+
+  shutdown-all:
+    desc: Shutdown Talos on all the nodes
+    silent: true
+    cmds:
+      - for: { var: NODE_LIST_MASTERSLAST, split: ",", as: NODE }
+        cmd: talosctl -n {{.NODE}} shutdown --timeout 5m
+        ignore_error: true
+        vars:
+          NODE: '{{.NODE}}'
+      - for: { var: NODE_LIST_MASTERSLAST, split: ",", as: NODE }
+        cmd: talosctl -n {{.NODE}} shutdown --force --timeout 5m
+        ignore_error: true
+        vars:
+          NODE: '{{.NODE}}'

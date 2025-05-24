@@ -245,7 +245,7 @@ tasks:
       - which kubectl
 
   # To run backup jobs in parallel for all replicationsources:
-  #  - kubectl get replicationsources --all-namespaces --no-headers | awk '{print $2, $1}' | xargs --max-procs=4 -l bash -c 'task volsync:snapshot app=$0 ns=$1'
+  #  - kubectl get replicationsources --all-namespaces --no-headers | awk '{ ns = $1; name = $2; match(name, /^(.*)-([^-]*)$/, arr); print ns, arr[1], arr[2];}' | xargs --max-procs=4 -l bash -c 'task volsync:snapshot ns=$0 app=$1 dest=$2'
   #
   snapshot:
     desc: Trigger a Restic ReplicationSource snapshot (ex. task volsync:snapshot app=plex dest=nfs [ns=default])
@@ -266,9 +266,14 @@ tasks:
     preconditions:
       - sh: test -f {{ .waitForJobScript }}
       - sh: kubectl -n {{ .ns }} get replicationsources {{ .rs }}
-        msg: "ReplicationSource '{{ .app }}' not found in namespace '{{ .ns }}'"
+        msg: "ReplicationSource '{{ .rs }}' not found in namespace '{{ .ns }}'"
       - sh: "kubectl -n {{ .ns }} get secret {{ .app }}-volsync-{{ .dest }}"
         msg: Missing Secret - check the app, dest & namespace
+
+  backup-everything:
+    desc: Trigger all replicationsources to run
+    cmds:
+      - kubectl get replicationsources --all-namespaces --no-headers | awk '{ ns = $1; name = $2; match(name, /^(.*)-([^-]*)$/, arr); print ns, arr[1], arr[2];}' | xargs --max-procs=4 -l bash -c 'task volsync:snapshot ns=$0 app=$1 dest=$2'
 
   # To run restore jobs in parallel for all replicationdestinations:
   #   - kubectl get replicationsources --all-namespaces --no-headers | awk '{print $2, $1}' | xargs --max-procs=2 -l bash -c 'task volsync:restore app=$0 ns=$1'

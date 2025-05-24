@@ -2,12 +2,6 @@
 version: "3"
 
 tasks:
-  k10-password:
-    desc: Retrieve the grafana admin password
-    silent: true
-    cmds:
-      - kubectl -n backups get secret $(kubectl -n backups get serviceaccount k10-k10 -o jsonpath="{.secrets[0].name}") -ojsonpath="{.data.token}" | base64 --decode && echo
-
   grafana-password:
     desc: Retrieve the grafana admin password
     silent: true
@@ -89,3 +83,32 @@ tasks:
     interactive: true
     cmds:
       - watch -n2 "kubectl get po -A -owide | grep -v Running && echo '' && kubectl get ks -A | grep -v Applied && echo '' && kubectl get hr -A | grep -v succeeded"
+
+  shutdown:
+    desc: Prepare for full shutdown
+    # silent: true
+    cmds:
+      - task: scale-nfs-workloads-down
+      - task: volysync:state-resume
+      - task: volsync:backup-everything
+      - task: volysync:state-suspend
+      - |
+        kubectl get cronjobs --all-namespaces --no-headers | while read -r namespace name schedule suspend active last_schedule age; do
+
+        if [[ "$(echo "$suspend" | tr '[:upper:]' '[:lower:]')" == "true" ]]; then
+          echo "INFO: Skipping suspended CronJob: $namespace/$name"
+          continue
+        fi
+
+        job_name="${name}-preshutdown-$(date +%s)-${RANDOM}"
+        job_name=$(echo "${job_name:0:63}" | sed 's/[^a-zA-Z0-9]$//')
+
+        echo "INFO: Triggering $namespace/$name as $job_name..."
+        # Execute the command
+        kubectl create job "$job_name" --from=cronjob/"$name" -n "$namespace"
+
+        sleep 5
+
+        done
+        echo "INFO: Finished attempting to trigger CronJobs."
+      - task: etcd:backup

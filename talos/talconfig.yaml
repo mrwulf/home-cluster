@@ -209,6 +209,7 @@ patches:
       kubelet:
         extraArgs:
           rotate-server-certificates: true
+          max-pods: 150
         extraConfig:
           imageGCLowThresholdPercent: 60
           imageGCHighThresholdPercent: 70
