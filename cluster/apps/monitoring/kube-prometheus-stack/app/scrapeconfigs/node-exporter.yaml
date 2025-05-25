@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: &name node-exporter
+spec:
+  staticConfigs:
+    - targets:
+        - "firewall02.${SECRET_DOMAIN}:9100"
+        - "firewall02.${SECRET_DOMAIN}:8404"
+        - "firewall03.${SECRET_DOMAIN}:9100"
+        - "firewall03.${SECRET_DOMAIN}:8404"
+        - "${CORE_NFS_SERVER}:9100"
+  metricsPath: /metrics
+  honorTimestamps: true
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: *name

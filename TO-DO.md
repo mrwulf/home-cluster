@@ -1,4 +1,5 @@
 things to try:
+- open-notebook.ai
 - stirling-pdf
 - adventurelog
 - forgejo
