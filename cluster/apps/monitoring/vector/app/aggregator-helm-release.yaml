@@ -133,7 +133,7 @@ spec:
           type: loki
           inputs:
             - kubernetes_logs
-          endpoint: http://loki-stack.monitoring:3100
+          endpoint: http://loki-headless.monitoring.svc.cluster.local:3100
           encoding:
             codec: json
           batch:
@@ -162,7 +162,7 @@ spec:
           type: loki
           inputs:
             - journal_logs
-          endpoint: http://loki-stack.monitoring:3100
+          endpoint: http://loki-headless.monitoring.svc.cluster.local:3100
           encoding:
             codec: json
           batch:
@@ -179,7 +179,7 @@ spec:
           type: loki
           inputs:
             - talos_kernel_logs_xform
-          endpoint: http://loki-stack.monitoring:3100
+          endpoint: http://loki-headless.monitoring.svc.cluster.local:3100
           encoding:
             codec: json
             except_fields:
@@ -198,7 +198,7 @@ spec:
           type: loki
           inputs:
             - talos_service_logs_xform
-          endpoint: http://loki-stack.monitoring:3100
+          endpoint: http://loki-headless.monitoring.svc.cluster.local:3100
           encoding:
             codec: json
             except_fields:
@@ -218,7 +218,7 @@ spec:
           inputs:
             - opnsense_filterlog_route._unmatched
             # - opnsense_filterlog_geoip
-          endpoint: http://loki-stack.monitoring:3100
+          endpoint: http://loki-headless.monitoring.svc.cluster.local:3100
           encoding:
             codec: json
           batch:

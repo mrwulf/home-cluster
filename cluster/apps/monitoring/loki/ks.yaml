@@ -16,7 +16,8 @@ spec:
   prune: true
   sourceRef:
     kind: GitRepository
-    name: k8s-gitops-kubernetes
+    name: flux-system
+    namespace: flux-system
   wait: false
   dependsOn:
     - name: rook-ceph-cluster

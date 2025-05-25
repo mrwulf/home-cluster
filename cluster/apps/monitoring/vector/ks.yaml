@@ -13,7 +13,7 @@ spec:
   path: ./cluster/apps/monitoring/vector/app
   prune: true
   dependsOn:
-    - name: loki-stack
+    - name: loki
   sourceRef:
     kind: GitRepository
     name: flux-system
