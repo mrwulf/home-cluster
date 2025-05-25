@@ -231,6 +231,13 @@ spec:
     datasources:
       datasources.yaml:
         apiVersion: 1
+        deleteDatasources:
+          - name: Alertmanager
+            orgId: 1
+          - name: Prometheus
+            orgId: 1
+          - name: Loki
+            orgId: 1
         datasources:
           - access: proxy
             name: Prometheus
@@ -249,15 +256,6 @@ spec:
             url: http://alertmanager.monitoring.svc.cluster.local:9093
             jsonData:
               implementation: prometheus
-
-        deleteDatasources:
-          - name: Alertmanager
-            orgId: 1
-          - name: Prometheus
-            orgId: 1
-          - name: Loki
-            orgId: 1
-
     env:
       GF_ANALYTICS_CHECK_FOR_UPDATES: false
       GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: false
