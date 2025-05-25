@@ -3,16 +3,18 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &appname kube-prometheus-stack
+  name: &app kube-prometheus-stack
   namespace: flux-system
 spec:
   targetNamespace: monitoring
   commonMetadata:
     labels:
-      app.kubernetes.io/name: *appname
+      app.kubernetes.io/name: *app
   interval: 30m
   timeout: 5m
   path: "./cluster/apps/monitoring/kube-prometheus-stack/app"
+  components:
+    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -22,3 +24,7 @@ spec:
   dependsOn:
     - name: alertmanager
     - name: rook-ceph-cluster
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_SUBDOMAIN: prom
