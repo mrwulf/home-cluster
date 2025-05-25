@@ -272,7 +272,7 @@ spec:
       GF_SECURITY_COOKIE_SAMESITE: grafana
       GF_SERVER_ROOT_URL: "https://grafana.home.${SECRET_DOMAIN}"
       GF_AUTH_SIGNOUT_REDIRECT_URL: "https://auth.${SECRET_DOMAIN}/application/o/grafana/end-session/"
-      GF_AUTH_OAUTH_AUTO_LOGIN: false # Switch off auto_login to be able to log in as admin to solve https://github.com/grafana/grafana/issues/29211
+      GF_AUTH_OAUTH_AUTO_LOGIN: true # Switch off auto_login to be able to log in as admin to solve https://github.com/grafana/grafana/issues/29211
       GF_AUTH_GENERIC_OAUTH_ENABLED: true
       GF_AUTH_GENERIC_OAUTH_NAME: Authentik
       GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "${GRAFANA_OAUTH_CLIENTID}"
@@ -281,7 +281,7 @@ spec:
       GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://auth.${SECRET_DOMAIN}/application/o/authorize/"
       GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "https://auth.${SECRET_DOMAIN}/application/o/token/"
       GF_AUTH_GENERIC_OAUTH_API_URL: "https://auth.${SECRET_DOMAIN}/application/o/userinfo/"
-      GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: false
+      GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: true
       GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_NAME: email
 
     envFromSecret: grafana-secret
