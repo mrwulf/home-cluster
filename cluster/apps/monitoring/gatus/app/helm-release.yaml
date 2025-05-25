@@ -3,13 +3,13 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: gatus
+  name: &app gatus
 spec:
   interval: 30m
   chart:
     spec:
       chart: app-template
-      version: 3.7.3
+      version: 4.0.1
       sourceRef:
         kind: HelmRepository
         name: bjw-s-charts
@@ -93,16 +93,18 @@ spec:
             sysctls:
               - name: net.ipv4.ping_group_range
                 value: "0 2147483647"
+        serviceAccount:
+          identifier: *app
     service:
       app:
-        controller: gatus
+        controller: *app
         ipFamilyPolicy: PreferDualStack
         ports:
           http:
             port: *port
     serviceMonitor:
       app:
-        serviceName: gatus
+        serviceName: *app
         endpoints:
           - port: http
             metricRelabelings:
@@ -127,8 +129,7 @@ spec:
               - *host
 
     serviceAccount:
-      create: true
-      name: gatus
+      gatus: {}
     persistence:
       config:
         type: emptyDir
