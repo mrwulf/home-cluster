@@ -113,7 +113,7 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
         hosts:
-          - &host "prometheus..home.${SECRET_DOMAIN}"
+          - &host "prometheus.home.${SECRET_DOMAIN}"
         tls:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
