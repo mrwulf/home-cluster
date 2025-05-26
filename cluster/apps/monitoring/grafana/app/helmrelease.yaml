@@ -199,13 +199,6 @@ spec:
           revision: 14
           datasource: Prometheus
 
-      # nginx:
-      #   nginx:
-      #     url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
-      #     datasource: Prometheus
-      #   nginx-request-handling-performance:
-      #     url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/request-handling-performance.json
-      #     datasource: Prometheus
       unifi:
         unifi-insights:
           # renovate: dashboardName="UniFi-Poller: Client Insights - Prometheus"
@@ -225,6 +218,12 @@ spec:
         unifi-usw:
           # renovate: dashboardName="UniFi-Poller: USW Insights - Prometheus"
           gnetId: 11312
+          revision: 9
+          datasource: Prometheus
+      traefik:
+        traefik:
+          # renovate: dashboardName="Traefik"
+          gnetId: 17346
           revision: 9
           datasource: Prometheus
 
@@ -283,6 +282,7 @@ spec:
       GF_AUTH_GENERIC_OAUTH_API_URL: "https://auth.${SECRET_DOMAIN}/application/o/userinfo/"
       GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: true
       GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_NAME: email
+      GF_AUTH_GENERIC_OAUTH_GROUP_MAPPING_ROLE_ATTRIBUTE_PATH: contains(groups[*], 'admin') && 'Admin' || 'Viewer'
 
     envFromSecret: grafana-secret
 
