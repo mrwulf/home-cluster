@@ -20,7 +20,7 @@ spec:
 
     annotations:
       configmap.reloader.stakater.com/reload: grafana
-      secret.reloader.stakater.com/reload: grafana-admin-secret
+      secret.reloader.stakater.com/reload: grafana-secret
 
     replicas: 1
 
@@ -260,7 +260,7 @@ spec:
       GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: false
       GF_ANALYTICS_REPORTING_ENABLED: false
       GF_AUTH_ANONYMOUS_ENABLED: false
-      GF_AUTH_BASIC_ENABLED: false
+      GF_AUTH_BASIC_ENABLED: true
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /tmp/dashboards/home.json
       GF_EXPLORE_ENABLED: true
@@ -282,7 +282,7 @@ spec:
       GF_AUTH_GENERIC_OAUTH_API_URL: "https://auth.${SECRET_DOMAIN}/application/o/userinfo/"
       GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: true
       GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_NAME: email
-      GF_AUTH_GENERIC_OAUTH_GROUP_MAPPING_ROLE_ATTRIBUTE_PATH: contains(groups[*], 'admins') && 'Admin' || 'Viewer'
+      GF_AUTH_GENERIC_OAUTH_GROUP_MAPPING_ROLE_ATTRIBUTE_PATH: contains(groups[*], 'admins') && 'Admin' || 'Admin'
       GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN: true
       GF_AUTH_GENERIC_OAUTH_USE_REFRESH_TOKEN: true
 
