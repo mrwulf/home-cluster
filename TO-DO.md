@@ -4,6 +4,7 @@ things to try:
 - adventurelog
 - forgejo
 - vert.sh
+- ntfy.sh
 - itzcrazykns/perplexica
 - obsidian-remote
 - link shortener/bookmark keeper:
