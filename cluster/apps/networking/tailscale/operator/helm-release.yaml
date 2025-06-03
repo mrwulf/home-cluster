@@ -18,9 +18,9 @@ spec:
     operatorConfig:
       hostname: "tailscale-operator"
       defaultTags:
-        - "tag:k8s"
+        - "tag:ts-k8s"
     apiServerProxyConfig:
-      mode: "true"
+      mode: "false"
   valuesFrom:
     - kind: Secret
       name: tailscale-operator
