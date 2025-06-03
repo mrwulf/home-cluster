@@ -52,7 +52,7 @@ spec:
           app:
             image:
               repository: ghcr.io/gurucomputing/headscale-ui
-              tag: 2024.02.24-beta1
+              tag: "2025.05.22"
             securityContext:
               readOnlyRootFilesystem: true
     # defaultPodOptions:
