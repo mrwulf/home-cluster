@@ -8,3 +8,4 @@ resources:
   - sync-certificates.yaml
   - sync-postgres-creds.yaml
   - remove-cpu-limit.yaml
+  - generate-gatus.yaml

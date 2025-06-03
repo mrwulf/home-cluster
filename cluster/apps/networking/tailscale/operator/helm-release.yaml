@@ -20,7 +20,7 @@ spec:
       defaultTags:
         - "tag:ts-k8s"
     apiServerProxyConfig:
-      mode: "false"
+      mode: "noauth"
   valuesFrom:
     - kind: Secret
       name: tailscale-operator
