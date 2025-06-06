@@ -166,7 +166,7 @@ spec:
 
     persistence:
       data:
-        existingClaim: "${VOLSYNC_CLAIM}"
+        existingClaim: *app
         advancedMounts:
           app:
             app:

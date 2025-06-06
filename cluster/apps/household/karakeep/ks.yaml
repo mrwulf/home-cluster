@@ -27,6 +27,5 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CLAIM: hoarder
       VOLSYNC_CAPACITY: 20Gi
       VOLSYNC_START_MINUTE: "7"
