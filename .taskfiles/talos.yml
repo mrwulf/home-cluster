@@ -16,7 +16,8 @@ vars:
     sh: yq '.nodes[] | select(.controlPlane==true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
   WORKER_LIST:
     sh: yq '.nodes[] | select(.controlPlane!=true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
-  NODE_LIST_MASTERSFIRST: "{{.MASTER_LIST}},{{.WORKER_LIST}}"
+  NODE_LIST_MASTERSFIRST:
+    sh: echo "{{.MASTER_LIST}},{{.WORKER_LIST}}" | sed 's/,$//'
   NODE_LIST_MASTERSLAST:
     sh: echo '{{.NODE_LIST_MASTERSFIRST}}' | tr ',' '\n' | tac | tr '\n' ',' | sed 's/,$//' | sed 's/^,//'
   ONE_MASTER:
@@ -49,7 +50,7 @@ tasks:
     silent: true
     cmds:
       - |
-        echo {{.NODE_LIST_MASTERSFIRST}}
+        echo "{{.NODE_LIST_MASTERSFIRST}}"
 
   get-a-master:
     silent: true
