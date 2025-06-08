@@ -73,6 +73,7 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           gatus.io/enabled: "true"
+          gatus.io/status-code: "401"
         hosts:
           - host: &host "{{ .Release.Name }}.home.${SECRET_DOMAIN}"
             paths:

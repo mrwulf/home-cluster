@@ -2,6 +2,7 @@
 # Note: Gatus vars should be escaped with $${VAR_NAME} to avoid interpolation by Flux
 web:
   port: $${WEB_PORT}
+  read-buffer-size: 32768
 storage:
   type: postgres
   path: postgres://$${INIT_POSTGRES_USER}:$${INIT_POSTGRES_PASS}@$${INIT_POSTGRES_HOST}:5432/$${INIT_POSTGRES_DBNAME}?sslmode=disable
@@ -13,10 +14,9 @@ ui:
   header: Status
 alerting:
   pushover:
-    title: Gatus (Kubernetes)
     application-token: $${PUSHOVER_TOKEN}
     user-key: $${PUSHOVER_USER_KEY}
-    priority: 1
+    priority: 0
     default-alert:
       description: health-check failed
       send-on-resolved: true
@@ -37,14 +37,8 @@ endpoints:
     conditions:
       - "[BODY] == 10.0.10.20"
       - "[DNS_RCODE] == NOERROR"
-  - name: flux-webhook
-    client:
-      dns-resolver: tcp://10.0.0.1:53053
-    group: external
-    url: https://flux-receiver.${SECRET_DOMAIN}
-    interval: 1m
-    conditions:
-      - "[STATUS] == 404"
+    alerts: &alerts
+      - type: pushover
   - name: certificate
     group: external
     url: "https://flux-receiver.${SECRET_DOMAIN}"
@@ -52,6 +46,7 @@ endpoints:
     conditions:
       - "[CERTIFICATE_EXPIRATION] > 240h"
       # - "[DOMAIN_EXPIRATION] > 720h"
+    alerts: *alerts
   - name: certificate
     group: internal
     url: "https://status.home.${SECRET_DOMAIN}"
@@ -59,6 +54,7 @@ endpoints:
     conditions:
       - "[CERTIFICATE_EXPIRATION] > 240h"
       # - "[DOMAIN_EXPIRATION] > 720h"
+    alerts: *alerts
   - name: nas
     group: services
     url: "ssh://10.0.1.15:22" # port is optional. Default is 22.
@@ -69,3 +65,4 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
       - "[STATUS] == 0"
+    alerts: *alerts

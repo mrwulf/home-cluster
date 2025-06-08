@@ -41,7 +41,7 @@ spec:
             value: '{{ contains( GATUS_GROUP, ''internal'' ) }}'
         - name: GATUS_EXTERNAL_RESOLVER
           variable:
-            jmesPath: '((contains( GATUS_GROUP, ''external'' ) && !contains( request.object.metadata.annotations."external-dns.alpha.kubernetes.io/cloudflare-proxied", ''false'')) && ''tcp://10.0.0.1:53053'') || '''''
+            jmesPath: '((contains( GATUS_GROUP, ''external'' ) && !contains( not_null(request.object.metadata.annotations."external-dns.alpha.kubernetes.io/cloudflare-proxied",''''), ''false'')) && ''tcp://10.0.0.1:53053'') || '''''
         - name: GATUS_EXTERNAL_DNS
           variable:
             value:
@@ -83,3 +83,5 @@ spec:
                   ui:
                     hide-hostname: {{ GATUS_OBFUSCATE }}
                     hide-url: {{ GATUS_OBFUSCATE }}
+                  alerts:
+                    - type: pushover
