@@ -1,4 +1,5 @@
 things to try:
+- dify.ai
 - open-notebook.ai
 - stirling-pdf
 - adventurelog

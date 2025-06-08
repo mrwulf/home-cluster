@@ -32,6 +32,21 @@ spec:
           variable:
             value: '{{ request.object.metadata.annotations."gatus.io/name" || request.object.metadata.name }}'
             jmesPath: "to_string(@)"
+        - name: GATUS_GROUP
+          variable:
+            value: '{{ contains(request.object.spec.rules[0].host, ''.home.'' ) &&  ''internal''  || ''external'' }}'
+            jmesPath: "to_string(@)"
+        - name: GATUS_OBFUSCATE
+          variable:
+            value: '{{ contains( GATUS_GROUP, ''internal'' ) }}'
+        - name: GATUS_EXTERNAL_RESOLVER
+          variable:
+            jmesPath: '(contains( GATUS_GROUP, ''external'' ) && ''tcp://10.0.0.1:53053'') || '''''
+        - name: GATUS_EXTERNAL_DNS
+          variable:
+            value:
+              dns-resolver: '{{ GATUS_EXTERNAL_RESOLVER }}'
+            # jmesPath:
         - name: GATUS_PATH
           variable:
             value: '{{ request.object.metadata.annotations."gatus.io/path" || '''' }}'
@@ -39,6 +54,10 @@ spec:
         - name: GATUS_STATUS_CODE
           variable:
             value: '{{ request.object.metadata.annotations."gatus.io/status-code" || `200` }}'
+            jmesPath: "to_string(@)"
+        - name: GATUS_INTERVAL
+          variable:
+            value: '{{ request.object.metadata.annotations."gatus.io/interval" || ''1m'' }}'
             jmesPath: "to_string(@)"
       generate:
         apiVersion: v1
@@ -57,7 +76,11 @@ spec:
               endpoints:
                 - name: {{ GATUS_NAME }}
                   url: https://{{ GATUS_HOST }}{{ GATUS_PATH }}
-                  interval: 1m
-                  group: auto
+                  interval: {{ GATUS_INTERVAL }}
+                  group: {{ GATUS_GROUP }}
+                  client: {{ GATUS_EXTERNAL_DNS }}
                   conditions:
                     - "[STATUS] == {{ GATUS_STATUS_CODE }}"
+                  ui:
+                    hide-hostname: {{ GATUS_OBFUSCATE }}
+                    hide-url: {{ GATUS_OBFUSCATE }}
