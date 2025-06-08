@@ -106,7 +106,7 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           hajimari.io/icon: "mdi:pail"
           hajimari.io/enable: "true"
-          gatus.io/enable: "true"
+          gatus.io/enabled: "true"
         hosts:
           - host: &console-host "minio.home.${SECRET_DOMAIN}"
             paths:
@@ -125,7 +125,7 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           hajimari.io/enable: "false"
-          gatus.io/enable: "true"
+          gatus.io/enabled: "true"
         hosts:
           - host: &api-host "cdn.${SECRET_DOMAIN}"
             paths:
