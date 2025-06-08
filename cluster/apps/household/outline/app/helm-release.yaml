@@ -94,8 +94,9 @@ spec:
           hajimari.io/icon: "book"
           hajimari.io/appName: "Outline"
           hajimari.io/group: "Home"
+          gatus.io/enabled: "true"
         hosts:
-          - host: &host "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+          - host: &host "docs.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:

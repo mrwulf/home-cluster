@@ -23,7 +23,6 @@ spec:
   wait: false
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/internal
   postBuild:
     substitute:
       APP: *app

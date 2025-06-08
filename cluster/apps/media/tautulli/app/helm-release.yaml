@@ -53,6 +53,8 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/group: "Media"
           hajimari.io/icon: "mdi:chart-bar"
+          gatus.io/enabled: "true"
+          gatus.io/status-code: "404"
         hosts:
           - host: &host "tautulli.home.${SECRET_DOMAIN}"
             paths:

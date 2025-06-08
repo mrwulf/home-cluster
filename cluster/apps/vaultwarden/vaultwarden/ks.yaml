@@ -13,7 +13,6 @@ spec:
   path: ./cluster/apps/vaultwarden/vaultwarden/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/external
   prune: true
   sourceRef:
     kind: GitRepository
@@ -25,7 +24,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: bw
       VOLSYNC_CLAIM: vaultwarden-db
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_START_MINUTE: "3"

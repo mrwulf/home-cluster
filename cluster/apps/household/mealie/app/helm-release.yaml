@@ -82,8 +82,9 @@ spec:
           hajimari.io/icon: "food"
           hajimari.io/appName: "Mealie"
           hajimari.io/group: "Home"
+          gatus.io/enabled: "true"
         hosts:
-          - host: &host "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+          - host: &host "meals.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:

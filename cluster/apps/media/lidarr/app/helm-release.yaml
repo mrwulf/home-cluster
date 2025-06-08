@@ -80,6 +80,10 @@ spec:
       app:
         enabled: true
         className: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          gatus.io/enabled: "true"
         hosts:
           - host: &host "{{ .Release.Name }}.home.${SECRET_DOMAIN}"
             paths:

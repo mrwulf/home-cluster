@@ -21,13 +21,10 @@ spec:
   wait: false
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/direct
   postBuild:
     substitute:
       APP: *app
       APP_UID: "0"
       APP_GID: "0"
-      GATUS_STATUS: "404"
-      GATUS_SUBDOMAIN: hs
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_START_MINUTE: "22"

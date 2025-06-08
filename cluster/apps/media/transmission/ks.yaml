@@ -13,7 +13,6 @@ spec:
   path: ./cluster/apps/media/transmission/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/internal
   dependsOn:
     - name: transmission-incomplete-pvc
   prune: true
@@ -27,7 +26,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: tms
       VOLSYNC_CLAIM: transmission-config
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_START_MINUTE: "47"

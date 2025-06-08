@@ -11,8 +11,6 @@ spec:
       app.kubernetes.io/name: *app
   interval: 30m
   path: ./cluster/apps/monitoring/goldilocks/app
-  components:
-    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository

@@ -1,7 +1,0 @@
-endpoints:
-  - conditions:
-      - '[STATUS] == ${GATUS_STATUS:=200}'
-    group: external
-    interval: 1m
-    name: ${APP}
-    url: https://${GATUS_SUBDOMAIN:=${APP}}.${SECRET_DOMAIN}${GATUS_PATH:=/}

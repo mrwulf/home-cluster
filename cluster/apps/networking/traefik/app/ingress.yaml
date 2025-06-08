@@ -9,6 +9,8 @@ metadata:
     hajimari.io/icon: "web"
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+    gatus.io/enabled: "true"
+    gatus.io/path: "/dashboard/"
 spec:
   ingressClassName: "traefik"
   tls:

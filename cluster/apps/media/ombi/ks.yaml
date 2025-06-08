@@ -15,7 +15,6 @@ spec:
   path: ./cluster/apps/media/ombi/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository

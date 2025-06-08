@@ -50,6 +50,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/appName: "Rook/Ceph"
           hajimari.io/group: "storage"
+          gatus.io/enabled: "true"
         host:
           name: &host "rook.home.${SECRET_DOMAIN}"
           path: "/"

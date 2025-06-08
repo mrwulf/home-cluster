@@ -57,8 +57,10 @@ spec:
           external-dns.home.arpa/enabled: "true"
           hajimari.io/icon: mdi:web
           hajimari.io/group: "Home"
+          gatus.io/enabled: "true"
+          gatus.io/status-code: "404"
         hosts:
-          - host: &host "${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
+          - host: &host "reddit.home.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:

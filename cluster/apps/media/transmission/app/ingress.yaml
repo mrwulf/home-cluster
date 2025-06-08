@@ -10,10 +10,11 @@ metadata:
     hajimari.io/enable: "true"
     hajimari.io/group: "Media"
     hajimari.io/icon: "mdi:cloud-download"
+    gatus.io/enabled: "true"
 spec:
   ingressClassName: "traefik"
   rules:
-    - host: &host "${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
+    - host: &host "tms.home.${SECRET_DOMAIN}"
       http:
         paths:
           - path: /

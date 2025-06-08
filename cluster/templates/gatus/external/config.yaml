@@ -1,9 +1,0 @@
-endpoints:
-  - client:
-      dns-resolver: tcp://10.0.0.1:53053
-    conditions:
-      - '[STATUS] == ${GATUS_STATUS:=200}'
-    group: external
-    interval: 1m
-    name: ${APP}
-    url: https://${GATUS_SUBDOMAIN:=${APP}}.${SECRET_DOMAIN}${GATUS_PATH:=/}

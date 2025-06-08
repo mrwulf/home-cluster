@@ -79,6 +79,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/group: "Media"
           hajimari.io/icon: "book-open"
+          gatus.io/enabled: "true"
         hosts:
           - host: &host "readarr-audio.home.${SECRET_DOMAIN}"
             paths:

@@ -21,10 +21,6 @@ spec:
   interval: 30m
   retryInterval: 1m
   timeout: 5m
-  components:
-    - ../../../../templates/gatus/internal
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: reddit
-      GATUS_STATUS: '404'

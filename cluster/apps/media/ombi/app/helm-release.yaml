@@ -61,6 +61,7 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: websecure
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          gatus.io/enabled: "true"
           hajimari.io/enable: "true"
           hajimari.io/icon: mdi:ticket-account
           hajimari.io/group: "Media"

@@ -13,8 +13,6 @@ spec:
   interval: 30m
   timeout: 5m
   path: "./cluster/apps/monitoring/grafana/app"
-  components:
-    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository

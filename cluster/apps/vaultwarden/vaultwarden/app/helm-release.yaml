@@ -115,6 +115,7 @@ spec:
           hajimari.io/group: "Home"
           hajimari.io/url: https://bw.${SECRET_DOMAIN}/
           hajimari.io/icon: mdi:lock
+          gatus.io/enabled: "true"
         hosts:
           - host: &host "bw.${SECRET_DOMAIN}"
             paths:

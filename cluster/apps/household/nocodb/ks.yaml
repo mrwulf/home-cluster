@@ -20,7 +20,6 @@ spec:
   prune: true
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/internal
   sourceRef:
     kind: GitRepository
     name: flux-system

@@ -13,7 +13,6 @@ spec:
   path: ./cluster/apps/media/tautulli/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -27,7 +26,6 @@ spec:
       APP: *app
       APP_UID: "568"
       APP_GID: "568"
-      GATUS_STATUS: '404'
       VOLSYNC_CLAIM: tautulli-config
       VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_START_MINUTE: "22"

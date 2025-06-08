@@ -15,4 +15,3 @@ resources:
   - sonarr/ks.yaml
   - tautulli/ks.yaml
   - transmission/ks.yaml
-  # - wizarr

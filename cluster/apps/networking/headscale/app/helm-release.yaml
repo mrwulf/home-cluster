@@ -113,8 +113,8 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-direct@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=domain}"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
-          # nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-          # nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+          gatus.io/enabled: "true"
+          gatus.io/status-code: "404"
         hosts:
           - host: &host hs.${SECRET_DOMAIN}
             paths:

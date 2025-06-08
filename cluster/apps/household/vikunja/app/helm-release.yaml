@@ -112,8 +112,9 @@ spec:
           hajimari.io/appName: "Lists"
           hajimari.io/icon: mdi:format-list-checkbox
           hajimari.io/group: "Home"
+          gatus.io/enabled: "true"
         hosts:
-          - host: &host "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+          - host: &host "lists.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
