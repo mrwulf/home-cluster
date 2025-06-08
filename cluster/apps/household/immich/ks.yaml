@@ -23,9 +23,6 @@ spec:
   interval: 30m
   retryInterval: 1m
   timeout: 5m
-  components:
-    - ../../../../templates/gatus/direct
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: photos

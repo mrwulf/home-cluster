@@ -45,9 +45,8 @@ spec:
                 memory: 2G
           codeserver:
             image:
-              repository: ghcr.io/k8s-at-home/code-server
-              tag: v4.6.0
-            workingDir: "/config"
+              repository: ghcr.io/coder/code-server
+              tag: 4.93.1
             args:
               - --auth
               - "none"
@@ -55,6 +54,9 @@ spec:
               - "/config/.vscode"
               - --extensions-dir
               - "/config/.vscode"
+              - "--port"
+              - "12321"
+              - "/config"
             resources:
               requests:
                 cpu: 10m

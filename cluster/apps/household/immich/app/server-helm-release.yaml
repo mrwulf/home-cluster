@@ -90,11 +90,12 @@ spec:
           hajimari.io/appName: Immich
           hajimari.io/group: "Home"
           hajimari.io/icon: heroicons:photo
+          gatus.io/enabled: "true"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-direct@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=domain}"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
         hosts:
-          - host: &host ${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
+          - host: &host photos.${SECRET_DOMAIN}
             paths:
               - path: /
                 service:
