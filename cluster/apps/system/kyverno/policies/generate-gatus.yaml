@@ -38,7 +38,7 @@ spec:
             jmesPath: "to_string(@)"
         - name: GATUS_OBFUSCATE
           variable:
-            value: true
+            value: 'true'
             # value: '{{ contains( GATUS_GROUP, ''internal'' ) }}'
         - name: GATUS_EXTERNAL_RESOLVER
           variable:
