@@ -41,7 +41,7 @@ spec:
           main:
             image:
               repository: ghcr.io/wizarrrr/wizarr
-              tag: 2025.6.1
+              tag: 2025.6.2
             env:
               TZ: "${TIMEZONE}"
               APP_URL: "https://wizarr.${SECRET_DOMAIN}"
