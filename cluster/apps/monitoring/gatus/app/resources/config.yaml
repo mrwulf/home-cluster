@@ -64,9 +64,9 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
-  - name: nas
+  - name: NAS
     group: services
-    url: "ssh://10.0.1.15:22" # port is optional. Default is 22.
+    url: "ssh://${CORE_NFS_SERVER}:22" # port is optional. Default is 22.
     ssh:
       username: ""
       password: ""
@@ -74,6 +74,36 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
       - "[STATUS] == 0"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: Firewall - Active
+    group: services
+    url: "https://10.0.0.1:${FIREWALL_PORT}"
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: Firewall - Primary
+    group: services
+    url: "https://10.0.0.3:${FIREWALL_PORT}"
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: Firewall - Backup
+    group: services
+    url: "https://10.0.0.2:${FIREWALL_PORT}"
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
     alerts: *alerts
     ui:
       hide-hostname: true

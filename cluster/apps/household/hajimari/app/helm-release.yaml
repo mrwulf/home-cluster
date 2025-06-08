@@ -61,7 +61,7 @@ spec:
           apps:
             - name: OPNSense
               icon: 'mdi:wall-fire'
-              url: https://firewall.${FIREWALL_URI}/
+              url: https://firewall.${SECRET_DOMAIN}:${FIREWALL_PORT}/
         - group: monitoring
           apps:
             - name: Uptime-Kuma
