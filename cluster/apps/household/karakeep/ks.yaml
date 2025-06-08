@@ -15,7 +15,6 @@ spec:
   path: ./cluster/apps/household/karakeep/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
