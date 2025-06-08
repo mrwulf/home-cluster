@@ -94,6 +94,7 @@ spec:
           hajimari.io/icon: "weather-sunset"
           hajimari.io/group: "Home"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          gatus.io/enabled: "true"
         hosts:
           - host: &host "hajimari.home.${SECRET_DOMAIN}"
             paths:

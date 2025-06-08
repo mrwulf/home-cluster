@@ -11,8 +11,6 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   path: ./cluster/apps/databases/postgres/app
-  components:
-    - ../../../_common
   prune: true
   sourceRef:
     kind: GitRepository
@@ -36,9 +34,6 @@ spec:
   path: ./cluster/apps/databases/postgres/cluster
   dependsOn:
     - name: postgres
-  components:
-    - ../../../_common
-  #   - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
     kind: GitRepository
@@ -62,9 +57,6 @@ spec:
   path: ./cluster/apps/databases/postgres/backups
   dependsOn:
     - name: postgres
-  components:
-    - ../../../_common
-  #   - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
     kind: GitRepository
@@ -92,7 +84,6 @@ spec:
     - name: authentik
     - name: traefik
   components:
-    - ../../../_common
     - ../../../../templates/volsync/primary
   prune: true
   sourceRef:

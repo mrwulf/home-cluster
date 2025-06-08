@@ -18,7 +18,6 @@ spec:
   path: ./cluster/apps/ai/open-webui/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/external
   prune: true
   sourceRef:
     kind: GitRepository
@@ -29,6 +28,5 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: chat
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_START_MINUTE: "48"

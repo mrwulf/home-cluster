@@ -74,6 +74,7 @@ spec:
         className: "traefik"
         annotations:
           hajimari.io/icon: mdi:cash
+          gatus.io/enabled: "true"
         hosts:
           - host: *host
             paths:

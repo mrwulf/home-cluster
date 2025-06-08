@@ -13,8 +13,6 @@ spec:
   dependsOn:
     - name: traefik
   path: "./cluster/apps/ai/searxng/app/"
-  components:
-    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -25,4 +23,3 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: search

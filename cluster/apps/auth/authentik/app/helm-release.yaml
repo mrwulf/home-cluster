@@ -87,6 +87,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "shield-lock"
           hajimari.io/group: "Home"
+          gatus.io/enabled: "true"
         hosts:
           - &host "auth.${SECRET_DOMAIN}"
         tls:

@@ -74,6 +74,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/appName: "Code Server"
           hajimari.io/icon: cib:visual-studio-code
+          gatus.io/enabled: "true"
         hosts:
           - host: *host
             paths:

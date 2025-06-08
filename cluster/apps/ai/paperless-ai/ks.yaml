@@ -16,7 +16,6 @@ spec:
     - name: paperless
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository

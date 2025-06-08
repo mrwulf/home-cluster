@@ -14,8 +14,6 @@ spec:
     - name: external-secrets-stores
   interval: 30m
   path: ./cluster/apps/monitoring/gatus/app
-  components:
-    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository

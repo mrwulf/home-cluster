@@ -70,6 +70,7 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          gatus.io/enabled: "true"
         hosts:
           - host: &host "paperless-ai.home.${SECRET_DOMAIN}"
             paths:

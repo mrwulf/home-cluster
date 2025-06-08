@@ -81,6 +81,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: "home-automation"
           hajimari.io/group: "Home"
+          gatus.io/enabled: "true"
         hosts:
           - host: &host "home-assistant.${SECRET_DOMAIN}"
             paths:
@@ -101,6 +102,7 @@ spec:
           hajimari.io/icon: microsoft-visual-studio-code
           hajimari.io/appName: "Home-Assistant Config Editor"
           hajimari.io/group: "Home"
+          gatus.io/enabled: "true"
         hosts:
           - host: &host-config "hass-config.home.${SECRET_DOMAIN}"
             paths:

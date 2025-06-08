@@ -15,7 +15,6 @@ spec:
   path: ./cluster/apps/household/home-assistant/app
   components:
     - ../../../../templates/volsync/primary
-    - ../../../../templates/gatus/external
   prune: true
   sourceRef:
     kind: GitRepository

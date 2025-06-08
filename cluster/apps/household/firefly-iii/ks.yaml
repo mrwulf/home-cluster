@@ -17,7 +17,6 @@ spec:
   path: ./cluster/apps/household/firefly-iii/app
   components:
     - ../../../../templates/volsync/init
-    - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -29,7 +28,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: money
       VOLSYNC_CLAIM: *app
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_START_MINUTE: "37"
@@ -51,8 +49,6 @@ spec:
     - name: authentik
     - name: firefly-iii
   path: ./cluster/apps/household/firefly-iii/importer
-  # components:
-  #   - ../../../../templates/gatus/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -64,4 +60,3 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: money-importer
