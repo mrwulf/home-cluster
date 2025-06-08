@@ -27,7 +27,7 @@ alerting:
 #     target: https://radar.cloudflare.com/ip
 #     interval: 1m
 endpoints:
-  - name: DNS status
+  - name: DNS Resolver
     group: internal
     url: 10.0.10.14
     interval: 1m
@@ -39,7 +39,10 @@ endpoints:
       - "[DNS_RCODE] == NOERROR"
     alerts: &alerts
       - type: pushover
-  - name: certificate
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: certificate-external
     group: external
     url: "https://flux-receiver.${SECRET_DOMAIN}"
     interval: 1h
@@ -47,7 +50,10 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 240h"
       # - "[DOMAIN_EXPIRATION] > 720h"
     alerts: *alerts
-  - name: certificate
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: certificate-internal
     group: internal
     url: "https://status.home.${SECRET_DOMAIN}"
     interval: 1h
@@ -55,6 +61,9 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 240h"
       # - "[DOMAIN_EXPIRATION] > 720h"
     alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
   - name: nas
     group: services
     url: "ssh://10.0.1.15:22" # port is optional. Default is 22.
@@ -66,3 +75,6 @@ endpoints:
       - "[CONNECTED] == true"
       - "[STATUS] == 0"
     alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true

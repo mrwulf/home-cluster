@@ -38,7 +38,8 @@ spec:
             jmesPath: "to_string(@)"
         - name: GATUS_OBFUSCATE
           variable:
-            value: '{{ contains( GATUS_GROUP, ''internal'' ) }}'
+            value: true
+            # value: '{{ contains( GATUS_GROUP, ''internal'' ) }}'
         - name: GATUS_EXTERNAL_RESOLVER
           variable:
             jmesPath: '((contains( GATUS_GROUP, ''external'' ) && !contains( not_null(request.object.metadata.annotations."external-dns.alpha.kubernetes.io/cloudflare-proxied",''''), ''false'')) && ''tcp://10.0.0.1:53053'') || '''''
