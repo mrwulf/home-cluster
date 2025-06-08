@@ -80,7 +80,7 @@ endpoints:
       hide-url: true
   - name: Firewall - Active
     group: services
-    url: "https://10.0.0.1:${FIREWALL_PORT}"
+    url: "https://firewall.${SECRET_DOMAIN}:${FIREWALL_PORT}"
     interval: 1m
     conditions:
       - "[STATUS] == 200"
@@ -90,7 +90,7 @@ endpoints:
       hide-url: true
   - name: Firewall - Primary
     group: services
-    url: "https://10.0.0.3:${FIREWALL_PORT}"
+    url: "https://firewall03.${SECRET_DOMAIN}:${FIREWALL_PORT}"
     interval: 1m
     conditions:
       - "[STATUS] == 200"
@@ -100,7 +100,7 @@ endpoints:
       hide-url: true
   - name: Firewall - Backup
     group: services
-    url: "https://10.0.0.2:${FIREWALL_PORT}"
+    url: "https://firewall02.${SECRET_DOMAIN}:${FIREWALL_PORT}"
     interval: 1m
     conditions:
       - "[STATUS] == 200"
