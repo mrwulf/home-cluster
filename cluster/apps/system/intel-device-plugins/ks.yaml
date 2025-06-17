@@ -13,6 +13,8 @@ spec:
   interval: 30m
   timeout: 5m
   path: ./cluster/apps/system/intel-device-plugins/app
+  dependsOn:
+    - name: node-feature-discovery-rules
   prune: true
   sourceRef:
     kind: GitRepository

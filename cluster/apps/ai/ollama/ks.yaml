@@ -11,6 +11,8 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   path: ./cluster/apps/ai/ollama/app
+  dependsOn:
+    - name: intel-device-plugins-gpu
   prune: true
   sourceRef:
     kind: GitRepository
