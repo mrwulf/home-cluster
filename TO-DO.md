@@ -1,5 +1,7 @@
 things to try:
 - dify.ai
+- jellyplex-watched
+- booklore
 - open-notebook.ai
 - stirling-pdf
 - adventurelog

@@ -1,0 +1,147 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2beta2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jellyfin
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 4.1.1
+      interval: 30m
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  values:
+    controllers:
+      jellyfin:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: jellyfin/jellyfin
+              tag: 10.10.7
+              pullPolicy: IfNotPresent
+            env:
+              DOTNET_SYSTEM_IO_DISABLEFILELOCKING: "true"
+              JELLYFIN_FFmpeg__probesize: 50000000
+              JELLYFIN_FFmpeg__analyzeduration: 50000000
+              JELLYFIN_PublishedServerUrl: https://jellyfin.home.${SECRET_DOMAIN}
+              TZ: "${TIMEZONE}"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &port 8096
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: false
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                gpu.intel.com/i915: 1
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                gpu.intel.com/i915: 1
+                memory: 8Gi
+        pod:
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            runAsNonRoot: true
+            fsGroup: 568
+            fsGroupChangePolicy: OnRootMismatch
+            supplementalGroups: [44, 10000, 65539]
+    service:
+      app:
+        controller: jellyfin
+        type: LoadBalancer
+        # annotations:
+        #   lbipam.cilium.io/ips: 10.0.42.128
+        externalTrafficPolicy: Local
+        ports:
+          http:
+            port: 8096
+    serviceMonitor:
+      app:
+        serviceName: jellyfin
+        endpoints:
+          - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
+    ingress:
+      main:
+        enabled: true
+        className: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          # traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          # external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+          # external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=base.domain}"
+          gatus.io/enabled: "true"
+        hosts:
+          - host: &host "jellyfin.home.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+    persistence:
+      config:
+        existingClaim: jellyfin
+        globalMounts:
+          - path: /config
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+      transcode:
+        type: emptyDir
+        globalMounts:
+          - path: /transcode
+      backups:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/jellyfin-backups"
+        globalMounts:
+          - path: /backups
+      movies:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/Movies
+        globalMounts:
+          - path: /Movies
+      tv:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/TV
+        globalMounts:
+          - path: /TV
+      other:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/OtherStorage/Normal
+        globalMounts:
+          - path: /other

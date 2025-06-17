@@ -3,21 +3,19 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app plex
+  name: &app jellyfin
   namespace: flux-system
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  # dependsOn:
-  #   - name: rook-ceph-cluster
-  interval: 30m
-  path: ./cluster/apps/media/plex/app
-  components:
-    - ../../../../templates/volsync/primary
   dependsOn:
     - name: rook-ceph-cluster
     - name: intel-device-plugins-gpu
+  interval: 30m
+  path: ./cluster/apps/media/jellyfin/app
+  components:
+    - ../../../../templates/volsync/init
   prune: true
   sourceRef:
     kind: GitRepository
@@ -29,7 +27,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CLAIM: plex-config
       VOLSYNC_CAPACITY: 100Gi
-      VOLSYNC_START_MINUTE: "11"
+      VOLSYNC_START_MINUTE: "37"
       VOLSYNC_CACHE_CAPACITY: "30Gi"
