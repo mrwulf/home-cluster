@@ -15,7 +15,7 @@ spec:
   interval: 30m
   path: ./cluster/apps/media/jellyfin/app
   components:
-    - ../../../../templates/volsync/init
+    - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
     kind: GitRepository
