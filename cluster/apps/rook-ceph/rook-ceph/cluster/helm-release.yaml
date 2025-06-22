@@ -99,6 +99,8 @@ spec:
           requests:
             cpu: "1"
             memory: "2Gi"
+          limits:
+            memory: "8Gi"
       storage:
         useAllNodes: true
         useAllDevices: false
