@@ -1,6 +1,6 @@
 things to try:
 - dify.ai
-- jellyplex-watched
+- jellyplex-watched - https://github.com/luigi311/JellyPlex-Watched
 - booklore
 - open-notebook.ai
 - stirling-pdf
