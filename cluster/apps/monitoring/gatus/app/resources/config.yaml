@@ -68,9 +68,11 @@ endpoints:
     group: internal
     url: "https://k8s.home:6443"
     interval: 1m
+    client:
+      insecure: true
     conditions:
       - "[STATUS] == 401"
-      - "[BODY].message = Unauthorized"
+      - "[BODY].message == Unauthorized"
     alerts: *alerts
     ui:
       hide-hostname: true
