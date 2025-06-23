@@ -5,3 +5,4 @@ resources:
   - crds.yaml
   - external-secret.yaml
   - helm-release.yaml
+  - service-monitor.yaml
