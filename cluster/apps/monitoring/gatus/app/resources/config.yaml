@@ -56,10 +56,20 @@ endpoints:
   - name: certificate-internal
     group: internal
     url: "https://status.home.${SECRET_DOMAIN}"
-    interval: 1h
+    interval: 1m
     conditions:
       - "[CERTIFICATE_EXPIRATION] > 240h"
       # - "[DOMAIN_EXPIRATION] > 720h"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: kubernetes api
+    group: internal
+    url: "https://kubernetes.home:6443"
+    interval: 1h
+    conditions:
+      - "[STATUS] == 401"
     alerts: *alerts
     ui:
       hide-hostname: true
