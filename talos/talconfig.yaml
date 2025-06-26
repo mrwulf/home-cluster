@@ -4,7 +4,7 @@ clusterName: k8s
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
 talosVersion: v1.10.4
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
-kubernetesVersion: v1.33.1
+kubernetesVersion: v1.33.2
 endpoint: https://${clusterEndpointIP}:6443
 
 additionalApiServerCertSans: &sans
@@ -27,6 +27,7 @@ nodes:
     disableSearchDomain: true
     nameservers:
       - 10.0.0.1
+      - 10.0.1.1
     installDiskSelector:
       model: KINGSTON OM8PGP41024N-A0
     networkInterfaces:
@@ -68,6 +69,7 @@ nodes:
     disableSearchDomain: true
     nameservers:
       - 10.0.0.1
+      - 10.0.1.1
     installDiskSelector:
       model: KINGSTON OM8PGP41024N-A0
     networkInterfaces:
@@ -109,6 +111,7 @@ nodes:
     disableSearchDomain: true
     nameservers:
       - 10.0.0.1
+      - 10.0.1.1
     installDiskSelector:
       model: KINGSTON OM8PGP41024N-A0
     networkInterfaces:
@@ -150,6 +153,7 @@ nodes:
   #   disableSearchDomain: true
   #   nameservers:
   #     - 10.0.0.1
+  #     - 10.0.1.1
   #   installDiskSelector:
   #     type: ssd
   #   networkInterfaces:
