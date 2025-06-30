@@ -16,3 +16,4 @@ data:
   FORGEJO_ADDR: 10.0.10.16
   TRAEFIK_ADDR: 10.0.10.20
   UNIFI_ADDR: 10.0.10.213 # there is a dns override for unifi on this IP
+  VPN_ADDR: 10.0.10.12

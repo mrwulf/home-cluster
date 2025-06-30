@@ -1,0 +1,159 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: angelnu
+spec:
+  interval: 15m
+  url: https://angelnu.github.io/helm-charts
+  timeout: 3m
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.dmfrey.com/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: pod-gateway
+
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: pod-gateway
+      version: 6.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: angelnu
+  values:
+    image:
+      repository: ghcr.io/angelnu/pod-gateway
+      tag: v1.13.0@sha256:a5b032e15f7570493977b330a5a86dcffebb807d35685ad803e47afb62d105f2
+
+    # -- IP address of the DNS server within the vxlan tunnel.
+    # All mutated PODs will get this as their DNS server.
+    # It must match VXLAN_GATEWAY_IP in settings.sh
+    DNS: 172.16.1.1
+
+    # -- The DNSPolicy to apply to the POD. Only when set to "None" will the
+    # DNS value above apply. To avoid altering POD DNS (i.e., to allow
+    # initContainers to use DNS before the the VXLAN is up), set to "ClusterFirst"
+    DNSPolicy: ClusterFirst
+
+    service:
+      vpn:
+        enabled: true
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: "${VPN_ADDR}"
+        externalTrafficPolicy: Cluster
+        ports:
+          shadowsocks:
+            enabled: true
+            port: 8388
+
+    addons:
+      vpn:
+        enabled: true
+        type: gluetun
+        image:
+          repository: ghcr.io/qdm12/gluetun
+          tag: v3.40.0@sha256:2b42bfa046757145a5155acece417b65b4443c8033fb88661a8e9dcf7fda5a00
+
+        env:
+          - name: VPN_SERVICE_PROVIDER
+            value: private internet access
+          - name: VPN_INTERFACE
+            value: &VPN_INTERFACE tun0
+          - name: VPN_TYPE
+            value: openvpn
+          - name: OPENVPN_PROTOCOL
+            value: tcp
+          # - name: OPENVPN_ENDPOINT_PORT
+          #   value: "1197"
+          - name: SERVER_REGIONS
+            value: CA Montreal
+          - name: SERVER_HOSTNAMES
+            value: ca-montreal.privacy.network
+          - name: HEALTH_VPN_DURATION_INITIAL
+            value: 60s
+          - name: SHADOWSOCKS
+            value: "on"
+          - name: FIREWALL
+            value: "off"
+          - name: DOT
+            value: "off"
+          - name: LOG_LEVEL
+            value: debug
+          - name: LOG_CONFS
+            value: "true"
+
+        envFrom:
+          - secretRef:
+              name: pod-gateway-secret
+
+        securityContext:
+          # Gluetun won't run on-top of Talos / Cilium w/o this atm
+          privileged: true
+          # capabilities:
+          #   add:
+          #     - NET_ADMIN
+          #     - NET_RAW
+
+        resources:
+          requests:
+            cpu: 5m
+            memory: 64M
+            my.home/tun: 1
+          limits:
+            my.home/tun: 1
+            memory: 64M
+
+        networkPolicy:
+          enabled: false
+
+        livenessProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - if [ $(wget -q -O- https://ipinfo.io/city) == 'Montréal' ]; then exit 0; else exit $?; fi
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          failureThreshold: 3
+
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: pod-gateway
+      secret.reloader.stakater.com/reload: pod-gateway-secret
+
+    # publicPorts:
+    #   - IP: 10
+    #     hostname: qbittorrent
+    #     ports:
+    #       - port: 57512
+    #         type: udp
+    #       - port: 57512
+    #         type: tcp
+
+    routed_namespaces:
+      - vpn
+
+    settings:
+      NOT_ROUTED_TO_GATEWAY_CIDRS: 192.168.0.0/16 10.0.0.0/8
+      VPN_BLOCK_OTHER_TRAFFIC: false
+      VPN_INTERFACE: tun0
+      VPN_LOCAL_CIDRS: 192.168.0.0/16 10.0.0.0/8
+      VPN_PORT_FORWARDING: "on"
+      # VPN_TRAFFIC_PORT: "1197"
+      VXLAN_ID: 43
+      VXLAN_IP_NETWORK: 172.16.1
+      VPN_PORT_FORWARDING_UP_COMMAND: /bin/sh -c '/usr/bin/wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://qbittorrent.vpn.svc.cluster.local/api/v2/app/setPreferences 2>&1'
+
+    webhook:
+      gatewayDefault: true
+      gatewayAnnotation: setGateway
+      gatewayLabel: setGateway
+      namespaceSelector:
+        type: label
+        label: routed-gateway
+      image:
+        repository: ghcr.io/angelnu/gateway-admision-controller
+        tag: v3.12.0@sha256:6f6ab596afd5fef0ca4648eadfb21cd37ba86fa5afa8b85edcc072976a61fbed

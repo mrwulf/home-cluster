@@ -29,14 +29,16 @@ spec:
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
+          # setGateway: "true"
         containers:
           main:
             image:
               repository: ghcr.io/flaresolverr/flaresolverr
               tag: v3.3.25
             env:
-              TZ: "${TZ}"
+              TZ: "${TIMEZONE}"
               LOG_LEVEL: info
+              TEST_URL: https://www.google.com
               PORT: &port 80
               PROMETHEUS_ENABLED: true
               PROMETHEUS_PORT: &metricsPort 8080
