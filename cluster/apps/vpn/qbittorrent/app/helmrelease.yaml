@@ -18,7 +18,6 @@ spec:
       *app :
         annotations:
           reloader.stakater.com/auto: "true"
-          setGateway: "true"
 
         containers:
           *app :
@@ -62,6 +61,8 @@ spec:
                 memory: 8Gi
 
     defaultPodOptions:
+      annotations:
+        setGateway: "true"
       securityContext:
         runAsNonRoot: true
         runAsUser: 985
@@ -105,20 +106,6 @@ spec:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *host
-
-    # route:
-    #   *app :
-    #     hostnames:
-    #       - "{{ .Release.Name }}.dmfrey.com"
-    #       - qb.dmfrey.com
-    #     parentRefs:
-    #       - name: internal
-    #         namespace: kube-system
-    #         sectionName: https
-    #     rules:
-    #       - backendRefs:
-    #           - name: *app
-    #             port: *port
 
     persistence:
       config:
