@@ -148,7 +148,7 @@ spec:
       VPN_PORT_FORWARDING_UP_COMMAND: /bin/sh -c '/usr/bin/wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://qbittorrent.vpn.svc.cluster.local/api/v2/app/setPreferences 2>&1'
 
     webhook:
-      gatewayDefault: true
+      gatewayDefault: false
       gatewayAnnotation: setGateway
       gatewayLabel: setGateway
       namespaceSelector:
