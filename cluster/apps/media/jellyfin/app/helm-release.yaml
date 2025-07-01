@@ -70,7 +70,7 @@ spec:
     service:
       app:
         controller: jellyfin
-        type: LoadBalancer
+        # type: LoadBalancer
         # annotations:
         #   lbipam.cilium.io/ips: 10.0.42.128
         externalTrafficPolicy: Local

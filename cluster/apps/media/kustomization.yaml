@@ -6,6 +6,7 @@ resources:
   - flaresolverr/ks.yaml
   - isponsorblocktv/ks.yaml
   - jellyfin/ks.yaml
+  - jellyplex-watched/ks.yaml
   - lidarr/ks.yaml
   - ombi/ks.yaml
   - plex/ks.yaml

@@ -15,6 +15,8 @@ spec:
         - ports:
             - port: "1197"
               protocol: TCP
+            - port: "501"
+              protocol: TCP
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
