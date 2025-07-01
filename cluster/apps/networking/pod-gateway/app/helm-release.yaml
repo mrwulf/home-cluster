@@ -67,8 +67,8 @@ spec:
             value: openvpn
           - name: OPENVPN_PROTOCOL
             value: tcp
-          - name: OPENVPN_ENDPOINT_PORT
-            value: "1197"
+          # - name: OPENVPN_ENDPOINT_PORT
+          #   value: "1197"
           - name: SERVER_REGIONS
             value: CA Montreal
           - name: SERVER_HOSTNAMES
@@ -127,11 +127,11 @@ spec:
     publicPorts:
       - IP: 10
         hostname: qbittorrent
-        ports:
-          - port: 57512
-            type: udp
-          - port: 57512
-            type: tcp
+        # ports:
+        #   - port: 57512
+        #     type: udp
+        #   - port: 57512
+        #     type: tcp
 
     routed_namespaces:
       - vpn
@@ -142,7 +142,7 @@ spec:
       VPN_INTERFACE: tun0
       VPN_LOCAL_CIDRS: 192.168.0.0/16 10.0.0.0/8
       VPN_PORT_FORWARDING: "on"
-      VPN_TRAFFIC_PORT: "1197"
+      VPN_TRAFFIC_PORT: "501"
       VXLAN_ID: 43
       VXLAN_IP_NETWORK: 172.16.1
       VPN_PORT_FORWARDING_UP_COMMAND: /bin/sh -c '/usr/bin/wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://qbittorrent.vpn.svc.cluster.local/api/v2/app/setPreferences 2>&1'

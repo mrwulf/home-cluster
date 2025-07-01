@@ -16,6 +16,7 @@ spec:
   dependsOn:
     - name: rook-ceph-cluster
     - name: pod-gateway
+    - name: qbittorrent-incomplete-pvc
   prune: true
   sourceRef:
     kind: GitRepository
@@ -30,6 +31,35 @@ spec:
       VOLSYNC_CLAIM: *app
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_START_MINUTE: "41"
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app qbittorrent-incomplete-pvc
+  namespace: flux-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 30m
+  path: ./cluster/templates/volsync/init
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: vpn
+  timeout: 5m
+  wait: false
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CLAIM: qbittorrent-incomplete
+      VOLSYNC_CAPACITY: 200Gi
+      VOLSYNC_START_MINUTE: "26"
+      APP_UID: "985"
+      APP_GID: "977"
 # ---
 # # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 # apiVersion: kustomize.toolkit.fluxcd.io/v1

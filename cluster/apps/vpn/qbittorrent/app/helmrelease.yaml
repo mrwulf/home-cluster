@@ -111,6 +111,9 @@ spec:
       config:
         existingClaim: ${VOLSYNC_CLAIM}
 
+      incomplete:
+        existingClaim: qbittorrent-incomplete
+
       downloads:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
