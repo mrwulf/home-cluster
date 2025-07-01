@@ -67,8 +67,8 @@ spec:
             value: openvpn
           - name: OPENVPN_PROTOCOL
             value: tcp
-          # - name: OPENVPN_ENDPOINT_PORT
-          #   value: "1197"
+          - name: OPENVPN_ENDPOINT_PORT
+            value: "1194"
           - name: SERVER_REGIONS
             value: CA Montreal
           - name: SERVER_HOSTNAMES
@@ -138,11 +138,11 @@ spec:
 
     settings:
       NOT_ROUTED_TO_GATEWAY_CIDRS: 192.168.0.0/16 10.0.0.0/8
-      VPN_BLOCK_OTHER_TRAFFIC: false
+      VPN_BLOCK_OTHER_TRAFFIC: "true"
       VPN_INTERFACE: tun0
       VPN_LOCAL_CIDRS: 192.168.0.0/16 10.0.0.0/8
       VPN_PORT_FORWARDING: "on"
-      # VPN_TRAFFIC_PORT: "1197"
+      VPN_TRAFFIC_PORT: "1194"
       VXLAN_ID: 43
       VXLAN_IP_NETWORK: 172.16.1
       VPN_PORT_FORWARDING_UP_COMMAND: /bin/sh -c '/usr/bin/wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://qbittorrent.vpn.svc.cluster.local/api/v2/app/setPreferences 2>&1'
