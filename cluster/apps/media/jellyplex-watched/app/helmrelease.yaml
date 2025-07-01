@@ -40,13 +40,13 @@ spec:
 
             env:
               ## Do not mark any shows/movies as played and instead just output to log if they would of been marked.
-              DRYRUN: "True"
+              DRYRUN: "False"
               ## Additional logging information
               DEBUG: "False"
               ## Debugging level, "info" is default, "debug" is more verbose
               DEBUG_LEVEL: "debug"
               ## How often to run the script in seconds
-              SLEEP_DURATION: "300"
+              SLEEP_DURATION: "900"
               ## Log file where all output will be written to
               LOGFILE: "log.log"
               ## Map usernames between plex and jellyfin in the event that they are different, order does not matter
@@ -94,7 +94,7 @@ spec:
                 cpu: 50m
                 memory: 100Mi
               limits:
-                memory: 200Mi
+                memory: 2Gi
 
     service:
       *app :
