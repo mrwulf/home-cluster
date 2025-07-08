@@ -2,6 +2,7 @@ things to try:
 - dify.ai
 - jellyplex-watched - https://github.com/luigi311/JellyPlex-Watched
 - booklore
+- immich public proxy
 - open-notebook.ai
 - stirling-pdf
 - adventurelog
