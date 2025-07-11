@@ -9,8 +9,16 @@ vars:
   ARCH: '{{if eq .ARCH_OS "x86_64"}}amd64{{else}}{{.ARCH_OS}}{{end}}'
   head: '{{if eq .OS "darwin"}}g{{end}}head'
   grep: '{{if eq .OS "darwin"}}g{{end}}grep'
+  awk: '{{if eq .OS "darwin"}}g{{end}}awk'
 
 tasks:
+  mkdir:
+    internal: true
+    cmds:
+      - mkdir -p "${HOME}/bin"
+    generates:
+      - "${HOME}/bin/"
+
   all:
     desc: Install all of the dependencies & tools
     cmds:
@@ -36,7 +44,7 @@ tasks:
     desc: Install age
     vars:
       APP_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       OWNER: FiloSottile
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
@@ -89,7 +97,7 @@ tasks:
     desc: Install sops
     vars:
       APP_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       OWNER: mozilla
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.APP_NAME}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
@@ -109,7 +117,7 @@ tasks:
     desc: Install talhelper
     vars:
       TASK_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       OWNER: budimanjojo
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
@@ -133,7 +141,7 @@ tasks:
     desc: Install talosctl
     vars:
       TASK_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/siderolabs/talos/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
@@ -172,7 +180,7 @@ tasks:
     ignore_errors: true
     vars:
       TASK_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       OWNER: kastenhq
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
@@ -194,7 +202,7 @@ tasks:
     desc: Install kubectl
     vars:
       APP_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       OWNER: mozilla
       RELEASE_VERSION:
         sh: curl -L -s https://dl.k8s.io/release/stable.txt
@@ -204,8 +212,10 @@ tasks:
       - |
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
 
-        wget -qnv --progress=bar -O ~/bin/kubectl dl.k8s.io/{{.RELEASE_VERSION}}/bin/linux/amd64/kubectl
+        wget -qnv --progress=bar -O ~/bin/kubectl https://dl.k8s.io/{{.RELEASE_VERSION}}/bin/{{.OS}}/amd64/kubectl
         chmod +x ~/bin/kubectl
+    deps:
+      - task: mkdir
     status:
       - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
     silent: true
@@ -217,7 +227,7 @@ tasks:
     ignore_errors: true
     vars:
       TASK_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       OWNER: fluxcd
       PROJECT: flux2 # '{{.PROJECT | default .TASK_NAME}}'
       RELEASE_VERSION:
@@ -244,7 +254,7 @@ tasks:
     ignore_errors: true
     vars:
       TASK_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       OWNER: helm
       PROJECT: '{{.PROJECT | default .TASK_NAME}}'
       RELEASE_VERSION:
@@ -274,7 +284,7 @@ tasks:
     ignore_errors: true
     vars:
       TASK_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       OWNER: pre-commit
       PROJECT: '{{.PROJECT | default .TASK_NAME}}'
       RELEASE_VERSION:
@@ -301,7 +311,7 @@ tasks:
     ignore_errors: true
     vars:
       TASK_NAME:
-        sh: "echo {{.TASK}} | awk -F: '{print $(NF)}'"
+        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       RELEASE_VERSION:
         sh: 'curl -s https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt'
       DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
