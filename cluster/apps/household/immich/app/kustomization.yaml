@@ -6,3 +6,4 @@ resources:
   - server-helm-release.yaml
   - microservices-helm-release.yaml
   - ml-helm-release.yaml
+  - proxy-helm-release.yaml
