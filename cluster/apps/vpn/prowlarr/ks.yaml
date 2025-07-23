@@ -12,7 +12,7 @@ spec:
   dependsOn:
     - name: external-secrets-stores
   interval: 30m
-  path: ./cluster/apps/media/prowlarr/app
+  path: ./cluster/apps/vpn/prowlarr/app
   components:
     - ../../../../templates/volsync/init
   prune: true
@@ -20,7 +20,7 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: media
+  targetNamespace: vpn
   timeout: 5m
   wait: false
   postBuild:

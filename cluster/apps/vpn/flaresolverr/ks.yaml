@@ -10,12 +10,12 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./cluster/apps/media/flaresolverr/app
+  path: ./cluster/apps/vpn/flaresolverr/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: media
+  targetNamespace: vpn
   timeout: 5m
   wait: false
