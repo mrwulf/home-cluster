@@ -33,6 +33,7 @@ spec:
               tag: 1.11.5
             env:
               IMMICH_URL: http://immich-server.household.svc.cluster.local:3001
+              showHomePage: false
             resources:
               requests:
                 cpu: 100m
