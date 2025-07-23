@@ -14,7 +14,7 @@ spec:
   interval: 30m
   path: ./cluster/apps/media/prowlarr/app
   components:
-    - ../../../../templates/volsync/primary
+    - ../../../../templates/volsync/init
   prune: true
   sourceRef:
     kind: GitRepository

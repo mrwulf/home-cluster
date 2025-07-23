@@ -3,14 +3,12 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - audiobookshelf/ks.yaml
-  - flaresolverr/ks.yaml
   - isponsorblocktv/ks.yaml
   - jellyfin/ks.yaml
   - jellyplex-watched/ks.yaml
   - lidarr/ks.yaml
   - ombi/ks.yaml
   - plex/ks.yaml
-  - prowlarr/ks.yaml
   - radarr/ks.yaml
   - readarr-audio/ks.yaml
   - readarr-books/ks.yaml
