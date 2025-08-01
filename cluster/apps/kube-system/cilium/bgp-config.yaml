@@ -1,5 +1,5 @@
 ---
-apiVersion: cilium.io/v2alpha1
+apiVersion: cilium.io/v2
 kind: CiliumLoadBalancerIPPool
 metadata:
   name: main-pool
@@ -9,30 +9,57 @@ spec:
     - cidr: "${NETWORK_LB_RANGE}"
     - cidr: "${NETWORK_LB_RANGE_OLD}"
 ---
-apiVersion: cilium.io/v2alpha1
-kind: CiliumBGPPeeringPolicy
+apiVersion: cilium.io/v2
+kind: CiliumBGPClusterConfig
 metadata:
-  name: peering-policy
-  namespace: kube-system
+  name: cilium-bgp
 spec:
   nodeSelector:
     matchLabels:
       kubernetes.io/os: linux
-  virtualRouters:
-    - localASN: 65430
-      exportPodCIDR: false
-      serviceSelector:
+  bgpInstances:
+    - name: "instance-k8s-65430"
+      localASN: 65430
+      localPort: 179
+      peers:
+        - name: "peer-65402-firewall02"
+          peerASN: 65402
+          peerAddress: 10.0.0.2/32
+          peerConfigRef:
+            name: "cilium-peer"
+        - name: "peer-65403-firewall03"
+          peerASN: 65403
+          peerAddress: 10.0.0.3/32
+          peerConfigRef:
+            name: "cilium-peer"
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPPeerConfig
+metadata:
+  name: cilium-peer
+spec:
+  timers:
+    connectRetryTimeSeconds: 5
+    holdTimeSeconds: 9
+    keepAliveTimeSeconds: 3
+  gracefulRestart:
+    enabled: true
+    restartTimeSeconds: 90
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: bgp-advertisements
+  labels:
+    advertise: bgp
+spec:
+  advertisements:
+    - advertisementType: "Service"
+      service:
+        addresses:
+          - ExternalIP
+          - LoadBalancerIP
+      selector:
         matchExpressions:
           # Export all services
           - { key: somekey, operator: NotIn, values: ["never-used-value"] }
-      neighbors:
-        - peerAddress: 10.0.0.2/32
-          peerASN: 65402
-          gracefulRestart:
-            enabled: true
-            restartTimeSeconds: 90
-        - peerAddress: 10.0.0.3/32
-          peerASN: 65403
-          gracefulRestart:
-            enabled: true
-            restartTimeSeconds: 90
