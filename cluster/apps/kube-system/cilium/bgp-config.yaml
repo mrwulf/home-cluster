@@ -24,12 +24,12 @@ spec:
       peers:
         - name: "peer-65402-firewall02"
           peerASN: 65402
-          peerAddress: 10.0.0.2/32
+          peerAddress: 10.0.0.2
           peerConfigRef:
             name: "cilium-peer"
         - name: "peer-65403-firewall03"
           peerASN: 65403
-          peerAddress: 10.0.0.3/32
+          peerAddress: 10.0.0.3
           peerConfigRef:
             name: "cilium-peer"
 ---
