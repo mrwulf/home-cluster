@@ -18,9 +18,8 @@ spec:
     matchLabels:
       kubernetes.io/os: linux
   bgpInstances:
-    - name: "instance-k8s-65430"
+    - name: "cilium-65430"
       localASN: 65430
-      localPort: 179
       peers:
         - name: "peer-65402-firewall02"
           peerASN: 65402
@@ -45,6 +44,12 @@ spec:
   gracefulRestart:
     enabled: true
     restartTimeSeconds: 90
+  families:
+    - afi: ipv4
+      safi: unicast
+      advertisements:
+        matchLabels:
+          advertise: bgp
 ---
 apiVersion: cilium.io/v2
 kind: CiliumBGPAdvertisement
