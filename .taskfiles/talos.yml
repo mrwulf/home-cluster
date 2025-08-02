@@ -76,7 +76,8 @@ tasks:
     silent: true
     vars:
       NODE_LIST:
-        sh: yq '.nodes[].ipAddress' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
+        sh: kubectl get nodes -o json | jq -r '[.items[] | select(.status.conditions[] | .type == "Ready" and .status == "True") | .status.addresses[] | select(.type == "InternalIP") | .address] | join(",")'
+        # sh: yq '.nodes[].ipAddress' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
     cmds:
       - |
         talosctl -n {{.NODE_LIST}} dashboard

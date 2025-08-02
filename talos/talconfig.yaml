@@ -63,48 +63,48 @@ nodes:
       node-role.kubernetes.io/control-plane: ''
     nodeAnnotations:
       installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
-  - hostname: node2.home
-    controlPlane: true
-    ipAddress: 10.0.1.52
-    disableSearchDomain: true
-    nameservers:
-      - 10.0.0.1
-      - 10.0.1.1
-    installDiskSelector:
-      model: KINGSTON OM8PGP41024N-A0
-    networkInterfaces:
-      - interface: bond0
-        addresses:
-          - 10.0.1.52/23
-        dhcp: false
-        mtu: 9000
-        bond:
-          deviceSelectors:
-            # 2.5G Ports
-            - pciID: 8086:125*
-              driver: igc
-          mode: 802.3ad
-          xmitHashPolicy: layer3+4
-          lacpRate: fast
-          miimon: 1000
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.0.0.1
-      - deviceSelector: { busPath: 0-1.0 } # power side
-        dhcp: false
-        mtu: 65520
-        addresses: [169.254.255.12/32]
-        routes: [{ network: 169.254.255.13/32, metric: 2048 }]
-      - deviceSelector: { busPath: 1-1.0 } # nic side
-        dhcp: false
-        mtu: 65520
-        addresses: [169.254.255.12/32]
-        routes: [{ network: 169.254.255.11/32, metric: 2048 }]
-    nodeLabels:
-      node.home.arpa/physical: "true"
-      node-role.kubernetes.io/control-plane: ''
-    nodeAnnotations:
-      installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
+  # - hostname: node2.home
+  #   controlPlane: true
+  #   ipAddress: 10.0.1.52
+  #   disableSearchDomain: true
+  #   nameservers:
+  #     - 10.0.0.1
+  #     - 10.0.1.1
+  #   installDiskSelector:
+  #     model: KINGSTON OM8PGP41024N-A0
+  #   networkInterfaces:
+  #     - interface: bond0
+  #       addresses:
+  #         - 10.0.1.52/23
+  #       dhcp: false
+  #       mtu: 9000
+  #       bond:
+  #         deviceSelectors:
+  #           # 2.5G Ports
+  #           - pciID: 8086:125*
+  #             driver: igc
+  #         mode: 802.3ad
+  #         xmitHashPolicy: layer3+4
+  #         lacpRate: fast
+  #         miimon: 1000
+  #       routes:
+  #         - network: 0.0.0.0/0
+  #           gateway: 10.0.0.1
+  #     - deviceSelector: { busPath: 0-1.0 } # power side
+  #       dhcp: false
+  #       mtu: 65520
+  #       addresses: [169.254.255.12/32]
+  #       routes: [{ network: 169.254.255.13/32, metric: 2048 }]
+  #     - deviceSelector: { busPath: 1-1.0 } # nic side
+  #       dhcp: false
+  #       mtu: 65520
+  #       addresses: [169.254.255.12/32]
+  #       routes: [{ network: 169.254.255.11/32, metric: 2048 }]
+  #   nodeLabels:
+  #     node.home.arpa/physical: "true"
+  #     node-role.kubernetes.io/control-plane: ''
+  #   nodeAnnotations:
+  #     installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
   - hostname: node3.home
     controlPlane: true
     ipAddress: 10.0.1.53
@@ -147,37 +147,37 @@ nodes:
       node-role.kubernetes.io/control-plane: ''
     nodeAnnotations:
       installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
-  # - hostname: replacement.home
-  #   controlPlane: true
-  #   ipAddress: 10.0.1.55
-  #   disableSearchDomain: true
-  #   nameservers:
-  #     - 10.0.0.1
-  #     - 10.0.1.1
-  #   installDiskSelector:
-  #     type: ssd
-  #   networkInterfaces:
-  #     - interface: bond0
-  #       addresses:
-  #         - 10.0.1.55/23
-  #       dhcp: false
-  #       mtu: 9000
-  #       bond:
-  #         deviceSelectors:
-  #           - driver: e1000e # native NIC 1gbe
-  #           - driver: r8152 # pluggable / wavlink 2.5gbe
-  #         mode: 802.3ad
-  #         xmitHashPolicy: layer3+4
-  #         lacpRate: fast
-  #         miimon: 1000
-  #       routes:
-  #         - network: 0.0.0.0/0
-  #           gateway: 10.0.0.1
-  #   nodeLabels:
-  #     node.home.arpa/physical: "true"
-  #     node-role.kubernetes.io/control-plane: ''
-  #   nodeAnnotations:
-  #     installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
+  - hostname: replacement.home
+    controlPlane: true
+    ipAddress: 10.0.1.55
+    disableSearchDomain: true
+    nameservers:
+      - 10.0.0.1
+      - 10.0.1.1
+    installDiskSelector:
+      type: ssd
+    networkInterfaces:
+      - interface: bond0
+        addresses:
+          - 10.0.1.55/23
+        dhcp: false
+        mtu: 9000
+        bond:
+          deviceSelectors:
+            - driver: e1000e # native NIC 1gbe
+            - driver: r8152 # pluggable / wavlink 2.5gbe
+          mode: 802.3ad
+          xmitHashPolicy: layer3+4
+          lacpRate: fast
+          miimon: 1000
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.0.0.1
+    nodeLabels:
+      node.home.arpa/physical: "true"
+      node-role.kubernetes.io/control-plane: ''
+    nodeAnnotations:
+      installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
 patches:
   - |-
     machine:
@@ -219,6 +219,8 @@ patches:
           imageGCHighThresholdPercent: 70
           maxParallelImagePulls: 10
           serializeImagePulls: false
+          shutdownGracePeriod: 60s
+          shutdownGracePeriodCriticalPods: 30s
       logging:
         destinations:
           - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
