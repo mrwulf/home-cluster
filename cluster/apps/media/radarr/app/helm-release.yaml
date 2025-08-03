@@ -32,7 +32,7 @@ spec:
           main:
             image:
               repository: ghcr.io/home-operations/radarr
-              tag: '5.27.2.10142'
+              tag: '5.27.3.10153'
             env:
               TZ: "${TIMEZONE}"
               RADARR__INSTANCE_NAME: Radarr
