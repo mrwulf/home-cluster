@@ -65,8 +65,8 @@ spec:
             value: &VPN_INTERFACE tun0
           - name: VPN_TYPE
             value: openvpn
-          - name: OPENVPN_PROTOCOL
-            value: tcp
+          # - name: OPENVPN_PROTOCOL
+          #   value: tcp
           # - name: OPENVPN_ENDPOINT_PORT
           #   value: "1197"
           - name: SERVER_REGIONS
@@ -105,7 +105,7 @@ spec:
             my.home/tun: 1
           limits:
             my.home/tun: 1
-            memory: 64M
+            memory: 128M
 
         networkPolicy:
           enabled: false
@@ -118,6 +118,7 @@ spec:
               - if [ $(wget -q -O- https://ipinfo.io/city) == 'Montréal' ]; then exit 0; else exit $?; fi
           initialDelaySeconds: 30
           periodSeconds: 60
+          timeoutSeconds: 5
           failureThreshold: 3
 
     podAnnotations:
