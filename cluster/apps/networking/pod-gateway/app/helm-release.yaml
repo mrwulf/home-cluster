@@ -143,7 +143,7 @@ spec:
       VPN_INTERFACE: tun0
       VPN_LOCAL_CIDRS: 192.168.0.0/16 10.0.0.0/8
       VPN_PORT_FORWARDING: "on"
-      VPN_TRAFFIC_PORT: "501"
+      VPN_TRAFFIC_PORT: "1197"
       VXLAN_ID: 43
       VXLAN_IP_NETWORK: 172.16.1
       VPN_PORT_FORWARDING_UP_COMMAND: /bin/sh -c '/usr/bin/wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://qbittorrent.vpn.svc.cluster.local/api/v2/app/setPreferences 2>&1'

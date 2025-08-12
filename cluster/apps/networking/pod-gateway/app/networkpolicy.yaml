@@ -3,7 +3,6 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: pod-gateway-openvpn
-  namespace: pod-gateway
 spec:
   endpointSelector:
     matchLabels:
@@ -15,6 +14,8 @@ spec:
         - ports:
             - port: "1197"
               protocol: TCP
+            - port: "1197"
+              protocol: UDP
             - port: "501"
               protocol: TCP
 ---
@@ -22,7 +23,6 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: pod-gateway-cluster-dns
-  namespace: pod-gateway
 spec:
   endpointSelector:
     matchLabels:
@@ -41,7 +41,6 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: pod-gateway-vxlan
-  namespace: pod-gateway
 spec:
   endpointSelector:
     matchLabels:
