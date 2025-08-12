@@ -282,7 +282,7 @@ spec:
       GF_AUTH_GENERIC_OAUTH_API_URL: "https://auth.${SECRET_DOMAIN}/application/o/userinfo/"
       GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: true
       GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_NAME: email
-      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: role_attribute_path = contains(groups[*], 'admin') && 'GrafanaAdmin' || contains(groups[*], 'editor') && 'Editor' || 'Viewer'
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: contains(groups[*], 'admin') && 'GrafanaAdmin' || contains(groups[*], 'editor') && 'Editor' || 'Viewer'
       GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN: true
       GF_AUTH_GENERIC_OAUTH_USE_REFRESH_TOKEN: true
 
