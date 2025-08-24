@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: *app
   interval: 30m
   path: ./cluster/apps/backups/volsync/app
+  dependsOn:
+    - name: openebs
   prune: true
   sourceRef:
     kind: GitRepository
