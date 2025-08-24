@@ -1,5 +1,7 @@
 things to try:
 - dify.ai
+- https://dawarich.app/docs/intro - google timeline replacement
+- https://github.com/vladmandic/sdnext - image & video creation
 - jellyplex-watched - https://github.com/luigi311/JellyPlex-Watched
 - booklore
 - open-notebook.ai

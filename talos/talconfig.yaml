@@ -221,6 +221,15 @@ patches:
           serializeImagePulls: false
           shutdownGracePeriod: 60s
           shutdownGracePeriodCriticalPods: 30s
+        extraMounts:
+          # Mount openebs-hostpath in kubelet
+          - destination: /var/mnt/extra
+            type: bind
+            source: /var/mnt/extra
+            options:
+              - rbind
+              - rshared
+              - rw
       logging:
         destinations:
           - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
