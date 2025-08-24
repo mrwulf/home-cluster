@@ -16,7 +16,7 @@ spec:
       name: *app
       namespace: backups
   interval: 1h
-  path: ./cluster/apps/kube-system/openebs/app
+  path: ./cluster/apps/backups/openebs/app
   prune: true
   retryInterval: 2m
   sourceRef:
