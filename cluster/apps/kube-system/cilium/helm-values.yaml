@@ -23,9 +23,14 @@ bandwidthManager:
   bbr: true
 devices: 'bond0'
 bpf:
+  datapathMode: netkit
   masquerade: true
   preallocateMaps: true
   tproxy: true
+  distributedLRU:
+    enabled: true
+  mapDynamicSizeRatio: 0.08
+bpfClockProbe: true
 loadBalancer:
   algorithm: "maglev"
   mode: "dsr"
