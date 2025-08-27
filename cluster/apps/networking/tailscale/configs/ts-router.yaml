@@ -3,7 +3,7 @@ kind: Connector
 metadata:
   name: ts-router
 spec:
-  hostname: tailscale-router
+  hostname: ts-router
   subnetRouter:
     advertiseRoutes:
       - "10.0.0.0/23"
