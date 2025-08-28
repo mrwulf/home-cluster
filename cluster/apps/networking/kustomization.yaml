@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - cloudflare-ddns/ks.yaml
   - cloudflare-tunnel/ks.yaml
+  - netbird/ks.yaml
   - pod-gateway/ks.yaml
   - traefik/ks.yaml
   - unifi/ks.yaml
