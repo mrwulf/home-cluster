@@ -30,3 +30,34 @@ spec:
       VOLSYNC_CAPACITY: 200Gi
       VOLSYNC_START_MINUTE: "37"
       VOLSYNC_CACHE_CAPACITY: "30Gi"
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app jellyfin-meilisearch
+  namespace: flux-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: rook-ceph-cluster
+    - name: jellyfin
+  interval: 30m
+  path: ./cluster/apps/media/jellyfin/meilisearch
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: media
+  timeout: 5m
+  wait: false
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_START_MINUTE: "37"

@@ -1,0 +1,61 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2beta2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app jellyfin-meilisearch
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 4.2.0
+      interval: 30m
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  values:
+    controllers:
+      meilisearch:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: docker.io/getmeili/meilisearch
+              tag: v1.19.1
+            env:
+              MEILI_NO_ANALYTICS: true
+              MEILI_EXPERIMENTAL_DUMPLESS_UPGRADE: true
+              MEILI_DB_PATH: /config/
+              MEILI_MASTER_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: *app
+                    key: MEILI_MASTER_KEY
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+        pod:
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            runAsNonRoot: true
+            fsGroup: 568
+            fsGroupChangePolicy: OnRootMismatch
+            supplementalGroups: [44, 10000, 65539]
+    service:
+      app:
+        controller: meilisearch
+        ports:
+          http:
+            port: 7700
+    persistence:
+      config:
+        existingClaim: *app
+        globalMounts:
+          - path: /config
