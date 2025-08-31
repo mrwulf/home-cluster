@@ -181,7 +181,6 @@ spec:
         disableAPICheck: true
         serviceMonitor:
           enabled: true
-          namespace: "network-system"
           namespaceSelector: { }
           metricRelabelings:
             - sourceLabels: [__name__]
@@ -203,7 +202,6 @@ spec:
         prometheusRule:
           enabled: true
           additionalLabels: { }
-          namespace: "networking"
           rules:
             - alert: TraefikDown
               expr: up{job="traefik"} == 0
