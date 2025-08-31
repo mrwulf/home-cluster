@@ -203,7 +203,7 @@ spec:
         prometheusRule:
           enabled: true
           additionalLabels: { }
-          namespace: "network-system"
+          namespace: "networking"
           rules:
             - alert: TraefikDown
               expr: up{job="traefik"} == 0
