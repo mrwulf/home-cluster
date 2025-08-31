@@ -26,6 +26,7 @@ spec:
               repository: docker.io/getmeili/meilisearch
               tag: v1.19.1
             env:
+              MEILI_ENV: production
               MEILI_NO_ANALYTICS: true
               MEILI_EXPERIMENTAL_DUMPLESS_UPGRADE: true
               MEILI_DB_PATH: /config/data.ms
@@ -44,7 +45,7 @@ spec:
                 memory: 1Gi
             securityContext:
               allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
+              readOnlyRootFilesystem: false
               capabilities: { drop: ["ALL"] }
         pod:
           securityContext:
