@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: ghcr.io/home-operations/bazarr
-              tag: 1.5.2@sha256:dbc87e5ce9e199709188e152e82b3ff5d33e6521a1b3d61e465aa75b4b739e7f
+              tag: 1.5.2
             env:
               TZ: "${TIMEZONE}"
             envFrom:
@@ -116,6 +116,12 @@ spec:
         defaultMode: 0775 # trunk-ignore(yamllint/octal-values)
         globalMounts:
           - path: /scripts
+      backups:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/bazarr-backups"
+        globalMounts:
+          - path: /backups
       movies:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
