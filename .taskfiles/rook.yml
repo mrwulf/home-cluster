@@ -136,7 +136,7 @@ tasks:
         msg: 'PVC Name Required!'
     cmds:
       - |
-        kubectl run debug-pvc-{{.VOL}} -n {{.ROOK_NAMESPACE}} -it --image=null --overrides='
+        kubectl run debug-pvc-{{.VOL}} -n {{.NAMESPACE}} -it --image=null --overrides='
           {
             "spec": {
               "containers": [

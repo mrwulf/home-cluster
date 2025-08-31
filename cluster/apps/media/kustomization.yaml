@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - audiobookshelf/ks.yaml
+  - bazarr/ks.yaml
   - isponsorblocktv/ks.yaml
   - jellyfin/ks.yaml
   - jellyplex-watched/ks.yaml

@@ -61,7 +61,7 @@ spec:
               SMTP_PORT: 2525
               SMTP_FROM_EMAIL: "outline@${SECRET_DOMAIN}"
               SMTP_SECURE: "false"
-              URL: "https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+              URL: &host "https://docs.${SECRET_DOMAIN}"
               WEB_CONCURRENCY: 10
             command:
               [
@@ -96,7 +96,7 @@ spec:
           hajimari.io/group: "Home"
           gatus.io/enabled: "true"
         hosts:
-          - host: &host "docs.${SECRET_DOMAIN}"
+          - host: *host
             paths:
               - path: /
                 service:
