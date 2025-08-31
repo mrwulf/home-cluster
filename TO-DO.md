@@ -1,4 +1,5 @@
 # things to try:
+- atuin - shared shell history
 - recyclarr - implement trash standards
 - bazarr - more subtitles
 - autobrr/autobrr- indexers faster

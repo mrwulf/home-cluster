@@ -21,6 +21,16 @@ spec:
       bazarr:
         annotations:
           reloader.stakater.com/auto: "true"
+          secret.reloader.stakater.com/reload: &secret bazarr-secrets
+        initContainers:
+          01-init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 17.6
+              pullPolicy: IfNotPresent
+            envFrom:
+              - secretRef:
+                  name: *secret
         containers:
           app:
             image:
@@ -30,7 +40,7 @@ spec:
               TZ: "${TIMEZONE}"
             envFrom:
               - secretRef:
-                  name: bazarr
+                  name: *secret
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -57,7 +67,7 @@ spec:
           subcleaner:
             image:
               repository: registry.k8s.io/git-sync/git-sync
-              tag: v4.4.2@sha256:3089d9787b89bdc5af01d9f6e8d515aefb9672e8aea3972d7ff67478112bacb3
+              tag: v4.4.2
               pullPolicy: IfNotPresent
             args:
               - --repo=https://github.com/KBlixt/subcleaner
