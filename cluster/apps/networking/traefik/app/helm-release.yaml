@@ -175,7 +175,6 @@ spec:
     metrics:
       prometheus:
         enabled: true
-        entryPoint: metrics
         service:
           enabled: true
 
