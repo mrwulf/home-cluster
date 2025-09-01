@@ -74,7 +74,7 @@ spec:
                 cpu: 10m
                 memory: 50Mi
               limits:
-                memory: 500Mi
+                memory: 2Gi
 
     service:
       main:
@@ -96,7 +96,7 @@ spec:
           hajimari.io/group: "Home"
           gatus.io/enabled: "true"
         hosts:
-          - host: *host
+          - host: "docs.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
