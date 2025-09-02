@@ -46,7 +46,7 @@ spec:
               AWS_S3_UPLOAD_BUCKET_URL: "https://cdn.${SECRET_DOMAIN}"
               AWS_S3_UPLOAD_MAX_SIZE: "26214400"
               ENABLE_UPDATES: "false"
-              OIDC_AUTH_URI: "https://auth.${SECRET_DOMAIN}/application/o/authorize"
+              OIDC_AUTH_URI: "https://auth.${SECRET_DOMAIN}/application/o/authorize/"
               OIDC_CLIENT_ID: "outline"
               OIDC_CLIENT_SECRET: "${SECRET_OUTLINE_OAUTH_CLIENT_SECRET}"
               OIDC_DISPLAY_NAME: Authentik
