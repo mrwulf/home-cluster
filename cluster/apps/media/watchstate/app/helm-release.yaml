@@ -97,3 +97,9 @@ spec:
         globalMounts:
           - path: /tmp
             subPath: tmp
+      backups:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/watchstate"
+        globalMounts:
+          - path: /config/backups
