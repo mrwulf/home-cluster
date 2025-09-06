@@ -102,4 +102,4 @@ spec:
         server: "${CORE_NFS_SERVER:=nas0}"
         path: "/mnt/user/backups/watchstate"
         globalMounts:
-          - path: /config/backups
+          - path: /config/backup
