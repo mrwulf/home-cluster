@@ -45,7 +45,7 @@ spec:
                 cpu: 50m
                 memory: 128Mi
               limits:
-                memory: 192Mi
+                memory: 512Mi
         containers:
           app:
             image:
