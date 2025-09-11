@@ -205,5 +205,5 @@ spec:
               storageClassName: ceph-block
               resources:
                 requests:
-                  storage: 55Gi
+                  storage: 70Gi
         walCompression: true
