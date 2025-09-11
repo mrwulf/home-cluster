@@ -10,6 +10,7 @@ resources:
   - immich/ks.yaml
   - libreddit/ks.yaml
   - mealie/ks.yaml
+  - n8n/ks.yaml
   # - nocodb/ks.yaml
   - outline/ks.yaml
   - paperless/ks.yaml
