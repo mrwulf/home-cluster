@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app atuin
+  namespace: flux-system
+spec:
+  targetNamespace: development
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: volsync
+    - name: traefik
+  path: ./cluster/apps/development/code-server/app
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 30m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      APP_UID: "2000"
+      APP_GID: "2000"
+      GATUS_SUBDOMAIN: sh
+      VOLSYNC_CLAIM: *app
+      VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_START_MINUTE: "04"
