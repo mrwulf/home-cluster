@@ -13,7 +13,7 @@ spec:
   dependsOn:
     - name: volsync
     - name: traefik
-  path: ./cluster/apps/development/code-server/app
+  path: ./cluster/apps/development/atuin/app
   components:
     - ../../../../templates/volsync/primary
   prune: true
