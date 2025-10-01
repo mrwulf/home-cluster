@@ -2,9 +2,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 clusterName: k8s
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
-talosVersion: v1.11.1
+talosVersion: v1.11.2
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
-kubernetesVersion: v1.33.4
+kubernetesVersion: v1.34.1
 endpoint: https://${clusterEndpointIP}:6443
 
 additionalApiServerCertSans: &sans
@@ -365,8 +365,10 @@ controlPlane:
       cluster:
         apiServer:
           extraArgs:
-            runtime-config: admissionregistration.k8s.io/v1alpha1=true
-            feature-gates: MutatingAdmissionPolicy=true
+            enable-aggregator-routing: true
+            # runtime-config: admissionregistration.k8s.io/v1beta1=true
+            # feature-gates: MutatingAdmissionPolicy=true
+            # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
 
     # Enable K8s Talos API Access
     - |-
