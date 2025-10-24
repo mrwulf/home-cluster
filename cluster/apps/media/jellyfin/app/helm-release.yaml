@@ -130,6 +130,12 @@ spec:
         path: /mnt/user/TV
         globalMounts:
           - path: /TV
+      music:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/k8s/music
+        globalMounts:
+          - path: /music
       other:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
