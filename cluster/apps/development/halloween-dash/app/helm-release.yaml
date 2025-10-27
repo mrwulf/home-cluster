@@ -81,7 +81,7 @@ spec:
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           # gatus.io/status-code: "404"
         hosts:
-          - host: &host "halloween-daash.${SECRET_DOMAIN}"
+          - host: &host "${APP}.${SECRET_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
