@@ -4,3 +4,4 @@ resources:
   - namespace.yaml
   - atuin/ks.yaml
   - code-server/ks.yaml
+  - halloween-dash/ks.yaml
