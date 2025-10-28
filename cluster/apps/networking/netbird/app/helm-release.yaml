@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: netbirdio/netbird
-              tag: 0.59.8
+              tag: 0.59.9
             env:
               # NB_ENABLE_ROSENPASS: true
               NB_HOSTNAME: k8s-router # name that will appear in the management UI
