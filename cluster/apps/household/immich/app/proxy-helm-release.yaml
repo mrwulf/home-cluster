@@ -30,7 +30,7 @@ spec:
           app:
             image:
               repository: alangrainger/immich-public-proxy
-              tag: 1.14.0
+              tag: 1.14.1
             env:
               IMMICH_URL: http://immich-server.household.svc.cluster.local:3001
               showHomePage: false
