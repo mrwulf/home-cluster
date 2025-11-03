@@ -50,7 +50,8 @@ spec:
         log_level: info
       storage:
         type: filesystem
-
+        bucketNames:
+          chunks: chunks
     backend:
       replicas: 0
     chunksCache:
