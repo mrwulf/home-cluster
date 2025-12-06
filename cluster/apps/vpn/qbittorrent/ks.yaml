@@ -43,7 +43,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./cluster/templates/volsync/init
+  path: ./cluster/templates/volsync/local-only
   prune: true
   sourceRef:
     kind: GitRepository
@@ -56,8 +56,8 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CLAIM: qbittorrent-incomplete
-      VOLSYNC_CAPACITY: 400Gi
-      VOLSYNC_CACHE_CAPACITY: "40Gi"
+      VOLSYNC_CAPACITY: 600Gi
+      VOLSYNC_CACHE_CAPACITY: "60Gi"
       VOLSYNC_START_MINUTE: "26"
       APP_UID: "985"
       APP_GID: "977"
