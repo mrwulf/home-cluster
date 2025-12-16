@@ -16,7 +16,7 @@ spec:
   values:
     image:
       repository: timberio/vector
-      tag: 0.51.1-debian
+      tag: 0.52.0-debian
     role: Agent
 
     podAnnotations:
