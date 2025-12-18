@@ -2,3 +2,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - helm-release.yaml
+configMapGenerator:
+  - name: code-server-setup-tools
+    files:
+      - setup-tools.sh=setup-tools.sh
+generatorOptions:
+  disableNameSuffixHash: true

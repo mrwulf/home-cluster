@@ -22,6 +22,15 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
 
+        initContainers:
+          setup-tools:
+            image:
+              repository: debian
+              tag: bookworm-slim
+            command: ["/bin/bash", "/tmp/setup-tools.sh"]
+            securityContext:
+              runAsUser: 0
+
         containers:
           main:
             image:
@@ -88,6 +97,14 @@ spec:
               - *host
 
     persistence:
+      setup-tools:
+        type: configMap
+        name: code-server-setup-tools
+        defaultMode: 0755
+        globalMounts:
+          - path: /tmp/setup-tools.sh
+            subPath: setup-tools.sh
+            readOnly: true
       config:
         existingClaim: "${VOLSYNC_CLAIM}"
         globalMounts:
