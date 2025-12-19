@@ -1,6 +1,8 @@
 #!/bin/bash
 
-apt update && apt install -y curl ca-certificates gettext-base bash-completion command-not-found python3-pip
+apt update && 
+  apt install -y curl ca-certificates gettext-base bash-completion command-not-found python3-pip &&
+  apt update
 mkdir -p /home/coder/bin
 cd /home/coder/bin
 
