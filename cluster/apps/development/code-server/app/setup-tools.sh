@@ -2,7 +2,7 @@
 
 apt update && apt install -y curl ca-certificates gettext-base bash-completion command-not-found python3-pip
 mkdir -p /home/coder/bin
-cd /home/coder/.local/bin
+cd /home/coder/bin
 
 echo "Installing kubectl..."
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
