@@ -1,7 +1,7 @@
 #!/bin/bash
 
-apt-get update && apt-get install -y curl ca-certificates gettext-base bash-completion command-not-found python3-pip
-mkdir -p /home/coder/.local/bin
+apt update && apt install -y curl ca-certificates gettext-base bash-completion command-not-found python3-pip
+mkdir -p /home/coder/bin
 cd /home/coder/.local/bin
 
 echo "Installing kubectl..."
@@ -17,4 +17,4 @@ echo "Installing yq..."
 curl -Lo yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
 
 chmod +x kubectl talosctl jq yq
-chown -R 1000:1000 /home/coder/.local
+chown -R 1000:1000 /home/coder/bin
