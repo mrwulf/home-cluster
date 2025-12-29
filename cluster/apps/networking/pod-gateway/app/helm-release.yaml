@@ -19,7 +19,7 @@ spec:
   chart:
     spec:
       chart: pod-gateway
-      version: 6.6.1
+      version: 7.0.5
       sourceRef:
         kind: HelmRepository
         name: angelnu
@@ -50,76 +50,78 @@ spec:
             enabled: true
             port: 8388
 
-    addons:
-      vpn:
-        enabled: true
-        type: gluetun
-        image:
-          repository: ghcr.io/qdm12/gluetun
-          tag: v3.41.0@sha256:6b54856716d0de56e5bb00a77029b0adea57284cf5a466f23aad5979257d3045
+    controllers:
+      main:
+        containers:
+          gluetun:
+            enabled: true
+            type: gluetun
+            image:
+              repository: ghcr.io/qdm12/gluetun
+              tag: v3.41.0@sha256:6b54856716d0de56e5bb00a77029b0adea57284cf5a466f23aad5979257d3045
 
-        env:
-          - name: VPN_SERVICE_PROVIDER
-            value: private internet access
-          - name: VPN_INTERFACE
-            value: &VPN_INTERFACE tun0
-          - name: VPN_TYPE
-            value: openvpn
-          # - name: OPENVPN_PROTOCOL
-          #   value: tcp
-          # - name: OPENVPN_ENDPOINT_PORT
-          #   value: "1197"
-          - name: SERVER_REGIONS
-            value: CA Montreal
-          - name: SERVER_HOSTNAMES
-            value: ca-montreal.privacy.network
-          - name: HEALTH_VPN_DURATION_INITIAL
-            value: 60s
-          - name: SHADOWSOCKS
-            value: "on"
-          - name: FIREWALL
-            value: "off"
-          - name: DOT
-            value: "off"
-          - name: LOG_LEVEL
-            value: debug
-          - name: LOG_CONFS
-            value: "true"
+            env:
+              - name: VPN_SERVICE_PROVIDER
+                value: private internet access
+              - name: VPN_INTERFACE
+                value: &VPN_INTERFACE tun0
+              - name: VPN_TYPE
+                value: openvpn
+              # - name: OPENVPN_PROTOCOL
+              #   value: tcp
+              # - name: OPENVPN_ENDPOINT_PORT
+              #   value: "1197"
+              - name: SERVER_REGIONS
+                value: CA Montreal
+              - name: SERVER_HOSTNAMES
+                value: ca-montreal.privacy.network
+              - name: HEALTH_VPN_DURATION_INITIAL
+                value: 60s
+              - name: SHADOWSOCKS
+                value: "on"
+              - name: FIREWALL
+                value: "off"
+              - name: DOT
+                value: "off"
+              - name: LOG_LEVEL
+                value: debug
+              - name: LOG_CONFS
+                value: "true"
 
-        envFrom:
-          - secretRef:
-              name: pod-gateway-secret
+            envFrom:
+              - secretRef:
+                  name: pod-gateway-secret
 
-        securityContext:
-          # Gluetun won't run on-top of Talos / Cilium w/o this atm
-          privileged: true
-          # capabilities:
-          #   add:
-          #     - NET_ADMIN
-          #     - NET_RAW
+            securityContext:
+              # Gluetun won't run on-top of Talos / Cilium w/o this atm
+              privileged: true
+              # capabilities:
+              #   add:
+              #     - NET_ADMIN
+              #     - NET_RAW
 
-        resources:
-          requests:
-            cpu: 5m
-            memory: 64M
-            my.home/tun: 1
-          limits:
-            my.home/tun: 1
-            memory: 128M
+            resources:
+              requests:
+                cpu: 5m
+                memory: 64M
+                my.home/tun: 1
+              limits:
+                my.home/tun: 1
+                memory: 128M
 
-        networkPolicy:
-          enabled: false
+            networkPolicy:
+              enabled: false
 
-        livenessProbe:
-          exec:
-            command:
-              - sh
-              - -c
-              - if [ $(wget -q -O- https://ipinfo.io/city) == 'Montréal' ]; then exit 0; else exit $?; fi
-          initialDelaySeconds: 30
-          periodSeconds: 60
-          timeoutSeconds: 5
-          failureThreshold: 3
+            livenessProbe:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - if [ $(wget -q -O- https://ipinfo.io/city) == 'Montréal' ]; then exit 0; else exit $?; fi
+              initialDelaySeconds: 30
+              periodSeconds: 60
+              timeoutSeconds: 5
+              failureThreshold: 3
 
     podAnnotations:
       configmap.reloader.stakater.com/reload: pod-gateway
@@ -158,4 +160,3 @@ spec:
       image:
         repository: ghcr.io/angelnu/gateway-admision-controller
         tag: v3.12.0@sha256:6f6ab596afd5fef0ca4648eadfb21cd37ba86fa5afa8b85edcc072976a61fbed
-
