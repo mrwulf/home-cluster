@@ -39,9 +39,10 @@ spec:
     DNSPolicy: ClusterFirst
 
     service:
-      gluetun:
+      vpn:
         enabled: true
         type: LoadBalancer
+        controller: main
         annotations:
           lbipam.cilium.io/ips: "${VPN_ADDR}"
         externalTrafficPolicy: Cluster
