@@ -110,16 +110,33 @@ spec:
             networkPolicy:
               enabled: false
 
-            livenessProbe:
-              exec:
-                command:
-                  - sh
-                  - -c
-                  - if [ $(wget -q -O- https://ipinfo.io/city) == 'Montréal' ]; then exit 0; else exit $?; fi
-              initialDelaySeconds: 30
-              periodSeconds: 60
-              timeoutSeconds: 5
-              failureThreshold: 3
+            probes:
+              liveness:
+                exec:
+                  command:
+                    - sh
+                    - -c
+                    - if [ $(wget -q -O- https://ipinfo.io/city) == 'Montréal' ]; then exit 0; else exit $?; fi
+                initialDelaySeconds: 30
+                periodSeconds: 60
+                timeoutSeconds: 5
+                failureThreshold: 3
+      webhook:
+        containers:
+          main:
+            probes:
+              liveness:
+                exec:
+                  command:
+                    - sh
+                    - --no-check-certificate
+                    - -q
+                    - -O
+                    - /dev/null
+                    - https://:8443/wh/health
+                periodSeconds: 10
+                timeoutSeconds: 10
+                failureThreshold: 5
 
     podAnnotations:
       configmap.reloader.stakater.com/reload: pod-gateway
