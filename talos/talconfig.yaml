@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 clusterName: k8s
 # renovate: depName=ghcr.io/siderolabs/installer datasource=docker
-talosVersion: v1.11.5
+talosVersion: v1.11.6
 # renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
 kubernetesVersion: v1.34.1
 endpoint: https://${clusterEndpointIP}:6443
@@ -354,22 +354,6 @@ controlPlane:
             - name: thunderbolt
             - name: thunderbolt_net
 
-    # Disable default API server admission plugins.
-    - |-
-      - op: replace
-        path: /cluster/apiServer/admissionControl
-        value: []
-
-    # Enable MutatingAdmissionPolicy
-    - |-
-      cluster:
-        apiServer:
-          extraArgs:
-            # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
-            enable-aggregator-routing: true
-            runtime-config: admissionregistration.k8s.io/v1beta1=true
-            feature-gates: MutatingAdmissionPolicy=true
-
     # Enable K8s Talos API Access
     - |-
       machine:
@@ -386,8 +370,15 @@ controlPlane:
       cluster:
         allowSchedulingOnControlPlanes: true
         apiServer:
+          # disable default API server admission plugins
+          admissionControl:
+            $$patch: delete        
           extraArgs:
+            # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
             enable-aggregator-routing: true
+            # Enable mutating admission policy
+            feature-gates: MutatingAdmissionPolicy=true
+            runtime-config: admissionregistration.k8s.io/v1beta1=true
           resources:
             requests:
               cpu: 400m
