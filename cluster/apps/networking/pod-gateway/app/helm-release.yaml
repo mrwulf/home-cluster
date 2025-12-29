@@ -39,7 +39,7 @@ spec:
     DNSPolicy: ClusterFirst
 
     service:
-      vpn:
+      gluetun:
         enabled: true
         type: LoadBalancer
         annotations:
