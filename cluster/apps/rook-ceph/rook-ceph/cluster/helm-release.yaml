@@ -80,7 +80,7 @@ spec:
         provider: host
         addressRanges:
           public: ["10.0.1.0/24"]
-          cluster: ["169.254.255.0/24", "10.0.1.51", "10.0.1.55/32"] # Add replacement with a /32 if in use: 10.0.1.55/32
+          cluster: ["169.254.255.0/24", "10.0.1.51/32", "10.0.1.55/32"] # Add replacement with a /32 if in use: 10.0.1.55/32
         connections:
           requireMsgr2: true
       resources:
