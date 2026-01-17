@@ -67,7 +67,7 @@ spec:
               [
                 "/bin/sh",
                 "-c",
-                "yarn db:migrate --env=production-ssl-disabled && yarn start --env=production-ssl-disabled",
+                "node build/server/index.js",
               ]
             resources:
               requests:
