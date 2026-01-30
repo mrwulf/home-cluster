@@ -184,6 +184,7 @@ spec:
         - module: dns_ad_blocking
           name: gateway-blocking-dns
           url: *gateway
+
         # - module: dns_ad_blocking
         #   name: pihole-1-blocking-dns
         #   url: *pihole1

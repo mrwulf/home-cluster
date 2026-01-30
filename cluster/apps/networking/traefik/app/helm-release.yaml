@@ -82,6 +82,7 @@ spec:
         enabled: true
         allowExternalNameServices: true
         ingressClass: traefik
+
       # kubernetesGateway:
       #   enabled: true
       #   experimentalChannel: false

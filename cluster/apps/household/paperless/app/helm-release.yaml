@@ -69,6 +69,7 @@ spec:
             probes:
               startup:
                 enabled: false
+
             # resources:
             #   requests:
             #     cpu: 25m

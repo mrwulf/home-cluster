@@ -51,6 +51,7 @@ spec:
             requests:
               memory: 128Mi
               cpu: 100m
+
       # snapshotter:
       #   tag: v8.2.0   # TODO: Remove after ceph 1.16 fix is in
     crds:

@@ -146,6 +146,7 @@ nodes:
       node-role.kubernetes.io/control-plane: ""
     nodeAnnotations:
       installerImage: "{{ .MachineConfig.MachineInstall.InstallImage }}"
+
   # - hostname: replacement.home
   #   controlPlane: true
   #   ipAddress: 10.0.1.55
