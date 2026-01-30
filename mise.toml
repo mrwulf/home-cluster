@@ -1,4 +1,5 @@
 [tools]
+python = "3.13"
 kubectl = "latest"
 task = "latest"
 
