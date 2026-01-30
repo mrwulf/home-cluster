@@ -26,8 +26,18 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Setup mise
-        uses: jdx/mise-action@v2
+      - name: Verify python
+        run: |
+          python --version
+          python3 --version
+          which python
+          which python3
 
+      - name: Install mise with selected Python
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --user mise
+          echo "${HOME}/.local/bin" >> $GITHUB_PATH
+          
       - name: Run all tests
         run: mise exec -- task test:all
