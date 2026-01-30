@@ -69,7 +69,7 @@ tasks:
     cmds:
       - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
     status:
-      - 'command -v kustomize'
+      - "command -v kustomize"
     silent: true
     ignore_errors: true
 
@@ -123,7 +123,7 @@ tasks:
         sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
       CURRENT_VERSION:
         sh: "{{.TASK_NAME}} --version | {{.grep}} -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
-      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
+      DESIRED_VERSION: "{{.DESIRED_VERSION | default .RELEASE_VERSION}}"
     cmds:
       - |
         echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: v{{.DESIRED_VERSION}}"
@@ -144,7 +144,7 @@ tasks:
         sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/siderolabs/talos/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
-      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
+      DESIRED_VERSION: "{{.DESIRED_VERSION | default .RELEASE_VERSION}}"
       CURRENT_VERSION:
         sh: "talosctl version --client | {{.grep}} 'Tag:' | {{.grep}} -oP 'v[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
     cmds:
@@ -232,7 +232,7 @@ tasks:
       PROJECT: flux2 # '{{.PROJECT | default .TASK_NAME}}'
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
-      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
+      DESIRED_VERSION: "{{.DESIRED_VERSION | default .RELEASE_VERSION}}"
       CURRENT_VERSION:
         sh: "{{.TASK_NAME}} version | {{.grep}} -oPm1 '[0-9]+.[0-9]+.[0-9]+(-.+)?$' || echo 0.0.0"
       FILENAME: "{{.TASK_NAME}}_{{.DESIRED_VERSION}}_{{.OS}}_{{.ARCH}}.tar.gz"
@@ -256,10 +256,10 @@ tasks:
       TASK_NAME:
         sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       OWNER: helm
-      PROJECT: '{{.PROJECT | default .TASK_NAME}}'
+      PROJECT: "{{.PROJECT | default .TASK_NAME}}"
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
-      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
+      DESIRED_VERSION: "{{.DESIRED_VERSION | default .RELEASE_VERSION}}"
       CURRENT_VERSION:
         sh: '{{.TASK_NAME}} version | {{.grep}} -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | {{.head}} -1 || echo 0.0.0'
       FILENAME: "{{.TASK_NAME}}-v{{.DESIRED_VERSION}}-linux-amd64.tar.gz"
@@ -286,10 +286,10 @@ tasks:
       TASK_NAME:
         sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       OWNER: pre-commit
-      PROJECT: '{{.PROJECT | default .TASK_NAME}}'
+      PROJECT: "{{.PROJECT | default .TASK_NAME}}"
       RELEASE_VERSION:
         sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.PROJECT}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
-      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
+      DESIRED_VERSION: "{{.DESIRED_VERSION | default .RELEASE_VERSION}}"
       CURRENT_VERSION:
         sh: '{{.TASK_NAME}} -V | {{.grep}} -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | {{.head}} -1 || echo 0.0.0'
     status:
@@ -313,8 +313,8 @@ tasks:
       TASK_NAME:
         sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
       RELEASE_VERSION:
-        sh: 'curl -s https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt'
-      DESIRED_VERSION: '{{.DESIRED_VERSION | default .RELEASE_VERSION}}'
+        sh: "curl -s https://raw.githubusercontent.com/cilium/cilium-cli/master/stable.txt"
+      DESIRED_VERSION: "{{.DESIRED_VERSION | default .RELEASE_VERSION}}"
       CURRENT_VERSION:
         sh: 'echo -n "v" | cat - <({{.TASK_NAME}} version --client | {{.grep}} "cli" | {{.grep}} -oP -m1 "[0-9]+\.[0-9]+\.[0-9]+(-.+)?\s*" | {{.head}} -1 ) || echo v0.0.0'
     status:

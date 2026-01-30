@@ -5,4 +5,4 @@ kind: Kustomization
 resources:
   - ./helm-release.yaml
   - ./rbac.yaml
- # - ../../../../../shared/templates/gatus/guarded
+  # - ../../../../../shared/templates/gatus/guarded

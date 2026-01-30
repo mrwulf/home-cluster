@@ -1,0 +1,126 @@
+---
+version: "3"
+
+vars:
+  LINTERS_DIR: "{{.PROJECT_DIR}}/.github/linters"
+
+tasks:
+  all:
+    desc: Run all tests (like CI)
+    cmds:
+      - task: lint:all
+      - task: flux:validate
+
+  lint:all:
+    desc: Run all linters
+    cmds:
+      - task: lint:markdown
+      - task: lint:yaml
+      - task: lint:kubernetes
+      - task: lint:format
+
+  lint:markdown:
+    desc: Lint Markdown files
+    cmds:
+      - echo "Linting Markdown files..."
+      - markdownlint -c '{{.LINTERS_DIR}}/.markdownlint.yaml' '**/*.md' --ignore node_modules --ignore .git
+    ignore_error: false
+
+  lint:yaml:
+    desc: Lint YAML files
+    cmds:
+      - echo "Linting YAML files..."
+      - yamllint -c '{{.LINTERS_DIR}}/.yamllint.yaml' .
+    ignore_error: false
+
+  lint:kubernetes:
+    desc: Validate Kubernetes manifests with kubeconform
+    cmds:
+      - echo "Validating Kubernetes manifests..."
+      - |
+        find cluster -name '*.yaml' -o -name '*.yml' | \
+        grep -v '\.sops\.yaml$' | \
+        grep -v 'kustomizeconfig\.yaml$' | \
+        grep -v '/values\.yaml$' | \
+        grep -v 'helm-values\.yaml$' | \
+        grep -v '/config/.*\.\(yaml\|yml\)$' | \
+        grep -v '/configs/.*\.\(yaml\|yml\)$' | \
+        grep -v '/resources/.*\.\(yaml\|yml\)$' | \
+        grep -v 'for-config\.yaml$' | \
+        xargs kubeconform \
+          -strict \
+          -ignore-missing-schemas \
+          -schema-location default \
+          -schema-location 'https://kubernetes-schemas.pages.dev/{{`{{.NormalizedKubernetesVersion}}`}}-standalone-strict/{{`{{.ResourceKind}}`}}-{{`{{.ResourceAPIVersion}}`}}.json' \
+          -verbose
+    ignore_error: false
+    vars:
+      K8S_VERSION: "v1.32.0"
+
+  lint:format:
+    desc: Check code formatting with prettier
+    cmds:
+      - echo "Checking formatting..."
+      - prettier --ignore-path '{{.LINTERS_DIR}}/.prettierignore' --config '{{.LINTERS_DIR}}/.prettierrc.yaml' --check .
+    ignore_error: false
+
+  lint:format:fix:
+    desc: Fix code formatting with prettier
+    cmds:
+      - echo "Fixing formatting..."
+      - prettier --ignore-path '{{.LINTERS_DIR}}/.prettierignore' --config '{{.LINTERS_DIR}}/.prettierrc.yaml' --write .
+
+  flux:validate:
+    desc: Validate Flux resources locally
+    cmds:
+      - task: flux:build
+      - task: flux:check
+
+  flux:build:
+    desc: Build and validate all Flux kustomizations
+    cmds:
+      - echo "Building Flux kustomizations..."
+      - flux build kustomization flux-system --path {{.PROJECT_DIR}}/cluster/apps/flux-system --dry-run
+      - flux build kustomization crds --path {{.PROJECT_DIR}}/cluster/crds --dry-run
+      - flux build kustomization core --path {{.PROJECT_DIR}}/cluster/core --dry-run
+      - flux build kustomization apps --path {{.PROJECT_DIR}}/cluster/apps --dry-run
+    ignore_error: true
+
+  flux:check:
+    desc: Check Flux compatibility and requirements
+    cmds:
+      - echo "Checking Flux compatibility..."
+      - flux check
+    ignore_error: true
+
+  flux:diff:helmrelease:
+    desc: Show diff for HelmRelease resources (like CI)
+    cmds:
+      - echo "Diffing HelmRelease resources..."
+      - flux-local diff --path cluster --resource helmrelease --sources flux-system
+    ignore_error: true
+
+  flux:diff:kustomization:
+    desc: Show diff for Kustomization resources (like CI)
+    cmds:
+      - echo "Diffing Kustomization resources..."
+      - flux-local diff --path cluster --resource kustomization --sources flux-system
+    ignore_error: true
+
+  flux:diff:all:
+    desc: Show diff for all Flux resources (like CI)
+    cmds:
+      - task: flux:diff:helmrelease
+      - task: flux:diff:kustomization
+
+  quick:
+    desc: Quick test run (no Kubernetes validation)
+    cmds:
+      - task: lint:markdown
+      - task: lint:yaml
+      - task: lint:format
+
+  fix:
+    desc: Auto-fix all fixable issues
+    cmds:
+      - task: lint:format:fix

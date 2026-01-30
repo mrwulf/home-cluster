@@ -7,7 +7,7 @@ metadata:
 spec:
   sourcePVC: "${VOLSYNC_CLAIM:=${APP}}"
   trigger:
-    schedule: '${VOLSYNC_START_MINUTE:=0} */2 * * *'
+    schedule: "${VOLSYNC_START_MINUTE:=0} */2 * * *"
   restic:
     repository: ${APP}-volsync-minio # secret name
     pruneIntervalDays: 10

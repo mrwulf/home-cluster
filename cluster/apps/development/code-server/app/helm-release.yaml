@@ -27,7 +27,12 @@ spec:
             lifecycle:
               postStart:
                 exec:
-                  command: ["/bin/bash", "-c", "sudo /tmp/setup-tools.sh > /home/coder/setup.log 2>&1"]
+                  command:
+                    [
+                      "/bin/bash",
+                      "-c",
+                      "sudo /tmp/setup-tools.sh > /home/coder/setup.log 2>&1",
+                    ]
             image:
               repository: ghcr.io/coder/code-server
               tag: 4.108.2

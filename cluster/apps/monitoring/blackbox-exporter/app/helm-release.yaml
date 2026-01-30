@@ -47,7 +47,7 @@ spec:
       allowPrivilegeEscalation: false
       capabilities:
         drop: ["ALL"]
-    # Add NET_RAW to enable ICMP
+        # Add NET_RAW to enable ICMP
         add: ["NET_RAW"]
 
     config:

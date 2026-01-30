@@ -19,7 +19,7 @@ spec:
     spegel:
       containerdSock: /run/containerd/containerd.sock
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
-      filter: ':latest$'
+      filter: ":latest$"
     grafanaDashboard:
       enabled: true
       labels:

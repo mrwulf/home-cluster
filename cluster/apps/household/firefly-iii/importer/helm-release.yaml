@@ -30,8 +30,8 @@ spec:
               TRUSTED_PROXIES: "**"
               FIREFLY_III_URL: "http://firefly-iii.household.svc.cluster.local:8080"
               VANITY_URL: "https://money.home.${SECRET_DOMAIN}"
-              CAN_AUTO_IMPORT: 'true'
-              CAN_POST_FILES: 'true'
+              CAN_AUTO_IMPORT: "true"
+              CAN_POST_FILES: "true"
             envFrom:
               - secretRef:
                   name: firefly-importer-secret

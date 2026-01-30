@@ -9,7 +9,7 @@ spec:
   restic:
     repository: "${B2_RESTIC_REPO}:home-backups/databases"
     password: "${NFS_RESTIC_PWD}"
-    retain: {"daily": 3, "weekly": 9}
+    retain: { "daily": 3, "weekly": 9 }
     pruneIntervalDays: 7
     b2:
       id: "${B2_ACCOUNT_ID}"

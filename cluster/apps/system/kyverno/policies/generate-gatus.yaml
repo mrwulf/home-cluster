@@ -34,11 +34,11 @@ spec:
             jmesPath: "to_string(@)"
         - name: GATUS_GROUP
           variable:
-            value: '{{ contains(request.object.spec.rules[0].host, ''.home.'' ) &&  ''internal''  || ''external'' }}'
+            value: "{{ contains(request.object.spec.rules[0].host, '.home.' ) &&  'internal'  || 'external' }}"
             jmesPath: "to_string(@)"
         - name: GATUS_OBFUSCATE
           variable:
-            value: 'true'
+            value: "true"
             # value: '{{ contains( GATUS_GROUP, ''internal'' ) }}'
         - name: GATUS_EXTERNAL_RESOLVER
           variable:
@@ -46,7 +46,7 @@ spec:
         - name: GATUS_EXTERNAL_DNS
           variable:
             value:
-              dns-resolver: '{{ GATUS_EXTERNAL_RESOLVER }}'
+              dns-resolver: "{{ GATUS_EXTERNAL_RESOLVER }}"
         - name: GATUS_PATH
           variable:
             value: '{{ request.object.metadata.annotations."gatus.io/path" || '''' }}'

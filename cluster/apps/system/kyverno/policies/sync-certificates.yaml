@@ -23,7 +23,18 @@ spec:
           - resources:
               kinds:
                 - Namespace
-              names: [ai, databases, development, flux-system, household, kube-system, media, monitoring, other, storage] # networking excluded (since that's the source)
+              names:
+                # networking excluded (since that's the source)
+                - ai
+                - databases
+                - development
+                - flux-system
+                - household
+                - kube-system
+                - media
+                - monitoring
+                - other
+                - storage
       generate:
         generateExisting: true
         apiVersion: v1
@@ -40,7 +51,15 @@ spec:
           - resources:
               kinds:
                 - Namespace
-              names: [ai, auth, databases, flux-system, household, media, vaultwarden] # networking excluded (since that's the source)
+              names:
+                # networking excluded (since that's the source)
+                - ai
+                - auth
+                - databases
+                - flux-system
+                - household
+                - media
+                - vaultwarden
       generate:
         generateExisting: true
         apiVersion: v1

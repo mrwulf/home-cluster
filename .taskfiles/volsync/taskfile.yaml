@@ -3,15 +3,15 @@
 version: "3"
 
 x-task-vars: &task-vars
-  app: '{{ .app }}'
-  dest: '{{ .dest }}'
-  controller: '{{ .controller }}'
-  ns: '{{ .ns }}'
-  claim: '{{ .claim }}'
-  ts: '{{ .ts }}'
-  ks: '{{ .ks }}'
-  previous: '{{ .previous }}'
-  restoreAsOf: '{{ .restoreAsOf }}'
+  app: "{{ .app }}"
+  dest: "{{ .dest }}"
+  controller: "{{ .controller }}"
+  ns: "{{ .ns }}"
+  claim: "{{ .claim }}"
+  ts: "{{ .ts }}"
+  ks: "{{ .ks }}"
+  previous: "{{ .previous }}"
+  restoreAsOf: "{{ .restoreAsOf }}"
 
 vars:
   destinationTemplate: "{{ .ROOT_DIR }}/.taskfiles/volsync/templates/ReplicationDestination.tmpl.yaml"
@@ -25,7 +25,6 @@ vars:
   realpath: '{{if eq .OS "darwin"}}g{{end}}realpath'
 
 tasks:
-
   relpath:
     desc: Calculate relative path from one file to another
     summary: ...
@@ -47,25 +46,25 @@ tasks:
     vars:
       app: '{{ or .app (fail "`app` is required") }}'
       app_ks:
-        sh: "find {{ .CLUSTER_DIR }} -type f -name \"*.yaml\" -o -name \"*.yml\" | while read file; do yq '.metadata.name' \"$file\" | grep -qx \"{{ .app }}\" && echo \"$file\" && break; done"
+        sh: 'find {{ .CLUSTER_DIR }} -type f -name "*.yaml" -o -name "*.yml" | while read file; do yq ''.metadata.name'' "$file" | grep -qx "{{ .app }}" && echo "$file" && break; done'
       # Templates must have all asterisks in single quotes! Make sure all vars are passed in to ENV of this task!
       secretTemplate: "{{ .ROOT_DIR }}/cluster/templates/volsync/primary/nfs/secret.yaml"
       sourceTemplate: "{{ .ROOT_DIR }}/cluster/templates/volsync/primary/nfs/replicationsource.yaml"
       ns:
-        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.targetNamespace | explode(.)' {{ .app_ks }}"
+        sh: 'yq ''select(.metadata.name == "{{.app}}") | .spec.targetNamespace | explode(.)'' {{ .app_ks }}'
     env:
       APP:
-        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.APP | explode(.)' {{ .app_ks }}"
+        sh: 'yq ''select(.metadata.name == "{{.app}}") | .spec.postBuild.substitute.APP | explode(.)'' {{ .app_ks }}'
       VOLSYNC_CLAIM:
-        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.VOLSYNC_CLAIM | explode(.)' {{ .app_ks }}"
+        sh: 'yq ''select(.metadata.name == "{{.app}}") | .spec.postBuild.substitute.VOLSYNC_CLAIM | explode(.)'' {{ .app_ks }}'
       VOLSYNC_CAPACITY:
-        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.VOLSYNC_CAPACITY | explode(.)' {{ .app_ks }}"
+        sh: 'yq ''select(.metadata.name == "{{.app}}") | .spec.postBuild.substitute.VOLSYNC_CAPACITY | explode(.)'' {{ .app_ks }}'
       VOLSYNC_START_MINUTE:
-        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.VOLSYNC_START_MINUTE | explode(.)' {{ .app_ks }}"
+        sh: 'yq ''select(.metadata.name == "{{.app}}") | .spec.postBuild.substitute.VOLSYNC_START_MINUTE | explode(.)'' {{ .app_ks }}'
       APP_UID:
-        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.APP_UID | explode(.)' {{ .app_ks }}"
+        sh: 'yq ''select(.metadata.name == "{{.app}}") | .spec.postBuild.substitute.APP_UID | explode(.)'' {{ .app_ks }}'
       APP_GID:
-        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.postBuild.substitute.APP_GID | explode(.)' {{ .app_ks }}"
+        sh: 'yq ''select(.metadata.name == "{{.app}}") | .spec.postBuild.substitute.APP_GID | explode(.)'' {{ .app_ks }}'
       SECRET_RESTIC_PWD:
         sh: "sops --decrypt {{ .CLUSTER_DIR }}/flux/meta/cluster-secrets.sops.yaml | yq '.stringData.SECRET_RESTIC_PWD'"
     preconditions:
@@ -93,11 +92,11 @@ tasks:
         sh: "sops --decrypt cluster/flux/meta/cluster-secrets.sops.yaml | yq '.stringData.CORE_NFS_SERVER'"
       NAS_PATH:
         sh: "sops --decrypt cluster/flux/meta/cluster-secrets.sops.yaml | yq '.stringData.NFS_VOLSYNC_PATH'"
-      nfs_path: '{{ .nfs_path | default .NAS_PATH }}'
+      nfs_path: "{{ .nfs_path | default .NAS_PATH }}"
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
       dest: '{{ or .dest (fail "ReplicationSource `dest` is required") }}'
-      SECRETREF: '{{ .app }}-volsync-{{ .dest }}'
+      SECRETREF: "{{ .app }}-volsync-{{ .dest }}"
     cmds:
       - |
         kubectl run toolbox-volsync-{{ .app }}-{{ .ts }} -n {{.ns}} -it --rm --image=null --overrides='
@@ -148,7 +147,6 @@ tasks:
             }
           }'
 
-
   # --------------------------------------------------------------------------
   state-*:
     desc: Suspend or resume Volsync
@@ -157,12 +155,12 @@ tasks:
       - flux --namespace {{.ns}} {{.STATE}} helmrelease {{.app}}
       - kubectl --namespace {{.ns}} scale deployment {{.app}} --replicas {{if eq .STATE "suspend"}}0{{else}}1{{end}}
     vars:
-      STATE: '{{index .MATCH 0}}'
-      app: 'volsync'
+      STATE: "{{index .MATCH 0}}"
+      app: "volsync"
       app_ks:
-        sh: "find {{ .CLUSTER_DIR }} -type f -name \"*.yaml\" -o -name \"*.yml\" | while read file; do yq '.metadata.name' \"$file\" | grep -qx \"{{ .app }}\" && echo \"$file\" && break; done"
+        sh: 'find {{ .CLUSTER_DIR }} -type f -name "*.yaml" -o -name "*.yml" | while read file; do yq ''.metadata.name'' "$file" | grep -qx "{{ .app }}" && echo "$file" && break; done'
       ns:
-        sh: "yq 'select(.metadata.name == \"{{.app}}\") | .spec.targetNamespace | explode(.)' {{ .app_ks }}"
+        sh: 'yq ''select(.metadata.name == "{{.app}}") | .spec.targetNamespace | explode(.)'' {{ .app_ks }}'
     preconditions:
       - '[[ "{{.STATE}}" == "suspend" || "{{.STATE}}" == "resume" ]]'
       - which flux kubectl
@@ -261,7 +259,7 @@ tasks:
       app: '{{ or .app (fail "ReplicationSource `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
       dest: '{{ or .dest (fail "ReplicationSource `dest` is required") }}'
-      rs: '{{ .app }}-{{ .dest }}'
+      rs: "{{ .app }}-{{ .dest }}"
     env: *task-vars
     preconditions:
       - sh: test -f {{ .waitForJobScript }}
@@ -293,7 +291,7 @@ tasks:
       app: '{{ or .app (fail "Variable `app` is required") }}'
       ns: '{{ .ns | default "default" }}'
       dest: '{{ or .dest (fail "ReplicationSource `dest` is required") }}'
-      rs: '{{ .app }}-{{ .dest }}'
+      rs: "{{ .app }}-{{ .dest }}"
       # 1) Query to find the Flux Kustomization associated with the ReplicationSource (app)
       ks:
         sh: |

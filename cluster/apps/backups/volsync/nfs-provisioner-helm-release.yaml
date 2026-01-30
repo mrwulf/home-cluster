@@ -23,4 +23,4 @@ spec:
       name: nfs
       reclaimPolicy: Retain
       # https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
-      pathPattern: '$${.PVC.namespace}-$${.PVC.name}'
+      pathPattern: "$${.PVC.namespace}-$${.PVC.name}"

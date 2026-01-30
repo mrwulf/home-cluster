@@ -60,17 +60,17 @@ spec:
         - group: networking
           apps:
             - name: OPNSense
-              icon: 'mdi:wall-fire'
+              icon: "mdi:wall-fire"
               url: https://firewall.${SECRET_DOMAIN}:${FIREWALL_PORT}/
         - group: monitoring
           apps:
             - name: Uptime-Kuma
-              icon: 'mdi:alert-circle-check'
+              icon: "mdi:alert-circle-check"
               url: https://status.${SECRET_DOMAIN}/
         - group: storage
           apps:
             - name: NAS
-              icon: 'mdi:nas'
+              icon: "mdi:nas"
               url: https://${CORE_NFS_SERVER}/
       globalBookmarks:
         - group: Talos

@@ -16,7 +16,6 @@ spec:
           containers:
             - name: talos-backup
               image: ghcr.io/siderolabs/talosctl:latest
-              dnsPolicy: ClusterFirstWithHostNet
               workingDir: /tmp
               imagePullPolicy: IfNotPresent
               securityContext:

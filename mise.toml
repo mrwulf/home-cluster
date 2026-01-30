@@ -1,0 +1,11 @@
+[tools]
+kubectl = "latest"
+task = "latest"
+
+# Testing tools
+flux2 = "latest"
+kubeconform = "latest"
+yamllint = "latest"
+"npm:markdownlint-cli" = "latest"
+"npm:prettier" = "latest"
+"pipx:flux-local" = "latest"

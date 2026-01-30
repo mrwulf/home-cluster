@@ -6,7 +6,6 @@ metadata:
   name: qbtools
 
 spec:
-
   interval: 1h
 
   chartRef:
@@ -23,18 +22,18 @@ spec:
       retries: 3
 
   values:
-
     controllers:
       tagging:
         type: cronjob
 
-        cronjob: &cronJobSpec
+        cronjob:
           schedule: 0 * * * *
-          backoffLimit: 0
-          concurrencyPolicy: Forbid
-          successfulJobsHistory: 1
-          failedJobsHistory: 1
-          ttlSecondsAfterFinished: 3600
+          <<: &cronJobSpec
+            backoffLimit: 0
+            concurrencyPolicy: Forbid
+            successfulJobsHistory: 1
+            failedJobsHistory: 1
+            ttlSecondsAfterFinished: 3600
 
         initContainers:
           tag: &container
@@ -52,15 +51,6 @@ spec:
               - secretRef:
                   name: qbtools-secret
 
-            args: [
-              "tagging",
-              "--added-on",
-              "--expired",
-              "--last-activity",
-              "--sites",
-              "--unregistered"
-            ]
-
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -72,30 +62,48 @@ spec:
               limits:
                 memory: 256M
 
+          tag-with-args:
+            <<: *container
+            args:
+              [
+                "tagging",
+                "--added-on",
+                "--expired",
+                "--last-activity",
+                "--sites",
+                "--unregistered",
+              ]
+
         containers:
           unregistered:
             <<: *container
-            args: [
-              "prune",
-              "--exclude-category", "manual",
-              "--exclude-category", "music",
-              "--exclude-tag", "added:1d",
-              "--include-tag", "unregistered",
-              "--with-data"
-              # "--dry-run"
-            ]
+            args:
+              - "prune"
+              - "--exclude-category"
+              - "manual"
+              - "--exclude-category"
+              - "music"
+              - "--exclude-tag"
+              - "added:1d"
+              - "--include-tag"
+              - "unregistered"
+              - "--with-data"
+              # - "--dry-run"
 
           expired:
             <<: *container
-            args: [
-              "prune",
-              "--exclude-category", "manual",
-              "--exclude-category", "music",
-              "--exclude-tag", "added:1d",
-              "--include-tag", "expired",
-              "--with-data"
-              # "--dry-run"
-            ]
+            args:
+              - "prune"
+              - "--exclude-category"
+              - "manual"
+              - "--exclude-category"
+              - "music"
+              - "--exclude-tag"
+              - "added:1d"
+              - "--include-tag"
+              - "expired"
+              - "--with-data"
+              # - "--dry-run"
 
         pod:
           labels:
@@ -114,11 +122,11 @@ spec:
         containers:
           app:
             <<: *container
-            args: [
-              "orphaned",
-              "--exclude-pattern", "*_unpackerred*",
-              # "--dry-run"
-            ]
+            args:
+              - "orphaned"
+              - "--exclude-pattern"
+              - "*_unpackerred*"
+              # - "--dry-run"
 
         pod:
           restartPolicy: Never
@@ -127,10 +135,7 @@ spec:
         containers:
           app:
             <<: *container
-            args: [
-              "reannounce",
-              "--process-seeding"
-            ]
+            args: ["reannounce", "--process-seeding"]
 
         pod:
           labels:
@@ -140,13 +145,18 @@ spec:
         containers:
           app:
             <<: *container
-            args: [
-              "limiter",
-              "--max-line-speed-mbps", "100",
-              "--max-percent", "0.8",
-              "--limit-percent", "0.4",
-              "--interval", "5"
-            ]
+            args:
+              [
+                "limiter",
+                "--max-line-speed-mbps",
+                "100",
+                "--max-percent",
+                "0.8",
+                "--limit-percent",
+                "0.4",
+                "--interval",
+                "5",
+              ]
 
         pod:
           labels:

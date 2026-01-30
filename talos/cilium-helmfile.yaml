@@ -14,7 +14,7 @@ releases:
     namespace: kube-system
     chart: cilium/cilium
     version: 1.18.1
-    values: ['../cluster/apps/kube-system/cilium/helm-values.yaml']
+    values: ["../cluster/apps/kube-system/cilium/helm-values.yaml"]
     # hooks:
     #   - events: ["postsync"]
     #     command: kubectl

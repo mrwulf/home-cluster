@@ -2,10 +2,9 @@
 version: "3"
 
 tasks:
-
   init:
     vars:
-      TARGET_PATH: '~/.config/sops/age'
+      TARGET_PATH: "~/.config/sops/age"
       TARGET_FILE: "{{.TARGET_PATH}}/keys.txt"
       TEMP_FILE:
         sh: mktemp -u
