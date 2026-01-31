@@ -3,7 +3,7 @@ version: "3"
 
 vars:
   CURRENT_NAMESPACE:
-    sh: "kubectl config view --minify -o jsonpath='{..namespace}'"
+    sh: "kubectl config view --minify -o jsonpath='{..namespace}' || echo ''"
   NAMESPACE: "{{.namespace | default .CURRENT_NAMESPACE}}"
 
 tasks:
