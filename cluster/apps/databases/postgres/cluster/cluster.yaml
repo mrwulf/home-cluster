@@ -19,7 +19,7 @@ spec:
     enablePodMonitor: true
   postgresql:
     parameters:
-      auto_explain.log_min_duration: '10s'
+      auto_explain.log_min_duration: "10s"
       max_connections: "300"
       max_wal_size: 512MB
       shared_buffers: 2048MB

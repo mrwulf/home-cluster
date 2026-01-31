@@ -67,7 +67,7 @@ tasks:
     interactive: true
     silent: true
     vars:
-      NODE: '{{.CLI_ARGS | default .ONE_MASTER}}'
+      NODE: "{{.CLI_ARGS | default .ONE_MASTER}}"
     cmds:
       - kubectl debug node/{{.NODE}} -it --image=fedora:36 -- bash
 
@@ -102,7 +102,7 @@ tasks:
     cmds:
       - task: ctl-all
         vars:
-          CLI_ARGS: 'service | tail -n +2 | grep kubelet | sort -r -k 5'
+          CLI_ARGS: "service | tail -n +2 | grep kubelet | sort -r -k 5"
 
   theila:
     desc: Show the Theila web-ui dashboard with all the hosts
@@ -157,7 +157,7 @@ tasks:
       - for: { var: NODE_LIST, split: ",", as: NODE }
         task: diff-config
         vars:
-          NODE: '{{.NODE}}'
+          NODE: "{{.NODE}}"
 
   apply-config:
     desc: Apply config against running node config
@@ -182,8 +182,8 @@ tasks:
       - for: { var: NODE_LIST, split: ",", as: NODE }
         task: apply-config
         vars:
-          NODE: '{{.NODE}}'
-          MODE: '{{.MODE}}'
+          NODE: "{{.NODE}}"
+          MODE: "{{.MODE}}"
 
   upgrade:
     desc: Upgrade Talos on a single node to the version in talconfig.yaml
@@ -239,12 +239,12 @@ tasks:
       - task: generate-configs
       - task: diff-all-configs
         silent: false
-    prompt: 'Are you sure you want to apply all configs and upgrade talos?'
+    prompt: "Are you sure you want to apply all configs and upgrade talos?"
     cmds:
       - for: { var: NODE_LIST_MASTERSFIRST, split: ",", as: NODE }
         task: upgrade
         vars:
-          NODE: '{{.NODE}}'
+          NODE: "{{.NODE}}"
       - task: :cluster:cleanup
       - kubectl -n kube-system rollout restart daemonset cilium
 
@@ -265,7 +265,7 @@ tasks:
         vars:
           TARGET_VERSION: "{{.TARGET_VERSION}}"
         silent: false
-    prompt: 'Are you sure you want to upgrade kubernetes?'
+    prompt: "Are you sure you want to upgrade kubernetes?"
     cmds:
       - echo "Running the real upgrade..."
       - talosctl -n {{.ONE_MASTER}} upgrade-k8s --to={{.TARGET_VERSION}}
@@ -327,7 +327,7 @@ tasks:
       - for: { var: NODE_LIST_MASTERSFIRST, split: ",", as: NODE }
         task: reboot
         vars:
-          NODE: '{{.NODE}}'
+          NODE: "{{.NODE}}"
       - task: :cluster:cleanup
       - kubectl -n kube-system rollout restart daemonset cilium
 
@@ -339,9 +339,9 @@ tasks:
         cmd: talosctl -n {{.NODE}} shutdown --timeout 5m
         ignore_error: true
         vars:
-          NODE: '{{.NODE}}'
+          NODE: "{{.NODE}}"
       - for: { var: NODE_LIST_MASTERSLAST, split: ",", as: NODE }
         cmd: talosctl -n {{.NODE}} shutdown --force --timeout 5m
         ignore_error: true
         vars:
-          NODE: '{{.NODE}}'
+          NODE: "{{.NODE}}"

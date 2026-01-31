@@ -29,18 +29,18 @@ spec:
               ATTACHMENTS_FOLDER: "data/attachments"
               DOMAIN: "https://bw.${SECRET_DOMAIN}"
               TZ: "${TIMEZONE}"
-              SIGNUPS_ALLOWED: 'false'
-              INVITATIONS_ALLOWED: 'false'
-              ORG_EVENTS_ENABLED: 'true'
+              SIGNUPS_ALLOWED: "false"
+              INVITATIONS_ALLOWED: "false"
+              ORG_EVENTS_ENABLED: "true"
               PASSWORD_ITERATIONS: "321000"
-              PUSH_ENABLED: 'true'
+              PUSH_ENABLED: "true"
               PUSH_INSTALLATION_ID: "${VAULTWARDEN_PUSH_ID}"
               PUSH_INSTALLATION_KEY: "${VAULTWARDEN_PUSH_KEY}"
               EVENTS_DAYS_RETAIN: "730" # organizational events, 2 yrs: 365 * 2
-              WEBSOCKET_ENABLED: 'true'
+              WEBSOCKET_ENABLED: "true"
               WEBSOCKET_ADDRESS: 0.0.0.0
-              REQUIRE_DEVICE_EMAIL: 'true'
-              SHOW_PASSWORD_HINT: 'false'
+              REQUIRE_DEVICE_EMAIL: "true"
+              SHOW_PASSWORD_HINT: "false"
               SMTP_HOST: smtp-relay.system.svc.cluster.local
               SMTP_FROM: vaultwarden@${SECRET_DOMAIN}
               SMTP_FROM_NAME: vaultwarden@${SECRET_DOMAIN}
@@ -77,7 +77,7 @@ spec:
               DELETE_AFTER: 30
               CRON_TIME: "0 * * * *"
               ENCRYPTION_PASSWORD: "${VAULTWARDEN_BACKUP_PASS}"
-              BACKUP_DIR: '/backups'
+              BACKUP_DIR: "/backups"
               BACKUP_ON_STARTUP: true
               GID: 0
               UID: 0

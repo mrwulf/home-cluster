@@ -106,9 +106,9 @@ spec:
             repository: ${secret.metadata.name}
             pruneIntervalDays: ${schema.spec.restic.pruneIntervalDays}
             retain: ${schema.spec.restic.retain}
-            copyMethod: 'Direct'
+            copyMethod: "Direct"
             storageClassName: ${schema.spec.nfs.storageClass}
-            accessModes: ['ReadWriteMany']
+            accessModes: ["ReadWriteMany"]
             cacheCapacity: ${schema.spec.restic.cacheCapacity}
             cacheStorageClassName: ${schema.spec.restic.cacheStorageClass}
-            cacheAccessModes: ['ReadWriteOnce']
+            cacheAccessModes: ["ReadWriteOnce"]

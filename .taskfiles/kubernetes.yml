@@ -3,14 +3,14 @@ version: "3"
 
 vars:
   CURRENT_NAMESPACE:
-    sh: "kubectl config view --minify -o jsonpath='{..namespace}'"
-  NAMESPACE: '{{.namespace | default .CURRENT_NAMESPACE}}'
+    sh: "kubectl config view --minify -o jsonpath='{..namespace}' || echo ''"
+  NAMESPACE: "{{.namespace | default .CURRENT_NAMESPACE}}"
 
 tasks:
   getpods:
     aliases:
-      - 'gp'
-    desc: 'Get Pods'
+      - "gp"
+    desc: "Get Pods"
     interactive: false
     silent: false
     requires:
@@ -21,8 +21,8 @@ tasks:
 
   getallpods:
     aliases:
-      - 'gpa'
-    desc: 'Get All Pods'
+      - "gpa"
+    desc: "Get All Pods"
     interactive: false
     silent: false
     requires:
@@ -32,7 +32,7 @@ tasks:
         kubectl get pods -A -owide --sort-by='{.metadata.creationTimestamp}'
 
   getno:
-    alias: 'gn'
+    alias: "gn"
     desc: Get Nodes
     interactive: false
     silent: false

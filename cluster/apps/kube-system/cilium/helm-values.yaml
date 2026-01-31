@@ -21,7 +21,7 @@ cgroup:
 bandwidthManager:
   enabled: true
   bbr: true
-devices: 'bond0'
+devices: "bond0"
 enableIPv4BIGTCP: true
 bpf:
   datapathMode: netkit

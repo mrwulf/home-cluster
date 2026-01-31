@@ -1,7 +1,6 @@
 ---
 version: "3"
 
-
 vars:
   ROOK_NAMESPACE:
     sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
@@ -25,12 +24,11 @@ tasks:
     cmds:
       - kubectl -n {{.ROOK_NAMESPACE}} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
-# Clean up all snapshots: https://community.veeam.com/veeam-kasten-kubernetes-data-protection-support-92/help-removing-orphaned-snapshot-images-ceph-rbd-3935
-## for x in $(rbd trash list --pool ceph-blockpool ); do echo $x ; rbd snap purge ceph-blockpool/$x  ; done
-## for x in $(rbd list --pool ceph-blockpool ); do echo $x ; rbd snap purge ceph-blockpool/$x  ; done
+  # Clean up all snapshots: https://community.veeam.com/veeam-kasten-kubernetes-data-protection-support-92/help-removing-orphaned-snapshot-images-ceph-rbd-3935
+  ## for x in $(rbd trash list --pool ceph-blockpool ); do echo $x ; rbd snap purge ceph-blockpool/$x  ; done
+  ## for x in $(rbd list --pool ceph-blockpool ); do echo $x ; rbd snap purge ceph-blockpool/$x  ; done
 
-
-# Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
+  # Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
   clean-up-pv:
     desc: Clean a single PV
     requires:
@@ -54,9 +52,10 @@ tasks:
     preconditions:
       - sh: kubectl get po -n {{.ROOK_NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
         msg: Rook tools pod isn't running.
+
       # - sh: '[ -z "{{.CHILDREN}}" ]'
       #   msg: "These children must be removed first: (probably volumesnapshots)\n{{.CHILDREN}}"
-        # Delete most of the older children: kubectl get volumesnapshot --sort-by='.status.creationTime' -A | grep -v backups | grep -P 'd$' | awk '{print $1, $2}' | xargs -r -L1  kubectl  delete volumesnapshot -n
+      # Delete most of the older children: kubectl get volumesnapshot --sort-by='.status.creationTime' -A | grep -v backups | grep -P 'd$' | awk '{print $1, $2}' | xargs -r -L1  kubectl  delete volumesnapshot -n
 
   clean-up-all-pv:
     desc: Clean up all PVs
@@ -67,7 +66,7 @@ tasks:
       - for: { var: PV_LIST, split: ",", as: PV }
         task: clean-up-pv
         vars:
-          PV: '{{.PV}}'
+          PV: "{{.PV}}"
 
   clean-up-img:
     desc: Clean up an image
@@ -83,17 +82,16 @@ tasks:
       - sh: kubectl get po -n {{.ROOK_NAMESPACE}} -lapp=rook-ceph-tools | grep -q Running
         msg: Rook tools pod isn't running.
       - sh: '[ -n "{{.CLI_ARGS}}" ]'
-        msg: 'Image Name Required!'
+        msg: "Image Name Required!"
       - sh: '[ -z "{{.CHILDREN}}" ]'
         msg: "These children must be removed first:\n {{.CHILDREN}}"
 
+  # Purge retained volumesnapshots & volumesnapshotcontents from backups NS (k10)
+  # for SN in $(k get volumesnapshotcontents.snapshot.storage.k8s.io | grep Retain | awk '{print $1}'); do echo $SN; VS=$(kubectl get volumesnapshotcontents.snapshot.storage.k8s.io $SN -ojsonpath='{.spec.volumeSnapshotRef.name}'); echo $VS; kubectl delete volumesnapshot $VS -n backups;  kubectl delete volumesnapshotcontents $SN; done
 
-# Purge retained volumesnapshots & volumesnapshotcontents from backups NS (k10)
-# for SN in $(k get volumesnapshotcontents.snapshot.storage.k8s.io | grep Retain | awk '{print $1}'); do echo $SN; VS=$(kubectl get volumesnapshotcontents.snapshot.storage.k8s.io $SN -ojsonpath='{.spec.volumeSnapshotRef.name}'); echo $VS; kubectl delete volumesnapshot $VS -n backups;  kubectl delete volumesnapshotcontents $SN; done
-
-# still have snapshots:
-# csi-vol-677a4f42-f91a-11ec-bc39-0ed6f0913b1b
-# csi-vol-677b530e-f91a-11ec-bc39-0ed6f0913b1b
+  # still have snapshots:
+  # csi-vol-677a4f42-f91a-11ec-bc39-0ed6f0913b1b
+  # csi-vol-677b530e-f91a-11ec-bc39-0ed6f0913b1b
 
   get-unused-images:
     desc: Collect unused images
@@ -133,7 +131,7 @@ tasks:
         sh: "sops --decrypt cluster/flux/meta/cluster-secrets.sops.yaml | yq '.stringData.NFS_KUBERNETES_PATH'"
     preconditions:
       - sh: '[ -n "{{.VOL}}" ]'
-        msg: 'PVC Name Required!'
+        msg: "PVC Name Required!"
     cmds:
       - |
         kubectl run debug-pvc-{{.VOL}} -n {{.NAMESPACE}} -it --image=null --overrides='
@@ -195,7 +193,7 @@ tasks:
     desc: Clone a volume snapshot and then attach and start a little file browser web app. Press ctrl+c to kill browser
     interactive: true
     vars:
-      PVC: '{{.CLI_ARGS}}'
+      PVC: "{{.CLI_ARGS}}"
       PVC_NAMESPACE:
         sh: 'kubectl get pvc -A -oyaml | yq ''.items[] | select(.metadata.name=="{{.PVC}}") | .metadata.namespace'''
     cmds:

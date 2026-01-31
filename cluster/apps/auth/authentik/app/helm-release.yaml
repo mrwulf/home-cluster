@@ -60,7 +60,7 @@ spec:
                   name: postgres-superuser
                   key: username
             - name: INIT_POSTGRES_USER
-              value: 'authentik'
+              value: "authentik"
             - name: INIT_POSTGRES_PASS
               value: "${AUTHENTIK_DB_PASS}"
           requests:

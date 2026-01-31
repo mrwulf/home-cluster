@@ -6,7 +6,7 @@ tasks:
     desc: Rebase
     aliases:
       - :git-rebase
-    dir: '{{.PROJECT_DIR}}'
+    dir: "{{.PROJECT_DIR}}"
     cmds:
       - git stash push -u
       - git pull --rebase --stat
@@ -16,7 +16,7 @@ tasks:
     desc: Rebase and push
     aliases:
       - :git-sync
-    dir: '{{.PROJECT_DIR}}'
+    dir: "{{.PROJECT_DIR}}"
     cmds:
       - git stash push -u
       - git pull --rebase --stat

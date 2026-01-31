@@ -63,12 +63,7 @@ spec:
               SMTP_SECURE: "false"
               URL: "https://docs.${SECRET_DOMAIN}"
               WEB_CONCURRENCY: 10
-            command:
-              [
-                "/bin/sh",
-                "-c",
-                "node build/server/index.js",
-              ]
+            command: ["/bin/sh", "-c", "node build/server/index.js"]
             resources:
               requests:
                 cpu: 10m

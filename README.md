@@ -1,9 +1,11 @@
 # Basic Startup
-```
+
+```bash
 # Install dependencies
-## Install go-task on your own (https://taskfile.dev/installation/)
-## If using macos, `brew install grep,awk`
-## Install all the other dependencies (reference just the install taskfile so VARS don't need the dependencies)
+# Install go-task on your own (https://taskfile.dev/installation/)
+# If using macos, `brew install grep,awk`
+# Install all the other dependencies
+# (reference just the install taskfile so VARS don't need the dependencies)
 task --taskfile .taskfiles/install.yml all
 
 # Set up age/sops
@@ -44,18 +46,63 @@ helmfile apply -f talos/flux-helmfile.yaml
 
 ```
 
-# Tools
-* [talos](https://talos.dev)
-* [talhelper](https://github.com/budimanjojo/talhelper)
-* [flux](https://toolkit.fluxcd.io/)
-* [sops](https://toolkit.fluxcd.io/guides/mozilla-sops/)
-* [age](https://github.com/FiloSottile/age)
-* [go-task](https://github.com/go-task/task)
-* [pre-commit](https://github.com/pre-commit/pre-commit)
-* [helm](https://helm.sh/)
-* [kustomize](https://kustomize.io/)
+## Tools
 
-# Components
+- [talos](https://talos.dev)
+- [talhelper](https://github.com/budimanjojo/talhelper)
+- [flux](https://toolkit.fluxcd.io/)
+- [sops](https://toolkit.fluxcd.io/guides/mozilla-sops/)
+- [age](https://github.com/FiloSottile/age)
+- [go-task](https://github.com/go-task/task)
+- [pre-commit](https://github.com/pre-commit/pre-commit)
+- [helm](https://helm.sh/)
+- [kustomize](https://kustomize.io/)
+
+## Testing
+
+Run all the tests locally that normally run in GitHub Actions CI.
+
+## Install Testing Tools
+
+```bash
+# Install all tools via mise
+mise install
+```
+
+## Run Tests
+
+```bash
+# Run all tests (like CI)
+task test:all
+
+# Run a quick test (skips slower Kubernetes validation)
+task test:quick
+
+# Run all linters
+task test:lint:all
+
+# Run individual linters
+task test:lint:markdown    # Lint markdown files
+task test:lint:yaml        # Lint YAML files
+task test:lint:kubernetes  # Validate Kubernetes manifests with kubeconform
+task test:lint:format      # Check code formatting with prettier
+
+# Auto-fix formatting issues
+task test:fix
+```
+
+## Flux Validation
+
+```bash
+# Validate Flux resources locally
+task test:flux:validate
+
+# Show diffs for all Flux resources
+task test:flux:diff:all
+```
+
+## Components
+
 - [authentik](https://goauthentik.io) - IDp + SSO
 - [cert-manager](https://cert-manager.io/) - SSL certificates - with Cloudflare DNS challenge
 - [flux](https://toolkit.fluxcd.io/) - GitOps tool for deploying manifests from the `cluster` directory
@@ -74,13 +121,12 @@ The Git repository contains the following directories under `cluster` and are or
 - **core** directory (depends on **crds**) are important infrastructure applications (grouped by namespace) that should never be pruned by Flux
 - **apps** directory (depends on **core**) is where your common applications (grouped by namespace) could be placed, Flux will prune resources here if they are not tracked by Git anymore
 
-# My Cluster
+## My Cluster
 
-| Node                                                   | Role                                                  | Specs                                                  |
-|--------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------|
-| node1 | Control Plane, Storage | MinisForum MS-01 12600H<br />96G |
-| node2 | Control Plane, Storage | MinisForum MS-01 12600H<br />96G |
-| node3 | Control Plane, Storage | MinisForum MS-01 12600H<br />96G |
+| Node  | Role                   | Specs                        |
+| ----- | ---------------------- | ---------------------------- |
+| node1 | Control Plane, Storage | MinisForum MS-01 12600H, 96G |
+| node2 | Control Plane, Storage | MinisForum MS-01 12600H, 96G |
+| node3 | Control Plane, Storage | MinisForum MS-01 12600H, 96G |
 
-
-# Other Stuff
+## Other Stuff

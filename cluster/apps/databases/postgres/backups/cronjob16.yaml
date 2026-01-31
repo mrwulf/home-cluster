@@ -5,7 +5,7 @@ kind: CronJob
 metadata:
   name: postgres16-backup
 spec:
-  schedule: '0 */2 * * *'
+  schedule: "0 */2 * * *"
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
@@ -23,7 +23,7 @@ spec:
               image: docker.io/prodrigestivill/postgres-backup-local:18@sha256:f70742ebe42b2277689b028d1fd15aa80f77cffa01da163cc9f85a6ff1866e7f
               imagePullPolicy: IfNotPresent
               command:
-                - '/backup.sh'
+                - "/backup.sh"
               env:
                 - name: POSTGRES_HOST
                   value: postgres16-ro.databases.svc.cluster.local
@@ -38,9 +38,9 @@ spec:
                       name: postgres-superuser
                       key: password
                 - name: POSTGRES_DB
-                  value: 'bazarr,gatus,fireflyiii,lidarr_main,lidarr_log,paperless,nocodb,openwebui,penpot,teable'
+                  value: "bazarr,gatus,fireflyiii,lidarr_main,lidarr_log,paperless,nocodb,openwebui,penpot,teable"
                 - name: BACKUP_KEEP_MINS
-                  value: '1440'
+                  value: "1440"
                 - name: TZ
                   value: "${TIMEZONE}"
 
@@ -53,5 +53,5 @@ spec:
           volumes:
             - name: nas-backups
               nfs:
-                server: '${CORE_NFS_SERVER:=nas0}'
-                path: '/mnt/user/backups/postgres-backup'
+                server: "${CORE_NFS_SERVER:=nas0}"
+                path: "/mnt/user/backups/postgres-backup"

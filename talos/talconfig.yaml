@@ -59,9 +59,9 @@ nodes:
         routes: [{ network: 169.254.255.13/32, metric: 2048 }]
     nodeLabels:
       node.home.arpa/physical: "true"
-      node-role.kubernetes.io/control-plane: ''
+      node-role.kubernetes.io/control-plane: ""
     nodeAnnotations:
-      installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
+      installerImage: "{{ .MachineConfig.MachineInstall.InstallImage }}"
   - hostname: node2.home
     controlPlane: true
     ipAddress: 10.0.1.52
@@ -101,9 +101,9 @@ nodes:
         routes: [{ network: 169.254.255.11/32, metric: 2048 }]
     nodeLabels:
       node.home.arpa/physical: "true"
-      node-role.kubernetes.io/control-plane: ''
+      node-role.kubernetes.io/control-plane: ""
     nodeAnnotations:
-      installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
+      installerImage: "{{ .MachineConfig.MachineInstall.InstallImage }}"
   - hostname: node3.home
     controlPlane: true
     ipAddress: 10.0.1.53
@@ -143,9 +143,10 @@ nodes:
         routes: [{ network: 169.254.255.12/32, metric: 2048 }]
     nodeLabels:
       node.home.arpa/physical: "true"
-      node-role.kubernetes.io/control-plane: ''
+      node-role.kubernetes.io/control-plane: ""
     nodeAnnotations:
-      installerImage: '{{ .MachineConfig.MachineInstall.InstallImage }}'
+      installerImage: "{{ .MachineConfig.MachineInstall.InstallImage }}"
+
   # - hostname: replacement.home
   #   controlPlane: true
   #   ipAddress: 10.0.1.55
@@ -275,15 +276,15 @@ worker:
   schematic: &schematic
     customization:
       extraKernelArgs:
-        - talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/   # Logging
-        - talos.auditd.disabled=1  # Less security, faster computer
-        - mitigations=off          # Less security, faster computer
-        - apparmor=0               # Less security, faster computer
-        - security=none            # Less security, faster computer
-        - init_on_alloc=0          # Less security, faster computer
-        - init_on_free=0           # Less security, faster computer
-        - intel_iommu=on           # PCI Passthrough
-        - iommu=pt                 # PCI Passthrough
+        - talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/ # Logging
+        - talos.auditd.disabled=1 # Less security, faster computer
+        - mitigations=off # Less security, faster computer
+        - apparmor=0 # Less security, faster computer
+        - security=none # Less security, faster computer
+        - init_on_alloc=0 # Less security, faster computer
+        - init_on_free=0 # Less security, faster computer
+        - intel_iommu=on # PCI Passthrough
+        - iommu=pt # PCI Passthrough
       systemExtensions:
         officialExtensions:
           - siderolabs/intel-ucode
@@ -372,7 +373,7 @@ controlPlane:
         apiServer:
           # disable default API server admission plugins
           admissionControl:
-            $$patch: delete        
+            $$patch: delete
           extraArgs:
             # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
             enable-aggregator-routing: true

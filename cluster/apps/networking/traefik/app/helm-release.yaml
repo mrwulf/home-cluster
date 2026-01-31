@@ -82,6 +82,7 @@ spec:
         enabled: true
         allowExternalNameServices: true
         ingressClass: traefik
+
       # kubernetesGateway:
       #   enabled: true
       #   experimentalChannel: false
@@ -178,7 +179,7 @@ spec:
         disableAPICheck: true
         serviceMonitor:
           enabled: true
-          namespaceSelector: { }
+          namespaceSelector: {}
           metricRelabelings:
             - sourceLabels: [__name__]
               separator: ;
@@ -198,7 +199,7 @@ spec:
           honorLabels: true
         prometheusRule:
           enabled: true
-          additionalLabels: { }
+          additionalLabels: {}
           rules:
             - alert: TraefikDown
               expr: up{job="traefik"} == 0

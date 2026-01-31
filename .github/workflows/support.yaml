@@ -1,7 +1,7 @@
 ---
 name: "Support requests"
 
-on:
+on: # yamllint disable-line rule:truthy
   issues:
     types:
       - labeled
