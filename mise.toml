@@ -1,5 +1,4 @@
 [tools]
-python = "3.13"
 kubectl = "latest"
 task = "latest"
 
@@ -9,4 +8,4 @@ kubeconform = "latest"
 yamllint = "latest"
 "npm:markdownlint-cli" = "latest"
 "npm:prettier" = "latest"
-"pipx:flux-local" = "latest"
+"pipx:flux-local" = "7.11.0"
