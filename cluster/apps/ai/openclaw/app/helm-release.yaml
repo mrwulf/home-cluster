@@ -172,10 +172,10 @@ spec:
               "agents": {
                 "defaults": {
                   "workspace": "/home/node/.openclaw/workspace",
-                  "model": {
-                    // Uses OPENAI_API_KEY from environment
-                    "primary": "openai/gpt-4o"
-                  },
+                  // "model": {
+                  //   // Uses OPENAI_API_KEY from environment
+                  //   "primary": "openai/gpt-4o"
+                  // },
                   "userTimezone": "UTC",
                   "timeoutSeconds": 600,
                   "maxConcurrent": 1
