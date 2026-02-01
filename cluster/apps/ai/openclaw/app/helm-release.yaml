@@ -158,40 +158,84 @@ spec:
         suffix: "config"
         data:
           openclaw.json: |
-            {
-              "gateway": {
-                "port": 18789,
-                "mode": "local"
+          {
+            // Gateway configuration
+            "gateway": {
+              "port": 18789,
+              "mode": "local",
+              // IMPORTANT: trustedProxies uses exact IP matching only
+              // CIDR notation is NOT supported - list each proxy IP individually
+              "trustedProxies": ["10.0.0.1"]
+            },
+
+            // Agent configuration
+            "agents": {
+              "defaults": {
+                "workspace": "/home/node/.openclaw/workspace",
+                "model": {
+                  // Uses OPENAI_API_KEY from environment
+                  "primary": "openai/gpt-4o"
+                },
+                "userTimezone": "UTC",
+                "timeoutSeconds": 600,
+                "maxConcurrent": 1
               },
-              "models": {
-                "providers": {
-                  "ollama": {
-                    "baseUrl": "http://ollama.ai.svc.cluster.local:11434/v1",
-                    "apiKey": "ollama-local",
-                    "api": "openai-completions"
+              "list": [
+                {
+                  "id": "main",
+                  "default": true,
+                  "identity": {
+                    "name": "OpenClaw",
+                    "emoji": "🦞"
                   }
                 }
-              },
-              "agents": {
-                "defaults": {
-                  "workspace": "/home/node/.openclaw/workspace",
-                  "model": {
-                    "primary": "ollama/llama3.3"
-                  },
-                  "timezone": "UTC",
-                  "timeout": 600,
-                  "maxConcurrent": 1
-                }
-              },
-              "sessions": {
-                "scope": "sender",
-                "reset": "idle",
+              ]
+            },
+
+            // Session management
+            "session": {
+              "scope": "per-sender",
+              "store": "/home/node/.openclaw/sessions",
+              "reset": {
+                "mode": "idle",
                 "idleMinutes": 60
-              },
-              "logging": {
-                "level": "info",
-                "console": {
-                  "style": "compact"
+              }
+            },
+
+            // Logging
+            "logging": {
+              "level": "info",
+              "consoleLevel": "info",
+              "consoleStyle": "compact",
+              "redactSensitive": "tools"
+            },
+
+            // Tools configuration
+            "tools": {
+              "profile": "full",
+              "web": {
+                "search": {
+                  "enabled": true
+                },
+                "fetch": {
+                  "enabled": true
                 }
               }
             }
+          }
+
+        # // Channel configuration can be added here:
+        # // "channels": {
+        # //   "telegram": {
+        # //     "botToken": "${TELEGRAM_BOT_TOKEN}",
+        # //     "enabled": true
+        # //   },
+        # //   "discord": {
+        # //     "token": "${DISCORD_BOT_TOKEN}"
+        # //   },
+        # //   "slack": {
+        # //     "botToken": "${SLACK_BOT_TOKEN}",
+        # //     "appToken": "${SLACK_APP_TOKEN}"
+        # //   }
+        # // }
+          
