@@ -66,6 +66,8 @@ spec:
               TERM: xterm-256color
               # Ollama Configuration
               OLLAMA_API_KEY: ollama-local
+            envFrom:
+              - openclaw-secrets
             probes:
               liveness:
                 enabled: true
