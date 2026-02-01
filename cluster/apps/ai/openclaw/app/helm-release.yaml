@@ -1,0 +1,196 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app openclaw
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 4.6.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+      strategy: rollback
+  values:
+    controllers:
+      openclaw:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-config:
+            image:
+              repository: busybox
+              tag: "1.37"
+            command:
+              - /bin/sh
+              - -c
+              - |
+                cp /config/openclaw.json /home/node/.openclaw/openclaw.json
+                chown 1000:1000 /home/node/.openclaw/openclaw.json
+            securityContext:
+              runAsUser: 0
+              runAsGroup: 0
+              runAsNonRoot: false
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+                add:
+                  - CHOWN
+        containers:
+          app:
+            image:
+              repository: ghcr.io/openclaw/openclaw
+              tag: 2026.1.30
+            command:
+              - node
+              - dist/index.js
+              - gateway
+              - --bind
+              - lan
+              - --port
+              - "18789"
+            env:
+              HOME: /home/node
+              TERM: xterm-256color
+              # Ollama Configuration
+              OLLAMA_API_KEY: ollama-local
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 18789
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 18789
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 18789
+                  periodSeconds: 5
+                  failureThreshold: 30
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 200m
+                memory: 512Mi
+              limits:
+                cpu: 2000m
+                memory: 2Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: openclaw
+        ports:
+          http:
+            port: 18789
+    ingress:
+      app:
+        enabled: true
+        className: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          gatus.io/enabled: "true"
+        hosts:
+          - host: &host "openclaw.home.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+    persistence:
+      data:
+        enabled: true
+        existingClaim: *app
+        globalMounts:
+          - path: /home/node/.openclaw
+      config:
+        enabled: true
+        type: configMap
+        name: openclaw-config
+        advancedMounts:
+          openclaw:
+            init-config:
+              - path: /config
+                readOnly: true
+    configMaps:
+      config:
+        enabled: true
+        data:
+          openclaw.json: |
+            {
+              "gateway": {
+                "port": 18789,
+                "mode": "local"
+              },
+              "models": {
+                "providers": {
+                  "ollama": {
+                    "baseUrl": "http://ollama.ai.svc.cluster.local:11434/v1",
+                    "apiKey": "ollama-local",
+                    "api": "openai-completions"
+                  }
+                }
+              },
+              "agents": {
+                "defaults": {
+                  "workspace": "/home/node/.openclaw/workspace",
+                  "model": {
+                    "primary": "ollama/llama3.3"
+                  },
+                  "timezone": "UTC",
+                  "timeout": 600,
+                  "maxConcurrent": 1
+                }
+              },
+              "sessions": {
+                "scope": "sender",
+                "reset": "idle",
+                "idleMinutes": 60
+              },
+              "logging": {
+                "level": "info",
+                "console": {
+                  "style": "compact"
+                }
+              }
+            }

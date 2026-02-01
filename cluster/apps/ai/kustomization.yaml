@@ -6,7 +6,8 @@ resources:
   # Pre Flux-Kustomizations
   - ./namespace.yaml
   # Flux-Kustomizations
-  - ./open-webui/ks.yaml
   - ./ollama/ks.yaml
+  - ./open-webui/ks.yaml
+  - ./openclaw/ks.yaml
   - ./paperless-ai/ks.yaml
   - ./searxng/ks.yaml
