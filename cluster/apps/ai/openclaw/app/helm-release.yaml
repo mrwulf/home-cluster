@@ -158,71 +158,71 @@ spec:
         suffix: "config"
         data:
           openclaw.json: |
-          {
-            // Gateway configuration
-            "gateway": {
-              "port": 18789,
-              "mode": "local",
-              // IMPORTANT: trustedProxies uses exact IP matching only
-              // CIDR notation is NOT supported - list each proxy IP individually
-              "trustedProxies": ["10.0.0.1"]
-            },
-
-            // Agent configuration
-            "agents": {
-              "defaults": {
-                "workspace": "/home/node/.openclaw/workspace",
-                "model": {
-                  // Uses OPENAI_API_KEY from environment
-                  "primary": "openai/gpt-4o"
-                },
-                "userTimezone": "UTC",
-                "timeoutSeconds": 600,
-                "maxConcurrent": 1
+            {
+              // Gateway configuration
+              "gateway": {
+                "port": 18789,
+                "mode": "local",
+                // IMPORTANT: trustedProxies uses exact IP matching only
+                // CIDR notation is NOT supported - list each proxy IP individually
+                "trustedProxies": ["10.0.0.1"]
               },
-              "list": [
-                {
-                  "id": "main",
-                  "default": true,
-                  "identity": {
-                    "name": "OpenClaw",
-                    "emoji": "🦞"
-                  }
-                }
-              ]
-            },
 
-            // Session management
-            "session": {
-              "scope": "per-sender",
-              "store": "/home/node/.openclaw/sessions",
-              "reset": {
-                "mode": "idle",
-                "idleMinutes": 60
-              }
-            },
-
-            // Logging
-            "logging": {
-              "level": "info",
-              "consoleLevel": "info",
-              "consoleStyle": "compact",
-              "redactSensitive": "tools"
-            },
-
-            // Tools configuration
-            "tools": {
-              "profile": "full",
-              "web": {
-                "search": {
-                  "enabled": true
+              // Agent configuration
+              "agents": {
+                "defaults": {
+                  "workspace": "/home/node/.openclaw/workspace",
+                  "model": {
+                    // Uses OPENAI_API_KEY from environment
+                    "primary": "openai/gpt-4o"
+                  },
+                  "userTimezone": "UTC",
+                  "timeoutSeconds": 600,
+                  "maxConcurrent": 1
                 },
-                "fetch": {
-                  "enabled": true
+                "list": [
+                  {
+                    "id": "main",
+                    "default": true,
+                    "identity": {
+                      "name": "OpenClaw",
+                      "emoji": "🦞"
+                    }
+                  }
+                ]
+              },
+
+              // Session management
+              "session": {
+                "scope": "per-sender",
+                "store": "/home/node/.openclaw/sessions",
+                "reset": {
+                  "mode": "idle",
+                  "idleMinutes": 60
+                }
+              },
+
+              // Logging
+              "logging": {
+                "level": "info",
+                "consoleLevel": "info",
+                "consoleStyle": "compact",
+                "redactSensitive": "tools"
+              },
+
+              // Tools configuration
+              "tools": {
+                "profile": "full",
+                "web": {
+                  "search": {
+                    "enabled": true
+                  },
+                  "fetch": {
+                    "enabled": true
+                  }
                 }
               }
             }
-          }
 
         # // Channel configuration can be added here:
         # // "channels": {
