@@ -67,7 +67,8 @@ spec:
               # Ollama Configuration
               OLLAMA_API_KEY: ollama-local
             envFrom:
-              - openclaw-secrets
+              - secretRef:
+                  name: openclaw-secrets
             probes:
               liveness:
                 enabled: true
