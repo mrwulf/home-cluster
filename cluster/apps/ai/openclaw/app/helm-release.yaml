@@ -43,8 +43,7 @@ spec:
             env:
               HOME: /home/node
               TERM: xterm-256color
-              # Ollama Configuration
-              OLLAMA_API_KEY: ollama-local
+              PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/node/.openclaw/bin/bin"
             envFrom:
               - secretRef:
                   name: openclaw-secrets
