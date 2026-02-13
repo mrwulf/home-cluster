@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://helm.cilium.io
       chart: cilium
-      version: 1.18.6
+      version: 1.19.0
       sourceRef:
         kind: HelmRepository
         name: cilium-charts
@@ -42,7 +42,7 @@ spec:
     devices: "bond0"
     enableIPv4BIGTCP: true
     bpf:
-      datapathMode: netkit
+      datapathMode: veth # switch back to netkit once https://github.com/cilium/cilium/issues/39892 is fixed
       masquerade: true
       preallocateMaps: true
       tproxy: true
