@@ -42,7 +42,7 @@ spec:
     devices: "bond0"
     enableIPv4BIGTCP: true
     bpf:
-      datapathMode: netkit # switch back to netkit once https://github.com/cilium/cilium/issues/39892 is fixed
+      datapathMode: veth # switch back to netkit once https://github.com/cilium/cilium/issues/39892 is fixed
       masquerade: true
       preallocateMaps: true
       tproxy: true
