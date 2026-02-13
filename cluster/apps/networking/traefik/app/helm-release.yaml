@@ -111,11 +111,11 @@ spec:
           tls:
             enabled: true
             options: "default"
-          transport:
-            respondingTimeouts:
-              readTimeout: 3600s
-              idleTimeout: 3600s
-              writeTimeout: 3600s
+        transport:
+          respondingTimeouts:
+            readTimeout: 3600s
+            idleTimeout: 3600s
+            writeTimeout: 3600s
         http3:
           enabled: true
         # Only allow forwarding from local and from cloudflare
