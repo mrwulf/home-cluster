@@ -31,7 +31,7 @@ spec:
           app:
             image:
               repository: ghcr.io/openclaw/openclaw
-              tag: 2026.2.17
+              tag: 2026.2.19
             command:
               - node
               - dist/index.js
