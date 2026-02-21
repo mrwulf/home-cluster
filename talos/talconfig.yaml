@@ -399,7 +399,8 @@ controlPlane:
         etcd:
           extraArgs:
             listen-metrics-urls: http://0.0.0.0:2381
-            auto-compaction-retention: 4
+            auto-compaction-mode: periodic
+            auto-compaction-retention: 30m
         proxy:
           disabled: true
         scheduler:
