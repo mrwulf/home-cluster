@@ -34,6 +34,11 @@ spec:
     # https://github.com/k8s-at-home/library-charts/tree/main/charts/stable/common/values.yaml
     #
 
+    # Disable native network policies
+    networkpolicies:
+      main:
+        enabled: false
+        
     controllers:
       main:
         # Configure the main controller - this runs the VPN server
@@ -199,4 +204,4 @@ spec:
       gatewayAnnotationValue:
 
       # -- determines how sidecar container is created
-      # sidecarAsInit: false
+      sidecarAsInit: false
