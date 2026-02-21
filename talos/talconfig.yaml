@@ -235,7 +235,6 @@ patches:
           - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
             format: json_lines
       network:
-        disableSearchDomain: true
         extraHostEntries:
           - ip: ${clusterEndpointIP}
             aliases:
