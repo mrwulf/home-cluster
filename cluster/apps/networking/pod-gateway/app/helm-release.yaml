@@ -33,7 +33,7 @@ spec:
     # This chart inherits from our common library chart. You can check the default values/options here:
     # https://github.com/k8s-at-home/library-charts/tree/main/charts/stable/common/values.yaml
     #
-    
+
     controllers:
       main:
         # Configure the main controller - this runs the VPN server
@@ -47,26 +47,26 @@ spec:
               # -- image tag
               tag: v3.41.1@sha256:1a5bf4b4820a879cdf8d93d7ef0d2d963af56670c9ebff8981860b6804ebc8ab
             env:
-              - name:  VPN_SERVICE_PROVIDER
+              - name: VPN_SERVICE_PROVIDER
                 value: "private internet access"
-              - name:  VPN_INTERFACE
+              - name: VPN_INTERFACE
                 value: tun0
-              - name:  OPENVPN_ENDPOINT_PORT
+              - name: OPENVPN_ENDPOINT_PORT
                 value: 1197
-              - name:  OPENVPN_PROTOCOL
+              - name: OPENVPN_PROTOCOL
                 value: udp
                 # Make sure firewall is off, otherwise child pods cannot reach gateway pod.
-              - name:  FIREWALL_ENABLED_DISABLING_IT_SHOOTS_YOU_IN_YOUR_FOOT
+              - name: FIREWALL_ENABLED_DISABLING_IT_SHOOTS_YOU_IN_YOUR_FOOT
                 value: "off"
-              - name:  DOT
+              - name: DOT
                 value: "off"
-              - name:  SERVER_REGIONS
+              - name: SERVER_REGIONS
                 value: "CA Montreal"
               - name: LOG_LEVEL
                 value: debug
               - name: LOG_CONFS
                 value: "true"
-    
+
             envFrom:
               - secretRef:
                   name: pod-gateway-secret
@@ -156,8 +156,8 @@ spec:
     # -- settings to expose ports, usually through a VPN provider.
     # NOTE: if you change it you will need to manually restart the gateway POD
     publicPorts:
-    - hostname: qbittorrent
-      IP: 10
+      - hostname: qbittorrent
+        IP: 10
       # ports:
       # - type: udp
       #   port: "${BITTORRENT_PORT}"
@@ -198,6 +198,6 @@ spec:
       # with gatewayAnnotation'value that matches, will get the gateway.
       # If not set gatewayAnnotation boolean value will apply.
       gatewayAnnotationValue:
-        
+
       # -- determines how sidecar container is created
       # sidecarAsInit: false
