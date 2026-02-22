@@ -1,6 +1,8 @@
 [tools]
 kubectl = "latest"
 task = "latest"
+yq = "latest"
+jq = "latest"
 
 # Testing tools
 flux2 = "latest"
