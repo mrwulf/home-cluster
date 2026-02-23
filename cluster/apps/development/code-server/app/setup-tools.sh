@@ -10,7 +10,7 @@ cd /home/coder/bin
 echo "Installing mise-en-place..."
 curl https://mise.run | sh
 
-/home/coder/.local/bin/mise prepare
+/home/coder/.local/bin/mise install
 
 # echo "Installing kubectl..."
 # curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
