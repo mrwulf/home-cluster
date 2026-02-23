@@ -22,23 +22,23 @@ tasks:
   all:
     desc: Install all of the dependencies & tools
     cmds:
-      - task: talosctl
-      - task: talhelper
-      - task: go-task
-      - task: yq
+      # - task: talosctl
+      # - task: talhelper
+      # - task: go-task
+      # - task: yq
       # - task: jq
-      - task: age
-      - task: sops
+      # - task: age
+      # - task: sops
       # - task: kubestr # Doesn't return version info --- downloads each run
-      - task: kubectl
-      - task: kustomize
-      - task: flux
-      - task: helm
-      - task: pre-commit
+      # - task: kubectl
+      # - task: kustomize
+      # - task: flux
+      # - task: helm
+      # - task: pre-commit
       # - task: krew & plugins (ns, cilium, cnpg, stern)
       # - task: dyff
       # - task: kustomize
-      - task: cilium
+      # - task: cilium
 
   age:
     desc: Install age
