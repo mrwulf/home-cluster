@@ -2,8 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
-  name: intel-charts
-  namespace: flux-system
+  name: intel-device-plugins-gpu
 spec:
   interval: 15m
   layerSelector:
@@ -11,4 +10,4 @@ spec:
     operation: copy
   ref:
     tag: "0.35.0"
-  url: oci://ghcr.io/intel/helm-charts
+  url: oci://ghcr.io/intel/helm-charts/intel-device-plugins-gpu

@@ -7,8 +7,7 @@ spec:
   interval: 30m
   chartRef:
     kind: OCIRepository
-    name: intel-charts
-    namespace: flux-system
+    name: intel-device-plugins-gpu
   maxHistory: 2
   install:
     createNamespace: true
