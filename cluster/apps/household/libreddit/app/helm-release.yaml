@@ -51,8 +51,6 @@ spec:
         annotations:
           auth.home.arpa/enabled: "true"
           external-dns.home.arpa/enabled: "true"
-          hajimari.io/icon: mdi:web
-          hajimari.io/group: "Home"
           gatus.io/enabled: "true"
           gatus.io/status-code: "404"
         hosts:

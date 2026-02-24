@@ -82,10 +82,6 @@ spec:
       main:
         className: traefik
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/appName: Immich
-          hajimari.io/group: "Home"
-          hajimari.io/icon: heroicons:photo
           gatus.io/enabled: "true"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-direct@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=domain}"

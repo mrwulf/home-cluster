@@ -68,8 +68,6 @@ spec:
         enabled: true
         className: "traefik"
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: "foundation:page-export-csv"
         hosts:
           - host: &host "${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
             paths:

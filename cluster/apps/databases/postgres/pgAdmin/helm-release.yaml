@@ -61,8 +61,6 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          hajimari.io/icon: "simple-icons:adminer"
-          hajimari.io/enable: "true"
           gatus.io/enabled: "true"
         hosts:
           - host: &host "pgadmin.home.${SECRET_DOMAIN}"

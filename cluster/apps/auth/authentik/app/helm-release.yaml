@@ -78,9 +78,6 @@ spec:
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: "shield-lock"
-          hajimari.io/group: "Home"
           gatus.io/enabled: "true"
         hosts:
           - &host "auth.${SECRET_DOMAIN}"

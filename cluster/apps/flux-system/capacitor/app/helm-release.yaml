@@ -59,7 +59,6 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          hajimari.io/enable: "true"
         hosts:
           - host: &host "capacitor.home.${SECRET_DOMAIN}"
             paths:

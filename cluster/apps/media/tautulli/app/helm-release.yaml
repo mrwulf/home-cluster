@@ -81,9 +81,6 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          hajimari.io/enable: "true"
-          hajimari.io/group: "Media"
-          hajimari.io/icon: "mdi:chart-bar"
           gatus.io/enabled: "true"
           gatus.io/status-code: "404"
         hosts:

@@ -98,10 +98,6 @@ spec:
           enabled: true
           className: traefik
           annotations:
-            hajimari.io/enable: "true"
-            hajimari.io/appName: "Cilium Dashboard"
-            hajimari.io/icon: mdi:workflow
-            hajimari.io/group: "networking"
             traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
             traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           hosts:
