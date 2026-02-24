@@ -2,13 +2,12 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
-  name: app-template
-  namespace: flux-system
+  name: vector-charts
 spec:
-  interval: 1h
+  interval: 15m
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 4.6.2
-  url: oci://ghcr.io/bjw-s/app-template
+    tag: "0.50.0"
+  url: oci://ghcr.io/vectordotdev/helm-charts

@@ -1,19 +1,26 @@
 ---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: descheduler-charts
+spec:
+  interval: 15m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: "0.35.0"
+  url: oci://ghcr.io/descheduler/charts
+---
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: descheduler
 spec:
   interval: 5m
-  chart:
-    spec:
-      chart: descheduler
-      version: 0.35.0
-      sourceRef:
-        kind: HelmRepository
-        name: descheduler-charts
-        namespace: flux-system
-      interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: descheduler-charts
   install:
     createNamespace: true
     remediation:

@@ -1,11 +1,6 @@
 ---
 version: "3"
 
-vars:
-  CURRENT_NAMESPACE:
-    sh: "kubectl config view --minify -o jsonpath='{..namespace}' || echo ''"
-  NAMESPACE: "{{.namespace | default .CURRENT_NAMESPACE}}"
-
 tasks:
   getpods:
     aliases:
@@ -13,6 +8,10 @@ tasks:
     desc: "Get Pods"
     interactive: false
     silent: false
+    vars:
+      CURRENT_NAMESPACE:
+        sh: "kubectl config view --minify -o jsonpath='{..namespace}' || echo ''"
+      NAMESPACE: "{{.namespace | default .CURRENT_NAMESPACE}}"
     requires:
       vars: ["NAMESPACE"]
     cmds:
@@ -25,6 +24,10 @@ tasks:
     desc: "Get All Pods"
     interactive: false
     silent: false
+    vars:
+      CURRENT_NAMESPACE:
+        sh: "kubectl config view --minify -o jsonpath='{..namespace}' || echo ''"
+      NAMESPACE: "{{.namespace | default .CURRENT_NAMESPACE}}"
     requires:
       vars: ["NAMESPACE"]
     cmds:
@@ -36,6 +39,10 @@ tasks:
     desc: Get Nodes
     interactive: false
     silent: false
+    vars:
+      CURRENT_NAMESPACE:
+        sh: "kubectl config view --minify -o jsonpath='{..namespace}' || echo ''"
+      NAMESPACE: "{{.namespace | default .CURRENT_NAMESPACE}}"
     requires:
       vars: ["NAMESPACE"]
     cmds:

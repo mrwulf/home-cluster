@@ -22,7 +22,7 @@ spec:
       name: "*"
     - kind: HelmRelease
       name: "*"
-    - kind: HelmRepository
+    - kind: OCIRepository
       name: "*"
     - kind: Kustomization
       name: "*"

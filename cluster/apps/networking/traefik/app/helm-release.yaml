@@ -1,4 +1,17 @@
 ---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: traefik-charts
+spec:
+  interval: 15m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: "39.0.2"
+  url: oci://ghcr.io/traefik/traefik-helm-chart
+---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/traefik/traefik-helm-chart/refs/heads/master/traefik/values.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
@@ -6,15 +19,9 @@ metadata:
   name: traefik
 spec:
   interval: 5m
-  chart:
-    spec:
-      chart: traefik
-      version: 39.0.2
-      sourceRef:
-        kind: HelmRepository
-        name: traefik-charts
-        namespace: flux-system
-      interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: traefik-charts
   install:
     createNamespace: true
     crds: CreateReplace

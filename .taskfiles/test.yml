@@ -75,14 +75,14 @@ tasks:
     cmds:
       - task: flux:build
       - task: flux:check
+      - task: flux:repo-refs
+      - task: flux:kustomization-resources
 
   flux:build:
     desc: Build and validate all Flux kustomizations
     cmds:
       - echo "Building Flux kustomizations..."
       - flux build kustomization flux-system --path {{.PROJECT_DIR}}/cluster/apps/flux-system --dry-run
-      - flux build kustomization crds --path {{.PROJECT_DIR}}/cluster/crds --dry-run
-      - flux build kustomization core --path {{.PROJECT_DIR}}/cluster/core --dry-run
       - flux build kustomization apps --path {{.PROJECT_DIR}}/cluster/apps --dry-run
     ignore_error: true
 
@@ -92,6 +92,20 @@ tasks:
       - echo "Checking Flux compatibility..."
       - flux check
     ignore_error: true
+
+  flux:repo-refs:
+    desc: Validate repository references in HelmReleases
+    cmds:
+      - echo "Validating repository references..."
+      - mise exec -- python3 .taskfiles/test/test-repo-refs.py
+    ignore_error: false
+
+  flux:kustomization-resources:
+    desc: Validate all files referenced in kustomization.yaml resources blocks exist
+    cmds:
+      - echo "Validating kustomization resources..."
+      - mise exec -- python3 .taskfiles/test/test-kustomization-resources.py
+    ignore_error: false
 
   flux:diff:helmrelease:
     desc: Show diff for HelmRelease resources (like CI)

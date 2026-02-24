@@ -1,3 +1,16 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: smartctl-exporter-charts
+spec:
+  interval: 15m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: "0.16.0"
+  url: oci://ghcr.io/prometheus-community/charts
 # https://github.com/jr0dd/home-ops/blob/main/cluster/apps/monitoring/grafana/helm-release.yaml
 #  smart-summary:
 #     url: https://raw.githubusercontent.com/jr0dd/grafana-dashboards/main/smart-summary.json
@@ -15,14 +28,9 @@ metadata:
   name: &app smartctl-exporter
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: prometheus-smartctl-exporter
-      version: 0.16.0
-      sourceRef:
-        kind: HelmRepository
-        name: prometheus-community-charts
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: smartctl-exporter-charts
   values:
     fullnameOverride: *app
     serviceMonitor:

@@ -1,19 +1,26 @@
 ---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: node-feature-discovery-charts
+spec:
+  interval: 15m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: "0.18.3"
+  url: oci://ghcr.io/kubernetes-sigs/node-feature-discovery/charts
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app node-feature-discovery
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: *app
-      version: 0.18.3
-      sourceRef:
-        kind: HelmRepository
-        name: node-feature-discovery-charts
-        namespace: flux-system
-      interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: node-feature-discovery-charts
   values:
     master:
       replicaCount: 2
