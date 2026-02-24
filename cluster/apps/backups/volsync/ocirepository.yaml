@@ -1,0 +1,13 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: nfs-subdir-external-provisioner-charts
+spec:
+  interval: 15m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: "v1.6.1"
+  url: oci://ghcr.io/kubernetes-sigs/nfs-subdir-external-provisioner

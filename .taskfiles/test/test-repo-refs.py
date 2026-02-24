@@ -44,9 +44,12 @@ for root, _, files in os.walk(APPS_DIR):
             errors.append(f"Failed to parse {filepath}: {e}")
             continue
 
-        # Collect names of OCIRepository/HelmRepository objects defined inline
+        # Collect names of OCIRepository/HelmRepository objects defined inline (same file)
+        # or co-located (ocirepository.yaml in the same directory)
         inline_oci_names  = set()
         inline_helm_names = set()
+
+        # Same-file definitions
         for doc in docs:
             if not isinstance(doc, dict):
                 continue
@@ -56,6 +59,22 @@ for root, _, files in os.walk(APPS_DIR):
                 inline_oci_names.add(name)
             elif kind == 'HelmRepository' and name:
                 inline_helm_names.add(name)
+
+        # Co-located ocirepository.yaml in the same directory
+        sibling_oci = os.path.join(os.path.dirname(filepath), 'ocirepository.yaml')
+        if sibling_oci != filepath and os.path.exists(sibling_oci):
+            try:
+                for doc in yaml.safe_load_all(open(sibling_oci).read()):
+                    if not isinstance(doc, dict):
+                        continue
+                    kind = doc.get('kind', '')
+                    name = (doc.get('metadata') or {}).get('name', '')
+                    if kind == 'OCIRepository' and name:
+                        inline_oci_names.add(name)
+                    elif kind == 'HelmRepository' and name:
+                        inline_helm_names.add(name)
+            except Exception:
+                pass
 
         # Check all HelmRelease chartRef / sourceRef usages
         for doc in docs:
