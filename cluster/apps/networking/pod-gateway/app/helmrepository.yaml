@@ -2,10 +2,9 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
-  name: vector-charts
-  namespace: flux-system
+  name: angelnu-charts
 spec:
   interval: 1h
   ref:
-    tag: "0.50.0"
-  url: https://helm.vector.dev
+    tag: "7.1.1"
+  url: https://angelnu.github.io/helm-charts

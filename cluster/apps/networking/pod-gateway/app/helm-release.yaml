@@ -8,8 +8,8 @@ metadata:
 spec:
   interval: 1h
   chartRef:
-    kind: OCIRepository
-    name: angelnu
+    kind: HelmRepository
+    name: angelnu-charts
   values:
     # Pasted from:
     # https://github.com/angelnu/helm-charts/blob/bceb8cc91d54895f1a4975c79ec520e88fbafe4b/charts/apps/pod-gateway/values.yaml

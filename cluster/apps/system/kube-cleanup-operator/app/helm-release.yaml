@@ -5,10 +5,9 @@ metadata:
   name: kube-cleanup-operator
   namespace: system
 spec:
-  interval: 5m
+  interval: 30m
   chartRef:
     kind: HelmRepository
-    chart: kube-cleanup-operator
     name: lwolf-charts
   install:
     createNamespace: true
