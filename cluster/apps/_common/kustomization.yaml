@@ -13,9 +13,3 @@ patches:
   - path: patches/helm-release.yaml
     target:
       kind: HelmRelease
-  # -----------------------------------------------------------
-  # All OCI Repositories
-  # -----------------------------------------------------------
-  - path: patches/ocirepository.yaml
-    target:
-      kind: OCIRepository
