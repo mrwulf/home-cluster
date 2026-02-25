@@ -6,4 +6,4 @@ metadata:
 spec:
   ref:
     tag: "0.27.1"
-  url: oci://ghcr.io/cloudnative-pg/charts
+  url: oci://ghcr.io/cloudnative-pg/charts/cloudnative-pg
