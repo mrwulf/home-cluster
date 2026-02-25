@@ -5,14 +5,9 @@ metadata:
   name: &app goldilocks
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: goldilocks
-      version: 10.3.0
-      sourceRef:
-        kind: HelmRepository
-        name: fairwinds-charts
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: fairwinds-charts
   values:
     vpa:
       enabled: true
@@ -24,8 +19,6 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          hajimari.io/enable: "true"
-          hajimari.io/appName: "Goldilocks"
           gatus.io/enabled: "true"
         hosts:
           - host: &host "goldilocks.home.${SECRET_DOMAIN}"

@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: stakater-charts
+spec:
+  ref:
+    tag: "2.2.8"
+  url: oci://ghcr.io/stakater/charts

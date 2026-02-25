@@ -5,14 +5,10 @@ metadata:
   name: home-assistant
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: app-template
-      version: 4.6.2
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s-charts
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
   values:
     defaultPodOptions:
       automountServiceAccountToken: false
@@ -80,9 +76,6 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: "home-automation"
-          hajimari.io/group: "Home"
           gatus.io/enabled: "true"
         hosts:
           - host: &host "home-assistant.${SECRET_DOMAIN}"
@@ -100,10 +93,6 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: microsoft-visual-studio-code
-          hajimari.io/appName: "Home-Assistant Config Editor"
-          hajimari.io/group: "Home"
           gatus.io/enabled: "true"
         hosts:
           - host: &host-config "hass-config.home.${SECRET_DOMAIN}"

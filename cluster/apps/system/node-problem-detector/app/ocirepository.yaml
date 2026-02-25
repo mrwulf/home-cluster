@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: deliveryhero-charts
+spec:
+  ref:
+    tag: "2.3.14"
+  url: oci://ghcr.io/deliveryhero/helm-charts

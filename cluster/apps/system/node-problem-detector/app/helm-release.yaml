@@ -5,14 +5,9 @@ metadata:
   name: node-problem-detector
 spec:
   interval: 5m
-  chart:
-    spec:
-      chart: node-problem-detector
-      version: 2.3.14
-      sourceRef:
-        kind: HelmRepository
-        name: deliveryhero-charts
-      interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: deliveryhero-charts
   values:
     metrics:
       enabled: true

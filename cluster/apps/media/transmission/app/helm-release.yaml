@@ -6,15 +6,9 @@ metadata:
   namespace: media
 spec:
   interval: 30m
-  chart:
-    spec:
-      # renovate: registryUrl=https://bananaspliff.github.io/geek-charts
-      chart: transmission-openvpn
-      version: 0.1.0
-      sourceRef:
-        kind: HelmRepository
-        name: bananaspliff-charts
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: bananaspliff-charts
   values:
     replicaCount: 1
     strategy: Recreate

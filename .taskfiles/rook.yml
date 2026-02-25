@@ -2,8 +2,6 @@
 version: "3"
 
 vars:
-  ROOK_NAMESPACE:
-    sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
   POOL: ceph-blockpool
   VOLUMESNAPSHOTCLASS: csi-rbdplugin-snapclass
   OS:
@@ -14,6 +12,9 @@ tasks:
   toolbox:
     desc: Exec into the Rook Ceph toolbox
     interactive: true
+    vars:
+      ROOK_NAMESPACE:
+        sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
     cmds:
       - kubectl -n {{ .ROOK_NAMESPACE }} exec -it $(kubectl -n {{ .ROOK_NAMESPACE }} get pod -l "app=rook-ceph-tools" -o jsonpath='{ .items[0].metadata.name }') -- bash
     silent: true
@@ -21,6 +22,9 @@ tasks:
   rook-password:
     desc: Retrieve the rook-ceph password
     silent: true
+    vars:
+      ROOK_NAMESPACE:
+        sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
     cmds:
       - kubectl -n {{.ROOK_NAMESPACE}} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
@@ -34,6 +38,8 @@ tasks:
     requires:
       vars: ["PV"]
     vars:
+      ROOK_NAMESPACE:
+        sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
       PVNAME: '{{.PV | default "invalid"}}'
       IMG:
         sh: kubectl describe pv {{.PVNAME}} | grep imageName | awk -F= '{print $2}'
@@ -71,6 +77,8 @@ tasks:
   clean-up-img:
     desc: Clean up an image
     vars:
+      ROOK_NAMESPACE:
+        sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
       IMG: "{{.CLI_ARGS}}"
       CHILDREN:
         sh: kubectl exec -n {{.ROOK_NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd children --all -p {{.POOL}} {{.IMG}}
@@ -96,6 +104,9 @@ tasks:
   get-unused-images:
     desc: Collect unused images
     silent: true
+    vars:
+      ROOK_NAMESPACE:
+        sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
     cmds:
       - |
         kubectl exec -n {{.ROOK_NAMESPACE}} -it $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- rbd -p {{.POOL}} ls | grep 'csi-vol-' > image_list.txt
@@ -112,6 +123,9 @@ tasks:
   ack-warnings:
     desc: Archive all ceph crashes
     silent: true
+    vars:
+      ROOK_NAMESPACE:
+        sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
     cmds:
       - kubectl exec -n {{.ROOK_NAMESPACE}} $(kubectl get po -A -lapp=rook-ceph-tools -oname) -- ceph crash archive-all
 

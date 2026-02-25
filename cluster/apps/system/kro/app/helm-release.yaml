@@ -7,14 +7,9 @@ metadata:
   namespace: system
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: kro
-      version: 0.4.1
-      sourceRef:
-        kind: HelmRepository
-        name: kro-charts
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: kro-charts
   values:
     deployment:
       replicaCount: 2

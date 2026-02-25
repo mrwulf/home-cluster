@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: cloudnative-pg-charts
+spec:
+  ref:
+    tag: "0.27.1"
+  url: oci://ghcr.io/cloudnative-pg/charts/cloudnative-pg

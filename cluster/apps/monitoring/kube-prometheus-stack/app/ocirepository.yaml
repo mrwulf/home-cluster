@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: kube-prometheus-stack-charts
+spec:
+  ref:
+    tag: "82.2.1"
+  url: oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack

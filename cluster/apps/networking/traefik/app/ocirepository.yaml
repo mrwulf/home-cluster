@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: traefik-charts
+spec:
+  ref:
+    tag: "39.0.2"
+  url: oci://ghcr.io/traefik/traefik-helm-chart

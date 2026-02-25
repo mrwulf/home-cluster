@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: external-secrets-charts
+spec:
+  ref:
+    tag: "2.0.1"
+  url: oci://ghcr.io/external-secrets/charts

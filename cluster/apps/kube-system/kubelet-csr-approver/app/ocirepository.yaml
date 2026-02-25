@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: postfinance-charts
+spec:
+  ref:
+    tag: "1.2.13"
+  url: oci://ghcr.io/postfinance/kubelet-csr-approver

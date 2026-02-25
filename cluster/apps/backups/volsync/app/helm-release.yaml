@@ -7,15 +7,9 @@ metadata:
   namespace: backups
 spec:
   interval: 5m
-  chart:
-    spec:
-      chart: volsync
-      version: 0.14.0
-      sourceRef:
-        kind: HelmRepository
-        name: backube-charts
-        namespace: flux-system
-      interval: 10m
+  chartRef:
+    kind: OCIRepository
+    name: backube-charts
   test:
     enable: true
   rollback:

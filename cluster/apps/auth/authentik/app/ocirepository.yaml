@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: authentik-charts
+spec:
+  ref:
+    tag: "2025.12.4"
+  url: oci://ghcr.io/goauthentik/helm

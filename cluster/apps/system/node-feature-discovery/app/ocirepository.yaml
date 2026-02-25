@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: node-feature-discovery-charts
+spec:
+  ref:
+    tag: "0.18.3"
+  url: oci://ghcr.io/home-operations/charts-mirror/node-feature-discovery

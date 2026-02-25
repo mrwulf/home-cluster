@@ -5,15 +5,9 @@ metadata:
   name: kyverno
 spec:
   interval: 5m
-  chart:
-    spec:
-      chart: kyverno
-      version: 3.7.1
-      sourceRef:
-        kind: HelmRepository
-        name: kyverno-charts
-        namespace: flux-system
-      interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: kyverno-charts
   test:
     enable: true
   values:

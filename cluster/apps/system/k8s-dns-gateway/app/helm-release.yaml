@@ -5,16 +5,9 @@ metadata:
   name: &app k8s-dns-gateway
 spec:
   interval: 5m
-  chart:
-    spec:
-      # renovate: registryUrl=https://ori-edge.github.io/k8s_gateway/
-      chart: k8s-gateway
-      version: 2.4.0
-      sourceRef:
-        kind: HelmRepository
-        name: k8s-gateway-charts
-        namespace: flux-system
-      interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: k8s-gateway-charts
   install:
     timeout: 10m
     remediation:

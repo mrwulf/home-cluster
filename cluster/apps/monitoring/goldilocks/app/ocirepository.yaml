@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: fairwinds-charts
+spec:
+  ref:
+    tag: "10.2.0"
+  url: oci://ghcr.io/fairwinds/charts

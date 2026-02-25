@@ -5,14 +5,9 @@ kind: HelmRelease
 metadata:
   name: &app k8tz
 spec:
-  chart:
-    spec:
-      chart: k8tz
-      version: 0.18.0
-      interval: 30m
-      sourceRef:
-        kind: HelmRepository
-        name: k8tz
+  chartRef:
+    kind: OCIRepository
+    name: k8tz
   interval: 30m
   values:
     namespace: system

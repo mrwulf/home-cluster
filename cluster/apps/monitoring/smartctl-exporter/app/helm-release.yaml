@@ -1,13 +1,3 @@
-# https://github.com/jr0dd/home-ops/blob/main/cluster/apps/monitoring/grafana/helm-release.yaml
-#  smart-summary:
-#     url: https://raw.githubusercontent.com/jr0dd/grafana-dashboards/main/smart-summary.json
-#     datasource: Prometheus
-#   smart-errors:
-#     url: https://raw.githubusercontent.com/jr0dd/grafana-dashboards/main/smart-errors.json
-#     datasource: Prometheus
-#
-# https://www.wirewd.com/hacks/blog/monitoring_a_mixed_fleet_of_flash_hdd_and_nvme_devices_with_node_exporter_and_prometheus
-#
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
@@ -15,14 +5,9 @@ metadata:
   name: &app smartctl-exporter
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: prometheus-smartctl-exporter
-      version: 0.16.0
-      sourceRef:
-        kind: HelmRepository
-        name: prometheus-community-charts
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: smartctl-exporter-charts
   values:
     fullnameOverride: *app
     serviceMonitor:

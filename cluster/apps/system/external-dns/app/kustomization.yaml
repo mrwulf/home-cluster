@@ -4,5 +4,6 @@ kind: Kustomization
 resources:
   - crds.yaml
   - external-secret.yaml
+  - ./ocirepository.yaml
   - helm-release.yaml
   - service-monitor.yaml

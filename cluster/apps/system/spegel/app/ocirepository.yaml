@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: spegel-charts
+spec:
+  ref:
+    tag: "0.6.0"
+  url: oci://ghcr.io/spegel-org/helm-charts

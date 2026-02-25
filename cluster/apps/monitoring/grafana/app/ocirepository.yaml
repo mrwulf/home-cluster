@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: grafana-charts
+spec:
+  ref:
+    tag: "10.5.15"
+  url: oci://ghcr.io/grafana/helm-charts/grafana

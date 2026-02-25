@@ -5,15 +5,9 @@ metadata:
   name: &app reloader
 spec:
   interval: 5m
-  chart:
-    spec:
-      chart: reloader
-      version: 2.2.8
-      sourceRef:
-        kind: HelmRepository
-        name: stakater-charts
-        namespace: flux-system
-      interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: stakater-charts
   values:
     nameOverride: *app
     fullnameOverride: *app

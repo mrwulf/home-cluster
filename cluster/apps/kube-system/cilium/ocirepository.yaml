@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: cilium-charts
+spec:
+  ref:
+    tag: "1.19.1"
+  url: oci://quay.io/cilium/charts/cilium

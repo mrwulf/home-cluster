@@ -5,15 +5,9 @@ metadata:
   name: authentik
 spec:
   interval: 30m
-  chart:
-    spec:
-      # renovate: registryUrl=https://charts.goauthentik.io/
-      chart: authentik
-      version: 2026.2.0
-      sourceRef:
-        kind: HelmRepository
-        name: authentik-charts
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: authentik-charts
   values:
     authentik:
       secret_key: "${AUTHENTIK_KEY}"
@@ -84,9 +78,6 @@ spec:
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: "shield-lock"
-          hajimari.io/group: "Home"
           gatus.io/enabled: "true"
         hosts:
           - &host "auth.${SECRET_DOMAIN}"

@@ -6,14 +6,10 @@ metadata:
   name: whoami
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: app-template
-      version: 4.6.2
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s-charts
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
   maxHistory: 2
   install:
     remediation:
@@ -55,8 +51,6 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-cloudflare-authentik@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
-          hajimari.io/appName: "Who Am I?"
-          hajimari.io/icon: mdi:id-card-outline
           gatus.io/enabled: "true"
         hosts:
           - host: &host "whoami.${SECRET_DOMAIN}"

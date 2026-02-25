@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: external-dns-charts
+spec:
+  ref:
+    tag: "1.20.0"
+  url: oci://ghcr.io/home-operations/charts-mirror/external-dns

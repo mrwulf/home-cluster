@@ -5,15 +5,9 @@ kind: HelmRelease
 metadata:
   name: grafana
 spec:
-  chart:
-    spec:
-      chart: grafana
-      interval: 30m
-      sourceRef:
-        kind: HelmRepository
-        name: grafana-charts
-        namespace: flux-system
-      version: 10.5.15
+  chartRef:
+    kind: OCIRepository
+    name: grafana-charts
   interval: 30m
   timeout: 20m
   values:

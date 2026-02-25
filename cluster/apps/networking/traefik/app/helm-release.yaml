@@ -6,15 +6,9 @@ metadata:
   name: traefik
 spec:
   interval: 5m
-  chart:
-    spec:
-      chart: traefik
-      version: 39.0.2
-      sourceRef:
-        kind: HelmRepository
-        name: traefik-charts
-        namespace: flux-system
-      interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: traefik-charts
   install:
     createNamespace: true
     crds: CreateReplace

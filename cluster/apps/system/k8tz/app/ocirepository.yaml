@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: k8tz
+spec:
+  ref:
+    tag: "0.18.0"
+  url: oci://ghcr.io/home-operations/charts-mirror/k8tz

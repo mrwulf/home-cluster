@@ -14,3 +14,6 @@ yamllint = "latest"
 node = "latest"
 pipx = "latest"
 python = "3.14.3"
+
+[env]
+_.python.venv = { path = ".venv", create = true }
