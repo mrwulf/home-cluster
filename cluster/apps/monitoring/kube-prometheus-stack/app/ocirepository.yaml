@@ -5,5 +5,5 @@ metadata:
   name: kube-prometheus-stack-charts
 spec:
   ref:
-    tag: "82.2.1"
+    tag: "82.4.0"
   url: oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack
