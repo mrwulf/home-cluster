@@ -111,14 +111,14 @@ tasks:
     desc: Show diff for HelmRelease resources (like CI)
     cmds:
       - echo "Diffing HelmRelease resources..."
-      - flux-local diff --path cluster --resource helmrelease --sources flux-system
+      - flux-local diff hr --path ./cluster --sources flux-system/flux-system
     ignore_error: true
 
   flux:diff:kustomization:
     desc: Show diff for Kustomization resources (like CI)
     cmds:
       - echo "Diffing Kustomization resources..."
-      - flux-local diff --path cluster --resource kustomization --sources flux-system
+      - flux-local diff ks --path ./cluster --sources flux-system/flux-system
     ignore_error: true
 
   flux:diff:all:

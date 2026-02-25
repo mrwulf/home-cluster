@@ -22,6 +22,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
+  path: ./docs/contributing/crd-source/crd-manifest.yaml
   prune: false
   wait: true
   dependsOn: []
