@@ -4,6 +4,10 @@ kind: OCIRepository
 metadata:
   name: authentik-charts
 spec:
+  interval: 1h
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
   ref:
     tag: "2025.12.4"
   url: oci://ghcr.io/goauthentik/helm

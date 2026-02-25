@@ -4,6 +4,10 @@ kind: OCIRepository
 metadata:
   name: jetstack-charts
 spec:
+  interval: 1h
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
   ref:
     tag: "v1.19.3"
   url: oci://ghcr.io/home-operations/charts-mirror/cert-manager
