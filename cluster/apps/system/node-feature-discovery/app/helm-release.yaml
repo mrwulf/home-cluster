@@ -5,9 +5,14 @@ metadata:
   name: &app node-feature-discovery
 spec:
   interval: 30m
-  chartRef:
-    kind: HelmRepository
-    name: node-feature-discovery-charts
+  chart:
+    spec:
+      chart: *app
+      version: 0.18.3
+      sourceRef:
+        kind: HelmRepository
+        name: node-feature-discovery-charts
+      interval: 30m
   values:
     master:
       replicaCount: 2

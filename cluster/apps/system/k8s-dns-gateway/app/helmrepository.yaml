@@ -5,6 +5,4 @@ metadata:
   name: k8s-gateway-charts
 spec:
   interval: 1h
-  ref:
-    tag: "2.4.0"
   url: https://ori-edge.github.io/k8s_gateway/

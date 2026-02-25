@@ -5,6 +5,4 @@ metadata:
   name: angelnu-charts
 spec:
   interval: 1h
-  ref:
-    tag: "7.1.1"
   url: https://angelnu.github.io/helm-charts

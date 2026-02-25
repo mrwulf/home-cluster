@@ -5,6 +5,4 @@ metadata:
   name: lwolf-charts
 spec:
   interval: 1h
-  ref:
-    tag: "1.0.4"
   url: https://lwolf.github.io/charts/

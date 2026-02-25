@@ -4,11 +4,15 @@ kind: HelmRelease
 metadata:
   name: vector-aggregator
 spec:
-  interval: 15m
-  chartRef:
-    kind: HelmRepository
-    name: vector-charts
-    namespace: flux-system
+  interval: 30m
+  chart:
+    spec:
+      chart: vector
+      version: 0.50.0
+      sourceRef:
+        kind: HelmRepository
+        name: vector-charts
+        namespace: flux-system
   values:
     image:
       repository: timberio/vector
