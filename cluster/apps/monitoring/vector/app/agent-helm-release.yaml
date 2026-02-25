@@ -6,7 +6,8 @@ metadata:
 spec:
   interval: 30m
   chartRef:
-    kind: OCIRepository
+    kind: HelmRepository
+    chart: vector
     name: vector-charts
     namespace: flux-system
   values:

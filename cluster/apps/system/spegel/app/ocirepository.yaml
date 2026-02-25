@@ -10,4 +10,4 @@ spec:
     operation: copy
   ref:
     tag: "0.6.0"
-  url: oci://ghcr.io/spegel-org/helm-charts
+  url: oci://ghcr.io/spegel-org/helm-charts/spegel

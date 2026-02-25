@@ -6,7 +6,8 @@ metadata:
 spec:
   interval: 5m
   chartRef:
-    kind: OCIRepository
+    kind: HelmRepository
+    chart: k8s-gateway
     name: k8s-gateway-charts
   install:
     timeout: 10m

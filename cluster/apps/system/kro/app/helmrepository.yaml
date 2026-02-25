@@ -1,0 +1,10 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: kro-charts
+spec:
+  interval: 1h
+  ref:
+    tag: "0.4.1"
+  url: https://kro-run.github.io/kro

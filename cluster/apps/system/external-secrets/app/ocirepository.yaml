@@ -10,4 +10,4 @@ spec:
     operation: copy
   ref:
     tag: "2.0.1"
-  url: oci://ghcr.io/external-secrets/charts
+  url: oci://ghcr.io/external-secrets/charts/external-secrets

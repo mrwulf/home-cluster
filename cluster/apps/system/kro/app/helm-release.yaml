@@ -8,7 +8,8 @@ metadata:
 spec:
   interval: 30m
   chartRef:
-    kind: OCIRepository
+    kind: HelmRepository
+    chart: kro
     name: kro-charts
   values:
     deployment:
