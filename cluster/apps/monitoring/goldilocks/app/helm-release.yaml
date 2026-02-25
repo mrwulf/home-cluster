@@ -5,9 +5,14 @@ metadata:
   name: &app goldilocks
 spec:
   interval: 30m
-  chartRef:
-    kind: HelmRepository
-    name: fairwinds-charts
+  chart:
+    spec:
+      # renovate: registryUrl=https://charts.fairwinds.com/stable
+      chart: goldilocks
+      version: 10.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: fairwinds-charts
   values:
     vpa:
       enabled: true

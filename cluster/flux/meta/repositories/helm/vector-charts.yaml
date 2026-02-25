@@ -6,6 +6,4 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
-  ref:
-    tag: "0.50.0"
   url: https://helm.vector.dev

@@ -5,6 +5,4 @@ metadata:
   name: fairwinds-charts
 spec:
   interval: 1h
-  ref:
-    tag: "10.2.0"
   url: https://charts.fairwinds.com/stable
