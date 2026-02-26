@@ -15,5 +15,5 @@ resources:
   - readarr-books/ks.yaml
   - sonarr/ks.yaml
   - tautulli/ks.yaml
-  - transmission/ks.yaml
+  # - transmission/ks.yaml
   - watchstate/ks.yaml
