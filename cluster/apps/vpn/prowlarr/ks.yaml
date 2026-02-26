@@ -14,7 +14,7 @@ spec:
   interval: 30m
   path: ./cluster/apps/vpn/prowlarr/app
   components:
-    - ../../../../templates/volsync/init
+    - ../../../../templates/volsync/primary
   prune: true
   sourceRef:
     kind: GitRepository

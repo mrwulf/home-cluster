@@ -14,6 +14,9 @@ tasks:
   toolbox:
     desc: Exec into the Rook Ceph toolbox
     interactive: true
+    vars:
+      ROOK_NAMESPACE:
+        sh: kubectl get cephcluster -A -o jsonpath='{.items[0].metadata.namespace}' || echo 'undefined'
     cmds:
       - kubectl -n {{ .ROOK_NAMESPACE }} exec -it $(kubectl -n {{ .ROOK_NAMESPACE }} get pod -l "app=rook-ceph-tools" -o jsonpath='{ .items[0].metadata.name }') -- bash
     silent: true
