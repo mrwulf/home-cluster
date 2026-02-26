@@ -19,6 +19,18 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
 
+        pod:
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - topologyKey: kubernetes.io/hostname
+                  namespaces:
+                    - networking
+                  labelSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: pod-gateway
+                      app.kubernetes.io/controller: main
+
         containers:
           *app :
             image:
