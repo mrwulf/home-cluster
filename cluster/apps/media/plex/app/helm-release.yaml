@@ -44,8 +44,7 @@ spec:
               tag: 1.43.0.10492
 
             env:
-              TZ: "${TIMEZONE}"
-              PLEX_ADVERTISE_URL: "http://${PLEX_ADDR}:32400/,http://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
+              PLEX_ADVERTISE_URL: "http://plex.media.home.${SECRET_DOMAIN}:32400/,http://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
               PLEX_PREFERENCE_GPU: "HardwareAcceleratedCodecs=1"
               # CLAIM_TOKEN: ''
 
@@ -88,7 +87,6 @@ spec:
         controller: plex
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: "${PLEX_ADDR:=1.1.1.1}"
           traefik.ingress.kubernetes.io/service.serversscheme: https
         externalTrafficPolicy: Local
         ports:
