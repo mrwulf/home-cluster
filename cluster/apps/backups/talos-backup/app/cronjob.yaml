@@ -31,7 +31,7 @@ spec:
               # talos.default.svc.cluster.local
               args:
                 - -n
-                - k8s.home
+                - 10.0.10.201
                 - etcd
                 - snapshot
                 - /backups/latest
