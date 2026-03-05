@@ -30,6 +30,6 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CLAIM: plex-config
-      VOLSYNC_CAPACITY: 100Gi
+      VOLSYNC_CAPACITY: 150Gi
       VOLSYNC_START_MINUTE: "11"
       VOLSYNC_CACHE_CAPACITY: "30Gi"
