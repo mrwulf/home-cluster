@@ -38,7 +38,7 @@ spec:
       topologySpreadConstraints:
         - maxSkew: 2
           topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: DoNotSchedule
+          whenUnsatisfiable: ScheduleAnyway
           labelSelector:
             matchLabels:
               app.kubernetes.io/instance: kyverno

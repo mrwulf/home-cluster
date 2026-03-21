@@ -35,7 +35,7 @@ spec:
       # on nodes where no other traefik pods are scheduled.
       # It should be used when hostNetwork: true to prevent port conflicts
       podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
+        preferredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
                 - key: app.kubernetes.io/name
