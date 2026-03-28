@@ -267,7 +267,7 @@ spec:
       GF_LOG_MODE: console
       GF_NEWS_NEWS_FEED_ENABLED: false
       # GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel
-      GF_SECURITY_COOKIE_SAMESITE: grafana
+      GF_SECURITY_COOKIE_SAMESITE: lax
       GF_SERVER_ROOT_URL: "https://grafana.home.${SECRET_DOMAIN}"
       GF_AUTH_SIGNOUT_REDIRECT_URL: "https://auth.${SECRET_DOMAIN}/application/o/grafana/end-session/"
       GF_AUTH_OAUTH_AUTO_LOGIN: false # Switch off auto_login to be able to log in as admin to solve https://github.com/grafana/grafana/issues/29211
@@ -322,7 +322,7 @@ spec:
 
     resources:
       limits:
-        memory: 512Mi
+        memory: 2Gi
       requests:
         cpu: 50m
         memory: 128Mi
