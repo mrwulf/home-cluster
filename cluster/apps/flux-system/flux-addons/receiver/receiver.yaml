@@ -1,7 +1,7 @@
 ---
 # Github should be configured to send application/json
 
-apiVersion: notification.toolkit.fluxcd.io/v1beta1
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
 kind: Receiver
 metadata:
   name: github-receiver
