@@ -9,6 +9,8 @@ web:
         username: flux
         groups:
           - flux-admin
+  rbac:
+    createRoles: true
   networkPolicy:
     create: false
   ingress:
