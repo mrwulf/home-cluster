@@ -66,7 +66,7 @@ spec:
           main:
             image:
               repository: restic/restic
-              tag: "0.17.3"
+              tag: "0.18.1"
             command:
               - /bin/sh
               - -c
