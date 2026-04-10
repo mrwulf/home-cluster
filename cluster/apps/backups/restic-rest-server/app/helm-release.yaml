@@ -20,6 +20,8 @@ spec:
             image:
               repository: restic/rest-server
               tag: "0.13.0"
+            command:
+              - /rest-server
             args:
               - --path
               - /data
