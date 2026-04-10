@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ./openebs/ks.yaml
+  - ./restic-rest-server/ks.yaml
   - ./snapshot-controller/ks.yaml
   - ./talos-backup/ks.yaml
   - ./volsync/ks.yaml

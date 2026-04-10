@@ -1,0 +1,152 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: restic-rest-server
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: restic/rest-server
+              tag: "0.13.0"
+            args:
+              - --path
+              - /data
+              - --htpasswd-file
+              - /secrets/.htpasswd
+              - --append-only
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &port 8000
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+
+      # Runs restic forget --prune on each device repo on the NFS share directly,
+      # bypassing --append-only (which only applies to the HTTP API).
+      # Schedule matches volsync's pruneIntervalDays: 10.
+      prune:
+        type: cronjob
+        cronjob:
+          schedule: "0 2 */10 * *"
+          concurrencyPolicy: Forbid
+          successfulJobsHistory: 3
+          failedJobsHistory: 3
+        containers:
+          main:
+            image:
+              repository: restic/restic
+              tag: "0.17.3"
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                for dir in /data/*/; do
+                  [ -d "$dir" ] || continue
+                  echo ">>> Pruning $dir"
+                  RESTIC_REPOSITORY="$dir" restic forget \
+                    --keep-hourly 24 \
+                    --keep-daily 5 \
+                    --keep-weekly 4 \
+                    --keep-monthly 3 \
+                    --prune \
+                    --verbose
+                done
+            env:
+              RESTIC_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: restic-rest-server-secret
+                    key: restic-password
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: *port
+
+    ingress:
+      main:
+        className: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
+          external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=domain}"
+          external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+          gatus.io/enabled: "true"
+          gatus.io/status-code: "200"
+        hosts:
+          - host: &host "backups.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: main
+                  port: http
+        tls:
+          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+
+    persistence:
+      data:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: "/mnt/user/backups/restic"
+        globalMounts:
+          - path: /data
+      secrets:
+        type: secret
+        name: restic-rest-server-secret
+        defaultMode: 0440
+        advancedMounts:
+          main:
+            main:
+              - path: /secrets
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
