@@ -41,7 +41,7 @@ spec:
           main:
             image:
               repository: ghcr.io/home-operations/plex
-              tag: 1.43.1.10576
+              tag: 1.43.1.10611
 
             env:
               PLEX_ADVERTISE_URL: "http://plex.media.home.${SECRET_DOMAIN}:32400/,http://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
