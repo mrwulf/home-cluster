@@ -23,7 +23,7 @@ spec:
             env:
               DATA_DIRECTORY: /data
               PASSWORD_FILE: /secrets/.htpasswd
-              OPTIONS: --append-only
+              OPTIONS: --append-only --provate-repos --debug
             probes:
               liveness: &probes
                 enabled: true
