@@ -17,7 +17,7 @@ htpasswd -nB <devicename>
 # e.g.: htpasswd -nB macbook-pro
 ```
 
-Copy the output line (e.g. `macbook-pro:$2y$05$...`).
+Copy the output line (e.g. `macbook-pro:$2y$...`).
 
 ### 2. Add to the cluster secret
 
@@ -38,7 +38,7 @@ Commit and push. Flux will reconcile and reload the secret automatically
 
 ### 3. Initialize the restic repository on the client
 
-Install restic: https://restic.net/
+Install restic: [https://restic.net/](https://restic.net/)
 
 ```sh
 # Set these once — add to your shell profile or backup script
@@ -115,7 +115,8 @@ $env:RESTIC_PASSWORD   = "restic-password-value"
 
 $action  = New-ScheduledTaskAction -Execute "restic" -Argument "backup C:\path\to\data"
 $trigger = New-ScheduledTaskTrigger -Daily -At 2am
-Register-ScheduledTask -TaskName "ResticBackup" -Action $action -Trigger $trigger -RunLevel Highest
+Register-ScheduledTask -TaskName "ResticBackup" -Action $action `
+  -Trigger $trigger -RunLevel Highest
 ```
 
 ---
