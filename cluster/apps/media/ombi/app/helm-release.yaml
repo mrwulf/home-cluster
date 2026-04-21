@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: lscr.io/linuxserver/ombi
-              tag: 4.53.4
+              tag: 4.53.5
 
             env:
               TZ: "${TIMEZONE}"
