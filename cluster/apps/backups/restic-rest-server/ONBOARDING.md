@@ -38,7 +38,7 @@ Commit and push. Flux will reconcile and reload the secret automatically
 
 ### 3. Initialize the restic repository on the client
 
-Install restic: https://restic.net/
+Install restic: <https://restic.net/>
 
 ```sh
 # Set these once — add to your shell profile or backup script
@@ -115,7 +115,8 @@ $env:RESTIC_PASSWORD   = "restic-password-value"
 
 $action  = New-ScheduledTaskAction -Execute "restic" -Argument "backup C:\path\to\data"
 $trigger = New-ScheduledTaskTrigger -Daily -At 2am
-Register-ScheduledTask -TaskName "ResticBackup" -Action $action -Trigger $trigger -RunLevel Highest
+Register-ScheduledTask -TaskName "ResticBackup" -Action $action `
+  -Trigger $trigger -RunLevel Highest
 ```
 
 ---
@@ -126,7 +127,7 @@ The server-side prune CronJob runs every 10 days and applies the same retention
 policy as volsync PVC backups:
 
 | Window  | Keep |
-|---------|------|
+| ------- | ---- |
 | Hourly  | 24   |
 | Daily   | 5    |
 | Weekly  | 4    |
