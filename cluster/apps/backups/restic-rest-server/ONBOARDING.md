@@ -15,6 +15,10 @@ On any machine with `htpasswd` (part of `apache2-utils` / `httpd-tools`, or via 
 ```sh
 htpasswd -nB <devicename>
 # e.g.: htpasswd -nB macbook-pro
+
+# OR
+
+docker run --rm -it httpd:2 htpasswd -nB <devicename>
 ```
 
 Copy the output line (e.g. `macbook-pro:$2y$05$...`).
