@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: spegel
-      version: 0.6.0
+      version: 0.7.0
       sourceRef:
         kind: HelmRepository
         name: spegel-charts
@@ -19,7 +19,8 @@ spec:
     spegel:
       containerdSock: /run/containerd/containerd.sock
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
-      filter: ":latest$"
+      registryFilters:
+        - :latest$
     grafanaDashboard:
       enabled: true
       labels:
@@ -29,3 +30,8 @@ spec:
         hostPort: 29999
     serviceMonitor:
       enabled: true
+    securityContext:
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
