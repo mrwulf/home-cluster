@@ -44,7 +44,7 @@ spec:
                 memory: 128Mi
           sync:
             image:
-              repository: 43ntropy/supersync
+              repository: iari/supersync
               tag: latest
             env:
               - name: NODE_ENV
