@@ -88,6 +88,8 @@ spec:
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           hajimari.io/enable: "true"
           gatus.io/enabled: "true"
+          gatus.io/path: /webhook
+          gatus.io/status-code: "404"
         hosts:
           - host: &exthost "{{ .Release.Name }}-webhook.${SECRET_DOMAIN}"
             paths:
