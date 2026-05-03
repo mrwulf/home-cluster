@@ -15,4 +15,5 @@ resources:
   - outline/ks.yaml
   - paperless/ks.yaml
   # - penpot/ks.yaml
+  - super-productivity/ks.yaml
   - vikunja/ks.yaml

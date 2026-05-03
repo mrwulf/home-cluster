@@ -1,0 +1,139 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app super-productivity
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+        containers:
+          main:
+            image:
+              repository: caddy
+              tag: 2.11.2-alpine
+              pullPolicy: IfNotPresent
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+          web:
+            image:
+              repository: ghcr.io/super-productivity/super-productivity
+              tag: latest
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+          sync:
+            image:
+              repository: ghcr.io/super-productivity/supersync
+              tag: latest
+            env:
+              - name: NODE_ENV
+                value: production
+              - name: PORT
+                value: "1900"
+              - name: DATA_DIR
+                value: /app/data
+              - name: PUBLIC_URL
+                value: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/api
+              - name: CORS_ENABLED
+                value: "true"
+              - name: CORS_ORIGINS
+                value: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
+              - name: SMTP_HOST
+                value: smtp-relay.home.svc.cluster.local
+              - name: SMTP_PORT
+                value: "2525"
+              - name: SMTP_SECURE
+                value: "false"
+              - name: SMTP_FROM
+                value: super-productivity@${SECRET_DOMAIN}
+              - name: WEBAUTHN_RP_ID
+                value: ${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
+              - name: WEBAUTHN_RP_NAME
+                value: Super Productivity
+              - name: WEBAUTHN_ORIGIN
+                value: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
+              - name: DATABASE_URL
+                valueFrom:
+                  secretKeyRef:
+                    name: super-productivity-db
+                    key: DATABASE_URL
+              - name: JWT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: super-productivity
+                    key: SP_JWT_SECRET
+            resources:
+              requests:
+                cpu: 15m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: 8080
+
+    ingress:
+      main:
+        className: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
+          hajimari.io/enable: "true"
+          hajimari.io/appName: "Super Productivity"
+          hajimari.io/icon: mdi:checkbox-marked-circle-outline
+          hajimari.io/group: "Home"
+          gatus.io/enabled: "true"
+        hosts:
+          - host: &host "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: main
+                  port: http
+        tls:
+          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *host
+
+    persistence:
+      data:
+        existingClaim: "${VOLSYNC_CLAIM}"
+        advancedMounts:
+          main:
+            sync:
+              - path: /app/data
+      caddy-config:
+        type: custom
+        volumeSpec:
+          configMap:
+            name: super-productivity
+        advancedMounts:
+          main:
+            main:
+              - path: /etc/caddy/Caddyfile
+                subPath: Caddyfile
