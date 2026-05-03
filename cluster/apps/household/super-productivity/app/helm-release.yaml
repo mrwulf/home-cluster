@@ -34,8 +34,8 @@ spec:
                 memory: 256Mi
           web:
             image:
-              repository: ghcr.io/super-productivity/super-productivity
-              tag: latest
+              repository: johannesjo/super-productivity
+              tag: v18.4.4
             resources:
               requests:
                 cpu: 10m
@@ -44,7 +44,7 @@ spec:
                 memory: 128Mi
           sync:
             image:
-              repository: ghcr.io/super-productivity/supersync
+              repository: 43ntropy/supersync
               tag: latest
             env:
               - name: NODE_ENV
