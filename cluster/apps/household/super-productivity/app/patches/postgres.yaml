@@ -5,9 +5,10 @@ kind: HelmRelease
 metadata:
   name: super-productivity
 spec:
+  interval: 30m
   values:
     controllers:
-      main:
+      sync:
         initContainers:
           init-db:
             image:

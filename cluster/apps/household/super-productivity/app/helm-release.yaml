@@ -12,7 +12,7 @@ spec:
     namespace: flux-system
   values:
     controllers:
-      main:
+      web:
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
@@ -23,17 +23,6 @@ spec:
         containers:
           main:
             image:
-              repository: caddy
-              tag: 2.11.2-alpine
-              pullPolicy: IfNotPresent
-            resources:
-              requests:
-                cpu: 10m
-                memory: 64Mi
-              limits:
-                memory: 256Mi
-          web:
-            image:
               repository: johannesjo/super-productivity
               tag: v18.4.4
             resources:
@@ -42,7 +31,17 @@ spec:
                 memory: 32Mi
               limits:
                 memory: 128Mi
-          sync:
+
+      sync:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+        containers:
+          main:
             image:
               repository: iari/supersync
               tag: latest
@@ -54,7 +53,7 @@ spec:
               - name: DATA_DIR
                 value: /app/data
               - name: PUBLIC_URL
-                value: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/api
+                value: https://sp-sync.${SECRET_DOMAIN}
               - name: CORS_ENABLED
                 value: "true"
               - name: CORS_ORIGINS
@@ -68,11 +67,11 @@ spec:
               - name: SMTP_FROM
                 value: super-productivity@${SECRET_DOMAIN}
               - name: WEBAUTHN_RP_ID
-                value: ${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
+                value: sp-sync.${SECRET_DOMAIN}
               - name: WEBAUTHN_RP_NAME
                 value: Super Productivity
               - name: WEBAUTHN_ORIGIN
-                value: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
+                value: https://sp-sync.${SECRET_DOMAIN}
               - name: DATABASE_URL
                 valueFrom:
                   secretKeyRef:
@@ -91,14 +90,19 @@ spec:
                 memory: 512Mi
 
     service:
-      main:
-        controller: main
+      web:
+        controller: web
         ports:
           http:
-            port: 8080
+            port: 80
+      sync:
+        controller: sync
+        ports:
+          http:
+            port: 1900
 
     ingress:
-      main:
+      web:
         className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -109,31 +113,38 @@ spec:
           hajimari.io/group: "Home"
           gatus.io/enabled: "true"
         hosts:
-          - host: &host "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+          - host: &webHost "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
-                  identifier: main
+                  identifier: web
                   port: http
         tls:
           - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
             hosts:
-              - *host
+              - *webHost
+      sync:
+        className: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
+          gatus.io/enabled: "true"
+        hosts:
+          - host: &syncHost "sp-sync.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: sync
+                  port: http
+        tls:
+          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - *syncHost
 
     persistence:
       data:
         existingClaim: "${VOLSYNC_CLAIM}"
         advancedMounts:
-          main:
-            sync:
-              - path: /app/data
-      caddy-config:
-        type: custom
-        volumeSpec:
-          configMap:
-            name: super-productivity
-        advancedMounts:
-          main:
+          sync:
             main:
-              - path: /etc/caddy/Caddyfile
-                subPath: Caddyfile
+              - path: /app/data
