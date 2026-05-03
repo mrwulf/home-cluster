@@ -59,7 +59,7 @@ spec:
               - name: CORS_ORIGINS
                 value: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
               - name: SMTP_HOST
-                value: smtp-relay.home.svc.cluster.local
+                value: smtp-relay.system.svc.cluster.local.
               - name: SMTP_PORT
                 value: "2525"
               - name: SMTP_SECURE
