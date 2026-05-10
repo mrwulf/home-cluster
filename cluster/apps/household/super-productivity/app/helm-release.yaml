@@ -24,7 +24,7 @@ spec:
           main:
             image:
               repository: johannesjo/super-productivity
-              tag: v18.4.4
+              tag: v18.5.0
             resources:
               requests:
                 cpu: 10m
