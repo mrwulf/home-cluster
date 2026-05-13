@@ -28,7 +28,7 @@ spec:
           main:
             image:
               repository: caddy
-              tag: 2.11.2-alpine
+              tag: 2.11.3-alpine
               pullPolicy: IfNotPresent
             resources:
               requests:
