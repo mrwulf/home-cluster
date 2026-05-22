@@ -114,8 +114,7 @@ spec:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
-            client:
-              dns-resolver: tcp://10.0.0.1:53053
+            guarded: true
         hosts:
           - host: &webHost "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
             paths:
@@ -135,8 +134,7 @@ spec:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
-            client:
-              dns-resolver: tcp://10.0.0.1:53053
+            guarded: true
         hosts:
           - host: &syncHost "sp-sync.${SECRET_DOMAIN}"
             paths:

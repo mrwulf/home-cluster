@@ -69,8 +69,7 @@ spec:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
-            client:
-              dns-resolver: tcp://10.0.0.1:53053
+            guarded: true
         hosts:
           - host: &host "chat.${SECRET_DOMAIN}"
             paths:
