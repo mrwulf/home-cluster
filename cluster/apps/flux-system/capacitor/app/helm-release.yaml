@@ -49,6 +49,7 @@ spec:
           identifier: *app
     serviceAccount:
       capacitor: {}
+    automountServiceAccountToken: true
     service:
       app:
         controller: *app
