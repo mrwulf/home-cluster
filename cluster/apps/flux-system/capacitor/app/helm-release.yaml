@@ -25,6 +25,8 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    defaultPodOptions:
+      automountServiceAccountToken: true
     controllers:
       capacitor:
         strategy: RollingUpdate
@@ -49,7 +51,6 @@ spec:
           identifier: *app
     serviceAccount:
       capacitor: {}
-    automountServiceAccountToken: true
     service:
       app:
         controller: *app
