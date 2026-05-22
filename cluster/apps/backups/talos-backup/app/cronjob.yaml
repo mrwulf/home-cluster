@@ -5,7 +5,7 @@ kind: CronJob
 metadata:
   name: talos-backup
 spec:
-  schedule: "15/60 * * * *"
+  schedule: "0/15 * * * *"
   suspend: false
   failedJobsHistoryLimit: 10
   jobTemplate:
