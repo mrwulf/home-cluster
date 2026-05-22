@@ -9,7 +9,12 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     hajimari.io/enable: "false"
     gatus.io/enabled: "true"
-    gatus.io/status-code: "404"
+    gatus.io/endpoint: |
+      group: external
+      client:
+        dns-resolver: tcp://10.0.0.1:53053
+      conditions:
+        - "[STATUS] == 404"
 spec:
   ingressClassName: "traefik"
   tls:

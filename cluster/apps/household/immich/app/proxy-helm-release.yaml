@@ -49,6 +49,10 @@ spec:
         className: traefik
         annotations:
           gatus.io/enabled: "true"
+          gatus.io/endpoint: |
+            group: external
+            client:
+              dns-resolver: tcp://10.0.0.1:53053
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
         hosts:

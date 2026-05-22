@@ -88,6 +88,10 @@ spec:
           hajimari.io/icon: "shield-lock"
           hajimari.io/group: "Home"
           gatus.io/enabled: "true"
+          gatus.io/endpoint: |
+            group: external
+            client:
+              dns-resolver: tcp://10.0.0.1:53053
         hosts:
           - &host "auth.${SECRET_DOMAIN}"
         tls:

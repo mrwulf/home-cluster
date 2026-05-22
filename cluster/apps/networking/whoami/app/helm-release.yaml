@@ -58,6 +58,10 @@ spec:
           hajimari.io/appName: "Who Am I?"
           hajimari.io/icon: mdi:id-card-outline
           gatus.io/enabled: "true"
+          gatus.io/endpoint: |
+            group: external
+            client:
+              dns-resolver: tcp://10.0.0.1:53053
         hosts:
           - host: &host "whoami.${SECRET_DOMAIN}"
             paths:

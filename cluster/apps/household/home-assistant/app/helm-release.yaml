@@ -84,6 +84,10 @@ spec:
           hajimari.io/icon: "home-automation"
           hajimari.io/group: "Home"
           gatus.io/enabled: "true"
+          gatus.io/endpoint: |
+            group: external
+            client:
+              dns-resolver: tcp://10.0.0.1:53053
         hosts:
           - host: &host "home-assistant.${SECRET_DOMAIN}"
             paths:

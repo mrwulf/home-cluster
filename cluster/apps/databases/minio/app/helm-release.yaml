@@ -126,7 +126,12 @@ spec:
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           hajimari.io/enable: "false"
           gatus.io/enabled: "true"
-          gatus.io/status-code: "403"
+          gatus.io/endpoint: |
+            group: external
+            client:
+              dns-resolver: tcp://10.0.0.1:53053
+            conditions:
+              - "[STATUS] == 403"
         hosts:
           - host: &api-host "cdn.${SECRET_DOMAIN}"
             paths:

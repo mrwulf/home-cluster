@@ -63,7 +63,7 @@ spec:
         enabled: true
         format: json
     ingressClass:
-      enabled: true
+      enabled: false
       isDefaultClass: true
     additionalArguments:
       - "--api.insecure=true"

@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - ingress.yaml
+  - ingressclass.yaml
 
 configMapGenerator:
   - name: traefik-dashboard

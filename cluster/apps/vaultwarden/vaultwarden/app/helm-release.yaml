@@ -116,6 +116,10 @@ spec:
           hajimari.io/url: https://bw.${SECRET_DOMAIN}/
           hajimari.io/icon: mdi:lock
           gatus.io/enabled: "true"
+          gatus.io/endpoint: |
+            group: external
+            client:
+              dns-resolver: tcp://10.0.0.1:53053
         hosts:
           - host: &host "bw.${SECRET_DOMAIN}"
             paths:

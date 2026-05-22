@@ -29,25 +29,21 @@ spec:
             envFrom: &envFrom
               - secretRef:
                   name: gatus-secret
-          init-config:
+          gatus-sidecar:
             dependsOn: init-db
             image:
-              repository: ghcr.io/kiwigrid/k8s-sidecar
-              tag: 2.2.3
-            env:
-              FOLDER: /config
-              LABEL: gatus.io/enabled
-              NAMESPACE: ALL
-              RESOURCE: both
-              UNIQUE_FILENAMES: true
-              METHOD: WATCH
-            restartPolicy: Always
+              repository: ghcr.io/home-operations/gatus-sidecar
+              tag: 0.0.14
+            args:
+              - --enable-ingress
+              - --annotation-enabled=gatus.io/enabled
+              - --annotation-config=gatus.io/endpoint
             resources:
               requests:
-                cpu: 50m
-                memory: 128Mi
+                cpu: 10m
               limits:
-                memory: 512Mi
+                memory: 64Mi
+            restartPolicy: Always
         containers:
           app:
             image:

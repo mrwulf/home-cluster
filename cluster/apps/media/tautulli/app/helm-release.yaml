@@ -85,7 +85,9 @@ spec:
           hajimari.io/group: "Media"
           hajimari.io/icon: "mdi:chart-bar"
           gatus.io/enabled: "true"
-          gatus.io/status-code: "404"
+          gatus.io/endpoint: |
+            conditions:
+              - "[STATUS] == 404"
         hosts:
           - host: &host "tautulli.home.${SECRET_DOMAIN}"
             paths:

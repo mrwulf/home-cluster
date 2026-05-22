@@ -83,6 +83,10 @@ spec:
           hajimari.io/appName: "Mealie"
           hajimari.io/group: "Home"
           gatus.io/enabled: "true"
+          gatus.io/endpoint: |
+            group: external
+            client:
+              dns-resolver: tcp://10.0.0.1:53053
         hosts:
           - host: &host "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
             paths:

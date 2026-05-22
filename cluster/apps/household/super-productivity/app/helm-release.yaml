@@ -112,6 +112,10 @@ spec:
           hajimari.io/icon: mdi:checkbox-marked-circle-outline
           hajimari.io/group: "Home"
           gatus.io/enabled: "true"
+          gatus.io/endpoint: |
+            group: external
+            client:
+              dns-resolver: tcp://10.0.0.1:53053
         hosts:
           - host: &webHost "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
             paths:
@@ -129,6 +133,10 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           gatus.io/enabled: "true"
+          gatus.io/endpoint: |
+            group: external
+            client:
+              dns-resolver: tcp://10.0.0.1:53053
         hosts:
           - host: &syncHost "sp-sync.${SECRET_DOMAIN}"
             paths:

@@ -91,6 +91,8 @@ spec:
           hajimari.io/group: "Home"
           hajimari.io/icon: heroicons:photo
           gatus.io/enabled: "true"
+          gatus.io/endpoint: |
+            group: external
           traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-direct@kubernetescrd"
           external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=domain}"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
