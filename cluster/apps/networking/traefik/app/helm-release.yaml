@@ -95,9 +95,8 @@ spec:
     #   - "--serverstransport.insecureskipverify=true"
     ports:
       traefik:
-        http:
-          expose:
-            default: true
+        expose:
+          default: true
       web:
         http:
           redirections:
