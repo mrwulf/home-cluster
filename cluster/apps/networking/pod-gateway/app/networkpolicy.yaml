@@ -81,7 +81,7 @@ spec:
             app.kubernetes.io/name: sonarr
     - toPorts:
         - ports:
-            - port: "8472"
+            - port: "4789"
               protocol: UDP
   ingress:
     - fromEndpoints:
@@ -101,7 +101,7 @@ spec:
             app.kubernetes.io/name: sonarr
     - toPorts:
         - ports:
-            - port: "8472"
+            - port: "4789"
               protocol: UDP
     - icmps:
         - fields:
