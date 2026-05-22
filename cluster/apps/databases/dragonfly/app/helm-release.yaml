@@ -82,6 +82,7 @@ spec:
             port: *port
           metrics:
             port: 8080
+        trafficDistribution: PreferSameNode
     serviceMonitor:
       app:
         serviceName: *app
@@ -93,3 +94,4 @@ spec:
             scrapeTimeout: 10s
     serviceAccount:
       dragonfly-operator: {}
+    automountServiceAccountToken: true
