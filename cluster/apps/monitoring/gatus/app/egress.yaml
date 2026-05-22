@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gatus-egress-ip
+  namespace: monitoring
+  annotations:
+    io.cilium/lb-ipam-ips: 10.0.10.99
+spec:
+  type: LoadBalancer
+  ports:
+    - name: dummy
+      port: 9999
+      targetPort: 9999
+---
+apiVersion: cilium.io/v2
+kind: CiliumEgressGatewayPolicy
+metadata:
+  name: gatus-egress
+  namespace: monitoring
+spec:
+  selectors:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: gatus
+  destinationCIDRs:
+    - 1.1.1.1/32
+  egressGateway:
+    nodeSelector:
+      matchLabels:
+        kubernetes.io/os: linux
+    egressIP: 10.0.10.99

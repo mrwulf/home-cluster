@@ -24,6 +24,8 @@ spec:
     rollOutCiliumPods: true
     localRedirectPolicy: true
     kubeProxyReplacement: true
+    egressGateway:
+      enabled: true
     kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
     ipv4NativeRoutingCIDR: "${NETWORK_K8S_CLUSTER_CIDR}"
     nativeRoutingCIDR: "${NETWORK_K8S_CLUSTER_CIDR}"
