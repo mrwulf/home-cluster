@@ -1,0 +1,40 @@
+#!ipxe
+
+# 10 second timeout (10000 ms)
+set timeout 10000
+
+:menu
+menu PXE Boot Options
+item --key l local         [l] Boot from Local Disk
+item --key t talos1_12_4   [t] Boot Talos Linux v1.12.4 (Default)
+item --key y talos_latest  [y] Boot Talos Linux Latest
+item --key u ubuntu        [u] Boot Ubuntu Live CD
+choose --timeout ${timeout} --default talos1_12_4 target && goto ${target} || goto local
+
+:local
+echo Booting from local hard drive...
+exit
+
+:talos1_12_4
+echo Booting Talos Linux v1.12.4...
+kernel /talos/vmlinuz-v1.12.4 initrd=initramfs-v1.12.4.xz talos.platform=metal console=tty0 console=ttyS0,115200n8 pti=on
+initrd /talos/initramfs-v1.12.4.xz
+boot
+
+:talos_latest
+echo Booting Talos Linux Latest...
+# kernel /talos/vmlinuz-latest initrd=initramfs-latest.xz talos.platform=metal console=tty0 console=ttyS0,115200n8 pti=on
+# initrd /talos/initramfs-latest.xz
+# boot
+echo (Not configured yet)
+sleep 3
+goto menu
+
+:ubuntu
+echo Booting Ubuntu Live CD...
+# Placeholder for Ubuntu kernel and initrd args
+# kernel /ubuntu/vmlinuz root=/dev/nfs boot=casper netboot=nfs nfsroot=...
+# initrd /ubuntu/initrd
+echo (Not configured yet)
+sleep 3
+goto menu

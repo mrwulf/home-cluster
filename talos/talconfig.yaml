@@ -153,7 +153,7 @@ nodes:
     networkInterfaces:
       - interface: bond0
         addresses:
-          - 10.0.1.51/23
+          - 10.0.1.53/23
         dhcp: false
         mtu: 9000
         bond:
