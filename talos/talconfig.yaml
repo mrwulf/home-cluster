@@ -1,15 +1,15 @@
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 clusterName: k8s
-talosVersion: v1.12.4
-kubernetesVersion: v1.35.1
+talosVersion: v1.13.2
+kubernetesVersion: v1.36.1
 endpoint: https://${clusterEndpointIP}:6443
 
 additionalApiServerCertSans: &sans
   - k8s.home
   - ${clusterEndpointIP}
   - 127.0.0.1
-  - 10.0.10.201
+  - 10.0.0.206
 
 additionalMachineCertSans: *sans
 
@@ -35,32 +35,51 @@ nodes:
         dhcp: false
         mtu: 9000
         bond:
-          deviceSelectors:
-            # 2.5G Ports
-            - pciID: 8086:125*
-              driver: igc
+          interfaces:
+            - enp2s0f0np0
+            - enp2s0f1np1
           mode: 802.3ad
           xmitHashPolicy: layer3+4
           lacpRate: fast
-          miimon: 1000
+          miimon: 100
+          updelay: 200
+          downdelay: 200
         routes:
           - network: 0.0.0.0/0
             gateway: 10.0.0.1
-      - deviceSelector: { busPath: 0-1.0 } # power side
-        dhcp: false
-        mtu: 65520
-        addresses: [169.254.255.11/32]
-        routes: [{ network: 169.254.255.12/32, metric: 2048 }]
-      - deviceSelector: { busPath: 1-1.0 } # nic side
-        dhcp: false
-        mtu: 65520
-        addresses: [169.254.255.11/32]
-        routes: [{ network: 169.254.255.13/32, metric: 2048 }]
+      - interface: lo
+        addresses:
+          - 10.0.10.99/32
     nodeLabels:
       node.home.arpa/physical: "true"
       node-role.kubernetes.io/control-plane: ""
     nodeAnnotations:
       installerImage: "{{ .MachineConfig.MachineInstall.InstallImage }}"
+    userVolumes:
+      - name: openebs-data
+        provisioning:
+          diskSelector:
+            match: "system_disk"
+          minSize: 100GiB
+          maxSize: 100GiB
+    patches:
+      - |-
+        apiVersion: v1alpha1
+        kind: VolumeConfig
+        name: EPHEMERAL
+        provisioning:
+          maxSize: 100GiB
+          grow: false
+      - |-
+        apiVersion: v1alpha1
+        kind: RawVolumeConfig
+        name: rook-vol
+        provisioning:
+          diskSelector:
+            match: "system_disk"
+          minSize: 600GiB
+          maxSize: 600GiB
+
   - hostname: node2.home
     controlPlane: true
     ipAddress: 10.0.1.52
@@ -77,32 +96,51 @@ nodes:
         dhcp: false
         mtu: 9000
         bond:
-          deviceSelectors:
-            # 2.5G Ports
-            - pciID: 8086:125*
-              driver: igc
+          interfaces:
+            - enp2s0f0np0
+            - enp2s0f1np1
           mode: 802.3ad
           xmitHashPolicy: layer3+4
           lacpRate: fast
-          miimon: 1000
+          miimon: 100
+          updelay: 200
+          downdelay: 200
         routes:
           - network: 0.0.0.0/0
             gateway: 10.0.0.1
-      - deviceSelector: { busPath: 0-1.0 } # power side
-        dhcp: false
-        mtu: 65520
-        addresses: [169.254.255.12/32]
-        routes: [{ network: 169.254.255.13/32, metric: 2048 }]
-      - deviceSelector: { busPath: 1-1.0 } # nic side
-        dhcp: false
-        mtu: 65520
-        addresses: [169.254.255.12/32]
-        routes: [{ network: 169.254.255.11/32, metric: 2048 }]
+      - interface: lo
+        addresses:
+          - 10.0.10.99/32
     nodeLabels:
       node.home.arpa/physical: "true"
       node-role.kubernetes.io/control-plane: ""
     nodeAnnotations:
       installerImage: "{{ .MachineConfig.MachineInstall.InstallImage }}"
+    userVolumes:
+      - name: openebs-data
+        provisioning:
+          diskSelector:
+            match: "system_disk"
+          minSize: 100GiB
+          maxSize: 100GiB
+    patches:
+      - |-
+        apiVersion: v1alpha1
+        kind: VolumeConfig
+        name: EPHEMERAL
+        provisioning:
+          maxSize: 100GiB
+          grow: false
+      - |-
+        apiVersion: v1alpha1
+        kind: RawVolumeConfig
+        name: rook-vol
+        provisioning:
+          diskSelector:
+            match: "system_disk"
+          minSize: 600GiB
+          maxSize: 600GiB
+
   - hostname: node3.home
     controlPlane: true
     ipAddress: 10.0.1.53
@@ -115,36 +153,54 @@ nodes:
     networkInterfaces:
       - interface: bond0
         addresses:
-          - 10.0.1.53/23
+          - 10.0.1.51/23
         dhcp: false
         mtu: 9000
         bond:
-          deviceSelectors:
-            # 2.5G Ports
-            - pciID: 8086:125*
-              driver: igc
+          interfaces:
+            - enp2s0f0np0
+            - enp2s0f1np1
           mode: 802.3ad
           xmitHashPolicy: layer3+4
           lacpRate: fast
-          miimon: 1000
+          miimon: 100
+          updelay: 200
+          downdelay: 200
         routes:
           - network: 0.0.0.0/0
             gateway: 10.0.0.1
-      - deviceSelector: { busPath: 0-1.0 } # power side
-        dhcp: false
-        mtu: 65520
-        addresses: [169.254.255.13/32]
-        routes: [{ network: 169.254.255.11/32, metric: 2048 }]
-      - deviceSelector: { busPath: 1-1.0 } # nic side
-        dhcp: false
-        mtu: 65520
-        addresses: [169.254.255.13/32]
-        routes: [{ network: 169.254.255.12/32, metric: 2048 }]
+      - interface: lo
+        addresses:
+          - 10.0.10.99/32
     nodeLabels:
       node.home.arpa/physical: "true"
       node-role.kubernetes.io/control-plane: ""
     nodeAnnotations:
       installerImage: "{{ .MachineConfig.MachineInstall.InstallImage }}"
+    userVolumes:
+      - name: openebs-data
+        provisioning:
+          diskSelector:
+            match: "system_disk"
+          minSize: 100GiB
+          maxSize: 100GiB
+    patches:
+      - |-
+        apiVersion: v1alpha1
+        kind: VolumeConfig
+        name: EPHEMERAL
+        provisioning:
+          maxSize: 100GiB
+          grow: false
+      - |-
+        apiVersion: v1alpha1
+        kind: RawVolumeConfig
+        name: rook-vol
+        provisioning:
+          diskSelector:
+            match: "system_disk"
+          minSize: 600GiB
+          maxSize: 600GiB
 
   # - hostname: replacement.home
   #   controlPlane: true
@@ -188,6 +244,7 @@ patches:
           enabled: true
           # Incompatible with Cilium bpf masquerade. https://github.com/siderolabs/talos/issues/8836
           forwardKubeDNSToHost: false
+          resolveMemberNames: true
       files:
         # configure containerd for spegel
         - content: |
@@ -208,7 +265,7 @@ patches:
             nodiratime=True
             rsize=131072
             wsize=131072
-            nconnect=8
+            nconnect=16
       kubelet:
         extraArgs:
           rotate-server-certificates: true
@@ -231,13 +288,8 @@ patches:
               - rw
       logging:
         destinations:
-          - endpoint: "udp://vector-aggregator.monitoring.${internalDomain}:6051/"
+          - endpoint: "udp://vector-aggregator.monitoring.svc.cluster.local:6051/"
             format: json_lines
-      network:
-        extraHostEntries:
-          - ip: ${clusterEndpointIP}
-            aliases:
-              - k8s.home
       sysctls:
         fs.inotify.max_user_watches: "1048576"
         fs.inotify.max_user_instances: "8192"
@@ -274,7 +326,7 @@ worker:
   schematic: &schematic
     customization:
       extraKernelArgs:
-        - talos.logging.kernel=udp://vector-aggregator.monitoring.${internalDomain}:6050/ # Logging
+        - talos.logging.kernel=udp://vector-aggregator.monitoring.svc.cluster.local:6050/ # Logging
         - talos.auditd.disabled=1 # Less security, faster computer
         - mitigations=off # Less security, faster computer
         - apparmor=0 # Less security, faster computer
@@ -350,8 +402,6 @@ controlPlane:
         kernel:
           modules:
             - name: nbd
-            - name: thunderbolt
-            - name: thunderbolt_net
 
     # Enable K8s Talos API Access
     - |-
@@ -426,12 +476,20 @@ controlPlane:
                   score:
                     disabled:
                       - name: ImageLocality
+                pluginConfig:
+                  - name: PodTopologySpread
+                    args:
+                      defaultingType: List
+                      defaultConstraints:
+                        - maxSkew: 1
+                          topologyKey: kubernetes.io/hostname
+                          whenUnsatisfiable: ScheduleAnyway
 
-    # Bootstrap manifests
+    # CRD configuration
     - |-
       cluster:
         extraManifests:
-          - # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
-            https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/experimental-install.yaml
-          - # renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
-            https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.85.0/stripped-down-crds.yaml
+          - https://github.com/prometheus-operator/prometheus-operator/releases/download/${promVersion}/stripped-down-crds.yaml
+          - https://github.com/kubernetes-sigs/gateway-api/releases/download/${gatewayApiVersion}/standard-install.yaml
+          - https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/${externalDNSVersion}/config/crd/standard/dnsendpoints.externaldns.k8s.io.yaml
+          - https://raw.githubusercontent.com/dragonflydb/dragonfly-operator/refs/tags/${dragonflyOperatorVersion}/manifests/crd.yaml
