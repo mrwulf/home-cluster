@@ -1,5 +1,5 @@
 # Network References
-clusterEndpointIP: 10.0.10.206
+clusterEndpointIP: 10.0.10.200
 CLUSTER_SUBNET: 10.0.1.0/24
 CONTROL1: 10.0.1.51
 CONTROL2: 10.0.1.52
