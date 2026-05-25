@@ -1,0 +1,19 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasource:
+    name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://vmsingle-stack.monitoring.svc.cluster.local:8428
+    isDefault: true
+    uid: PBFA97CFB590B2093
+    jsonData:
+      prometheusType: Prometheus

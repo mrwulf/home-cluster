@@ -1,0 +1,222 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: victoriametrics-charts
+  namespace: monitoring
+spec:
+  interval: 2h
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 0.79.1
+  url: oci://ghcr.io/victoriametrics/helm-charts/victoria-metrics-k8s-stack
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: victoria-metrics
+  namespace: monitoring
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: victoriametrics-charts
+  interval: 30m
+  timeout: 15m
+  install:
+    createNamespace: true
+  values:
+    fullnameOverride: stack
+
+    victoria-metrics-operator:
+      enabled: true
+      env:
+        - name: VM_VMALERTDEFAULT_CONFIGRELOADERCPU
+          value: "0"
+        - name: VM_VMAGENTDEFAULT_CONFIGRELOADERCPU
+          value: "0"
+        - name: VM_VMALERTMANAGER_CONFIGRELOADERCPU
+          value: "0"
+      operator:
+        disable_prometheus_converter: false
+        enable_converter_ownership: true
+
+    defaultRules:
+      create: true
+      rules:
+        KubeHpaMaxedOut:
+          create: false
+      groups:
+        k8sContainerMemorySwap:
+          create: false
+        kubeScheduler:
+          create: false
+
+    vmsingle:
+      enabled: true
+      spec:
+        retentionPeriod: "3"
+        replicaCount: 1
+        storage:
+          accessModes:
+            - ReadWriteOnce
+          storageClassName: ceph-block
+          resources:
+            requests:
+              storage: 70Gi
+        extraArgs:
+          memory.allowedPercent: "75"
+        resources:
+          limits:
+            memory: 3Gi
+          requests:
+            cpu: 530m
+            memory: 1.5Gi
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          gatus.io/enabled: "true"
+        hosts:
+          - "prom.home.${SECRET_DOMAIN}"
+        tls:
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - "prom.home.${SECRET_DOMAIN}"
+
+    alertmanager:
+      enabled: true
+      spec:
+        replicaCount: 1
+        storage:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              storageClassName: ceph-block
+              resources:
+                requests:
+                  storage: 1Gi
+        secrets:
+          - alertmanager-secret
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+          gatus.io/enabled: "true"
+        hosts:
+          - "alertmanager.home.${SECRET_DOMAIN}"
+        tls:
+          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+            hosts:
+              - "alertmanager.home.${SECRET_DOMAIN}"
+      config:
+        global:
+          resolve_timeout: 5m
+        receivers:
+          - name: "null"
+          - name: "pushover"
+            pushover_configs:
+              - html: true
+                token_file: /etc/vm/secrets/alertmanager-secret/pushover_api_token
+                user_key_file: /etc/vm/secrets/alertmanager-secret/pushover_api_userkey
+                send_resolved: true
+                priority: |-
+                  {{ if eq .Status "firing" }}1{{ else }}0{{ end }}
+                url_title: View in Alert Manager
+                title: |-
+                  [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }}
+                message: |-
+                  {{- range .Alerts }}
+                    {{- if ne .Labels.severity "" }}
+                      <b>Severity:</b> <i>{{ .Labels.severity }}</i>
+                    {{- else }}
+                      <b>Severity:</b> <i>N/A</i>
+                    {{- end }}
+                    {{- if ne .Annotations.description "" }}
+                      <b>Description:</b> <i>{{ .Annotations.description }}</i>
+                    {{- else if ne .Annotations.summary "" }}
+                      <b>Summary:</b> <i>{{ .Annotations.summary }}</i>
+                    {{- else if ne .Annotations.message "" }}
+                      <b>Message:</b> <i>{{ .Annotations.message }}</i>
+                    {{- else }}
+                      <b>Description:</b> <i>N/A</i>
+                    {{- end }}
+                    {{- if gt (len .Labels.SortedPairs) 0 }}
+                      <b>Details:</b>
+                      {{- range .Labels.SortedPairs }}
+                        • <b>{{ .Name }}:</b> <i>{{ .Value }}</i>
+                      {{- end }}
+                    {{- end }}
+                  {{- end }}
+        route:
+          group_by: ["alertname", "job"]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 6h
+          receiver: "pushover"
+          routes:
+            - receiver: "null"
+              matchers:
+                - alertname =~ "InfoInhibitor|Watchdog"
+            - receiver: "pushover"
+              matchers:
+                - severity = critical
+              continue: true
+        inhibit_rules:
+          - source_matchers:
+              - severity = "critical"
+            target_matchers:
+              - severity = "warning"
+            equal: ["alertname", "namespace"]
+
+    kubeApiServer:
+      enabled: true
+    kubelet:
+      enabled: true
+    kubeScheduler:
+      service:
+        selector:
+          k8s-app: kube-scheduler
+    kubeControllerManager:
+      service:
+        selector:
+          k8s-app: kube-controller-manager
+    kubeEtcd:
+      service:
+        selector:
+          k8s-app: kube-controller-manager
+    kubeProxy:
+      enabled: false
+
+    kube-state-metrics:
+      fullnameOverride: kube-state-metrics
+      verticalPodAutoscaler:
+        enabled: false
+      prometheus:
+        monitor:
+          enabled: true
+          relabelings:
+            - action: replace
+              regex: (.*)
+              replacement: $1
+              sourceLabels: ["__meta_kubernetes_pod_node_name"]
+              targetLabel: kubernetes_node
+
+    prometheus-node-exporter:
+      fullnameOverride: node-exporter
+      prometheus:
+        monitor:
+          enabled: true
+          relabelings:
+            - action: replace
+              regex: (.*)
+              replacement: $1
+              sourceLabels: [__meta_kubernetes_pod_node_name]
+              targetLabel: kubernetes_node

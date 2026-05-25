@@ -1,0 +1,106 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.bjw-s.dev/grafana.integreatly.org/grafana_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    dashboards: grafana
+spec:
+  config:
+    analytics:
+      check_for_updates: "false"
+      check_for_plugin_updates: "false"
+      reporting_enabled: "false"
+    auth:
+      disable_login_form: "false"
+      signout_redirect_url: "https://auth.${SECRET_DOMAIN}/application/o/grafana/end-session/"
+      oauth_auto_login: "false"
+    auth.generic_oauth:
+      enabled: "true"
+      name: "Authentik"
+      client_id: "${GRAFANA_OAUTH_CLIENTID}"
+      client_secret: "${GRAFANA_OAUTH_SECRET}"
+      scopes: "openid profile email offline_access"
+      auth_url: "https://auth.${SECRET_DOMAIN}/application/o/authorize/"
+      token_url: "https://auth.${SECRET_DOMAIN}/application/o/token/"
+      api_url: "https://auth.${SECRET_DOMAIN}/application/o/userinfo/"
+      allow_sign_up: "true"
+      email_attribute_name: "email"
+      role_attribute_path: "contains(groups[*], 'admins') && 'GrafanaAdmin' || contains(groups[*], 'editors') && 'Editor' || 'Viewer'"
+      allow_assign_grafana_admin: "true"
+      use_refresh_token: "true"
+      use_pkce: "true"
+      send_client_credentials_via_post: "true"
+    log:
+      mode: "console"
+    news:
+      news_feed_enabled: "false"
+    security:
+      cookie_samesite: "lax"
+    server:
+      root_url: "https://grafana.home.${SECRET_DOMAIN}"
+    date_formats:
+      use_browser_locale: "true"
+  deployment:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: grafana
+              env:
+                - name: GF_SECURITY_ADMIN_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-secret
+                      key: GF_SECURITY_ADMIN_USER
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-secret
+                      key: GF_SECURITY_ADMIN_PASSWORD
+                - name: GF_INSTALL_PLUGINS
+                  value: "grafana-clock-panel,grafana-piechart-panel,grafana-worldmap-panel"
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 472
+            runAsGroup: 472
+            fsGroup: 472
+            fsGroupChangePolicy: OnRootMismatch
+          volumes:
+            - name: tmp
+              emptyDir: {}
+            - name: grafana-data
+              emptyDir: {}
+  disableDefaultAdminSecret: true
+  disableDefaultSecurityContext: All
+  ingress:
+    metadata:
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
+        gatus.io/enabled: "true"
+    spec:
+      ingressClassName: traefik
+      rules:
+        - host: "grafana.home.${SECRET_DOMAIN}"
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: grafana-service
+                    port:
+                      number: 3000
+      tls:
+        - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+          hosts:
+            - "grafana.home.${SECRET_DOMAIN}"

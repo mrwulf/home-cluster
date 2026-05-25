@@ -3,24 +3,49 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app grafana
+  name: grafana-operator
   namespace: flux-system
 spec:
   targetNamespace: monitoring
   commonMetadata:
     labels:
-      app.kubernetes.io/name: *app
+      app.kubernetes.io/name: grafana-operator
   interval: 30m
   timeout: 5m
-  path: "./cluster/apps/monitoring/grafana/app"
+  path: "./cluster/apps/monitoring/grafana/operator"
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false
-  # dependsOn:
-  #   - name: external-secrets-stores
+  wait: true
   postBuild:
     substitute:
-      APP: *app
+      APP: grafana-operator
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: grafana
+  namespace: flux-system
+spec:
+  targetNamespace: monitoring
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: grafana
+  interval: 30m
+  timeout: 5m
+  path: "./cluster/apps/monitoring/grafana/instance"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+  dependsOn:
+    - name: grafana-operator
+    - name: victoria-metrics
+  postBuild:
+    substitute:
+      APP: grafana
