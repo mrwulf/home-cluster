@@ -42,6 +42,35 @@ tasks:
       - task: delete-failed-pods
       - task: delete-completed-pods
 
+  rollout-restart:
+    desc: Rollout restart all deployments, statefulsets, and daemonsets (excluding kube-system)
+    cmds:
+      - |
+        for ns in $(kubectl get ns -o jsonpath='{.items[*].metadata.name}'); do
+          if [ "$ns" = "kube-system" ] || [ "$ns" = "kube-public" ] || [ "$ns" = "kube-node-lease" ]; then
+            continue
+          fi
+          echo "=== Namespace: ${ns} ==="
+          if kubectl get deployments -n "${ns}" 2>&1 | grep -q "No resources found"; then
+            :
+          else
+            echo "  Restarting Deployments..."
+            kubectl rollout restart deployments -n "${ns}"
+          fi
+          if kubectl get statefulsets -n "${ns}" 2>&1 | grep -q "No resources found"; then
+            :
+          else
+            echo "  Restarting StatefulSets..."
+            kubectl rollout restart statefulsets -n "${ns}"
+          fi
+          if kubectl get daemonsets -n "${ns}" 2>&1 | grep -q "No resources found"; then
+            :
+          else
+            echo "  Restarting DaemonSets..."
+            kubectl rollout restart daemonsets -n "${ns}"
+          fi
+        done
+
   list-nfs-workloads:
     desc: List all deployments with NFS volumes
     silent: true
