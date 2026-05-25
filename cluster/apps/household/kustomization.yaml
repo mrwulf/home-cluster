@@ -4,7 +4,6 @@ resources:
   - namespace.yaml
   # - adventurelog/ks.yaml
   - box/ks.yaml
-  - hajimari/ks.yaml
   - karakeep/ks.yaml
   - home-assistant/ks.yaml
   # - firefly-iii/ks.yaml

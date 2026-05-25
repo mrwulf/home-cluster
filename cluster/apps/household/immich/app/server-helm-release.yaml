@@ -86,10 +86,6 @@ spec:
       main:
         className: traefik
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/appName: Immich
-          hajimari.io/group: "Home"
-          hajimari.io/icon: heroicons:photo
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
