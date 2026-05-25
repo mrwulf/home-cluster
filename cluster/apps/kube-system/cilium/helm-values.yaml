@@ -9,8 +9,8 @@ kubeProxyReplacement: true
 egressGateway:
   enabled: true
 kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
-ipv4NativeRoutingCIDR: 10.42.0.0/16
-nativeRoutingCIDR: 10.42.0.0/16
+ipv4NativeRoutingCIDR: 10.244.0.0/16
+nativeRoutingCIDR: 10.244.0.0/16
 autoDirectNodeRoutes: true
 k8sServiceHost: localhost
 k8sServicePort: 7445
