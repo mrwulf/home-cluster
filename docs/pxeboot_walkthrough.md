@@ -32,14 +32,14 @@ scp /home/bwulf/myhome/GitRoot/home-cluster/pxe-files/boot.conf root@<OPNsense-I
 
 ### 2. Configure OPNsense GUI
 
-**A. TFTP Server & Firewall**
+#### A. TFTP Server & Firewall
 
 1. Access OPNsense via your web browser.
 2. Ensure you have the plugin `os-tftp` installed from **System** -> **Firmware** -> **Plugins**.
 3. Go to **Services** -> **TFTP**, check **Enable**, and set **TFTP Directory** to `/usr/local/tftp`. Click **Apply**.
 4. Go to **Firewall** -> **Rules** -> **LAN** (or relevant interface) and ensure UDP port 69 is permitted to the firewall.
 
-**B. ISC DHCP Network Boot**
+#### B. ISC DHCP Network Boot
 
 1. Navigate to **Services** -> **ISC DHCPv4** -> **[Your Interface/LAN]**.
 2. Under the **Network Booting** section, click **Display Advanced**.

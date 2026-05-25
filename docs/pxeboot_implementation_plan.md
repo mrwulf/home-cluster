@@ -1,14 +1,18 @@
 # PXE Booting Talos Linux via OPNsense
 
-This document outlines the step-by-step implementation plan to configure your OPNsense router for PXE booting your MS-01 hosts. The plan covers installing the TFTP plugin, configuring ISC DHCPd, creating an iPXE boot menu with a 30-second local-disk fallback, and setting up the firewall.
+This document outlines the step-by-step implementation plan to configure your OPNsense router for PXE booting your MS-01 hosts.
+The plan covers installing the TFTP plugin, configuring ISC DHCPd, creating an iPXE boot menu with a 30-second local-disk fallback, and setting up the firewall.
 
 ## User Review Required
 
 > [!IMPORTANT]
 > Please review this plan. To implement it, you will need SSH access to your OPNsense machine to upload the `ipxe.efi` and Talos Linux files, as the OPNsense web UI does not have a comprehensive file manager for the TFTP root directory.
 
+<!-- -->
+
 > [!NOTE]
-> Since standard UEFI PXE clients can't inherently display a complex boot menu or fetch HTTP files on their own, we will use **iPXE**. The flow will be: `MS-01 UEFI PXE` -> `OPNsense DHCP` -> `Download ipxe.efi via TFTP` -> `Execute ipxe.efi` -> `Fetch iPXE config with menu via TFTP` -> `Boot Talos or Exit to Local Disk`.
+> Since standard UEFI PXE clients can't inherently display a complex boot menu or fetch HTTP files on their own, we will use **iPXE**.
+> The flow will be: `MS-01 UEFI PXE` -> `OPNsense DHCP` -> `Download ipxe.efi via TFTP` -> `Execute ipxe.efi` -> `Fetch iPXE config with menu via TFTP` -> `Boot Talos or Exit to Local Disk`.
 
 ## Proposed Steps
 
@@ -62,7 +66,8 @@ exit
 
 :talos
 echo Booting Talos Linux...
-kernel /talos/vmlinuz initrd=initramfs.xz talos.platform=metal console=tty0 console=ttyS0,115200n8 pti=on
+kernel /talos/vmlinuz initrd=initramfs.xz talos.platform=metal \
+    console=tty0 console=ttyS0,115200n8 pti=on
 initrd /talos/initramfs.xz
 boot
 ```
@@ -88,7 +93,8 @@ boot
 >
 > 1. Do you already have SSH root access enabled on your OPNsense installation to transfer the boot files?
 > 2. Do you have a specific Talos Linux version you'd like to use?
-> 3. For the DHCP chainloading, the simplest method requires placing an `autoexec.ipxe` file, or doing custom advanced DHCP configuration. Are you comfortable editing `/usr/local/etc/dhcpd.conf` on OPNsense, or would you prefer a strategy using only the Web UI with advanced DHCP options?
+> 3. For the DHCP chainloading, the simplest method requires placing an `autoexec.ipxe` file, or doing custom advanced DHCP configuration.
+>    Are you comfortable editing `/usr/local/etc/dhcpd.conf` on OPNsense, or would you prefer a strategy using only the Web UI with advanced DHCP options?
 
 ## Verification Plan
 
