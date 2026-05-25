@@ -40,17 +40,16 @@ spec:
               TUNNEL_ORIGIN_ENABLE_HTTP2: true
               TUNNEL_TRANSPORT_PROTOCOL: quic
               TUNNEL_POST_QUANTUM: true
-              TUNNEL_ID:
+              TUNNEL_TOKEN:
                 valueFrom:
                   secretKeyRef:
                     name: cloudflared-secret
-                    key: TUNNEL_ID
+                    key: TUNNEL_TOKEN
             args:
               - tunnel
               - --config
               - /etc/cloudflared/config/config.yaml
               - run
-              - "${SECRET_CLOUDFLARE_TUNNEL_ID}"
             probes:
               liveness: &probes
                 enabled: true
