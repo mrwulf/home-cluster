@@ -385,3 +385,19 @@ spec:
   datasources:
     - inputName: DS_PROMETHEUS
       datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cloudnative-pg
+  namespace: monitoring
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: postgres
+  # renovate: depName=20417
+  url: https://grafana.com/api/dashboards/20417/revisions/4/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
