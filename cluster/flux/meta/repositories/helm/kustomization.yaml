@@ -13,7 +13,6 @@ resources:
   - external-secrets-charts.yaml
   - fairwinds-charts.yaml
   - grafana-charts.yaml
-  - hajimari-charts.yaml
   - infracloudio-charts.yaml
   - intel-charts.yaml
   - jetstack-charts.yaml

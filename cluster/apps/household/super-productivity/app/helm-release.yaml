@@ -107,10 +107,6 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
-          hajimari.io/enable: "true"
-          hajimari.io/appName: "Super Productivity"
-          hajimari.io/icon: mdi:checkbox-marked-circle-outline
-          hajimari.io/group: "Home"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external

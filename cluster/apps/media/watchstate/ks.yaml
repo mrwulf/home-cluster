@@ -29,5 +29,5 @@ spec:
       APP: *app
       APP_UID: "2000"
       APP_GID: "2000"
-      VOLSYNC_CAPACITY: 2Gi
+      VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_START_MINUTE: "57"

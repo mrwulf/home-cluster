@@ -52,10 +52,6 @@ spec:
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          hajimari.io/enable: "true"
-          hajimari.io/appName: "Box"
-          hajimari.io/icon: mdi:package-variant-closed
-          hajimari.io/group: "Household"
           gatus.io/enabled: "true"
         hosts:
           - host: &host "{{ .Release.Name }}.home.${SECRET_DOMAIN}"
