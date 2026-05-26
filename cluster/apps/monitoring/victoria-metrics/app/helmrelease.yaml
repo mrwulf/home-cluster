@@ -184,14 +184,40 @@ spec:
       service:
         selector:
           k8s-app: kube-scheduler
+      vmScrape:
+        spec:
+          endpoints:
+            - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              port: http-metrics
+              scheme: https
+              tlsConfig:
+                caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                insecureSkipVerify: true
     kubeControllerManager:
       service:
         selector:
           k8s-app: kube-controller-manager
+      vmScrape:
+        spec:
+          endpoints:
+            - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              port: http-metrics
+              scheme: https
+              tlsConfig:
+                caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                insecureSkipVerify: true
     kubeEtcd:
       service:
+        enabled: true
+        port: 2381
+        targetPort: 2381
         selector:
-          k8s-app: kube-controller-manager
+          component: etcd
+      vmScrape:
+        spec:
+          endpoints:
+            - port: http-metrics
+              scheme: http
     kubeProxy:
       enabled: false
 
