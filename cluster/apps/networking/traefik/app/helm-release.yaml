@@ -82,11 +82,8 @@ spec:
         allowExternalNameServices: true
         ingressClass: traefik
 
-      # kubernetesGateway:
-      #   enabled: true
-      #   experimentalChannel: false
-      #   statusAddress:
-      #     ip: "${LB_IP}"
+      kubernetesGateway:
+        enabled: true
     global:
       checkNewVersion: false
       sendAnonymousUsage: false
@@ -98,6 +95,7 @@ spec:
         expose:
           default: true
       web:
+        port: 8000
         http:
           redirections:
             entrypoint:
@@ -105,6 +103,7 @@ spec:
               scheme: https
               permanent: true
       websecure:
+        port: 8443
         http:
           tls:
             enabled: true
@@ -171,6 +170,41 @@ spec:
             - 2405:8100::/32
             - 2a06:98c0::/29
             - 2c0f:f248::/32
+      webinternal:
+        port: 8010
+        expose:
+          default: false
+        http:
+          redirections:
+            entrypoint:
+              to: websecureinternal
+              scheme: https
+              permanent: true
+      websecureinternal:
+        port: 8450
+        expose:
+          default: false
+        http:
+          tls:
+            enabled: true
+            options: "default"
+        transport:
+          respondingTimeouts:
+            readTimeout: 3600s
+            idleTimeout: 3600s
+            writeTimeout: 3600s
+        http3:
+          enabled: true
+        forwardedHeaders:
+          trustedIPs:
+            - 10.0.0.0/8
+            - 192.168.0.0/16
+            - 172.16.0.0/12
+        proxyProtocol:
+          trustedIPs:
+            - 10.0.0.0/8
+            - 192.168.0.0/16
+            - 172.16.0.0/12
     metrics:
       prometheus:
         enabled: true

@@ -5,3 +5,7 @@ resources:
   - helm-release.yaml
   - ingress.yaml
   - ingressclass.yaml
+  - service-internal.yaml
+  - gatewayclass.yaml
+  - gateway-external.yaml
+  - gateway-internal.yaml

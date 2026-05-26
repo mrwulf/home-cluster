@@ -45,42 +45,46 @@ spec:
         ports:
           http:
             port: 80
-    ingress:
+
+    route:
       external:
-        className: traefik
+        enabled: true
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-cloudflare-authentik@kubernetescrd"
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
             guarded: true
-        hosts:
-          - host: &host "whoami.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - hosts:
-              - *host
-            secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "whoami.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: traefik-middleware-chain-cloudflare-authentik
+            backendRefs:
+              - identifier: main
+                port: http
       internal:
-        className: traefik
+        enabled: true
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           gatus.io/enabled: "true"
-        hosts:
-          - host: &host2 "whoami.home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - hosts:
-              - *host2
-            secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "whoami.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: main
+                port: http

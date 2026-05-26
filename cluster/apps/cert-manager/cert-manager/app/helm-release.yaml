@@ -17,6 +17,8 @@ spec:
   values:
     crds:
       enabled: true
+    config:
+      enableGatewayAPI: true
     dns01RecursiveNameservers: https://1.1.1.1:443/dns-query,https://1.0.0.1:443/dns-query
     dns01RecursiveNameserversOnly: true
     replicaCount: 2
