@@ -1,98 +1,69 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/ocirepository-source-v1beta2.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: dragonfly-operator-charts
+  namespace: databases
+spec:
+  interval: 2h
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: v1.5.0
+  url: oci://ghcr.io/dragonflydb/dragonfly-operator/helm/dragonfly-operator
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app dragonfly-operator
+  name: dragonfly-operator
+  namespace: databases
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: app-template
-      version: 5.0.1
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s-charts
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: dragonfly-operator-charts
+    namespace: databases
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
   values:
-    defaultPodOptions:
-      automountServiceAccountToken: true
-    controllers:
-      dragonfly-operator:
-        replicas: 1
-        strategy: RollingUpdate
-        containers:
-          app:
-            image:
-              repository: ghcr.io/dragonflydb/operator
-              tag: v1.5.0@sha256:2ceb0128302cd7756b743cc5d56ec9479fb08163b5c563897045a4e5e1555f02
-            command: [/manager]
-            args:
-              - --health-probe-bind-address=:8081
-              - --metrics-bind-address=:8080
-            probes:
-              liveness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /healthz
-                    port: &port 8081
-                  initialDelaySeconds: 15
-                  periodSeconds: 20
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-              readiness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /readyz
-                    port: *port
-                  initialDelaySeconds: 5
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
-            resources:
-              requests:
-                cpu: 10m
-              limits:
-                memory: 128Mi
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: [ALL] }
-        pod:
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            runAsNonRoot: true
-          topologySpreadConstraints:
-            - maxSkew: 1
-              topologyKey: kubernetes.io/hostname
-              whenUnsatisfiable: DoNotSchedule
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: *app
-        serviceAccount:
-          identifier: *app
-    service:
-      app:
-        controller: *app
-        ports:
-          http:
-            port: *port
-          metrics:
-            port: 8080
-        trafficDistribution: PreferSameNode
+    replicaCount: 1
+    crds:
+      install: true
+      keep: true
+    rbacProxy:
+      enabled: false
     serviceMonitor:
-      app:
-        serviceName: *app
-        endpoints:
-          - port: metrics
-            scheme: http
-            path: /metrics
-            interval: 1m
-            scrapeTimeout: 10s
-    serviceAccount:
-      dragonfly-operator: {}
+      enabled: true
+    podSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      runAsNonRoot: true
+    manager:
+      resources:
+        requests:
+          cpu: 10m
+        limits:
+          memory: 128Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: dragonfly-operator
