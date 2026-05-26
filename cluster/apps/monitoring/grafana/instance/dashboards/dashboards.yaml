@@ -416,3 +416,19 @@ spec:
   datasources:
     - inputName: DS_PROMETHEUS
       datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: vector
+  namespace: monitoring
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: vector
+  # renovate: depName=17045
+  url: https://grafana.com/api/dashboards/17045/revisions/1/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
