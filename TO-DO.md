@@ -1,6 +1,5 @@
 # things to try
 
-- atuin - shared shell history
 - monica - personal relationship manager
 - recyclarr - implement trash standards
 - subgen (integrates with bazarr) - [generates subtitles with AI](https://github.com/McCloudS/subgen?tab=readme-ov-file#docker)
@@ -30,3 +29,4 @@
 - watchstate - sync watch status - maybe less performance impact since it's not a full dump each time?
 - [jellyplex-watched](https://github.com/luigi311/JellyPlex-Watched)
 - bazarr - subtitles
+- atuin - shared shell history
