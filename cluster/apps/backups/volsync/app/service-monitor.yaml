@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: volsync
+  labels:
+    app.kubernetes.io/name: volsync
+spec:
+  endpoints:
+    - port: https
+      scheme: https
+      tlsConfig:
+        insecureSkipVerify: true
+  jobLabel: volsync
+  namespaceSelector:
+    matchNames:
+      - backups
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: volsync
