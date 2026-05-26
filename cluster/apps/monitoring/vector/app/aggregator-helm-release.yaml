@@ -228,6 +228,12 @@ spec:
             job: opnsense
             hostname: opnsense
 
+        prometheus_sink:
+          type: prometheus_exporter
+          inputs:
+            - vector_metrics
+          address: 0.0.0.0:9090
+
     podMonitor:
       enabled: true
       jobLabel: vector-aggregator

@@ -43,6 +43,9 @@ spec:
           mode: udp
           address: 127.0.0.1:12001
 
+        vector_metrics:
+          type: internal_metrics
+
       # Sinks
       sinks:
         kubernetes_sink:
@@ -66,8 +69,15 @@ spec:
           address: "vector-aggregator.monitoring:6051"
           version: "2"
 
+        prometheus_sink:
+          type: prometheus_exporter
+          inputs:
+            - vector_metrics
+          address: 0.0.0.0:9090
+
     podMonitor:
       enabled: true
+      port: prometheus-sink
 
     resources:
       requests:
