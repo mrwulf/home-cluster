@@ -96,8 +96,7 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  # renovate: depName=18089
-  url: https://grafana.com/api/dashboards/18089/revisions/1/download
+  url: https://raw.githubusercontent.com/spegel-org/spegel/v0.7.1/charts/spegel/monitoring/grafana-dashboard.json
   datasources:
     - inputName: DS_PROMETHEUS
       datasourceName: Prometheus
