@@ -4,6 +4,8 @@ kind: Gateway
 metadata:
   name: internal-gateway
   namespace: networking
+  labels:
+    gateway.sysinfra.pro/type: internal
 spec:
   gatewayClassName: traefik
   addresses:
@@ -12,13 +14,13 @@ spec:
   listeners:
     - name: http
       protocol: HTTP
-      port: 8010
+      port: 8000
       allowedRoutes:
         namespaces:
           from: All
     - name: https
       protocol: HTTPS
-      port: 8450
+      port: 8443
       allowedRoutes:
         namespaces:
           from: All

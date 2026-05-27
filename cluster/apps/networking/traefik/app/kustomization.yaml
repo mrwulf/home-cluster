@@ -3,9 +3,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - helm-release.yaml
+  - helm-release-internal.yaml
   - ingress.yaml
   - ingressclass.yaml
-  - service-internal.yaml
   - gatewayclass.yaml
   - gateway-external.yaml
   - gateway-internal.yaml

@@ -4,6 +4,8 @@ kind: Gateway
 metadata:
   name: external-gateway
   namespace: networking
+  labels:
+    gateway.sysinfra.pro/type: external
   annotations:
     external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
 spec:
