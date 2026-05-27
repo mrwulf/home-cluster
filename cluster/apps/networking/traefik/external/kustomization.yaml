@@ -5,3 +5,4 @@ resources:
   - helm-release.yaml
   - gatewayclass.yaml
   - gateway.yaml
+  - gateway-direct.yaml
