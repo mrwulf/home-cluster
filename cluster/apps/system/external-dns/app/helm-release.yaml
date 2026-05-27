@@ -34,8 +34,6 @@ spec:
     interval: 2m
 
     sources:
-      - ingress
-      - service
       - crd
       - gateway-httproute
 
@@ -71,8 +69,7 @@ spec:
             key: cloudflare_api_token
 
     extraArgs:
-      - --annotation-filter=external-dns.alpha.kubernetes.io/target
+      - --gateway-label-filter=gateway.sysinfra.pro/type=external
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
       - --cloudflare-proxied
-      # - --label-filter=ingress.home.arpa/type in (external, auth-external-only)
