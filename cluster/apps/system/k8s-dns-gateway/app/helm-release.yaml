@@ -56,7 +56,7 @@ spec:
                     values:
                       - *app
               topologyKey: kubernetes.io/hostname
-    watchedResources: ["Ingress", "Service"]
+    watchedResources: ["Ingress", "Service", "HTTPRoute"]
   postRenderers:
     - kustomize:
         patches:
@@ -91,6 +91,14 @@ spec:
                   - networking.k8s.io
                   resources:
                   - ingresses
+                  verbs:
+                  - list
+                  - watch
+                - apiGroups:
+                  - gateway.networking.k8s.io
+                  resources:
+                  - gateways
+                  - httproutes
                   verbs:
                   - list
                   - watch
