@@ -91,7 +91,7 @@ spec:
             group: external
             client:
               dns-resolver: "udp://10.0.0.1:53053"
-          external-dns.alpha.kubernetes.io/target: "dynamic.webwulf.net"
+          external-dns.alpha.kubernetes.io/target: "dynamic.${SECRET_DOMAIN}"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
         parentRefs:
           - name: external-gateway

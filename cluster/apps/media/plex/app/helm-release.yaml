@@ -98,7 +98,7 @@ spec:
       main:
         enabled: true
         annotations:
-          external-dns.alpha.kubernetes.io/target: "dynamic.webwulf.net"
+          external-dns.alpha.kubernetes.io/target: "dynamic.${SECRET_DOMAIN}"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
