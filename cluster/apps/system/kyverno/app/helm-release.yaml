@@ -35,6 +35,18 @@ spec:
                 - delete
                 - get
                 - list
+            - apiGroups:
+                - traefik.io
+              resources:
+                - middlewares
+              verbs:
+                - create
+                - update
+                - patch
+                - delete
+                - get
+                - list
+                - watch
       topologySpreadConstraints:
         - maxSkew: 2
           topologyKey: kubernetes.io/hostname
@@ -61,6 +73,18 @@ spec:
                 - delete
                 - get
                 - list
+            - apiGroups:
+                - traefik.io
+              resources:
+                - middlewares
+              verbs:
+                - create
+                - update
+                - patch
+                - delete
+                - get
+                - list
+                - watch
       resources:
         requests:
           cpu: 100m
