@@ -48,25 +48,26 @@ spec:
         ports:
           http:
             port: *port
-    ingress:
+    route:
       main:
         enabled: true
-        className: "traefik-internal"
         annotations:
-          auth.home.arpa/enabled: "true"
-          external-dns.home.arpa/enabled: "true"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             conditions:
               - "[STATUS] == 404"
-        hosts:
-          - host: &host "reddit.home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - hosts:
-              - *host
-            secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "reddit.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: main
+                port: http

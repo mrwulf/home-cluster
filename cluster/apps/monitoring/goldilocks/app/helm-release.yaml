@@ -19,21 +19,7 @@ spec:
     dashboard:
       replicaCount: 1
       ingress:
-        enabled: true
-        ingressClassName: "traefik-internal"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          gatus.io/enabled: "true"
-        hosts:
-          - host: &host "goldilocks.home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                type: Prefix
-        tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        enabled: false
 
     resources:
       limits:

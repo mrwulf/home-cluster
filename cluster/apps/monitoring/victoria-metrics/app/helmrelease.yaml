@@ -76,18 +76,7 @@ spec:
             cpu: 530m
             memory: 1.5Gi
       ingress:
-        enabled: true
-        ingressClassName: traefik-internal
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          gatus.io/enabled: "true"
-        hosts:
-          - "prom.home.${SECRET_DOMAIN}"
-        tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - "prom.home.${SECRET_DOMAIN}"
+        enabled: false
 
     alertmanager:
       enabled: true
@@ -104,18 +93,7 @@ spec:
         secrets:
           - alertmanager-secret
       ingress:
-        enabled: true
-        ingressClassName: traefik-internal
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          gatus.io/enabled: "true"
-        hosts:
-          - "alertmanager.home.${SECRET_DOMAIN}"
-        tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - "alertmanager.home.${SECRET_DOMAIN}"
+        enabled: false
       config:
         global:
           resolve_timeout: 5m

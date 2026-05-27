@@ -57,31 +57,24 @@ spec:
           http:
             port: 8080
 
-    # route:
-    #   app:
-    #     hostnames:
-    #       - watchstate.greyrock.dev
-    #     parentRefs:
-    #       - name: internal
-    #         namespace: kube-system
-    #         sectionName: https
-    ingress:
-      main:
+    route:
+      app:
         enabled: true
-        className: "traefik-internal"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          # gatus.io/status-code: "404"
-        hosts:
-          - host: &host "watchstate.home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "watchstate.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: app
+                port: http
     persistence:
       config:
         existingClaim: *app
