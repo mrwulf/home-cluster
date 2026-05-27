@@ -8,6 +8,9 @@ metadata:
     external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
 spec:
   gatewayClassName: traefik
+  addresses:
+    - type: IPAddress
+      value: "10.0.10.20"
   listeners:
     - name: http
       protocol: HTTP

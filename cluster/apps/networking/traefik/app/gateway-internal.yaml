@@ -6,6 +6,9 @@ metadata:
   namespace: networking
 spec:
   gatewayClassName: traefik
+  addresses:
+    - type: IPAddress
+      value: "10.0.10.30"
   listeners:
     - name: http
       protocol: HTTP
