@@ -89,6 +89,8 @@ spec:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
+            client:
+              dns-resolver: "udp://10.0.0.1:53053"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
         parentRefs:
           - name: external-gateway
