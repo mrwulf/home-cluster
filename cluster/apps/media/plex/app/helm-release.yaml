@@ -94,30 +94,32 @@ spec:
             port: 32400
             protocol: TCP
 
-    ingress:
+    route:
       main:
-        className: "traefik-external"
+        enabled: true
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
-          external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=base.domain}"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
             conditions:
               - "[STATUS] == 401"
-        hosts:
-          - host: &host "plex.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "plex.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: traefik-middleware-chain-no-auth
+            backendRefs:
+              - identifier: main
+                port: http
+
 
     persistence:
       config:

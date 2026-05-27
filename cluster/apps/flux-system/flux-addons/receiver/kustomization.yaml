@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - token.sops.yaml
   - receiver.yaml
-  - ingress.yaml
+  - route.yaml

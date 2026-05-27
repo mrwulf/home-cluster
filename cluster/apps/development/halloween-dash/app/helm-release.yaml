@@ -72,23 +72,25 @@ spec:
           http:
             port: *port
 
-    ingress:
+    route:
       main:
         enabled: true
-        className: "traefik-external"
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          # gatus.io/status-code: "404"
-        hosts:
-          - host: &host "${APP}.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "${APP}.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: app
+                port: http
+
 
     persistence:
       data:

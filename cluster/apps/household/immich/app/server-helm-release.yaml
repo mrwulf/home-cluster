@@ -82,27 +82,30 @@ spec:
           http:
             port: 3001
 
-    ingress:
+    route:
       main:
-        className: traefik-external
+        enabled: true
         annotations:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-direct@kubernetescrd"
-          external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=domain}"
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
-        hosts:
-          - host: &host photos.${SECRET_DOMAIN}
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - hosts:
-              - *host
-            secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "photos.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: traefik-middleware-chain-direct
+            backendRefs:
+              - identifier: main
+                port: http
+
 
     persistence:
       library:

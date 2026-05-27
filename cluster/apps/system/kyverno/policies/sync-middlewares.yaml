@@ -1,0 +1,119 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-middlewares
+  annotations:
+    policies.kyverno.io/title: Sync Middlewares
+    policies.kyverno.io/category: Sample
+    policies.kyverno.io/subject: Middleware
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/description: >-
+      Copies Traefik Middleware resources from the networking namespace to other
+      Namespaces when they are created, and keeps them synchronized.
+spec:
+  rules:
+    - name: sync-chain-no-auth
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - ai
+                - auth
+                - backups
+                - databases
+                - development
+                - flux-system
+                - household
+                - media
+                - vaultwarden
+      generate:
+        generateExisting: true
+        apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        name: traefik-middleware-chain-no-auth
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: traefik-middleware-chain-no-auth
+    - name: sync-chain-direct
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - ai
+                - auth
+                - backups
+                - databases
+                - development
+                - flux-system
+                - household
+                - media
+                - vaultwarden
+      generate:
+        generateExisting: true
+        apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        name: traefik-middleware-chain-direct
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: traefik-middleware-chain-direct
+    - name: sync-chain-internal-no-auth
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - ai
+                - auth
+                - backups
+                - databases
+                - development
+                - flux-system
+                - household
+                - media
+                - vaultwarden
+      generate:
+        generateExisting: true
+        apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        name: traefik-middleware-chain-internal-no-auth
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: traefik-middleware-chain-internal-no-auth
+    - name: sync-rfc1918-ips
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - ai
+                - auth
+                - backups
+                - databases
+                - development
+                - flux-system
+                - household
+                - media
+                - vaultwarden
+      generate:
+        generateExisting: true
+        apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        name: rfc1918-ips
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: rfc1918-ips

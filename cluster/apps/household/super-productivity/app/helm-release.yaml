@@ -101,47 +101,40 @@ spec:
           http:
             port: 1900
 
-    ingress:
+    route:
       web:
-        className: "traefik-external"
+        enabled: true
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
             guarded: true
-        hosts:
-          - host: &webHost "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: web
-                  port: http
-        tls:
-          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *webHost
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+        rules:
+          - backendRefs:
+              - identifier: web
+                port: http
       sync:
-        className: "traefik-external"
+        enabled: true
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
             guarded: true
-        hosts:
-          - host: &syncHost "sp-sync.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: sync
-                  port: http
-        tls:
-          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *syncHost
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "sp-sync.${SECRET_DOMAIN}"
+        rules:
+          - backendRefs:
+              - identifier: sync
+                port: http
+
 
     persistence:
       data:

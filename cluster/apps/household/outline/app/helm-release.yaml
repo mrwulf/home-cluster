@@ -78,25 +78,20 @@ spec:
           http:
             port: 8080
 
-    ingress:
+    route:
       main:
         enabled: true
-        className: "traefik-external"
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
             guarded: true
-        hosts:
-          - host: &host "docs.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "docs.${SECRET_DOMAIN}"
+        rules:
+          - backendRefs:
+              - identifier: main
+                port: http

@@ -58,50 +58,54 @@ spec:
           http:
             port: *port
 
-    ingress:
+    route:
       main:
         enabled: true
-        className: "traefik-internal"
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           gatus.io/enabled: "true"
-        hosts:
-          - host: *host
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
-
-        tls:
-          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "n8n.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: app
+                port: http
       webhook:
         enabled: true
-        className: "traefik-external"
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
             guarded: true
             conditions:
               - "[STATUS] == 404"
-        hosts:
-          - host: &exthost "{{ .Release.Name }}-webhook.${SECRET_DOMAIN}"
-            paths:
-              - path: /webhook
-                service:
-                  identifier: app
-                  port: http
-        tls:
-          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *exthost
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "n8n-webhook.${SECRET_DOMAIN}"
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /webhook
+            filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: traefik-middleware-chain-no-auth
+            backendRefs:
+              - identifier: app
+                port: http
 
     persistence:
       data:
@@ -110,25 +114,3 @@ spec:
           n8n:
             app:
               - path: /home/node/.n8n
-
-    # route:
-    #   app:
-    #     hostnames:
-    #       - *hostName
-    #     parentRefs:
-    #       - name: internal
-    #         namespace: kube-system
-    #         sectionName: https
-
-    #   webhooks:
-    #     hostnames:
-    #       - "{{ .Release.Name }}-webhook.${SECRET_DOMAIN}"
-    #     parentRefs:
-    #       - name: external
-    #         namespace: kube-system
-    #         sectionName: https
-    #     rules:
-    #       - matches:
-    #           - path:
-    #               value: /webhook
-    #         backendRefs: [{}]

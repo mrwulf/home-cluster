@@ -74,44 +74,43 @@ spec:
             enabled: true
             port: 12321
 
-    ingress:
+    route:
       main:
-        className: "traefik-external"
+        enabled: true
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
             guarded: true
-        hosts:
-          - host: &host "home-assistant.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - hosts:
-              - *host
-            secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "home-assistant.${SECRET_DOMAIN}"
+        rules:
+          - backendRefs:
+              - identifier: main
+                port: http
       code:
-        className: "traefik-internal"
+        enabled: true
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           gatus.io/enabled: "true"
-        hosts:
-          - host: &host-config "hass-config.home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: code
-        tls:
-          - hosts:
-              - *host-config
-            secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "hass-config.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: main
+                port: code
+
 
     persistence:
       config:

@@ -1,0 +1,27 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: flux-receiver
+  namespace: flux-system
+  annotations:
+    gatus.io/enabled: "true"
+    gatus.io/endpoint: |
+      group: external
+      guarded: true
+      conditions:
+        - "[STATUS] == 404"
+spec:
+  parentRefs:
+    - name: external-gateway
+      namespace: networking
+  hostnames:
+    - "flux-receiver.${SECRET_DOMAIN}"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: webhook-receiver
+          port: 80
