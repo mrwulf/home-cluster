@@ -416,8 +416,10 @@ controlPlane:
             enabled: true
             allowedRoles:
               - os:etcd:backup
+              - os:admin
             allowedKubernetesNamespaces:
               - backups
+              - system-upgrade
 
     # Cluster Configuration
     - |-
