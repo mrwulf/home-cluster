@@ -11,7 +11,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: traefik
+    - name: traefik-external
   path: "./cluster/apps/ai/searxng/app/"
   prune: true
   sourceRef:

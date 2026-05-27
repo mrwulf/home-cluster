@@ -12,7 +12,7 @@ spec:
       app.kubernetes.io/name: *app
   path: ./cluster/apps/household/libreddit/app
   dependsOn:
-    - name: traefik
+    - name: traefik-external
   prune: true
   sourceRef:
     kind: GitRepository

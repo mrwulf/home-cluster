@@ -82,7 +82,7 @@ spec:
     - name: postgres
     - name: volsync
     - name: authentik
-    - name: traefik
+    - name: traefik-external
   components:
     - ../../../../templates/volsync/primary
   prune: true

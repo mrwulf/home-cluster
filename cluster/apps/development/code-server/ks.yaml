@@ -12,7 +12,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: volsync
-    - name: traefik
+    - name: traefik-external
   path: ./cluster/apps/development/code-server/app
   components:
     - ../../../../templates/volsync/primary

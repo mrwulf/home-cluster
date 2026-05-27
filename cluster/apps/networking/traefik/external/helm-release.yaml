@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: traefik
+  name: traefik-external
 spec:
   interval: 5m
   chart:
@@ -86,7 +86,7 @@ spec:
         enabled: true
         statusAddress:
           service:
-            name: traefik
+            name: traefik-external
             namespace: networking
     global:
       checkNewVersion: false
@@ -197,7 +197,7 @@ spec:
               targetLabel: nodename
               replacement: $1
               action: replace
-          jobLabel: traefik
+          jobLabel: traefik-external
           scrapeInterval: 30s
           scrapeTimeout: 5s
           honorLabels: true
@@ -206,10 +206,10 @@ spec:
           additionalLabels: {}
           rules:
             - alert: TraefikDown
-              expr: up{job="traefik"} == 0
+              expr: up{job="traefik-external"} == 0
               for: 5m
               labels:
-                context: traefik
+                context: traefik-external
                 severity: warning
               annotations:
                 summary: "Traefik Down"

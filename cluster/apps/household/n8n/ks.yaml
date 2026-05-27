@@ -21,7 +21,7 @@ spec:
   wait: false
   dependsOn:
     - name: volsync
-    - name: traefik
+    - name: traefik-external
   components:
     - ../../../../templates/volsync/primary
   postBuild:

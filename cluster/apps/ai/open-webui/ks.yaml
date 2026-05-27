@@ -13,7 +13,7 @@ spec:
   dependsOn:
     - name: searxng
     - name: volsync
-    - name: traefik
+    - name: traefik-external
     - name: external-secrets-stores
   path: ./cluster/apps/ai/open-webui/app
   components:

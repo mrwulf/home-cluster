@@ -23,6 +23,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: traefik
+                name: traefik-external
                 port:
                   number: 8080

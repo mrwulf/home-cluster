@@ -3,14 +3,38 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app traefik
+  name: &app traefik-external
   namespace: flux-system
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./cluster/apps/networking/traefik/app
+  path: ./cluster/apps/networking/traefik/external
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: networking
+  timeout: 5m
+  wait: false
+  postBuild:
+    substitute:
+      APP: *app
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app traefik-internal
+  namespace: flux-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 30m
+  path: ./cluster/apps/networking/traefik/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -34,7 +58,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: traefik
+    - name: traefik-external
   interval: 30m
   path: ./cluster/apps/networking/traefik/middlewares
   prune: true
@@ -80,7 +104,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: traefik
+    - name: traefik-external
     - name: cert-manager
   interval: 30m
   path: ./cluster/apps/networking/traefik/certificates
