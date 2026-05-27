@@ -84,7 +84,6 @@ spec:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
-            guarded: true
             conditions:
               - "[STATUS] == 404"
         parentRefs:
