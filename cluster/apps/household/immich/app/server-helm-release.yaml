@@ -108,7 +108,6 @@ spec:
               - identifier: main
                 port: http
 
-
     persistence:
       library:
         type: nfs

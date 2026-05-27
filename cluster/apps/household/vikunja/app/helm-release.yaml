@@ -119,7 +119,6 @@ spec:
               - identifier: main
                 port: http
 
-
     persistence:
       files:
         existingClaim: "${VOLSYNC_CLAIM}"

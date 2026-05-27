@@ -110,7 +110,6 @@ spec:
               - identifier: main
                 port: code
 
-
     persistence:
       config:
         existingClaim: "${VOLSYNC_CLAIM}"

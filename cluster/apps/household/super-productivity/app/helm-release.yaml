@@ -133,7 +133,6 @@ spec:
               - identifier: sync
                 port: http
 
-
     persistence:
       data:
         existingClaim: "${VOLSYNC_CLAIM}"

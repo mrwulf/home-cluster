@@ -94,7 +94,6 @@ spec:
               - identifier: main
                 port: http
 
-
     persistence:
       api-data:
         existingClaim: "${VOLSYNC_CLAIM}"

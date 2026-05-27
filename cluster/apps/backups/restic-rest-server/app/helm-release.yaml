@@ -133,7 +133,6 @@ spec:
               - identifier: main
                 port: http
 
-
     persistence:
       data:
         type: nfs

@@ -122,7 +122,6 @@ spec:
               - identifier: main
                 port: http
 
-
     persistence:
       config:
         existingClaim: plex-config

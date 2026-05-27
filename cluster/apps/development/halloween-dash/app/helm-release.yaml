@@ -91,7 +91,6 @@ spec:
               - identifier: app
                 port: http
 
-
     persistence:
       data:
         existingClaim: "${VOLSYNC_CLAIM}"
