@@ -35,7 +35,7 @@ endpoints:
       query-name: "status.home.${SECRET_DOMAIN}"
       query-type: A
     conditions:
-      - "[BODY] == 10.0.10.20"
+      - "[BODY] == 10.0.10.30"
       - "[DNS_RCODE] == NOERROR"
     alerts: &alerts
       - type: pushover
