@@ -98,9 +98,25 @@ spec:
                   - gateway.networking.k8s.io
                   resources:
                   - gateways
+                  - gatewayclasses
                   - httproutes
                   - tlsroutes
                   - grpcroutes
                   verbs:
+                  - list
+                  - watch
+                - apiGroups:
+                  - externaldns.k8s.io
+                  resources:
+                  - dnsendpoints
+                  verbs:
+                  - list
+                  - watch
+                - apiGroups:
+                  - apiextensions.k8s.io
+                  resources:
+                  - customresourcedefinitions
+                  verbs:
+                  - get
                   - list
                   - watch
