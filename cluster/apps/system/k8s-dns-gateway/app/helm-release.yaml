@@ -99,6 +99,8 @@ spec:
                   resources:
                   - gateways
                   - httproutes
+                  - tlsroutes
+                  - grpcroutes
                   verbs:
                   - list
                   - watch
