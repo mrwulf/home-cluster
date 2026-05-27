@@ -9,7 +9,7 @@ metadata:
   annotations:
     external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
 spec:
-  gatewayClassName: traefik
+  gatewayClassName: traefik-external
   addresses:
     - type: IPAddress
       value: "10.0.10.20"

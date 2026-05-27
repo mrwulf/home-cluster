@@ -25,6 +25,10 @@ spec:
     remediation:
       retries: 3
   values:
+    gatewayClass:
+      enabled: false
+    gateway:
+      enabled: false
     # image:
     #   name: ghcr.io/k8s-at-home/traefik
     deployment:
@@ -63,12 +67,14 @@ spec:
         enabled: true
         format: json
     ingressClass:
-      enabled: false
-      isDefaultClass: true
+      enabled: true
+      isDefaultClass: false
+      name: "traefik-external"
     additionalArguments:
       - "--api.insecure=true"
       - "--serversTransport.insecureSkipVerify=true"
       - "--providers.kubernetesgateway.labelselector=gateway.sysinfra.pro/type=external"
+      - "--providers.kubernetesingress.ingressclass=traefik-internal"
     ingressRoute:
       dashboard:
         enabled: false

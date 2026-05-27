@@ -25,6 +25,10 @@ spec:
     remediation:
       retries: 3
   values:
+    gatewayClass:
+      enabled: false
+    gateway:
+      enabled: false
     deployment:
       kind: Deployment
       replicas: 2
@@ -60,12 +64,14 @@ spec:
         enabled: true
         format: json
     ingressClass:
-      enabled: false
+      enabled: true
       isDefaultClass: false
+      name: "traefik-external"
     additionalArguments:
       - "--api.insecure=true"
       - "--serversTransport.insecureSkipVerify=true"
       - "--providers.kubernetesgateway.labelselector=gateway.sysinfra.pro/type=internal"
+      - "--providers.kubernetesingress.ingressclass=traefik-internal"
     ingressRoute:
       dashboard:
         enabled: false

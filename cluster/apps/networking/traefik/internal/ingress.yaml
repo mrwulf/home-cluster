@@ -10,7 +10,7 @@ metadata:
     gatus.io/endpoint: |
       path: /dashboard/
 spec:
-  ingressClassName: "traefik"
+  ingressClassName: "traefik-external"
   tls:
     - hosts:
         - &host "traefik.home.${SECRET_DOMAIN}"
