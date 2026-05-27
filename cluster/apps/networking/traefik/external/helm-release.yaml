@@ -230,6 +230,15 @@ spec:
         real-ip:
           moduleName: github.com/Paxxs/traefik-get-real-ip
           version: v1.0.2
+    startupProbe:
+      exec:
+        command:
+          - /bin/sh
+          - -c
+          - test -f /plugins-storage/archives/github.com/Paxxs/traefik-get-real-ip/v1.0.2.zip
+      initialDelaySeconds: 15
+      periodSeconds: 5
+      failureThreshold: 6
     resources:
       requests:
         memory: 110Mi

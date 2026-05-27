@@ -55,7 +55,9 @@ spec:
                 # networking excluded (since that's the source)
                 - ai
                 - auth
+                - backups
                 - databases
+                - development
                 - flux-system
                 - household
                 - media
