@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: traefik-dashboard-internal
+  name: traefik-dashboard-external
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
@@ -13,7 +13,7 @@ spec:
   ingressClassName: "traefik-internal"
   tls:
     - hosts:
-        - &host "traefik-internal.home.${SECRET_DOMAIN}"
+        - &host "traefik-external.home.${SECRET_DOMAIN}"
       secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
   rules:
     - host: *host
