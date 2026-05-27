@@ -22,12 +22,12 @@ spec:
     - name: webinternal
       port: 80
       protocol: TCP
-      targetPort: webinternal
+      targetPort: 8010
     - name: websecureinternal
       port: 443
       protocol: TCP
-      targetPort: websecureinternal
+      targetPort: 8450
     - name: websecureinternal-http3
       port: 443
       protocol: UDP
-      targetPort: websecureinternal-http3
+      targetPort: 8450
