@@ -14,7 +14,7 @@ metadata:
       conditions:
         - "[STATUS] == 404"
 spec:
-  ingressClassName: "traefik"
+  ingressClassName: "traefik-external"
   tls:
     - hosts:
         - &host "flux-receiver.${SECRET_DOMAIN}"

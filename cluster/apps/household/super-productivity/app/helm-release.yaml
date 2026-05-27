@@ -103,7 +103,7 @@ spec:
 
     ingress:
       web:
-        className: "traefik"
+        className: "traefik-external"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
@@ -123,7 +123,7 @@ spec:
             hosts:
               - *webHost
       sync:
-        className: "traefik"
+        className: "traefik-external"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"

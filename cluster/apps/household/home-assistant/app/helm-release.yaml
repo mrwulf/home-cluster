@@ -76,7 +76,7 @@ spec:
 
     ingress:
       main:
-        className: "traefik"
+        className: "traefik-external"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
@@ -96,7 +96,7 @@ spec:
               - *host
             secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
       code:
-        className: "traefik"
+        className: "traefik-internal"
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"

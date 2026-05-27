@@ -51,7 +51,7 @@ spec:
     ingress:
       main:
         enabled: true
-        className: "traefik"
+        className: "traefik-internal"
         annotations:
           auth.home.arpa/enabled: "true"
           external-dns.home.arpa/enabled: "true"
