@@ -66,7 +66,7 @@ spec:
     ingressClass:
       enabled: true
       isDefaultClass: false
-      name: "traefik-external"
+      name: "traefik-internal"
     additionalArguments:
       - "--api.insecure=true"
       - "--serversTransport.insecureSkipVerify=true"
