@@ -86,7 +86,7 @@ spec:
       kubernetesIngress:
         enabled: true
         allowExternalNameServices: true
-        ingressClass: traefik
+        ingressClass: traefik-external
 
       kubernetesGateway:
         enabled: true

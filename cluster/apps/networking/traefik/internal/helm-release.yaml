@@ -81,7 +81,9 @@ spec:
         allowExternalNameServices: true
         allowCrossNamespace: true
       kubernetesIngress:
-        enabled: false
+        enabled: true
+        allowExternalNameServices: true
+        ingressClass: traefik-internal
       kubernetesGateway:
         enabled: true
         statusAddress:
