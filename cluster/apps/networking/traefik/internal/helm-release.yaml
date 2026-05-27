@@ -31,7 +31,7 @@ spec:
       enabled: false
     deployment:
       kind: Deployment
-      replicas: 2
+      replicas: 3
     affinity:
       podAntiAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:

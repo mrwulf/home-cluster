@@ -53,9 +53,9 @@ spec:
       enabled: true
       type: LoadBalancer
       loadBalancerIPs:
-        - "${TRAEFIK_ADDR}"
+        - "10.0.10.20"
       annotations:
-        io.cilium/lb-ipam-ips: "${TRAEFIK_ADDR}"
+        io.cilium/lb-ipam-ips: "10.0.10.20"
       externalTrafficPolicy: Local
       ipFamilies:
         - "IPv4"

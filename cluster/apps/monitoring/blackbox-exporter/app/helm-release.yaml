@@ -88,7 +88,7 @@ spec:
               - NOERROR
             validate_answer_rrs:
               fail_if_not_matches_regexp:
-                - "traefik\\.home\\.${SECRET_DOMAIN}\\.\\t.*\\tIN\\tA\\t${TRAEFIK_ADDR/./\\.}"
+                - "traefik-external\\.home\\.${SECRET_DOMAIN}\\.\\t.*\\tIN\\tA\\t${10.0.10.20/./\\.}"
 
         dns_unifi:
           prober: dns
