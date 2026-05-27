@@ -18,7 +18,7 @@ spec:
     fullnameOverride: *app
     ingress:
       enabled: true
-      className: traefik
+      className: traefik-internal
       hosts:
         - host: &host "blackbox.home.${SECRET_DOMAIN}"
           paths:

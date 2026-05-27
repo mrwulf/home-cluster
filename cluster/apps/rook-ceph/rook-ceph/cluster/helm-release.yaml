@@ -43,7 +43,7 @@ spec:
       createPrometheusRules: true
     ingress:
       dashboard:
-        ingressClassName: traefik
+        ingressclassName: traefik-internal
         annotations:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"

@@ -84,19 +84,6 @@ hubble:
         enabled: true
   ui:
     enabled: false
-    # rollOutPods: true
-    # ingress:
-    #   enabled: true
-    #   className: traefik
-    #   annotations:
-    #     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-    #     traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-    #   hosts:
-    #     - &host "hubble.home.${SECRET_DOMAIN}"
-    #   tls:
-    #     - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-    #       hosts:
-    #         - *host
   dashboards:
     enabled: true
     # namespace: monitoring

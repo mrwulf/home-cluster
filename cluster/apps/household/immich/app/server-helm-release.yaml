@@ -84,7 +84,7 @@ spec:
 
     ingress:
       main:
-        className: traefik
+        className: traefik-external
         annotations:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
