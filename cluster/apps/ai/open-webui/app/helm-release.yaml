@@ -58,29 +58,28 @@ spec:
         ports:
           http:
             port: 8080
-    ingress:
-      app:
+    route:
+      main:
         enabled: true
-        className: traefik-external
         annotations:
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
-            guarded: true
-        hosts:
-          - host: &host "chat.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
-        tls:
-          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "chat.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: traefik-middleware-chain-no-auth
+            backendRefs:
+              - identifier: app
+                port: http
     persistence:
       config:
         enabled: true

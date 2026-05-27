@@ -117,29 +117,26 @@ spec:
           - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
             hosts:
               - *console-host
+
+    route:
       s3:
-        className: traefik-external
+        enabled: true
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
-            guarded: true
+            path: /minio/health/live
             conditions:
-              - "[STATUS] == 403"
-        hosts:
-          - host: &api-host "cdn.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  identifier: minio
-                  port: *api-port
-        tls:
-          - secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *api-host
+              - "[STATUS] == 200"
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "cdn.${SECRET_DOMAIN}"
+        rules:
+          - backendRefs:
+              - identifier: minio
+                port: api
 
     persistence:
       config:

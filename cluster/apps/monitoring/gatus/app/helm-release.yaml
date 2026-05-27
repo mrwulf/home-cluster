@@ -36,6 +36,7 @@ spec:
               tag: 0.0.18
             args:
               - --enable-ingress
+              - --enable-httproute
               - --annotation-enabled=gatus.io/enabled
               - --annotation-config=gatus.io/endpoint
             resources:
