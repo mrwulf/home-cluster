@@ -69,6 +69,7 @@ spec:
           limits:
             memory: 1Gi
       metrics:
+        enabled: true
         serviceMonitor:
           enabled: true
       resources:
@@ -79,6 +80,25 @@ spec:
           memory: 2Gi
       ingress:
         enabled: false
+      route:
+        main:
+          enabled: true
+          hostnames:
+            - auth.${SECRET_DOMAIN}
+          parentRefs:
+            - name: external-gateway
+              namespace: networking
+              sectionName: https
+          filters:
+            - type: ExtensionRef
+              extensionRef:
+                group: traefik.io
+                kind: Middleware
+                name: traefik-middleware-chain-no-auth
+          annotations:
+            gatus.io/enabled: "true"
+            gatus.io/endpoint: |
+              group: external
 
     worker:
       replicas: 2
