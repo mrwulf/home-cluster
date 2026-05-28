@@ -21,8 +21,6 @@ spec:
             image:
               repository: ghcr.io/miguelndecarvalho/speedtest-exporter
               tag: v3.5.4
-            # env:
-            #   SPEEDTEST_SERVER: "10292"
             resources:
               requests:
                 cpu: 15m
@@ -40,6 +38,12 @@ spec:
         runAsNonRoot: true
         runAsUser: 568
         runAsGroup: 568
+      # Block flaky servers
+      hostAliases:
+        - ip: 127.0.0.1
+          hostnames:
+            - sd2caook.speedtest.sbcglobal.net.prod.hosts.ooklaserver.net
+            - sd2caook.speedtest.sbcglobal.net
     persistence:
       config:
         type: emptyDir
@@ -55,7 +59,6 @@ spec:
 
     serviceMonitor:
       main:
-        serviceName: main
         endpoints:
           - port: http
             scheme: http
