@@ -29,6 +29,22 @@ spec:
                 memory: 50M
               limits:
                 memory: 100M
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 568
+        runAsGroup: 568
+    persistence:
+      config:
+        type: emptyDir
+        globalMounts:
+          - path: /.config
 
     service:
       main:
@@ -46,3 +62,6 @@ spec:
             path: /metrics
             interval: 30m
             scrapeTimeout: 1m
+            metricRelabelings:
+              - action: labeldrop
+                regex: (pod)
