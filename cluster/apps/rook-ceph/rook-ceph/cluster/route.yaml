@@ -1,0 +1,24 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: rook-ceph-dashboard
+  namespace: rook-ceph
+  annotations:
+    gatus.io/enabled: "true"
+spec:
+  parentRefs:
+    - name: internal-gateway
+      namespace: networking
+  hostnames:
+    - "rook.home.${SECRET_DOMAIN}"
+  rules:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: rfc1918-ips
+      backendRefs:
+        - name: rook-ceph-mgr-dashboard
+          port: 7000

@@ -74,26 +74,29 @@ spec:
         ports:
           http:
             port: *port
-    ingress:
-      main:
+    route:
+      app:
         enabled: true
-        className: "traefik-internal"
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             conditions:
               - "[STATUS] == 404"
-        hosts:
-          - host: &host "tautulli.home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "tautulli.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: app
+                port: http
     persistence:
       config:
         existingClaim: "${VOLSYNC_CLAIM}"

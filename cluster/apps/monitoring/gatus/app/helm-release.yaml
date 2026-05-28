@@ -111,24 +111,26 @@ spec:
               - action: replace
                 sourceLabels: ["service"]
                 targetLabel: instance
-    ingress:
+    route:
       app:
-        className: traefik-internal
+        enabled: true
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           gatus.io/enabled: "true"
-        hosts:
-          - host: &host status.home.${SECRET_DOMAIN}
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
-        tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "status.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: app
+                port: http
 
     serviceAccount:
       gatus: {}

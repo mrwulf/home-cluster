@@ -41,20 +41,6 @@ spec:
     monitoring:
       enabled: true
       createPrometheusRules: true
-    ingress:
-      dashboard:
-        ingressClassName: traefik-internal
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          gatus.io/enabled: "true"
-        host:
-          name: &host "rook.home.${SECRET_DOMAIN}"
-          path: "/"
-        tls:
-          - hosts:
-              - *host
-            secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
     toolbox:
       enabled: true
     cephClusterSpec:

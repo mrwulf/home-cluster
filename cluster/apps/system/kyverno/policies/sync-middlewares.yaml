@@ -105,8 +105,12 @@ spec:
                 - development
                 - flux-system
                 - household
+                - kube-system
                 - media
+                - monitoring
+                - rook-ceph
                 - vaultwarden
+                - vpn
       generate:
         generateExisting: true
         apiVersion: traefik.io/v1alpha1

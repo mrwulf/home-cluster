@@ -74,24 +74,26 @@ spec:
           http:
             port: &httpPort 8080
 
-    ingress:
+    route:
       main:
-        className: traefik-internal
+        enabled: true
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
           gatus.io/enabled: "true"
-        hosts:
-          - host: *host
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: *httpPort
-        tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - *host
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: main
+                port: *httpPort
 
     persistence:
       setup-tools:

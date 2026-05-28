@@ -79,21 +79,6 @@ spec:
           memory: 2Gi
       ingress:
         enabled: false
-        ingressClassName: "traefik-external"
-        annotations:
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN:=domain}"
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
-          gatus.io/enabled: "true"
-          gatus.io/endpoint: |
-            group: external
-            guarded: true
-        hosts:
-          - &host "auth.${SECRET_DOMAIN}"
-        tls:
-          - hosts:
-              - *host
-            secretName: "wildcard-${SECRET_DOMAIN/./-}-tls"
 
     worker:
       replicas: 2

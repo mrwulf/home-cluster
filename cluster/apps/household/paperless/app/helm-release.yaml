@@ -90,25 +90,26 @@ spec:
           http:
             port: 8000
 
-    ingress:
+    route:
       main:
         enabled: true
-        className: "traefik-internal"
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-internal-no-auth@kubernetescrd"
           gatus.io/enabled: "true"
-        hosts:
-          - host: &host "paperless.home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: main
-                  port: http
-        tls:
-          - hosts:
-              - *host
-            secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "paperless.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: traefik-middleware-chain-internal-no-auth
+            backendRefs:
+              - identifier: main
+                port: http
 
     persistence:
       data:

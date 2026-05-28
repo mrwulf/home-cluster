@@ -98,27 +98,26 @@ spec:
             #   name: minio-secret
             #   key: MINIO_PROMETHEUS_TOKEN
 
-    ingress:
-      dashboard:
-        className: traefik-internal
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          gatus.io/enabled: "true"
-        hosts:
-          - host: &console-host "minio.home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  identifier: minio
-                  port: *console-port
-        tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *console-host
-
     route:
+      dashboard:
+        enabled: true
+        annotations:
+          gatus.io/enabled: "true"
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "minio.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: minio
+                port: *console-port
       s3:
         enabled: true
         annotations:

@@ -77,28 +77,26 @@ spec:
         ports:
           http:
             port: 8096
-    ingress:
-      main:
+    route:
+      app:
         enabled: true
-        className: traefik-internal
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          # traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
-          traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-          # external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
-          # external-dns.alpha.kubernetes.io/target: "${DDNS_TARGET:=base.domain}"
           gatus.io/enabled: "true"
-        hosts:
-          - host: &host "jellyfin.home.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
-        tls:
-          - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-            hosts:
-              - *host
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "jellyfin.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: app
+                port: http
     persistence:
       config:
         existingClaim: jellyfin

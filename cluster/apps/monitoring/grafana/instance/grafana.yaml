@@ -81,26 +81,3 @@ spec:
               emptyDir: {}
   disableDefaultAdminSecret: true
   disableDefaultSecurityContext: All
-  ingress:
-    metadata:
-      annotations:
-        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-        traefik.ingress.kubernetes.io/router.middlewares: "networking-rfc1918-ips@kubernetescrd"
-        gatus.io/enabled: "true"
-    spec:
-      ingressClassName: traefik-internal
-      rules:
-        - host: "grafana.home.${SECRET_DOMAIN}"
-          http:
-            paths:
-              - path: /
-                pathType: Prefix
-                backend:
-                  service:
-                    name: grafana-service
-                    port:
-                      number: 3000
-      tls:
-        - secretName: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-          hosts:
-            - "grafana.home.${SECRET_DOMAIN}"
