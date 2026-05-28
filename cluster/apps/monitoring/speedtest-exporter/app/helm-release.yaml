@@ -21,6 +21,20 @@ spec:
             image:
               repository: ghcr.io/miguelndecarvalho/speedtest-exporter
               tag: v3.5.4
+            env:
+              SPEEDTEST_CACHE_FOR: "1800"
+            probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /metrics
+                    port: 9798
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 60
+                  failureThreshold: 10
             resources:
               requests:
                 cpu: 15m
