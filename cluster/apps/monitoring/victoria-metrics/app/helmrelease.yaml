@@ -185,6 +185,11 @@ spec:
                 caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
                 insecureSkipVerify: true
     kubeEtcd:
+      enabled: true
+      endpoints:
+        - 10.0.1.51
+        - 10.0.1.52
+        - 10.0.1.53
       service:
         enabled: true
         port: 2381
