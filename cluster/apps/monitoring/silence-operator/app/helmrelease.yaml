@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: silence-operator-charts
+  namespace: monitoring
+spec:
+  interval: 2h
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 0.20.1
+  url: oci://gsoci.azurecr.io/charts/giantswarm/silence-operator
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: silence-operator
+  namespace: monitoring
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: silence-operator-charts
+  interval: 30m
+  timeout: 15m
+  install:
+    createNamespace: true
+  values:
+    alertmanagerAddress: "http://vmalertmanager-stack.monitoring.svc:9093"
+    podMonitor:
+      enabled: false

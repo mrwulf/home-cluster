@@ -7,3 +7,4 @@ resources:
   - secret.sops.yaml
   - oomkilled.yaml
   - scrapeconfig-infra-exporters.yaml
+  - endpoints.yaml

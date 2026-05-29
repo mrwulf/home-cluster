@@ -10,6 +10,7 @@ resources:
   - prometheus-operator/ks.yaml
   # - loki-stack/ks.yaml
   # - prometheus-stack/ks.yaml
+  - silence-operator/ks.yaml
   - smartctl-exporter/ks.yaml
   - speedtest-exporter/ks.yaml
   - unifi-poller/ks.yaml

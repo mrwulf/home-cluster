@@ -19,6 +19,10 @@ spec:
   values:
     deploymentMode: SingleBinary
 
+    monitoring:
+      serviceMonitor:
+        enabled: true
+
     loki:
       analytics:
         reporting_enabled: false

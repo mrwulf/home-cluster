@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: stack-kube-etcd
+  namespace: kube-system
+subsets:
+  - addresses:
+      - ip: 10.0.1.51
+      - ip: 10.0.1.52
+      - ip: 10.0.1.53
+    ports:
+      - name: http-metrics
+        port: 2381
+        protocol: TCP

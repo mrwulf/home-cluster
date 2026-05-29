@@ -84,7 +84,6 @@ spec:
             port: *metricsPort
     serviceMonitor:
       main:
-        serviceName: main
         endpoints:
           - port: metrics
             scheme: http

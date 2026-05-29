@@ -1,0 +1,13 @@
+---
+apiVersion: observability.giantswarm.io/v1alpha2
+kind: Silence
+metadata:
+  name: bonding-degraded-silence
+  namespace: monitoring
+  annotations:
+    valid-until: "2036-05-28T23:00:00Z"
+spec:
+  matchers:
+    - name: alertname
+      matchType: "=~"
+      value: "HostNetworkInterfaceDegraded|NodeBondingDegraded"

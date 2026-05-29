@@ -52,7 +52,6 @@ spec:
             port: 9749
     serviceMonitor:
       main:
-        serviceName: main
         endpoints:
           - port: metrics
             scheme: http
