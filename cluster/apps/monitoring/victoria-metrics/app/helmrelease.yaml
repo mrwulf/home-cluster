@@ -189,7 +189,7 @@ spec:
         enabled: true
         port: 2381
         targetPort: 2381
-        selector: {}
+        selector: null
       vmScrape:
         spec:
           endpoints:

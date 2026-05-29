@@ -10,4 +10,4 @@ spec:
   matchers:
     - name: alertname
       matchType: "=~"
-      value: "HostNetworkInterfaceDegraded|NodeBondingDegraded"
+      value: "CephNodeNetworkBondDegraded|NodeBondingDegraded|HostNetworkInterfaceDegraded"
