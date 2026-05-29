@@ -227,7 +227,7 @@ spec:
             - port: metrics
               metricRelabelConfigs:
                 - action: drop
-                  regex: /var/lib/kubelet/pods.+
+                  regex: /var/lib/kubelet/pods.+|/etc/nfsmount.conf
                   source_labels:
                     - mountpoint
               relabelConfigs:

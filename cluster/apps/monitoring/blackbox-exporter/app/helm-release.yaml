@@ -72,13 +72,13 @@ spec:
           prober: dns
           timeout: 5s
           dns:
-            query_name: "traefik.home.${SECRET_DOMAIN}"
+            query_name: "traefik-internal.home.${SECRET_DOMAIN}"
             query_type: "A"
             valid_rcodes:
               - NOERROR
             validate_answer_rrs:
               fail_if_not_matches_regexp:
-                - "traefik-external\\.home\\.${SECRET_DOMAIN}\\.\\t.*\\tIN\\tA\\t10\\.0\\.10\\.20"
+                - "traefik-internal\\.home\\.${SECRET_DOMAIN}\\.\\t.*\\tIN\\tA\\t10\\.0\\.10\\.30"
 
         dns_unifi:
           prober: dns
