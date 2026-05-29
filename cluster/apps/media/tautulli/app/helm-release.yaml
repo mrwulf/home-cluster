@@ -79,9 +79,6 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
-          gatus.io/endpoint: |
-            conditions:
-              - "[STATUS] == 404"
         parentRefs:
           - name: internal-gateway
             namespace: networking

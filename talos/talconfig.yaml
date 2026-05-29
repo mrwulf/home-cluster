@@ -344,7 +344,6 @@ worker:
           - siderolabs/lldpd
           - siderolabs/gasket-driver
           - siderolabs/mei
-          - siderolabs/thunderbolt
   extensionServices: &extensionServices
     - name: lldpd
       configFiles:
