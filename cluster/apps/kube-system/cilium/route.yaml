@@ -22,3 +22,18 @@ spec:
       backendRefs:
         - name: hubble-ui
           port: 80
+---
+# Note: This Middleware is manually defined in kube-system because Kyverno's
+# default webhook resourceFilters exclude the kube-system namespace, which
+# prevents the sync-middlewares ClusterPolicy from auto-generating it here.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: rfc1918-ips
+  namespace: kube-system
+spec:
+  ipWhiteList:
+    sourceRange:
+      - 10.0.0.0/8
+      - 32.32.0.0/16
+      - 192.168.0.0/16
