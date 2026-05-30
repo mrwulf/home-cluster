@@ -77,6 +77,21 @@ spec:
         port: 22
     ingress:
       enabled: false
+    httpRoute:
+      enabled: true
+      annotations:
+        gatus.io/enabled: "true"
+      parentRefs:
+        - name: internal-gateway
+          namespace: networking
+      hostnames:
+        - "git.home.${SECRET_DOMAIN}"
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: rfc1918-ips
     persistence:
       enabled: true
       create: false

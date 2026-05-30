@@ -4,6 +4,8 @@ kind: HTTPRoute
 metadata:
   name: blackbox-exporter
   namespace: monitoring
+  annotations:
+    gatus.io/enabled: "true"
 spec:
   parentRefs:
     - name: internal-gateway

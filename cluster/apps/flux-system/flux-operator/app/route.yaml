@@ -4,6 +4,8 @@ kind: HTTPRoute
 metadata:
   name: flux-operator-web
   namespace: flux-system
+  annotations:
+    gatus.io/enabled: "true"
 spec:
   parentRefs:
     - name: internal-gateway

@@ -67,6 +67,8 @@ spec:
     route:
       app:
         enabled: true
+        annotations:
+          gatus.io/enabled: "true"
         parentRefs:
           - name: internal-gateway
             namespace: networking
