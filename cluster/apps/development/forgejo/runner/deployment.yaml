@@ -16,6 +16,12 @@ spec:
       labels:
         app.kubernetes.io/name: forgejo-runner
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
       initContainers:
         - name: register-runner
           image: code.forgejo.org/forgejo/runner:12.10.2

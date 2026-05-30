@@ -60,3 +60,5 @@ spec:
       VOLSYNC_CLAIM: forgejo-runner-data
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_START_MINUTE: "35"
+      APP_UID: "568"
+      APP_GID: "568"
