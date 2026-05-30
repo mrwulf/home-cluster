@@ -25,6 +25,8 @@ spec:
       config:
         APP_NAME: "Forgejo Git Service"
         RUN_MODE: prod
+        oauth2_client:
+          ENABLE: true
         database:
           DB_TYPE: postgres
           HOST: postgres16-rw.databases.svc.cluster.local:5432
@@ -49,6 +51,12 @@ spec:
           DISABLE_REGISTRATION: false # Set to true if you only want Authentik logins
         security:
           INSTALL_LOCK: true
+      oauth:
+        - name: 'Authentik'
+          provider: 'openidConnect'
+          key: '4ZfKI0ByqYlyzDg9JpG1W1dtlpNgFb5jmWiTsdYf'
+          secret: 'DEt38kB4IkGOls9GyAmaGzUoXJkL9gjNy2bp7bIjfCwo4nZMXjDJJrGtNBlMPrFo3172zskBZ4mr1BRvzkPc1MFy4W9M78a5bIHo26Ni04VJ5pZh60JxRBYTilNl7Czy'
+          autoDiscoverUrl: 'https://auth.${SECRET_DOMAIN}/.well-known/openid-configuration'
       additionalConfigFromEnvs:
         - name: GITEA__database__USER
           valueFrom:
