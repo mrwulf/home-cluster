@@ -28,8 +28,8 @@ spec:
                 forgejo-runner register \
                   --config /data/config.yaml \
                   --no-interactive \
-                  --instance "${GITEA_INSTANCE_URL}" \
-                  --token "${GITEA_RUNNER_REGISTRATION_TOKEN}" \
+                  --instance "$${GITEA_INSTANCE_URL}" \
+                  --token "$${GITEA_RUNNER_REGISTRATION_TOKEN}" \
                   --name "k8s-runner" \
                   --labels "ubuntu-latest:host,self-hosted:host"
               else
