@@ -1,0 +1,62 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app forgejo
+  namespace: flux-system
+spec:
+  targetNamespace: development
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: volsync
+    - name: postgres-cluster
+    - name: traefik-internal
+  path: ./cluster/apps/development/forgejo/app
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 30m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CLAIM: forgejo-data
+      VOLSYNC_CAPACITY: 20Gi
+      VOLSYNC_START_MINUTE: "25"
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &runnerApp forgejo-runner
+  namespace: flux-system
+spec:
+  targetNamespace: development
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *runnerApp
+  dependsOn:
+    - name: forgejo
+  path: ./cluster/apps/development/forgejo/runner
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 30m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *runnerApp
+      VOLSYNC_CLAIM: forgejo-runner-data
+      VOLSYNC_CAPACITY: 2Gi
+      VOLSYNC_START_MINUTE: "35"

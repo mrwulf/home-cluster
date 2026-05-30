@@ -1,0 +1,77 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forgejo-runner
+  namespace: development
+  labels:
+    app.kubernetes.io/name: forgejo-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: forgejo-runner
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: forgejo-runner
+    spec:
+      initContainers:
+        - name: register-runner
+          image: code.forgejo.org/forgejo/runner:3.4.1
+          command:
+            - sh
+            - -c
+            - |
+              if [ ! -f /data/.runner ]; then
+                echo "Registering runner..."
+                forgejo-runner register \
+                  --config /data/config.yaml \
+                  --no-interactive \
+                  --instance "${GITEA_INSTANCE_URL}" \
+                  --token "${GITEA_RUNNER_REGISTRATION_TOKEN}" \
+                  --name "k8s-runner" \
+                  --labels "ubuntu-latest:host,self-hosted:host"
+              else
+                echo "Runner already registered."
+              fi
+          env:
+            - name: GITEA_INSTANCE_URL
+              value: "https://git.home.${SECRET_DOMAIN}"
+            - name: GITEA_RUNNER_REGISTRATION_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-runner-secret
+                  key: token
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /data/config.yaml
+              subPath: config.yaml
+      containers:
+        - name: runner
+          image: code.forgejo.org/forgejo/runner:3.4.1
+          command:
+            - forgejo-runner
+            - daemon
+            - --config
+            - /data/config.yaml
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /data/config.yaml
+              subPath: config.yaml
+      volumes:
+        - name: data
+          existingClaim: "${VOLSYNC_CLAIM}"
+        - name: config
+          configMap:
+            name: forgejo-runner-config

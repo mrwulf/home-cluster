@@ -1,0 +1,82 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: forgejo
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: forgejo-chart
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    image:
+      repository: codeberg.org/forgejo/forgejo
+      tag: 10.0.1
+    gitea:
+      config:
+        APP_NAME: "Forgejo Git Service"
+        RUN_MODE: prod
+        database:
+          DB_TYPE: postgres
+          HOST: postgres16-rw.databases.svc.cluster.local:5432
+          NAME: forgejo
+        server:
+          DOMAIN: "git.home.${SECRET_DOMAIN}"
+          ROOT_URL: "https://git.home.${SECRET_DOMAIN}/"
+          SSH_DOMAIN: "git.home.${SECRET_DOMAIN}"
+          SSH_PORT: 22
+          SSH_LISTEN_PORT: 22
+        mailer:
+          ENABLED: true
+          PROTOCOL: smtp
+          SMTP_ADDR: smtp-relay.system.svc.cluster.local
+          SMTP_PORT: 2525
+          FROM: "forgejo@${SECRET_DOMAIN}"
+          USER: ""
+          PASSWD: ""
+          FORCE_TRUST_SERVER_CERT: true
+        auth:
+          ENABLE_AUTO_REGISTRATION: true
+          DISABLE_REGISTRATION: false # Set to true if you only want Authentik logins
+        security:
+          INSTALL_LOCK: true
+      additionalConfigFromEnvs:
+        - name: GITEA__database__USER
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-db
+              key: FORGEJO_DATABASE_USER
+        - name: GITEA__database__PASSWD
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-db
+              key: FORGEJO_DATABASE_PASSWORD
+    service:
+      http:
+        type: ClusterIP
+        port: 3000
+      ssh:
+        type: LoadBalancer
+        port: 22
+    ingress:
+      enabled: false
+    persistence:
+      enabled: true
+      claimName: "${VOLSYNC_CLAIM}"
+    postgresql:
+      enabled: false
+    extraInitContainers:
+      - name: init-db
+        image: ghcr.io/home-operations/postgres-init:18.4
+        envFrom:
+          - secretRef:
+              name: forgejo-db
