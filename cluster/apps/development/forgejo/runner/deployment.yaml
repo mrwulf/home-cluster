@@ -18,7 +18,7 @@ spec:
     spec:
       initContainers:
         - name: register-runner
-          image: code.forgejo.org/forgejo/runner:3.4.1
+          image: code.forgejo.org/forgejo/runner:12.10.2
           command:
             - sh
             - -c
@@ -51,7 +51,7 @@ spec:
               subPath: config.yaml
       containers:
         - name: runner
-          image: code.forgejo.org/forgejo/runner:3.4.1
+          image: code.forgejo.org/forgejo/runner:12.10.2
           command:
             - forgejo-runner
             - daemon
@@ -71,7 +71,8 @@ spec:
               subPath: config.yaml
       volumes:
         - name: data
-          existingClaim: "${VOLSYNC_CLAIM}"
+          persistentVolumeClaim:
+            claimName: "${VOLSYNC_CLAIM}"
         - name: config
           configMap:
             name: forgejo-runner-config

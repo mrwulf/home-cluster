@@ -52,11 +52,11 @@ spec:
         security:
           INSTALL_LOCK: true
       oauth:
-        - name: 'Authentik'
-          provider: 'openidConnect'
-          key: '4ZfKI0ByqYlyzDg9JpG1W1dtlpNgFb5jmWiTsdYf'
-          secret: 'DEt38kB4IkGOls9GyAmaGzUoXJkL9gjNy2bp7bIjfCwo4nZMXjDJJrGtNBlMPrFo3172zskBZ4mr1BRvzkPc1MFy4W9M78a5bIHo26Ni04VJ5pZh60JxRBYTilNl7Czy'
-          autoDiscoverUrl: 'https://auth.${SECRET_DOMAIN}/application/o/forgejo/.well-known/openid-configuration'
+        - name: "Authentik"
+          provider: "openidConnect"
+          key: "4ZfKI0ByqYlyzDg9JpG1W1dtlpNgFb5jmWiTsdYf"
+          secret: "DEt38kB4IkGOls9GyAmaGzUoXJkL9gjNy2bp7bIjfCwo4nZMXjDJJrGtNBlMPrFo3172zskBZ4mr1BRvzkPc1MFy4W9M78a5bIHo26Ni04VJ5pZh60JxRBYTilNl7Czy"
+          autoDiscoverUrl: "https://auth.${SECRET_DOMAIN}/application/o/forgejo/.well-known/openid-configuration"
       additionalConfigFromEnvs:
         - name: GITEA__database__USER
           valueFrom:
