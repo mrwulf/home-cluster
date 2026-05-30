@@ -74,9 +74,20 @@ spec:
       claimName: "${VOLSYNC_CLAIM}"
     postgresql:
       enabled: false
-    extraInitContainers:
-      - name: init-db
-        image: ghcr.io/home-operations/postgres-init:18.4
-        envFrom:
-          - secretRef:
-              name: forgejo-db
+  postRenderers:
+    - kustomize:
+        patches:
+          - patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: forgejo
+              spec:
+                template:
+                  spec:
+                    initContainers:
+                      - name: init-db
+                        image: ghcr.io/home-operations/postgres-init:18.4
+                        envFrom:
+                          - secretRef:
+                              name: forgejo-db
