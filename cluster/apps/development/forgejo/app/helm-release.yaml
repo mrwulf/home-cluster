@@ -82,6 +82,8 @@ spec:
               kind: Deployment
               metadata:
                 name: forgejo
+                namespace: development
+
               spec:
                 template:
                   spec:
