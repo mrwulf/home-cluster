@@ -71,6 +71,7 @@ spec:
       enabled: false
     persistence:
       enabled: true
+      create: false
       claimName: "${VOLSYNC_CLAIM}"
     postgresql:
       enabled: false
