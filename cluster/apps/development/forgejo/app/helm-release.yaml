@@ -19,7 +19,8 @@ spec:
       retries: 3
   values:
     image:
-      repository: codeberg.org/forgejo/forgejo
+      registry: codeberg.org
+      repository: forgejo/forgejo
       tag: 10.0.1
     gitea:
       config:
