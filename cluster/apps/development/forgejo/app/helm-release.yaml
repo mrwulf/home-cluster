@@ -19,9 +19,8 @@ spec:
       retries: 3
   values:
     image:
-      registry: codeberg.org
       repository: forgejo/forgejo
-      tag: 10.0.1
+      tag: 15.0.2-rootless
     gitea:
       config:
         APP_NAME: "Forgejo Git Service"
