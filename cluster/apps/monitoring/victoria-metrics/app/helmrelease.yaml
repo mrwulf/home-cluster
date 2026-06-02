@@ -154,6 +154,15 @@ spec:
               - severity = "warning"
             equal: ["alertname", "namespace"]
 
+    vmagent:
+      spec:
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 50m
+            memory: 200Mi
+
     kubeApiServer:
       enabled: true
     kubelet:
