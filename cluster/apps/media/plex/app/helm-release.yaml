@@ -103,7 +103,7 @@ spec:
           gatus.io/endpoint: |
             group: external
             client:
-              dns-resolver: "udp://10.0.0.1:53053"
+              dns-resolver: "tcp://10.0.0.1:53053"
             conditions:
               - "[STATUS] == 401"
         parentRefs:

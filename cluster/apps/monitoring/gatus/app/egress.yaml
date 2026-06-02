@@ -8,6 +8,8 @@ metadata:
     io.cilium/lb-ipam-ips: 10.0.10.99
 spec:
   type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: gatus
   ports:
     - name: dummy
       port: 9999
