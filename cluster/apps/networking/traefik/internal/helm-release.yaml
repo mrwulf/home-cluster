@@ -105,6 +105,12 @@ spec:
               to: websecure
               scheme: https
               permanent: true
+      ssh:
+        port: 22
+        expose:
+          default: true
+        exposedPort: 22
+        protocol: TCP
       websecure:
         port: 8443
         http:

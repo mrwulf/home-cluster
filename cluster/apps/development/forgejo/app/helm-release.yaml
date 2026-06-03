@@ -73,7 +73,7 @@ spec:
         type: ClusterIP
         port: 3000
       ssh:
-        type: LoadBalancer
+        type: ClusterIP
         port: 22
     ingress:
       enabled: false
