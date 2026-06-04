@@ -1,18 +1,15 @@
 ---
-# Github should be configured to send application/json
-
 apiVersion: notification.toolkit.fluxcd.io/v1
 kind: Receiver
 metadata:
-  name: github-receiver
+  name: gitea-receiver
   namespace: flux-system
 spec:
-  type: github
+  type: gitea
   events:
-    - "ping"
     - "push"
   secretRef:
     name: webhook-token
   resources:
     - kind: GitRepository
-      name: flux-system
+      name: other-git

@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
   - token.sops.yaml
   - receiver.yaml
+  - gitea-receiver.yaml
   - route.yaml
