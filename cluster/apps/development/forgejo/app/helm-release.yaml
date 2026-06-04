@@ -27,6 +27,8 @@ spec:
         RUN_MODE: prod
         oauth2_client:
           ENABLE: true
+        webhook:
+          ALLOWED_HOST_LIST: "external,loopback,*.svc.cluster.local,*.${SECRET_DOMAIN}"
         database:
           DB_TYPE: postgres
           HOST: postgres16-rw.databases.svc.cluster.local:5432
