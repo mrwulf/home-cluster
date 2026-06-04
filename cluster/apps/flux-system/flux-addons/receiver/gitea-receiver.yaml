@@ -5,7 +5,7 @@ metadata:
   name: gitea-receiver
   namespace: flux-system
 spec:
-  type: gitea
+  type: generic
   events:
     - "push"
   secretRef:
