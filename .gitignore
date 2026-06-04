@@ -16,7 +16,7 @@ xanmanning.k3s*
 .terraform.tfstate*
 terraform.tfstate*
 # Working
-cluster/apps/other/
+cluster/apps/other/deploy/
 # talos/
 testing.sops.yaml
 # go-task build cache
