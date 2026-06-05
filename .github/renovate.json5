@@ -108,12 +108,27 @@
     {
       matchDatasources: ["docker"],
       versioning: "loose",
-      matchPackageNames: ["/plex/"],
+      matchPackageNames: [
+        "/plex/",
+        "/sonarr/",
+        "/radarr/",
+        "/prowlarr/",
+        "/readarr/",
+        "/lidarr/",
+        "/whisparr/",
+        "/tika/",
+        "quay.io/minio/minio",
+      ],
     },
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["ghcr.io/sysadminsmedia/homebox"],
       versioning: "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-hardened$",
+    },
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["docker.io/searxng/searxng", "searxng/searxng"],
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?:[0-9a-f]+)$",
     },
   ],
 }
