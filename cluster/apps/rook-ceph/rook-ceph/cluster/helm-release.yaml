@@ -38,6 +38,10 @@ spec:
       mon clock drift allowed = 0.8
       [osd]
       osd_mclock_profile = high_recovery_ops
+      # Bluestore slow operation tweaks
+      # bluestore_slow_ops_warn_threshold = 10 # Default 1
+      bluestore_slow_ops_warn_lifetime = 300 # Default 86400
+      # osd_op_complaint_time = 60.0 # Default 30
     monitoring:
       enabled: true
       createPrometheusRules: true

@@ -55,21 +55,21 @@ nodes:
       node-role.kubernetes.io/control-plane: ""
     nodeAnnotations:
       installerImage: "{{ .MachineConfig.MachineInstall.InstallImage }}"
-    userVolumes:
-      - name: openebs-data
-        provisioning:
-          diskSelector:
-            match: "system_disk"
-          minSize: 100GiB
-          maxSize: 100GiB
+    # userVolumes:
+    #   - name: openebs-data
+    #     provisioning:
+    #       diskSelector:
+    #         match: "system_disk"
+    #       minSize: 100GiB
+    #       maxSize: 100GiB
     patches:
       - |-
         apiVersion: v1alpha1
         kind: VolumeConfig
         name: EPHEMERAL
         provisioning:
-          maxSize: 100GiB
-          grow: false
+          minSize: 100GiB
+          grow: true
       - |-
         apiVersion: v1alpha1
         kind: RawVolumeConfig
@@ -116,21 +116,21 @@ nodes:
       node-role.kubernetes.io/control-plane: ""
     nodeAnnotations:
       installerImage: "{{ .MachineConfig.MachineInstall.InstallImage }}"
-    userVolumes:
-      - name: openebs-data
-        provisioning:
-          diskSelector:
-            match: "system_disk"
-          minSize: 100GiB
-          maxSize: 100GiB
+    # userVolumes:
+    #   - name: openebs-data
+    #     provisioning:
+    #       diskSelector:
+    #         match: "system_disk"
+    #       minSize: 100GiB
+    #       maxSize: 100GiB
     patches:
       - |-
         apiVersion: v1alpha1
         kind: VolumeConfig
         name: EPHEMERAL
         provisioning:
-          maxSize: 100GiB
-          grow: false
+          minSize: 100GiB
+          grow: true
       - |-
         apiVersion: v1alpha1
         kind: RawVolumeConfig
@@ -177,21 +177,21 @@ nodes:
       node-role.kubernetes.io/control-plane: ""
     nodeAnnotations:
       installerImage: "{{ .MachineConfig.MachineInstall.InstallImage }}"
-    userVolumes:
-      - name: openebs-data
-        provisioning:
-          diskSelector:
-            match: "system_disk"
-          minSize: 100GiB
-          maxSize: 100GiB
+    # userVolumes:
+    #   - name: openebs-data
+    #     provisioning:
+    #       diskSelector:
+    #         match: "system_disk"
+    #       minSize: 100GiB
+    #       maxSize: 100GiB
     patches:
       - |-
         apiVersion: v1alpha1
         kind: VolumeConfig
         name: EPHEMERAL
         provisioning:
-          maxSize: 100GiB
-          grow: false
+          minSize: 100GiB
+          grow: true
       - |-
         apiVersion: v1alpha1
         kind: RawVolumeConfig
