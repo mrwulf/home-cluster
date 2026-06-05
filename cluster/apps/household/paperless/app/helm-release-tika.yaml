@@ -22,7 +22,7 @@ spec:
           main:
             image:
               repository: apache/tika
-              tag: 3.3.1.0
+              tag: 4.0.0-SNAPSHOT-full
 
     service:
       main:
