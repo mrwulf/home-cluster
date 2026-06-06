@@ -19,4 +19,4 @@ spec:
     /cluster/apps/*
     !/cluster/apps/networking/
     /cluster/apps/networking/*
-    !/cluster/apps/networking/rathole-client/
+    !/cluster/apps/networking/ingress-tunnel/

@@ -1,0 +1,46 @@
+#cloud-config
+write_files:
+  # 1. Write FRP Server Configuration
+  - path: /etc/frp/frps.toml
+    permissions: '0600'
+    content: |
+      bindPort = 8080
+      auth.method = "token"
+      auth.token = "${TUNNEL_HANDSHAKE_TOKEN}"
+
+  # 2. Write Systemd Service File for FRPS
+  - path: /etc/systemd/system/frps.service
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=FRP Server
+      After=network.target
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/local/bin/frps -c /etc/frp/frps.toml
+      Restart=always
+      RestartSec=3
+      LimitNOFILE=1048576
+
+      [Install]
+      WantedBy=multi-user.target
+
+runcmd:
+  # 3. Download and Install FRP Binary Natively
+  # renovate: depName=fatedier/frp datasource=github-releases
+  - curl -L -o /tmp/frp.tar.gz https://github.com/fatedier/frp/releases/download/v0.58.1/frp_0.58.1_linux_amd64.tar.gz
+  - tar -xzf /tmp/frp.tar.gz -C /tmp/
+  - mv /tmp/frp_0.58.1_linux_amd64/frps /usr/local/bin/frps
+  - chmod +x /usr/local/bin/frps
+  - rm -rf /tmp/frp.tar.gz /tmp/frp_0.58.1_linux_amd64
+
+  # 4. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
+  - sysctl -w net.core.default_qdisc=fq
+  - sysctl -w net.ipv4.tcp_congestion_control=bbr
+  - echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+  - echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+
+  # 5. Enable and start FRP
+  - systemctl daemon-reload
+  - systemctl enable frps --now

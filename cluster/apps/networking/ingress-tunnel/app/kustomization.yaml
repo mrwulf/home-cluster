@@ -7,8 +7,8 @@ resources:
   - gitrepo.yaml
   - rbac.yaml
 configMapGenerator:
-  - name: rathole-client-template
+  - name: ingress-tunnel-template
     files:
-      - client.toml=configs/client.toml.template
+      - tunnel.toml=configs/tunnel.toml.template
 generatorOptions:
   disableNameSuffixHash: true

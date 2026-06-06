@@ -1,11 +1,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: rathole-client
+  name: ingress-tunnel
   namespace: flux-system
 spec:
   targetNamespace: networking
-  path: ./cluster/apps/networking/rathole-client/app
+  path: ./cluster/apps/networking/ingress-tunnel/app
   prune: true
   sourceRef:
     kind: GitRepository

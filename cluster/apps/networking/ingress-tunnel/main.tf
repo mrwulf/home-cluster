@@ -2,8 +2,7 @@ variable "hcloud_token" { type = string }
 variable "CLOUDFLARE_APIKEY" { type = string }
 variable "cloudflare_tunnel_cname" { type = string }
 variable "secret_domain" { type = string }
-variable "rathole_handshake_token" { type = string }
-variable "rathole_service_token" { type = string }
+variable "tunnel_handshake_token" { type = string }
 
 terraform {
   required_providers {
@@ -48,8 +47,8 @@ data "cloudflare_zone" "domain_zone" {
 data "hcloud_ssh_keys" "all_keys" {}
 
 # 3. Create the Hetzner Server (IPv4 enabled, IPv6 disabled)
-resource "hcloud_server" "rathole_vps" {
-  name        = "rathole-vps"
+resource "hcloud_server" "tunnel_vps" {
+  name        = "ingress-tunnel-vps"
   # renovate: datasource=docker depName=debian
   image       = "debian-12"
   server_type = "cx23"
@@ -62,14 +61,13 @@ resource "hcloud_server" "rathole_vps" {
   }
 
   user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
-    RATHOLE_HANDSHAKE_TOKEN = var.rathole_handshake_token
-    RATHOLE_SERVICE_TOKEN   = var.rathole_service_token
+    TUNNEL_HANDSHAKE_TOKEN = var.tunnel_handshake_token
   })
 }
 
 # 3. Create Declarative Firewall for the Server (Allow 22 & 8080 to home IP, 443 to all)
-resource "hcloud_firewall" "rathole_firewall" {
-  name = "rathole-firewall"
+resource "hcloud_firewall" "tunnel_firewall" {
+  name = "ingress-tunnel-firewall"
 
   rule {
     direction   = "in"
@@ -92,21 +90,21 @@ resource "hcloud_firewall" "rathole_firewall" {
     protocol    = "tcp"
     port        = "8080"
     source_ips  = [local.home_ip_cidr]
-    description = "Allow Rathole control channel from home only"
+    description = "Allow tunnel control channel from home only"
   }
 }
 
 # 4. Attach Firewall to the VPS Server
 resource "hcloud_firewall_attachment" "firewall_attach" {
-  firewall_id = hcloud_firewall.rathole_firewall.id
-  server_ids  = [hcloud_server.rathole_vps.id]
+  firewall_id = hcloud_firewall.tunnel_firewall.id
+  server_ids  = [hcloud_server.tunnel_vps.id]
 }
 
 # 5. Create the Primary DNS Record (pointing to VPS IP)
 resource "cloudflare_record" "wildcard_ingress" {
   zone_id = data.cloudflare_zone.domain_zone.id
   name    = "*.ingress"
-  value   = hcloud_server.rathole_vps.ipv4_address
+  value   = hcloud_server.tunnel_vps.ipv4_address
   type    = "A"
   proxied = true
 }
@@ -114,13 +112,13 @@ resource "cloudflare_record" "wildcard_ingress" {
 # 6. Deploy the Cloudflare Worker Script & Bindings Declaratively
 resource "cloudflare_worker_script" "failover_monitor" {
   account_id = data.cloudflare_zone.domain_zone.account_id
-  name       = "rathole-failover-monitor"
+  name       = "ingress-tunnel-failover-monitor"
   content    = file("${path.module}/failover-monitor.js")
   module     = true
 
   plain_text_binding {
     name = "VPS_PUBLIC_IP"
-    text = hcloud_server.rathole_vps.ipv4_address
+    text = hcloud_server.tunnel_vps.ipv4_address
   }
   plain_text_binding {
     name = "TUNNEL_CNAME"
@@ -154,6 +152,6 @@ resource "cloudflare_worker_cron_trigger" "failover_cron" {
 
 # 8. Output VPS public IP to expose it to tf-controller
 output "VPS_PUBLIC_IP" {
-  value       = hcloud_server.rathole_vps.ipv4_address
-  description = "The public IPv4 address of the Rathole VPS"
+  value       = hcloud_server.tunnel_vps.ipv4_address
+  description = "The public IPv4 address of the Ingress Tunnel VPS"
 }

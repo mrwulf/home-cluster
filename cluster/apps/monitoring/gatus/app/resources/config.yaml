@@ -121,7 +121,7 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
-  - name: VPS Rathole Server Endpoint
+  - name: VPS Tunnel Server Endpoint
     group: external
     url: "tcp://vps.ingress.${SECRET_DOMAIN}:8080"
     interval: 1m

@@ -1,0 +1,16 @@
+serverAddr = "__VPS_PUBLIC_IP__"
+serverPort = 8080
+auth.token = "__HANDSHAKE_TOKEN__"
+
+# Enable Multiplexing (TCP mux)
+transport.tcpMux = true
+
+[[proxies]]
+name = "web-secure"
+type = "tcp"
+localIP = "traefik-external.networking.svc.cluster.local"
+localPort = 443
+remotePort = 443
+transport.useEncryption = true
+transport.useCompression = true
+transport.proxyProtocolVersion = "v1"

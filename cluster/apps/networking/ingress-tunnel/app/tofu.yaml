@@ -1,12 +1,12 @@
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
 metadata:
-  name: rathole-infrastructure
+  name: ingress-tunnel-infra
   namespace: networking
 spec:
   interval: 1h
   approvePlan: auto
-  path: ./cluster/apps/networking/rathole-client
+  path: ./cluster/apps/networking/ingress-tunnel
   serviceAccountName: tf-runner
   sourceRef:
     kind: GitRepository
@@ -21,6 +21,6 @@ spec:
     - kind: Secret
       name: cloudflare-ddns
     - kind: Secret
-      name: rathole-infra-secrets
+      name: ingress-tunnel-secrets
   writeOutputsToSecret:
-    name: rathole-vps-output
+    name: vps-tunnel-output

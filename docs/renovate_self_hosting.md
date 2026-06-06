@@ -41,7 +41,7 @@ Add the following to `.github/renovate.json5` (or `.github/renovate/customManage
 
 ## 2. Infrastructure Code Annotation
 
-Once the custom manager is configured, annotate any `hcloud_server` resources in your Terraform files (e.g., `cluster/apps/networking/rathole-client/main.tf`):
+Once the custom manager is configured, annotate any `hcloud_server` resources in your Terraform files (e.g., `cluster/apps/networking/ingress-tunnel/main.tf`):
 
 ```hcl
   # renovate: datasource=custom.hetzner-server-types
