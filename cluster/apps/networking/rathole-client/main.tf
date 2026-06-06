@@ -47,8 +47,8 @@ data "cloudflare_zone" "domain_zone" {
 # 2. Create the Hetzner Server (IPv4 enabled, IPv6 disabled)
 resource "hcloud_server" "rathole_vps" {
   name        = "rathole-vps"
-  # renovate: datasource=docker depName=alpine
-  image       = "alpine-3.19"
+  # renovate: datasource=docker depName=debian
+  image       = "debian-12"
   server_type = "cpx11"
   location    = "ash" # US East (Ashburn, VA)
 
