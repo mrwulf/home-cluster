@@ -6,7 +6,7 @@ write_files:
     content: |
       [server]
       bind_addr = "0.0.0.0:8080"
-      token = "${RATHOLE_HANDSHAKE_TOKEN}"
+      default_token = "${RATHOLE_HANDSHAKE_TOKEN}"
 
       [server.services.web-secure]
       token = "${RATHOLE_SERVICE_TOKEN}"
