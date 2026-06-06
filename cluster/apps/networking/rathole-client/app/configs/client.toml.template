@@ -1,6 +1,6 @@
 [client]
-server_addr = "__VPS_PUBLIC_IP__:8080"
-token = "__HANDSHAKE_TOKEN__"
+remote_addr = "__VPS_PUBLIC_IP__:8080"
+default_token = "__HANDSHAKE_TOKEN__"
 
 [client.services.web-secure]
 token = "__SERVICE_TOKEN__"
