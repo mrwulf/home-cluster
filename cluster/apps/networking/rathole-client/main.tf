@@ -116,6 +116,7 @@ resource "cloudflare_worker_script" "failover_monitor" {
   account_id = data.cloudflare_zone.domain_zone.account_id
   name       = "rathole-failover-monitor"
   content    = file("${path.module}/failover-monitor.js")
+  module     = true
 
   plain_text_binding {
     name = "VPS_PUBLIC_IP"
