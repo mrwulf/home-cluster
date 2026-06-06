@@ -14,3 +14,5 @@ remotePort = 443
 transport.useEncryption = true
 transport.useCompression = true
 transport.proxyProtocolVersion = "v1"
+loadBalancer.group = "web-secure"
+loadBalancer.groupKey = "__HANDSHAKE_TOKEN__"
