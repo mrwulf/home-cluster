@@ -21,5 +21,5 @@ spec:
       name: cloudflare-ddns
     - kind: Secret
       name: rathole-infra-secrets
-  writeConnectionSecretToRef:
+  writeOutputsToSecret:
     name: rathole-vps-output
