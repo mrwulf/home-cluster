@@ -52,8 +52,8 @@ resource "hcloud_server" "rathole_vps" {
   name        = "rathole-vps"
   # renovate: datasource=docker depName=debian
   image       = "debian-12"
-  server_type = "cpx11"
-  location    = "ash" # US East (Ashburn, VA)
+  server_type = "cx22"
+  location    = "nbg1" # Nuremberg, Germany (Includes 20TB traffic limit)
   ssh_keys    = data.hcloud_ssh_keys.all_keys.ssh_keys[*].id
 
   public_net {
