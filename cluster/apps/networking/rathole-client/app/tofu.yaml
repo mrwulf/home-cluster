@@ -9,8 +9,8 @@ spec:
   path: ./cluster/apps/networking/rathole-client
   sourceRef:
     kind: GitRepository
-    name: flux-system
-    namespace: flux-system
+    name: tofu-infra-git
+    namespace: networking
   vars:
     - name: cloudflare_tunnel_cname
       value: "${SECRET_CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"

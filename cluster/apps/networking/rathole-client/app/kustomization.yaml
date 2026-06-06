@@ -4,6 +4,7 @@ resources:
   - tofu.yaml
   - helmrelease.yaml
   - external-secret.yaml
+  - gitrepo.yaml
 configMapGenerator:
   - name: rathole-client-template
     files:
