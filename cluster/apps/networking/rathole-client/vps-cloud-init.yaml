@@ -33,11 +33,12 @@ write_files:
 
 runcmd:
   # 3. Download and Install Rathole Binary Natively
-  # renovate: depName=jeromegn/rathole datasource=github-releases
-  - curl -L -o /tmp/rathole.tar.gz https://github.com/jeromegn/rathole/releases/download/v0.5.0/rathole-x86_64-unknown-linux-musl.tar.gz
-  - tar -xzf /tmp/rathole.tar.gz -C /usr/local/bin/
+  # renovate: depName=rathole-org/rathole datasource=github-releases
+  - apt-get update && apt-get install -y unzip
+  - curl -L -o /tmp/rathole.zip https://github.com/rathole-org/rathole/releases/download/v0.5.0/rathole-x86_64-unknown-linux-gnu.zip
+  - unzip -o /tmp/rathole.zip -d /usr/local/bin/
   - chmod +x /usr/local/bin/rathole
-  - rm /tmp/rathole.tar.gz
+  - rm /tmp/rathole.zip
 
   # 4. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
   - sysctl -w net.core.default_qdisc=fq
