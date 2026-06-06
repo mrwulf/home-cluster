@@ -1,0 +1,7 @@
+[client]
+server_addr = "__VPS_PUBLIC_IP__:8080"
+token = "__HANDSHAKE_TOKEN__"
+
+[client.services.web-secure]
+token = "__SERVICE_TOKEN__"
+local_addr = "traefik-external.networking.svc.cluster.local:443"

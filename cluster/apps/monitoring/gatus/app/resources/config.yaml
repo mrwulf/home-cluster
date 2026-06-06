@@ -121,3 +121,26 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
+  - name: VPS Rathole Server Endpoint
+    group: external
+    url: "tcp://vps.ingress.${SECRET_DOMAIN}:8080"
+    interval: 1m
+    conditions:
+      - "[CONNECTED] == true"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: External Public Ingress via VPS
+    group: external
+    url: "https://flux-receiver.${SECRET_DOMAIN}"
+    interval: 2m
+    dns:
+      query-name: "flux-receiver.${SECRET_DOMAIN}"
+      query-type: A
+    conditions:
+      - "[STATUS] == 200"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true

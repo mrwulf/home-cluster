@@ -1,0 +1,15 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: rathole-client
+  namespace: flux-system
+spec:
+  targetNamespace: networking
+  path: ./cluster/apps/networking/rathole-client/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: home-cluster
+  interval: 30m
+  retryInterval: 1m
+  timeout: 5m

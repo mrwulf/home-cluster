@@ -27,5 +27,13 @@
       datasourceTemplate: "docker",
       versioningTemplate: "redhat",
     },
+    {
+      customType: "regex",
+      description: ["Process OS image versions in Terraform/OpenTofu files"],
+      fileMatch: ["(^|/)cluster/.+\\.tf$"],
+      matchStrings: [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s*\\n\\s*image\\s*=\\s*\"\\S+-(?<currentValue>[^\"]+)\"",
+      ],
+    },
   ],
 }

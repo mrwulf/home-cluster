@@ -1,0 +1,25 @@
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: rathole-infrastructure
+  namespace: networking
+spec:
+  interval: 1h
+  approvePlan: auto
+  path: ./cluster/apps/networking/rathole-client
+  sourceRef:
+    kind: GitRepository
+    name: home-cluster
+    namespace: flux-system
+  vars:
+    - name: cloudflare_tunnel_cname
+      value: "${SECRET_CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"
+    - name: secret_domain
+      value: "${SECRET_DOMAIN}"
+  varsFrom:
+    - kind: Secret
+      name: cloudflare-ddns
+    - kind: Secret
+      name: rathole-infra-secrets
+  writeConnectionSecretToRef:
+    name: rathole-vps-output
