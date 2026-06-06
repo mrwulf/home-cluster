@@ -48,7 +48,7 @@ data "cloudflare_zone" "domain_zone" {
 resource "hcloud_server" "rathole_vps" {
   name        = "rathole-vps"
   # renovate: datasource=docker depName=alpine
-  image       = "alpine-3.19"
+  image       = "alpine-3.23"
   server_type = "cpx11"
   location    = "ash" # US East (Ashburn, VA)
 
