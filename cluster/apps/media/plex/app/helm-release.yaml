@@ -102,8 +102,9 @@ spec:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             group: external
-            client:
-              dns-resolver: "tcp://10.0.0.1:53053"
+            gated: true
+            # client:
+            #   dns-resolver: "tcp://10.0.0.1:53053"
             conditions:
               - "[STATUS] == 401"
         parentRefs:
