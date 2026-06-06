@@ -44,13 +44,17 @@ data "cloudflare_zone" "domain_zone" {
   name = var.secret_domain
 }
 
-# 2. Create the Hetzner Server (IPv4 enabled, IPv6 disabled)
+# 2. Look up all available SSH keys in the Hetzner Cloud project
+data "hcloud_ssh_keys" "all_keys" {}
+
+# 3. Create the Hetzner Server (IPv4 enabled, IPv6 disabled)
 resource "hcloud_server" "rathole_vps" {
   name        = "rathole-vps"
   # renovate: datasource=docker depName=debian
   image       = "debian-12"
   server_type = "cpx11"
   location    = "ash" # US East (Ashburn, VA)
+  ssh_keys    = data.hcloud_ssh_keys.all_keys.ssh_keys[*].id
 
   public_net {
     ipv4_enabled = true
