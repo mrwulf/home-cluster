@@ -7,6 +7,7 @@ spec:
   interval: 1h
   approvePlan: auto
   path: ./cluster/apps/networking/rathole-client
+  serviceAccountName: tf-runner
   sourceRef:
     kind: GitRepository
     name: tofu-infra-git
