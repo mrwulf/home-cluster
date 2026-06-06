@@ -49,7 +49,7 @@ resource "hcloud_server" "rathole_vps" {
   name        = "rathole-vps"
   # renovate: datasource=docker depName=alpine
   image       = "alpine-3.19"
-  server_type = "cx21"
+  server_type = "cpx11"
   location    = "ash" # US East (Ashburn, VA)
 
   public_net {
