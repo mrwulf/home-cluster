@@ -6,6 +6,7 @@ metadata:
 spec:
   interval: 1h
   approvePlan: auto
+  destroyResourcesOnDeletion: true
   path: ./cluster/apps/networking/ingress-tunnel
   serviceAccountName: tf-runner
   sourceRef:
