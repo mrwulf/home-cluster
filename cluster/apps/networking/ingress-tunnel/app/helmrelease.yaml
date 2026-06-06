@@ -34,10 +34,15 @@ spec:
                 # Replace placeholders in template with secret environment variables
                 sed -e "s/__VPS_PUBLIC_IP__/$${VPS_PUBLIC_IP}/g" \
                     -e "s/__HANDSHAKE_TOKEN__/$${TUNNEL_HANDSHAKE_TOKEN}/g" \
+                    -e "s/__POD_NAME__/$${POD_NAME}/g" \
                     /etc/tunnel/template/tunnel.toml > /etc/tunnel/config/tunnel.toml
                 echo "=== Generated Config ==="
                 cat /etc/tunnel/config/tunnel.toml
             env:
+              POD_NAME:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
               VPS_PUBLIC_IP:
                 valueFrom:
                   secretKeyRef:

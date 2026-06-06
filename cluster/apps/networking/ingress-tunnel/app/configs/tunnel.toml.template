@@ -6,7 +6,7 @@ auth.token = "__HANDSHAKE_TOKEN__"
 transport.tcpMux = true
 
 [[proxies]]
-name = "web-secure"
+name = "web-secure-__POD_NAME__"
 type = "tcp"
 localIP = "traefik-external.networking.svc.cluster.local"
 localPort = 443
