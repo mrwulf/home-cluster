@@ -32,9 +32,9 @@ spec:
               - -c
               - |
                 # Replace placeholders in template with secret environment variables
-                sed -e "s/__VPS_PUBLIC_IP__/${VPS_PUBLIC_IP}/g" \
-                    -e "s/__HANDSHAKE_TOKEN__/${RATHOLE_HANDSHAKE_TOKEN}/g" \
-                    -e "s/__SERVICE_TOKEN__/${RATHOLE_SERVICE_TOKEN}/g" \
+                sed -e "s/__VPS_PUBLIC_IP__/$${VPS_PUBLIC_IP}/g" \
+                    -e "s/__HANDSHAKE_TOKEN__/$${RATHOLE_HANDSHAKE_TOKEN}/g" \
+                    -e "s/__SERVICE_TOKEN__/$${RATHOLE_SERVICE_TOKEN}/g" \
                     /etc/rathole/template/client.toml > /etc/rathole/config/client.toml
                 echo "=== Generated Config ==="
                 cat /etc/rathole/config/client.toml
