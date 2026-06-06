@@ -8,3 +8,15 @@ spec:
   url: https://github.com/mrwulf/home-cluster.git
   ref:
     branch: main
+  ignore: |
+    # Ignore everything by default
+    /*
+
+    # Allow walking down into the target directory structure
+    !/cluster/
+    /cluster/*
+    !/cluster/apps/
+    /cluster/apps/*
+    !/cluster/apps/networking/
+    /cluster/apps/networking/*
+    !/cluster/apps/networking/rathole-client/
