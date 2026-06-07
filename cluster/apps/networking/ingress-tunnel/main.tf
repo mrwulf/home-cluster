@@ -104,12 +104,12 @@ resource "hcloud_firewall_attachment" "firewall_attach" {
   server_ids  = [hcloud_server.tunnel_vps.id]
 }
 
-# 5. Create the Primary DNS Record (pointing to VPS IP)
+# 5. Create the Primary DNS Record (CNAME pointing to direct VPS domain)
 resource "cloudflare_record" "ingress" {
   zone_id = data.cloudflare_zone.domain_zone.id
   name    = "ingress"
-  value   = hcloud_server.tunnel_vps.ipv4_address
-  type    = "A"
+  value   = cloudflare_record.vps_direct.hostname
+  type    = "CNAME"
   proxied = false
 
   lifecycle {
@@ -118,6 +118,15 @@ resource "cloudflare_record" "ingress" {
       type,
     ]
   }
+}
+
+# 5b. Create the Direct DNS Record (always pointing to VPS IP)
+resource "cloudflare_record" "vps_direct" {
+  zone_id = data.cloudflare_zone.domain_zone.id
+  name    = "vps-direct"
+  value   = hcloud_server.tunnel_vps.ipv4_address
+  type    = "A"
+  proxied = false
 }
 
 # 6. Deploy the Cloudflare Worker Script & Bindings Declaratively
@@ -132,6 +141,10 @@ resource "cloudflare_workers_script" "failover_monitor" {
   plain_text_binding {
     name = "VPS_PUBLIC_IP"
     text = hcloud_server.tunnel_vps.ipv4_address
+  }
+  plain_text_binding {
+    name = "VPS_DIRECT_HOST"
+    text = cloudflare_record.vps_direct.hostname
   }
   plain_text_binding {
     name = "TUNNEL_CNAME"

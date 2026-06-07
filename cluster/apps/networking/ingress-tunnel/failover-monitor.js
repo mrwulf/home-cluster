@@ -107,6 +107,7 @@ async function sendEmailViaSMTP(env, from, to, subject, body) {
 export default {
   async scheduled(event, env, ctx) {
     const VPS_IP = env.VPS_PUBLIC_IP;
+    const VPS_DIRECT_HOST = env.VPS_DIRECT_HOST;
     const TUNNEL_CNAME = env.TUNNEL_CNAME;
     const ZONE_ID = env.CLOUDFLARE_ZONE_ID;
     const RECORD_ID = env.CLOUDFLARE_RECORD_ID;
@@ -117,12 +118,11 @@ export default {
     const fromEmail = `failover-monitor@${SECRET_DOMAIN}`;
     const toEmail = `postmaster@${SECRET_DOMAIN}`;
 
-    // 1. Probe the VPS
+    // 1. Probe the VPS using its direct non-proxied domain
     let isVpsUp = false;
     try {
-      const res = await fetch(`https://${VPS_IP}`, {
+      const res = await fetch(`https://${VPS_DIRECT_HOST}`, {
         method: "HEAD",
-        headers: { "Host": RECORD_NAME },
         signal: AbortSignal.timeout(5000)
       });
       isVpsUp = res.status < 500;
@@ -139,8 +139,7 @@ export default {
     const currentContent = dnsData.result.content;
 
     // 3. Determine target state
-    const targetContent = isVpsUp ? VPS_IP : TUNNEL_CNAME;
-    const targetType = isVpsUp ? "A" : "CNAME";
+    const targetContent = isVpsUp ? VPS_DIRECT_HOST : TUNNEL_CNAME;
 
     // 4. Update if there is a mismatch
     if (currentContent !== targetContent) {
@@ -152,9 +151,9 @@ export default {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          type: targetType,
+          type: "CNAME",
           content: targetContent,
-          proxied: !isVpsUp // Proxied = true if using CNAME failover (tunnel), proxied = false if using A record (direct to VPS)
+          proxied: !isVpsUp // Proxied = true if using CNAME failover (tunnel), proxied = false if using direct VPS path
         })
       });
       if (!updateRes.ok) {
@@ -163,11 +162,11 @@ export default {
         console.log(`DNS record updated to point to ${targetContent} (proxied: ${!isVpsUp})`);
         ctx.waitUntil(sendEmailViaSMTP(env, fromEmail, toEmail,
           `[Failover] Ingress DNS Changed for ${SECRET_DOMAIN}`,
-          `Failover monitor detected that the ingress DNS record ${RECORD_NAME} was pointing to ${currentContent}, but should be ${targetContent}.\n\nAction: DNS record updated to a ${targetType} record pointing to ${targetContent} (proxied: ${!isVpsUp}).`
+          `Failover monitor detected that the ingress DNS record ${RECORD_NAME} was pointing to ${currentContent}, but should be ${targetContent}.\n\nAction: DNS record updated to a CNAME record pointing to ${targetContent} (proxied: ${!isVpsUp}).`
         ));
       }
     } else {
-      console.log("No action required. Current target is correct.");
+      console.log(`No action required. Current target is correct (${currentContent}). Hetzner IP: ${VPS_IP}`);
     }
   }
 }
