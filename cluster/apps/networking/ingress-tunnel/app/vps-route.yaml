@@ -9,21 +9,30 @@ spec:
       port: 7500
       targetPort: 7500
 ---
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
   name: frps-dashboard
   namespace: networking
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: networking-rfc1918-ips@kubernetescrd
+    gatus.io/enabled: "true"
+    gatus.io/endpoint: |
+      conditions:
+        - "[STATUS] == 401"
 spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`frps-dashboard.home.${SECRET_DOMAIN}`)
-      kind: Rule
-      services:
-        - name: frps-dashboard
-          port: 7500
-      middlewares:
-        - name: rfc1918-ips
-          namespace: networking
-  tls: {}
+  ingressClassName: traefik-internal
+  tls:
+    - hosts:
+        - "frps-dashboard.home.${SECRET_DOMAIN}"
+  rules:
+    - host: "frps-dashboard.home.${SECRET_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frps-dashboard
+                port:
+                  number: 7500

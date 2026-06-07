@@ -6,7 +6,7 @@ spec:
   jobName: frps
   targetEndpoints:
     - targets:
-        - "vps-direct.${SECRET_DOMAIN}:7500"
+        - "frps-dashboard:7500"
       scheme: "http"
       path: "/metrics"
       basicAuth:
