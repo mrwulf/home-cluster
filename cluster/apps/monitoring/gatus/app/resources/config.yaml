@@ -123,10 +123,10 @@ endpoints:
       hide-url: true
   - name: VPS Tunnel Server Endpoint
     group: external
-    url: "tcp://ingress.${SECRET_DOMAIN}:8080"
+    url: "http://vps-direct.${SECRET_DOMAIN}:7500"
     interval: 1m
     conditions:
-      - "[CONNECTED] == true"
+      - "[STATUS] == 401"
     alerts: *alerts
     ui:
       hide-hostname: true

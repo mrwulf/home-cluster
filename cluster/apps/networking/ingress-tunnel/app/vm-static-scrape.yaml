@@ -6,7 +6,7 @@ spec:
   jobName: frps
   targetEndpoints:
     - targets:
-        - "frps-dashboard:7500"
+        - "frps-dashboard.networking.svc.cluster.local:7500"
       scheme: "http"
       path: "/metrics"
       basicAuth:
