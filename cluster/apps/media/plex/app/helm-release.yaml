@@ -44,7 +44,7 @@ spec:
               tag: 1.43.2.10687
 
             env:
-              PLEX_ADVERTISE_URL: "https://plex.media.home.${SECRET_DOMAIN}:32400/,https://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
+              PLEX_ADVERTISE_URL: "https://plex.media.home.${SECRET_DOMAIN}:32400/,https://plex.${SECRET_DOMAIN}/"
               PLEX_PREFERENCE_GPU: "HardwareAcceleratedCodecs=1"
               # CLAIM_TOKEN: ''
 
