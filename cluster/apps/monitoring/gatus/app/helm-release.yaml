@@ -81,7 +81,7 @@ spec:
                 memory: 256Mi
           node-labeler:
             image:
-              repository: ghcr.io/onedr0p/kubernetes-cli
+              repository: alpine/kubectl
               tag: 1.36.1
             command: ["/bin/sh", "-c"]
             args:
