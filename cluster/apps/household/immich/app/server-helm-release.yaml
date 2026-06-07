@@ -87,10 +87,8 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
-          gatus.io/endpoint: |
-            group: external
-            client:
-              dns-resolver: "udp://10.0.0.1:53053"
+          # cloudflare-proxied must stay on the route: external-dns reads provider-specific
+          # annotations only from the HTTPRoute, not the parent Gateway (unlike target).
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
         parentRefs:
           - name: external-direct-gateway

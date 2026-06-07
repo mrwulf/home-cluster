@@ -75,9 +75,6 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
-          gatus.io/endpoint: |
-            group: external
-            guarded: true
         parentRefs:
           - name: external-gateway
             namespace: networking

@@ -83,7 +83,6 @@ spec:
         annotations:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
-            group: external
             conditions:
               - "[STATUS] == 404"
         parentRefs:

@@ -123,10 +123,7 @@ spec:
         annotations:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
-            group: external
             path: /minio/health/live
-            conditions:
-              - "[STATUS] == 200"
         parentRefs:
           - name: external-gateway
             namespace: networking

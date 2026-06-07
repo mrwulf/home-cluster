@@ -111,14 +111,15 @@ spec:
       main:
         enabled: true
         annotations:
+          # cloudflare-proxied must stay on the route: external-dns reads provider-specific
+          # annotations only from the HTTPRoute, not the parent Gateway (unlike target).
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
-            group: external
             conditions:
               - "[STATUS] == 401"
         parentRefs:
-          - name: external-gateway
+          - name: external-direct-gateway
             namespace: networking
         hostnames:
           - "backups.${SECRET_DOMAIN}"

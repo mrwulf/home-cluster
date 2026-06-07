@@ -106,8 +106,6 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
-          gatus.io/endpoint: |
-            group: external
         parentRefs:
           - name: external-gateway
             namespace: networking
@@ -121,8 +119,6 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
-          gatus.io/endpoint: |
-            group: external
         parentRefs:
           - name: external-gateway
             namespace: networking

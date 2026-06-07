@@ -49,10 +49,6 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
-          gatus.io/endpoint: |
-            group: external
-            client:
-              dns-resolver: "udp://10.0.0.1:53053"
         parentRefs:
           - name: external-gateway
             namespace: networking

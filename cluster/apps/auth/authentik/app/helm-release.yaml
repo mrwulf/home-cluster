@@ -97,8 +97,6 @@ spec:
                 name: traefik-middleware-chain-no-auth
           annotations:
             gatus.io/enabled: "true"
-            gatus.io/endpoint: |
-              group: external
 
     worker:
       replicas: 2
