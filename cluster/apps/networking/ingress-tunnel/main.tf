@@ -127,6 +127,10 @@ resource "cloudflare_workers_script" "failover_monitor" {
   content    = file("${path.module}/failover-monitor.js")
   module     = true
 
+  observability {
+    enabled = true
+  }
+
   plain_text_binding {
     name = "VPS_PUBLIC_IP"
     text = hcloud_server.tunnel_vps.ipv4_address
