@@ -8,6 +8,7 @@ metadata:
     io.cilium/lb-ipam-ips: 10.0.10.99
 spec:
   type: LoadBalancer
+  externalTrafficPolicy: Local
   selector:
     app.kubernetes.io/name: gatus
   ports:
@@ -30,5 +31,5 @@ spec:
   egressGateway:
     nodeSelector:
       matchLabels:
-        kubernetes.io/os: linux
+        egress-gateway-gatus: "true"
     egressIP: 10.0.10.99
