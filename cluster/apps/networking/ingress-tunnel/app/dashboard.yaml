@@ -5,6 +5,7 @@ kind: GrafanaDashboard
 metadata:
   name: frp
 spec:
+  allowCrossNamespaceImport: true
   instanceSelector:
     matchLabels:
       dashboards: grafana
