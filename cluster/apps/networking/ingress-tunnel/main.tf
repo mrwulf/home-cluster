@@ -3,6 +3,10 @@ variable "CLOUDFLARE_APIKEY" { type = string }
 variable "cloudflare_tunnel_cname" { type = string }
 variable "secret_domain" { type = string }
 variable "tunnel_handshake_token" { type = string }
+variable "smtp_server" { type = string }
+variable "smtp_username" { type = string }
+variable "smtp_password" { type = string }
+
 
 terraform {
   required_providers {
@@ -101,16 +105,23 @@ resource "hcloud_firewall_attachment" "firewall_attach" {
 }
 
 # 5. Create the Primary DNS Record (pointing to VPS IP)
-resource "cloudflare_record" "wildcard_ingress" {
+resource "cloudflare_record" "ingress" {
   zone_id = data.cloudflare_zone.domain_zone.id
-  name    = "*.ingress"
+  name    = "ingress"
   value   = hcloud_server.tunnel_vps.ipv4_address
   type    = "A"
-  proxied = true
+  proxied = false
+
+  lifecycle {
+    ignore_changes = [
+      value,
+      type,
+    ]
+  }
 }
 
 # 6. Deploy the Cloudflare Worker Script & Bindings Declaratively
-resource "cloudflare_worker_script" "failover_monitor" {
+resource "cloudflare_workers_script" "failover_monitor" {
   account_id = data.cloudflare_zone.domain_zone.account_id
   name       = "ingress-tunnel-failover-monitor"
   content    = file("${path.module}/failover-monitor.js")
@@ -130,23 +141,35 @@ resource "cloudflare_worker_script" "failover_monitor" {
   }
   plain_text_binding {
     name = "CLOUDFLARE_RECORD_ID"
-    text = cloudflare_record.wildcard_ingress.id
+    text = cloudflare_record.ingress.id
   }
   plain_text_binding {
     name = "RECORD_NAME"
-    text = "*.ingress.${var.secret_domain}"
+    text = "ingress.${var.secret_domain}"
+  }
+  plain_text_binding {
+    name = "SMTP_SERVER"
+    text = var.smtp_server
+  }
+  plain_text_binding {
+    name = "SMTP_USERNAME"
+    text = var.smtp_username
   }
 
   secret_text_binding {
     name = "CLOUDFLARE_API_TOKEN"
     text = var.CLOUDFLARE_APIKEY
   }
+  secret_text_binding {
+    name = "SMTP_PASSWORD"
+    text = var.smtp_password
+  }
 }
 
 # 7. Create the Cron Trigger for the Worker (runs every minute)
-resource "cloudflare_worker_cron_trigger" "failover_cron" {
+resource "cloudflare_workers_cron_trigger" "failover_cron" {
   account_id  = data.cloudflare_zone.domain_zone.account_id
-  script_name = cloudflare_worker_script.failover_monitor.name
+  script_name = cloudflare_workers_script.failover_monitor.name
   schedules   = ["* * * * *"]
 }
 

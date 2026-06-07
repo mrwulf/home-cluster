@@ -8,6 +8,13 @@ write_files:
       auth.method = "token"
       auth.token = "${TUNNEL_HANDSHAKE_TOKEN}"
 
+      # Enable Admin dashboard
+      webServer.addr = "127.0.0.1"
+      webServer.port = 7500
+      webServer.user = "admin"
+      webServer.password = "${TUNNEL_HANDSHAKE_TOKEN}"
+
+
   # 2. Write Systemd Service File for FRPS
   - path: /etc/systemd/system/frps.service
     permissions: '0644'

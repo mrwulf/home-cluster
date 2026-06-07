@@ -5,6 +5,12 @@ auth.token = "__HANDSHAKE_TOKEN__"
 # Enable Multiplexing (TCP mux)
 transport.tcpMux = true
 
+# Enable Admin web server & metrics
+webServer.addr = "0.0.0.0"
+webServer.port = 7500
+webServer.user = "admin"
+webServer.password = "__HANDSHAKE_TOKEN__"
+
 [[proxies]]
 name = "web-secure-__POD_NAME__"
 type = "tcp"

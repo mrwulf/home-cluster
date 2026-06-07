@@ -123,7 +123,7 @@ endpoints:
       hide-url: true
   - name: VPS Tunnel Server Endpoint
     group: external
-    url: "tcp://vps.ingress.${SECRET_DOMAIN}:8080"
+    url: "tcp://ingress.${SECRET_DOMAIN}:8080"
     interval: 1m
     conditions:
       - "[CONNECTED] == true"
@@ -133,13 +133,10 @@ endpoints:
       hide-url: true
   - name: External Public Ingress via VPS
     group: external
-    url: "https://flux-receiver.${SECRET_DOMAIN}"
+    url: "https://ingress.${SECRET_DOMAIN}"
     interval: 2m
-    dns:
-      query-name: "flux-receiver.${SECRET_DOMAIN}"
-      query-type: A
     conditions:
-      - "[STATUS] == 200"
+      - "[STATUS] < 500"
     alerts: *alerts
     ui:
       hide-hostname: true

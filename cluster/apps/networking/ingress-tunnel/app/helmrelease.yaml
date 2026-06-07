@@ -1,7 +1,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app ingress-tunnel
+  name: ingress-tunnel
 spec:
   interval: 30m
   chartRef:
@@ -88,3 +88,27 @@ spec:
           - path: /etc/tunnel/template/tunnel.toml
             subPath: tunnel.toml
             readOnly: true
+    service:
+      app:
+        controller: ingress-tunnel
+        ports:
+          http:
+            port: 7500
+    route:
+      app:
+        enabled: true
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "tunnel-admin.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: app
+                port: http
