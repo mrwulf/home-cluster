@@ -127,9 +127,7 @@ resource "cloudflare_workers_script" "failover_monitor" {
   content    = file("${path.module}/failover-monitor.js")
   module     = true
 
-  observability {
-    enabled = true
-  }
+  logpush = true
 
   plain_text_binding {
     name = "VPS_PUBLIC_IP"
