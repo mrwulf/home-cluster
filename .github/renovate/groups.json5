@@ -75,5 +75,17 @@
       group: { commitMessageTopic: "{{{groupName}}} group" },
       separateMinorPatch: true,
     },
+    {
+      description: "FRP client and server",
+      groupName: "FRP",
+      matchPackagePatterns: [
+        "fatedier/frp",
+        "fatedier/frpc",
+        "docker.io/fatedier/frpc",
+      ],
+      matchDatasources: ["docker", "github-releases"],
+      group: { commitMessageTopic: "{{{groupName}}} group" },
+      separateMinorPatch: true,
+    },
   ],
 }

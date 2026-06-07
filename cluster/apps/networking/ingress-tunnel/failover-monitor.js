@@ -1,104 +1,109 @@
-import { connect } from 'cloudflare:sockets';
+import { connect } from "cloudflare:sockets"
 
 async function sendEmailViaSMTP(env, from, to, subject, body) {
-  let socket;
-  let writer;
-  let reader;
+  let socket
+  let writer
+  let reader
 
   try {
-    socket = connect({
-      hostname: env.SMTP_SERVER,
-      port: 465
-    }, {
-      secureTransport: 'on'
-    });
+    socket = connect(
+      {
+        hostname: env.SMTP_SERVER,
+        port: 465,
+      },
+      {
+        secureTransport: "on",
+      }
+    )
 
-    writer = socket.writable.getWriter();
-    reader = socket.readable.getReader();
-    const decoder = new TextDecoder();
-    const encoder = new TextEncoder();
+    writer = socket.writable.getWriter()
+    reader = socket.readable.getReader()
+    const decoder = new TextDecoder()
+    const encoder = new TextEncoder()
 
-    let buffer = '';
+    let buffer = ""
 
     async function readLine() {
-      while (!buffer.includes('\n')) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value);
+      while (!buffer.includes("\n")) {
+        const { value, done } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value)
       }
-      const index = buffer.indexOf('\n');
-      if (index === -1) return '';
-      const line = buffer.substring(0, index + 1);
-      buffer = buffer.substring(index + 1);
-      return line;
+      const index = buffer.indexOf("\n")
+      if (index === -1) return ""
+      const line = buffer.substring(0, index + 1)
+      buffer = buffer.substring(index + 1)
+      return line
     }
 
     async function write(data) {
-      await writer.write(encoder.encode(data));
+      await writer.write(encoder.encode(data))
     }
 
     // Read greeting
-    let line = await readLine();
-    if (!line.startsWith('220')) throw new Error('Invalid SMTP greeting: ' + line);
+    let line = await readLine()
+    if (!line.startsWith("220"))
+      throw new Error("Invalid SMTP greeting: " + line)
 
     // EHLO
-    await write('EHLO localhost\r\n');
+    await write("EHLO localhost\r\n")
     while (true) {
-      line = await readLine();
-      if (line.startsWith('250 ')) break;
-      if (!line.startsWith('250-')) throw new Error('EHLO failed: ' + line);
+      line = await readLine()
+      if (line.startsWith("250 ")) break
+      if (!line.startsWith("250-")) throw new Error("EHLO failed: " + line)
     }
 
     // AUTH PLAIN
-    const authString = btoa(`\0${env.SMTP_USERNAME}\0${env.SMTP_PASSWORD}`);
-    await write(`AUTH PLAIN ${authString}\r\n`);
-    line = await readLine();
-    if (!line.startsWith('235')) throw new Error('SMTP AUTH failed: ' + line);
+    const authString = btoa(`\0${env.SMTP_USERNAME}\0${env.SMTP_PASSWORD}`)
+    await write(`AUTH PLAIN ${authString}\r\n`)
+    line = await readLine()
+    if (!line.startsWith("235")) throw new Error("SMTP AUTH failed: " + line)
 
     // MAIL FROM
-    await write(`MAIL FROM:<${from}>\r\n`);
-    line = await readLine();
-    if (!line.startsWith('250')) throw new Error('MAIL FROM failed: ' + line);
+    await write(`MAIL FROM:<${from}>\r\n`)
+    line = await readLine()
+    if (!line.startsWith("250")) throw new Error("MAIL FROM failed: " + line)
 
     // RCPT TO
-    await write(`RCPT TO:<${to}>\r\n`);
-    line = await readLine();
-    if (!line.startsWith('250')) throw new Error('RCPT TO failed: ' + line);
+    await write(`RCPT TO:<${to}>\r\n`)
+    line = await readLine()
+    if (!line.startsWith("250")) throw new Error("RCPT TO failed: " + line)
 
     // DATA
-    await write('DATA\r\n');
-    line = await readLine();
-    if (!line.startsWith('354')) throw new Error('DATA start failed: ' + line);
+    await write("DATA\r\n")
+    line = await readLine()
+    if (!line.startsWith("354")) throw new Error("DATA start failed: " + line)
 
     // Write message
-    const msg = [
-      `From: <${from}>`,
-      `To: <${to}>`,
-      `Subject: ${subject}`,
-      `Content-Type: text/plain; charset=UTF-8`,
-      `Date: ${new Date().toUTCString()}`,
-      `Message-ID: <${Date.now()}@${from.split('@')[1]}>`,
-      '',
-      body,
-      '.'
-    ].join('\r\n') + '\r\n';
-    await write(msg);
-    line = await readLine();
-    if (!line.startsWith('250')) throw new Error('DATA send failed: ' + line);
+    const msg =
+      [
+        `From: <${from}>`,
+        `To: <${to}>`,
+        `Subject: ${subject}`,
+        `Content-Type: text/plain; charset=UTF-8`,
+        `Date: ${new Date().toUTCString()}`,
+        `Message-ID: <${Date.now()}@${from.split("@")[1]}>`,
+        "",
+        body,
+        ".",
+      ].join("\r\n") + "\r\n"
+    await write(msg)
+    line = await readLine()
+    if (!line.startsWith("250")) throw new Error("DATA send failed: " + line)
 
     // QUIT
-    await write('QUIT\r\n');
-    console.log('Email sent successfully via SMTP!');
+    await write("QUIT\r\n")
+    console.log("Email sent successfully via SMTP!")
   } catch (err) {
-    console.error('SMTP Error:', err);
+    console.error("SMTP Error:", err)
   } finally {
     try {
-      if (writer) writer.releaseLock();
-      if (reader) reader.releaseLock();
+      if (writer) writer.releaseLock()
+      if (reader) reader.releaseLock()
     } catch (_) {}
     if (socket) {
       try {
-        await socket.close();
+        await socket.close()
       } catch (_) {}
     }
   }
@@ -106,67 +111,78 @@ async function sendEmailViaSMTP(env, from, to, subject, body) {
 
 export default {
   async scheduled(event, env, ctx) {
-    const VPS_IP = env.VPS_PUBLIC_IP;
-    const VPS_DIRECT_HOST = env.VPS_DIRECT_HOST;
-    const TUNNEL_CNAME = env.TUNNEL_CNAME;
-    const ZONE_ID = env.CLOUDFLARE_ZONE_ID;
-    const RECORD_ID = env.CLOUDFLARE_RECORD_ID;
-    const API_TOKEN = env.CLOUDFLARE_API_TOKEN;
-    const RECORD_NAME = env.RECORD_NAME;
+    const VPS_IP = env.VPS_PUBLIC_IP
+    const VPS_DIRECT_HOST = env.VPS_DIRECT_HOST
+    const TUNNEL_CNAME = env.TUNNEL_CNAME
+    const ZONE_ID = env.CLOUDFLARE_ZONE_ID
+    const RECORD_ID = env.CLOUDFLARE_RECORD_ID
+    const API_TOKEN = env.CLOUDFLARE_API_TOKEN
+    const RECORD_NAME = env.RECORD_NAME
 
-    const SECRET_DOMAIN = RECORD_NAME.replace(/^ingress\./, '');
-    const fromEmail = `failover-monitor@${SECRET_DOMAIN}`;
-    const toEmail = `postmaster@${SECRET_DOMAIN}`;
+    const SECRET_DOMAIN = RECORD_NAME.replace(/^ingress\./, "")
+    const fromEmail = `failover-monitor@${SECRET_DOMAIN}`
+    const toEmail = `postmaster@${SECRET_DOMAIN}`
 
     // 1. Probe the VPS using its direct non-proxied domain
-    let isVpsUp = false;
+    let isVpsUp = false
     try {
       const res = await fetch(`https://${VPS_DIRECT_HOST}`, {
         method: "HEAD",
-        signal: AbortSignal.timeout(5000)
-      });
-      isVpsUp = res.status < 500;
+        signal: AbortSignal.timeout(5000),
+      })
+      isVpsUp = res.status < 500
     } catch (err) {
-      isVpsUp = false;
+      isVpsUp = false
     }
 
     // 2. Query the current DNS record value
-    const dnsUrl = `https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}`;
+    const dnsUrl = `https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}`
     const dnsRes = await fetch(dnsUrl, {
-      headers: { "Authorization": `Bearer ${API_TOKEN}` }
-    });
-    const dnsData = await dnsRes.json();
-    const currentContent = dnsData.result.content;
+      headers: { Authorization: `Bearer ${API_TOKEN}` },
+    })
+    const dnsData = await dnsRes.json()
+    const currentContent = dnsData.result.content
 
     // 3. Determine target state
-    const targetContent = isVpsUp ? VPS_DIRECT_HOST : TUNNEL_CNAME;
+    const targetContent = isVpsUp ? VPS_DIRECT_HOST : TUNNEL_CNAME
 
     // 4. Update if there is a mismatch
     if (currentContent !== targetContent) {
-      console.log(`Mismatch detected! Current: ${currentContent}, Target: ${targetContent}. Updating...`);
+      console.log(
+        `Mismatch detected! Current: ${currentContent}, Target: ${targetContent}. Updating...`
+      )
       const updateRes = await fetch(dnsUrl, {
         method: "PATCH",
         headers: {
-          "Authorization": `Bearer ${API_TOKEN}`,
-          "Content-Type": "application/json"
+          Authorization: `Bearer ${API_TOKEN}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           type: "CNAME",
           content: targetContent,
-          proxied: !isVpsUp // Proxied = true if using CNAME failover (tunnel), proxied = false if using direct VPS path
-        })
-      });
+          proxied: !isVpsUp, // Proxied = true if using CNAME failover (tunnel), proxied = false if using direct VPS path
+        }),
+      })
       if (!updateRes.ok) {
-        console.error("Failed to update DNS record:", await updateRes.text());
+        console.error("Failed to update DNS record:", await updateRes.text())
       } else {
-        console.log(`DNS record updated to point to ${targetContent} (proxied: ${!isVpsUp})`);
-        ctx.waitUntil(sendEmailViaSMTP(env, fromEmail, toEmail,
-          `[Failover] Ingress DNS Changed for ${SECRET_DOMAIN}`,
-          `Failover monitor detected that the ingress DNS record ${RECORD_NAME} was pointing to ${currentContent}, but should be ${targetContent}.\n\nAction: DNS record updated to a CNAME record pointing to ${targetContent} (proxied: ${!isVpsUp}).`
-        ));
+        console.log(
+          `DNS record updated to point to ${targetContent} (proxied: ${!isVpsUp})`
+        )
+        ctx.waitUntil(
+          sendEmailViaSMTP(
+            env,
+            fromEmail,
+            toEmail,
+            `[Failover] Ingress DNS Changed for ${SECRET_DOMAIN}`,
+            `Failover monitor detected that the ingress DNS record ${RECORD_NAME} was pointing to ${currentContent}, but should be ${targetContent}.\n\nAction: DNS record updated to a CNAME record pointing to ${targetContent} (proxied: ${!isVpsUp}).`
+          )
+        )
       }
     } else {
-      console.log(`No action required. Current target is correct (${currentContent}). Hetzner IP: ${VPS_IP}`);
+      console.log(
+        `No action required. Current target is correct (${currentContent}). Hetzner IP: ${VPS_IP}`
+      )
     }
-  }
+  },
 }

@@ -2,7 +2,7 @@
 write_files:
   # 1. Write FRP Server Configuration
   - path: /etc/frp/frps.toml
-    permissions: '0600'
+    permissions: "0600"
     content: |
       bindPort = 8080
       auth.method = "token"
@@ -15,10 +15,9 @@ write_files:
       webServer.password = "${TUNNEL_HANDSHAKE_TOKEN}"
       enablePrometheus = true
 
-
   # 2. Write Systemd Service File for FRPS
   - path: /etc/systemd/system/frps.service
-    permissions: '0644'
+    permissions: "0644"
     content: |
       [Unit]
       Description=FRP Server
@@ -37,11 +36,11 @@ write_files:
 runcmd:
   # 3. Download and Install FRP Binary Natively
   # renovate: depName=fatedier/frp datasource=github-releases
-  - curl -L -o /tmp/frp.tar.gz https://github.com/fatedier/frp/releases/download/v0.58.1/frp_0.58.1_linux_amd64.tar.gz
+  - curl -L -o /tmp/frp.tar.gz https://github.com/fatedier/frp/releases/download/v0.69.1/frp_0.69.1_linux_amd64.tar.gz
   - tar -xzf /tmp/frp.tar.gz -C /tmp/
-  - mv /tmp/frp_0.58.1_linux_amd64/frps /usr/local/bin/frps
+  - mv /tmp/frp_*_linux_amd64/frps /usr/local/bin/frps
   - chmod +x /usr/local/bin/frps
-  - rm -rf /tmp/frp.tar.gz /tmp/frp_0.58.1_linux_amd64
+  - rm -rf /tmp/frp.tar.gz /tmp/frp_*_linux_amd64
 
   # 4. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
   - sysctl -w net.core.default_qdisc=fq

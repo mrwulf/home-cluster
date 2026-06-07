@@ -16,7 +16,7 @@ terraform {
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
     http = {
       source  = "hashicorp/http"
@@ -24,7 +24,7 @@ terraform {
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 3.0"
+      version = "~> 2.20"
     }
   }
 }
@@ -47,7 +47,7 @@ locals {
 }
 
 # 1. Look up Cloudflare Zone details dynamically using domain name
-data "cloudflare_zone" "domain_zone" {
+data "cloudflare_zones" "domain_zones" {
   name = var.secret_domain
 }
 
@@ -117,85 +117,102 @@ resource "hcloud_firewall_attachment" "firewall_attach" {
 }
 
 # 5. Create the Primary DNS Record (CNAME pointing to direct VPS domain)
-resource "cloudflare_record" "ingress" {
-  zone_id = data.cloudflare_zone.domain_zone.id
+resource "cloudflare_dns_record" "ingress" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
   name    = "ingress"
-  value   = cloudflare_record.vps_direct.hostname
+  content = "vps-direct.${var.secret_domain}"
   type    = "CNAME"
   proxied = false
+  ttl     = 1
 
   lifecycle {
     ignore_changes = [
-      value,
+      content,
       type,
     ]
   }
 }
 
 # 5b. Create the Direct DNS Record (always pointing to VPS IP)
-resource "cloudflare_record" "vps_direct" {
-  zone_id = data.cloudflare_zone.domain_zone.id
+resource "cloudflare_dns_record" "vps_direct" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
   name    = "vps-direct"
-  value   = hcloud_server.tunnel_vps.ipv4_address
+  content = hcloud_server.tunnel_vps.ipv4_address
   type    = "A"
   proxied = false
+  ttl     = 1
 }
 
 # 6. Deploy the Cloudflare Worker Script & Bindings Declaratively
 resource "cloudflare_workers_script" "failover_monitor" {
-  account_id = data.cloudflare_zone.domain_zone.account_id
-  name       = "ingress-tunnel-failover-monitor"
-  content    = file("${path.module}/failover-monitor.js")
-  module     = true
+  account_id  = data.cloudflare_zones.domain_zones.result[0].account.id
+  script_name = "ingress-tunnel-failover-monitor"
+  content     = file("${path.module}/failover-monitor.js")
+  main_module = "failover-monitor.js"
 
-  plain_text_binding {
-    name = "VPS_PUBLIC_IP"
-    text = hcloud_server.tunnel_vps.ipv4_address
-  }
-  plain_text_binding {
-    name = "VPS_DIRECT_HOST"
-    text = cloudflare_record.vps_direct.hostname
-  }
-  plain_text_binding {
-    name = "TUNNEL_CNAME"
-    text = var.cloudflare_tunnel_cname
-  }
-  plain_text_binding {
-    name = "CLOUDFLARE_ZONE_ID"
-    text = data.cloudflare_zone.domain_zone.id
-  }
-  plain_text_binding {
-    name = "CLOUDFLARE_RECORD_ID"
-    text = cloudflare_record.ingress.id
-  }
-  plain_text_binding {
-    name = "RECORD_NAME"
-    text = "ingress.${var.secret_domain}"
-  }
-  plain_text_binding {
-    name = "SMTP_SERVER"
-    text = var.smtp_server
-  }
-  plain_text_binding {
-    name = "SMTP_USERNAME"
-    text = var.smtp_username
-  }
-
-  secret_text_binding {
-    name = "CLOUDFLARE_API_TOKEN"
-    text = var.CLOUDFLARE_APIKEY
-  }
-  secret_text_binding {
-    name = "SMTP_PASSWORD"
-    text = var.smtp_password
-  }
+  bindings = [
+    {
+      name = "VPS_PUBLIC_IP"
+      type = "plain_text"
+      text = hcloud_server.tunnel_vps.ipv4_address
+    },
+    {
+      name = "VPS_DIRECT_HOST"
+      type = "plain_text"
+      text = "vps-direct.${var.secret_domain}"
+    },
+    {
+      name = "TUNNEL_CNAME"
+      type = "plain_text"
+      text = var.cloudflare_tunnel_cname
+    },
+    {
+      name = "CLOUDFLARE_ZONE_ID"
+      type = "plain_text"
+      text = data.cloudflare_zones.domain_zones.result[0].id
+    },
+    {
+      name = "CLOUDFLARE_RECORD_ID"
+      type = "plain_text"
+      text = cloudflare_dns_record.ingress.id
+    },
+    {
+      name = "RECORD_NAME"
+      type = "plain_text"
+      text = "ingress.${var.secret_domain}"
+    },
+    {
+      name = "SMTP_SERVER"
+      type = "plain_text"
+      text = var.smtp_server
+    },
+    {
+      name = "SMTP_USERNAME"
+      type = "plain_text"
+      text = var.smtp_username
+    },
+    {
+      name = "CLOUDFLARE_API_TOKEN"
+      type = "secret_text"
+      text = var.CLOUDFLARE_APIKEY
+    },
+    {
+      name = "SMTP_PASSWORD"
+      type = "secret_text"
+      text = var.smtp_password
+    }
+  ]
 }
 
 # 7. Create the Cron Trigger for the Worker (runs every minute)
 resource "cloudflare_workers_cron_trigger" "failover_cron" {
-  account_id  = data.cloudflare_zone.domain_zone.account_id
-  script_name = cloudflare_workers_script.failover_monitor.name
-  schedules   = ["* * * * *"]
+  account_id  = data.cloudflare_zones.domain_zones.result[0].account.id
+  script_name = cloudflare_workers_script.failover_monitor.script_name
+  schedules = [
+    {
+      cron = "* * * * *"
+    }
+  ]
 }
 
 # 8. Output VPS public IP to expose it to tf-controller
