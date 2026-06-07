@@ -86,11 +86,11 @@ spec:
             command: ["/bin/sh", "-c"]
             args:
               - |
-                trap 'echo "Removing label from ${NODE_NAME}"; kubectl label nodes "${NODE_NAME}" egress-gateway-gatus- --overwrite; exit 0' SIGTERM SIGINT
+                trap 'echo "Removing label from $NODE_NAME"; kubectl label nodes "$NODE_NAME" egress-gateway-gatus- --overwrite; exit 0' SIGTERM SIGINT
                 echo "Removing label from other nodes"
                 kubectl label nodes -l egress-gateway-gatus=true egress-gateway-gatus- --overwrite
-                echo "Adding label to ${NODE_NAME}"
-                kubectl label nodes "${NODE_NAME}" egress-gateway-gatus=true --overwrite
+                echo "Adding label to $NODE_NAME"
+                kubectl label nodes "$NODE_NAME" egress-gateway-gatus=true --overwrite
                 sleep infinity &
                 wait $!
             env:
