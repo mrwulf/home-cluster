@@ -9,10 +9,11 @@ write_files:
       auth.token = "${TUNNEL_HANDSHAKE_TOKEN}"
 
       # Enable Admin dashboard
-      webServer.addr = "127.0.0.1"
+      webServer.addr = "0.0.0.0"
       webServer.port = 7500
       webServer.user = "admin"
       webServer.password = "${TUNNEL_HANDSHAKE_TOKEN}"
+      enablePrometheus = true
 
 
   # 2. Write Systemd Service File for FRPS

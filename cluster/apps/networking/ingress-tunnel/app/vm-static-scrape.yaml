@@ -1,0 +1,18 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: frps-metrics
+spec:
+  jobName: frps
+  targetEndpoints:
+    - targets:
+        - "vps-direct.${SECRET_DOMAIN}:7500"
+      scheme: "http"
+      path: "/metrics"
+      basicAuth:
+        username:
+          name: ingress-tunnel-secrets
+          key: admin_username
+        password:
+          name: ingress-tunnel-secrets
+          key: tunnel_handshake_token

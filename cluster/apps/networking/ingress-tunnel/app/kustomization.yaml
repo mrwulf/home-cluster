@@ -6,7 +6,8 @@ resources:
   - external-secret.yaml
   - gitrepo.yaml
   - rbac.yaml
-  - service-monitor.yaml
+  - vm-static-scrape.yaml
+  - vps-route.yaml
   - dashboard.yaml
 configMapGenerator:
   - name: ingress-tunnel-template

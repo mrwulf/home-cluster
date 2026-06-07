@@ -96,6 +96,14 @@ resource "hcloud_firewall" "tunnel_firewall" {
     source_ips  = [local.home_ip_cidr]
     description = "Allow tunnel control channel from home only"
   }
+
+  rule {
+    direction   = "in"
+    protocol    = "tcp"
+    port        = "7500"
+    source_ips  = [local.home_ip_cidr]
+    description = "Allow dashboard and metrics scraping from home only"
+  }
 }
 
 # 4. Attach Firewall to the VPS Server
