@@ -133,6 +133,10 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /transcode
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
 
       logs:
         type: emptyDir
