@@ -22,6 +22,10 @@ terraform {
       source  = "hashicorp/http"
       version = "~> 3.4"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.20"
+    }
   }
 }
 
@@ -198,4 +202,25 @@ resource "cloudflare_workers_cron_trigger" "failover_cron" {
 output "VPS_PUBLIC_IP" {
   value       = hcloud_server.tunnel_vps.ipv4_address
   description = "The public IPv4 address of the Ingress Tunnel VPS"
+}
+
+provider "kubernetes" {}
+
+resource "kubernetes_endpoints" "frps_dashboard" {
+  metadata {
+    name      = "frps-dashboard"
+    namespace = "networking"
+  }
+
+  subset {
+    address {
+      ip = hcloud_server.tunnel_vps.ipv4_address
+    }
+
+    port {
+      name     = "http"
+      port     = 7500
+      protocol = "TCP"
+    }
+  }
 }
