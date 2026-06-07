@@ -81,8 +81,8 @@ spec:
                 memory: 256Mi
           node-labeler:
             image:
-              repository: docker.io/bitnami/kubectl
-              tag: 1.30.0
+              repository: ghcr.io/onedr0p/kubernetes-cli
+              tag: 1.36.1
             command: ["/bin/sh", "-c"]
             args:
               - |
