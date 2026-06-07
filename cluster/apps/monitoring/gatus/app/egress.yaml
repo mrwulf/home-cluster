@@ -6,6 +6,7 @@ metadata:
   namespace: monitoring
   annotations:
     io.cilium/lb-ipam-ips: 10.0.10.99
+    service.cilium.io/type: "ClusterIP"
 spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
