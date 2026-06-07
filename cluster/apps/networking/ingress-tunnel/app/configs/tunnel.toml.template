@@ -10,6 +10,7 @@ webServer.addr = "0.0.0.0"
 webServer.port = 7500
 webServer.user = "admin"
 webServer.password = "__HANDSHAKE_TOKEN__"
+enablePrometheus = true
 
 [[proxies]]
 name = "web-secure-__POD_NAME__"
