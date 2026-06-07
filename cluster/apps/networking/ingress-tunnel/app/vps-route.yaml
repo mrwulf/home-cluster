@@ -12,24 +12,21 @@ spec:
       port: 7500
       targetPort: 7500
 ---
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
 metadata:
   name: frps-dashboard
   namespace: networking
 spec:
-  parentRefs:
-    - name: internal-gateway
-      namespace: networking
-  hostnames:
-    - "frps-dashboard.home.${SECRET_DOMAIN}"
-  rules:
-    - filters:
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
-            name: rfc1918-ips
-      backendRefs:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`frps-dashboard.home.${SECRET_DOMAIN}`)
+      kind: Rule
+      services:
         - name: frps-dashboard
           port: 7500
+      middlewares:
+        - name: rfc1918-ips
+          namespace: networking
+  tls: {}
