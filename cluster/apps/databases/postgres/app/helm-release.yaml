@@ -17,9 +17,6 @@ spec:
   values:
     crds:
       create: true
-    config:
-      data:
-        INHERITED_LABELS: kasten.io/backup-volume=disabled
     monitoring:
       grafanaDashboard:
         create: true

@@ -27,11 +27,11 @@ tasks:
     cmds:
       - kubectl -n {{.ROOK_NAMESPACE}} get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
-  # Clean up all snapshots: https://community.veeam.com/veeam-kasten-kubernetes-data-protection-support-92/help-removing-orphaned-snapshot-images-ceph-rbd-3935
+  # Purge orphaned ceph-blockpool snapshots:
   ## for x in $(rbd trash list --pool ceph-blockpool ); do echo $x ; rbd snap purge ceph-blockpool/$x  ; done
   ## for x in $(rbd list --pool ceph-blockpool ); do echo $x ; rbd snap purge ceph-blockpool/$x  ; done
 
-  # Clean up everything: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups/kanister | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
+  # Clean up released PVs: for this_img in `kubectl get pv --sort-by=metadata.creationTimestamp | grep Released | grep backups | awk '{print $1}'`; do task rook:clean-up-pv -- $this_img ; done
   clean-up-pv:
     desc: Clean a single PV
     requires:
@@ -89,7 +89,7 @@ tasks:
       - sh: '[ -z "{{.CHILDREN}}" ]'
         msg: "These children must be removed first:\n {{.CHILDREN}}"
 
-  # Purge retained volumesnapshots & volumesnapshotcontents from backups NS (k10)
+  # Purge retained volumesnapshots & volumesnapshotcontents from backups NS
   # for SN in $(k get volumesnapshotcontents.snapshot.storage.k8s.io | grep Retain | awk '{print $1}'); do echo $SN; VS=$(kubectl get volumesnapshotcontents.snapshot.storage.k8s.io $SN -ojsonpath='{.spec.volumeSnapshotRef.name}'); echo $VS; kubectl delete volumesnapshot $VS -n backups;  kubectl delete volumesnapshotcontents $SN; done
 
   # still have snapshots:
