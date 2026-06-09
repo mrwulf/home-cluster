@@ -125,3 +125,21 @@ spec:
         clone:
           namespace: networking
           name: rfc1918-ips
+    - name: sync-chain-authentik
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - monitoring
+      generate:
+        generateExisting: true
+        apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        name: traefik-middleware-chain-authentik
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: traefik-middleware-chain-authentik

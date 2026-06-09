@@ -1,0 +1,15 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: headlamp
+  namespace: flux-system
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 0.42.0
+  # No official OCI chart upstream; mirrored (cosign-signed) by home-operations.
+  url: oci://ghcr.io/home-operations/charts-mirror/headlamp
