@@ -28,6 +28,7 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: audiobookshelf-config
       VOLSYNC_CAPACITY: 20Gi
-      VOLSYNC_START_MINUTE: "55"
+      VOLSYNC_NFS_START_MINUTE: "01"
+      VOLSYNC_B2_START_MINUTE: "26"
       APP_UID: "568"
       APP_GID: "568"

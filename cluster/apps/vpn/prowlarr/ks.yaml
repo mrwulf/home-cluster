@@ -28,4 +28,5 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: prowlarr-config
       VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_START_MINUTE: "07"
+      VOLSYNC_NFS_START_MINUTE: "53"
+      VOLSYNC_B2_START_MINUTE: "18"

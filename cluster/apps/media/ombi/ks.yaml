@@ -28,4 +28,5 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: ombi-config
       VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_START_MINUTE: "44"
+      VOLSYNC_NFS_START_MINUTE: "17"
+      VOLSYNC_B2_START_MINUTE: "42"
