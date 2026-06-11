@@ -123,25 +123,83 @@ export default {
     const fromEmail = `failover-monitor@${SECRET_DOMAIN}`
     const toEmail = `postmaster@${SECRET_DOMAIN}`
 
-    // 1. Probe the VPS using its direct non-proxied domain
+    // 1. Probe the VPS using its direct non-proxied domain (up to 3 attempts with 1.5s pause)
+    const maxProbes = 3
     let isVpsUp = false
-    try {
-      const res = await fetch(`https://${VPS_DIRECT_HOST}`, {
-        method: "HEAD",
-        signal: AbortSignal.timeout(5000),
-      })
-      isVpsUp = res.status < 500
-    } catch (err) {
-      isVpsUp = false
+    let lastProbeError = null
+    let lastProbeStatus = null
+    const probeAttempts = []
+
+    for (let attempt = 1; attempt <= maxProbes; attempt++) {
+      console.log(
+        `Probing VPS direct host https://${VPS_DIRECT_HOST} (attempt ${attempt}/${maxProbes})...`
+      )
+      const startTime = Date.now()
+      try {
+        const res = await fetch(`https://${VPS_DIRECT_HOST}`, {
+          method: "HEAD",
+          signal: AbortSignal.timeout(5000),
+        })
+        const duration = Date.now() - startTime
+        lastProbeStatus = res.status
+        const attemptLog = `Probe attempt ${attempt}: Finished in ${duration}ms with status code ${res.status}`
+        console.log(attemptLog)
+        probeAttempts.push(attemptLog)
+
+        if (res.status < 500) {
+          isVpsUp = true
+          break
+        } else {
+          lastProbeError = `HTTP Status ${res.status}`
+        }
+      } catch (err) {
+        const duration = Date.now() - startTime
+        lastProbeStatus = null
+        lastProbeError =
+          err instanceof Error ? `${err.name}: ${err.message}` : String(err)
+        const attemptLog = `Probe attempt ${attempt}: Failed in ${duration}ms. Error: ${lastProbeError}`
+        console.error(attemptLog)
+        probeAttempts.push(attemptLog)
+      }
+
+      if (attempt < maxProbes) {
+        // Wait 1.5 seconds before retrying
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+      }
     }
 
-    // 2. Query the current DNS record value
+    console.log(
+      `VPS probe summary: isVpsUp=${isVpsUp} (Last status: ${lastProbeStatus}, Last error: ${lastProbeError || "none"})`
+    )
+
+    // 2. Query the current DNS record value with error handling
+    let currentContent
     const dnsUrl = `https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}`
-    const dnsRes = await fetch(dnsUrl, {
-      headers: { Authorization: `Bearer ${API_TOKEN}` },
-    })
-    const dnsData = await dnsRes.json()
-    const currentContent = dnsData.result.content
+    try {
+      console.log(
+        `Querying current DNS record for ${RECORD_NAME} (Record ID: ${RECORD_ID})...`
+      )
+      const dnsRes = await fetch(dnsUrl, {
+        headers: { Authorization: `Bearer ${API_TOKEN}` },
+        signal: AbortSignal.timeout(5000),
+      })
+      if (!dnsRes.ok) {
+        const errorText = await dnsRes.text()
+        throw new Error(`Cloudflare API status ${dnsRes.status}: ${errorText}`)
+      }
+      const dnsData = await dnsRes.json()
+      if (!dnsData.success) {
+        throw new Error(
+          `Cloudflare API error: ${JSON.stringify(dnsData.errors)}`
+        )
+      }
+      currentContent = dnsData.result.content
+      console.log(`Current DNS record content: ${currentContent}`)
+    } catch (err) {
+      console.error(`Error querying DNS record:`, err)
+      // Stop execution gracefully to prevent false updates/email spam when Cloudflare is down
+      return
+    }
 
     // 3. Determine target state
     const targetContent = isVpsUp ? VPS_DIRECT_HOST : TUNNEL_CNAME
@@ -149,35 +207,68 @@ export default {
     // 4. Update if there is a mismatch
     if (currentContent !== targetContent) {
       console.log(
-        `Mismatch detected! Current: ${currentContent}, Target: ${targetContent}. Updating...`
+        `Mismatch detected! Current: ${currentContent}, Target: ${targetContent}. Updating DNS record...`
       )
-      const updateRes = await fetch(dnsUrl, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${API_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          type: "CNAME",
-          content: targetContent,
-          proxied: !isVpsUp, // Proxied = true if using CNAME failover (tunnel), proxied = false if using direct VPS path
-        }),
-      })
-      if (!updateRes.ok) {
-        console.error("Failed to update DNS record:", await updateRes.text())
-      } else {
-        console.log(
-          `DNS record updated to point to ${targetContent} (proxied: ${!isVpsUp})`
-        )
-        ctx.waitUntil(
-          sendEmailViaSMTP(
-            env,
-            fromEmail,
-            toEmail,
-            `[Failover] Ingress DNS Changed for ${SECRET_DOMAIN}`,
-            `Failover monitor detected that the ingress DNS record ${RECORD_NAME} was pointing to ${currentContent}, but should be ${targetContent}.\n\nAction: DNS record updated to a CNAME record pointing to ${targetContent} (proxied: ${!isVpsUp}).`
+      try {
+        const updateRes = await fetch(dnsUrl, {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${API_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "CNAME",
+            content: targetContent,
+            proxied: !isVpsUp, // Proxied = true if using CNAME failover (tunnel), proxied = false if using direct VPS path
+          }),
+          signal: AbortSignal.timeout(5000),
+        })
+        if (!updateRes.ok) {
+          const errorText = await updateRes.text()
+          console.error(
+            `Failed to update DNS record. Status: ${updateRes.status}. Error: ${errorText}`
           )
-        )
+        } else {
+          const updateData = await updateRes.json()
+          if (!updateData.success) {
+            console.error(
+              `Cloudflare API patch succeeded but returned failure: ${JSON.stringify(updateData.errors)}`
+            )
+          } else {
+            console.log(
+              `DNS record successfully updated to point to ${targetContent} (proxied: ${!isVpsUp})`
+            )
+
+            // Format Subject line with date and hour
+            const now = new Date()
+            const yyyy = now.getUTCFullYear()
+            const mm = String(now.getUTCMonth() + 1).padStart(2, "0")
+            const dd = String(now.getUTCDate()).padStart(2, "0")
+            const hh = String(now.getUTCHours()).padStart(2, "0")
+            const dateStr = `${yyyy}-${mm}-${dd} ${hh}:00 UTC`
+
+            const subject = `[Failover] Ingress DNS Changed for ${SECRET_DOMAIN} - ${dateStr}`
+            const body = [
+              `Failover monitor detected that the ingress DNS record ${RECORD_NAME} was pointing to ${currentContent}, but should be ${targetContent}.`,
+              ``,
+              `Action: DNS record updated to a CNAME record pointing to ${targetContent} (proxied: ${!isVpsUp}).`,
+              ``,
+              `=== Diagnostics ===`,
+              `Target Content: ${targetContent}`,
+              `Previous Content: ${currentContent}`,
+              `Timestamp: ${now.toISOString()}`,
+              ``,
+              `=== Probe Attempts ===`,
+              ...probeAttempts,
+            ].join("\r\n")
+
+            ctx.waitUntil(
+              sendEmailViaSMTP(env, fromEmail, toEmail, subject, body)
+            )
+          }
+        }
+      } catch (err) {
+        console.error(`Error updating DNS record:`, err)
       }
     } else {
       console.log(
