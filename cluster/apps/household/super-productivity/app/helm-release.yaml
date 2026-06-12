@@ -58,6 +58,8 @@ spec:
                 value: "true"
               - name: CORS_ORIGINS
                 value: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
+              - name: RUN_MIGRATIONS_ON_STARTUP
+                value: "true"
               - name: SMTP_HOST
                 value: smtp-relay.system.svc.cluster.local.
               - name: SMTP_PORT
