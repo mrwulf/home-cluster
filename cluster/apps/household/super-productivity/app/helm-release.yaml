@@ -43,8 +43,8 @@ spec:
         containers:
           main:
             image:
-              repository: iari/supersync
-              tag: latest
+              repository: ghcr.io/warreth/super-sync-server
+              tag: v18.9.1
             env:
               - name: NODE_ENV
                 value: production
