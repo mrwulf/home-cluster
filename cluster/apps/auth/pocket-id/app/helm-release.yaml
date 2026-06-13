@@ -30,10 +30,8 @@ spec:
       enabled: true
       name: pocket-id
       spec:
-        image:
-          repository: ghcr.io/pocket-id/pocket-id
-          # renovate: depName=pocket-id/pocket-id datasource=github-releases
-          tag: v2.8.0
+        # renovate: depName=pocket-id/pocket-id datasource=github-releases
+        image: ghcr.io/pocket-id/pocket-id:v2.8.0
         encryptionKey:
           valueFrom:
             secretKeyRef:
