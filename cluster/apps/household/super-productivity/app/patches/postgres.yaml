@@ -21,7 +21,7 @@ spec:
             image:
               repository: ghcr.io/warreth/super-sync-server
               tag: v18.9.1
-            command: ["/bin/sh", "-c", "./scripts/migrate-deploy.sh"]
+            command: ["/bin/sh", "-c", "chmod +x ./scripts/migrate-deploy.sh && ./scripts/migrate-deploy.sh"]
             envFrom:
               - secretRef:
                   name: super-productivity-db
