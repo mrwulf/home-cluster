@@ -27,10 +27,12 @@ spec:
           app:
             image:
               repository: ghcr.io/sysadminsmedia/homebox
-              tag: 0.25.0-hardened
+              tag: 0.26.1-hardened
             envFrom:
               - secretRef:
                   name: box-secret
+              - secretRef:
+                  name: box-sops-secret
             resources:
               requests:
                 cpu: 10m
