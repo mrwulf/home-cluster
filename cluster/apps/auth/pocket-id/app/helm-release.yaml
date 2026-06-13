@@ -18,7 +18,7 @@ spec:
       retries: 5
   values:
     operator:
-      replicas: 2
+      replicas: 1
       resources:
         limits:
           cpu: 200m
@@ -29,6 +29,7 @@ spec:
     instance:
       enabled: true
       name: pocket-id
+      replicas: 2
       spec:
         # renovate: depName=pocket-id/pocket-id datasource=github-releases
         image: ghcr.io/pocket-id/pocket-id:v2.8.0
