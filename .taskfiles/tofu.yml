@@ -1,0 +1,27 @@
+---
+version: "3"
+
+tasks:
+  plan:
+    desc: Run a local OpenTofu plan using dynamically fetched secrets and state
+    dir: "{{.PROJECT_DIR}}/cluster/apps/networking/ingress-tunnel"
+    cmds:
+      # 1. Download and decompress active state file from Kubernetes secret
+      - kubectl get secret -n networking tfstate-default-ingress-tunnel-infra -o jsonpath='{.data.tfstate}' | base64 -d | gunzip > terraform.tfstate
+      # 2. Run plan with dynamically populated variables
+      - |
+        export KUBECONFIG="$HOME/.kube/config"
+        export KUBE_CONFIG_PATH="$HOME/.kube/config"
+        export TF_VAR_CLOUDFLARE_APIKEY="$(kubectl get secret -n networking cloudflare-ddns -o jsonpath='{.data.CLOUDFLARE_APIKEY}' | base64 -d)"
+        export TF_VAR_hcloud_token="$(kubectl get secret -n networking ingress-tunnel-secrets -o jsonpath='{.data.hcloud_token}' | base64 -d)"
+        export TF_VAR_tunnel_handshake_token="$(kubectl get secret -n networking ingress-tunnel-secrets -o jsonpath='{.data.tunnel_handshake_token}' | base64 -d)"
+        export TF_VAR_smtp_server="$(kubectl get secret -n networking ingress-tunnel-secrets -o jsonpath='{.data.smtp_server}' | base64 -d)"
+        export TF_VAR_smtp_username="$(kubectl get secret -n networking ingress-tunnel-secrets -o jsonpath='{.data.smtp_username}' | base64 -d)"
+        export TF_VAR_smtp_password="$(kubectl get secret -n networking ingress-tunnel-secrets -o jsonpath='{.data.smtp_password}' | base64 -d)"
+        export TF_VAR_secret_domain="$(sops --decrypt {{.PROJECT_DIR}}/cluster/flux/meta/cluster-secrets.sops.yaml | yq eval '.stringData.SECRET_DOMAIN' -)"
+        export TUNNEL_ID="$(sops --decrypt {{.PROJECT_DIR}}/cluster/flux/meta/cluster-secrets.sops.yaml | yq eval '.stringData.SECRET_CLOUDFLARE_TUNNEL_ID' -)"
+        export TF_VAR_cloudflare_tunnel_cname="${TUNNEL_ID}.cfargotunnel.com"
+        tofu plan
+    defer:
+      # Cleanup state file on exit
+      - rm -f terraform.tfstate
