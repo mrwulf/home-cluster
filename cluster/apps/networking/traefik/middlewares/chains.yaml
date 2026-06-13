@@ -57,3 +57,29 @@ spec:
       - name: networking-traefik-middleware-rate-limit@kubernetescrd
       - name: networking-traefik-middleware-secure-headers@kubernetescrd
       - name: networking-traefik-middleware-compress@kubernetescrd
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-middleware-chain-pocket-id
+spec:
+  chain:
+    middlewares:
+      - name: networking-traefik-middleware-rate-limit@kubernetescrd
+      - name: networking-traefik-middleware-secure-headers@kubernetescrd
+      - name: networking-traefik-middleware-compress@kubernetescrd
+      - name: networking-traefik-middleware-pocket-id-forward-auth@kubernetescrd
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-middleware-chain-cloudflare-pocket-id
+spec:
+  chain:
+    middlewares:
+      - name: networking-traefik-middleware-rate-limit@kubernetescrd
+      - name: networking-traefik-middleware-secure-headers@kubernetescrd
+      - name: networking-traefik-middleware-cloudflare-tunnel@kubernetescrd
+      - name: networking-traefik-middleware-compress@kubernetescrd
+      - name: networking-traefik-middleware-pocket-id-forward-auth@kubernetescrd
+

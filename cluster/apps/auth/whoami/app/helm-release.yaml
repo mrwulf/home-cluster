@@ -67,7 +67,7 @@ spec:
                 extensionRef:
                   group: traefik.io
                   kind: Middleware
-                  name: traefik-middleware-chain-cloudflare-authentik
+                  name: traefik-middleware-chain-cloudflare-pocket-id
             backendRefs:
               - identifier: main
                 port: http

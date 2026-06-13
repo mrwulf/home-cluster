@@ -9,4 +9,4 @@ resources:
   - ingress-tunnel/ks.yaml
   - traefik/ks.yaml
   - unifi/ks.yaml
-  - whoami/ks.yaml
+

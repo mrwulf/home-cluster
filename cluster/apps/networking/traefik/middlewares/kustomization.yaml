@@ -10,3 +10,5 @@ resources:
   - secure-headers.yaml
   - rate-limit.yaml
   - stripprefix-api.yaml
+  - pocket-id.yaml
+
