@@ -33,6 +33,8 @@ spec:
                   name: box-secret
               - secretRef:
                   name: box-sops-secret
+              - secretRef:
+                  name: box-oidc-credentials
             resources:
               requests:
                 cpu: 10m

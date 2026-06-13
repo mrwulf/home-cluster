@@ -1,0 +1,19 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: box
+spec:
+  name: Box
+  clientID: a5c0b4d2-7e1a-4c9f-8d2b-6f8a3c9e1b7d
+  callbackUrls:
+    - https://box.home.${SECRET_DOMAIN}/api/v1/users/login/oidc/callback
+  allowedUserGroups:
+    - name: household-users
+      namespace: auth
+  secret:
+    name: box-oidc-credentials
+    keys:
+      clientID: HBOX_OIDC_CLIENT_ID
+      clientSecret: HBOX_OIDC_CLIENT_SECRET
+      issuerUrl: HBOX_OIDC_ISSUER_URL
