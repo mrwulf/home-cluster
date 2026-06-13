@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - authentik/ks.yaml
+  - pocket-id/ks.yaml

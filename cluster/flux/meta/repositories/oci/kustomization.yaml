@@ -6,3 +6,4 @@ resources:
   - ./headlamp.yaml
   - ./forgejo.yaml
   - ./forgejo-runner.yaml
+  - ./pocket-id-operator.yaml
