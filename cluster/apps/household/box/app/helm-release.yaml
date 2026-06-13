@@ -31,6 +31,8 @@ spec:
             envFrom:
               - secretRef:
                   name: box-secret
+              - secretRef:
+                  name: box-sops-secret
             resources:
               requests:
                 cpu: 10m
