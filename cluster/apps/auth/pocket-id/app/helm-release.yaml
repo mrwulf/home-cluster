@@ -29,7 +29,6 @@ spec:
     instance:
       enabled: true
       name: pocket-id
-      replicas: 2
       spec:
         # renovate: depName=pocket-id/pocket-id datasource=github-releases
         image: ghcr.io/pocket-id/pocket-id:v2.8.0
@@ -62,6 +61,8 @@ spec:
           requests:
             cpu: 10m
             memory: 64Mi
+        versionCheckDisabled: true
+        analyticsDisabled: true
         podTemplate:
           spec:
             initContainers:
