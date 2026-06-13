@@ -1,0 +1,9 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: k8s-admin
+spec:
+  users:
+    userRefs:
+      - name: brandon

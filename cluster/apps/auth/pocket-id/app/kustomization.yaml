@@ -7,3 +7,5 @@ resources:
   - ./httproute.yaml
   - ./clusterresourcebinding.yaml
   - ./users.yaml
+  - ./groups.yaml
+  - ./oidc-clients.yaml
