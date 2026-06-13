@@ -438,7 +438,7 @@ controlPlane:
             oidc-client-id: 287821e5-f31e-4073-9b2c-c30775e9fee6
             oidc-issuer-url: https://id.${SECRET_DOMAIN}
             oidc-username-claim: email
-            oidc-extra-scope: groups
+            oidc-groups-claim: groups
             oidc-groups-prefix: "oidc:"
           resources:
             requests:
