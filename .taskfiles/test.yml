@@ -17,6 +17,7 @@ tasks:
       - task: lint:markdown
       - task: lint:yaml
       - task: lint:kubernetes
+      - task: lint:tofu
       - task: lint:format
 
   lint:markdown:
@@ -57,6 +58,16 @@ tasks:
     ignore_error: false
     vars:
       K8S_VERSION: "v1.32.0"
+
+  lint:tofu:
+    desc: Statically validate OpenTofu manifests
+    dir: "{{.PROJECT_DIR}}/cluster/apps/networking/ingress-tunnel"
+    cmds:
+      - rm -rf .terraform
+      - tofu init -backend=false
+      - tofu validate
+    defer:
+      - rm -rf .terraform
 
   lint:format:
     desc: Check code formatting with prettier

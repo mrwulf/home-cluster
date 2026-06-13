@@ -1,11 +1,35 @@
-variable "hcloud_token" { type = string }
-variable "CLOUDFLARE_APIKEY" { type = string }
-variable "cloudflare_tunnel_cname" { type = string }
-variable "secret_domain" { type = string }
-variable "tunnel_handshake_token" { type = string }
-variable "smtp_server" { type = string }
-variable "smtp_username" { type = string }
-variable "smtp_password" { type = string }
+variable "hcloud_token" {
+  type      = string
+  sensitive = true
+}
+variable "CLOUDFLARE_APIKEY" {
+  type      = string
+  sensitive = true
+}
+variable "cloudflare_tunnel_cname" {
+  type      = string
+  sensitive = true
+}
+variable "secret_domain" {
+  type      = string
+  sensitive = true
+}
+variable "tunnel_handshake_token" {
+  type      = string
+  sensitive = true
+}
+variable "smtp_server" {
+  type      = string
+  sensitive = true
+}
+variable "smtp_username" {
+  type      = string
+  sensitive = true
+}
+variable "smtp_password" {
+  type      = string
+  sensitive = true
+}
 
 
 terraform {
@@ -119,7 +143,7 @@ resource "hcloud_firewall_attachment" "firewall_attach" {
 # 5. Create the Primary DNS Record (CNAME pointing to direct VPS domain)
 resource "cloudflare_dns_record" "ingress" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "ingress"
+  name    = "ingress.${var.secret_domain}"
   content = "vps-direct.${var.secret_domain}"
   type    = "CNAME"
   proxied = false
@@ -136,7 +160,7 @@ resource "cloudflare_dns_record" "ingress" {
 # 5b. Create the Direct DNS Record (always pointing to VPS IP)
 resource "cloudflare_dns_record" "vps_direct" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "vps-direct"
+  name    = "vps-direct.${var.secret_domain}"
   content = hcloud_server.tunnel_vps.ipv4_address
   type    = "A"
   proxied = false
