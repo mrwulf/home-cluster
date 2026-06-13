@@ -142,7 +142,7 @@ spec:
           routes:
             - receiver: "null"
               matchers:
-                - alertname =~ "InfoInhibitor|Watchdog"
+                - alertname =~ "InfoInhibitor|Watchdog|etcdDatabaseHighFragmentationRatio"
             - receiver: "pushover"
               matchers:
                 - severity = critical

@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: etcd-custom-rules
+  namespace: monitoring
+spec:
+  groups:
+    - name: etcd.rules
+      rules:
+        - alert: etcdDatabaseHighFragmentationRatioCustom
+          expr: |
+            (last_over_time(etcd_mvcc_db_total_size_in_use_in_bytes[5m]) / last_over_time(etcd_mvcc_db_total_size_in_bytes[5m])) < 0.5
+            and
+            (etcd_mvcc_db_total_size_in_bytes / etcd_server_quota_backend_bytes) > 0.4
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: etcd database high fragmentation ratio
+            description: 'etcd cluster "{{ $labels.job }}": database size in use on instance {{ $labels.instance }} is {{ $value | humanizePercentage }} of the actual allocated disk space, and total size exceeds 40% of quota.'
