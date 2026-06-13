@@ -2,3 +2,8 @@
 gotk-components.yaml
 ../../talos/clusterconfig/
 **/talos/clusterconfig/**
+**/.terraform/**
+**/.terraform.lock.hcl
+**/*.sops.yaml
+**/*.tfstate
+**/*.tfstate.backup
