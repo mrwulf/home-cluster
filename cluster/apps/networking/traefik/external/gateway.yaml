@@ -8,6 +8,12 @@ metadata:
     gateway.sysinfra.pro/type: external
   annotations:
     external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
+    # Probe attached routes via public DNS (egress -> 1.1.1.1) so Gatus tests the
+    # real external path. Inherited by all routes; per-route config wins on conflicts.
+    gatus.io/endpoint: |
+      group: external
+      client:
+        dns-resolver: "udp://1.1.1.1:53"
 spec:
   gatewayClassName: traefik-external
   addresses:

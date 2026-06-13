@@ -42,8 +42,8 @@ spec:
                     port: &port 8096
                   initialDelaySeconds: 0
                   periodSeconds: 30
-                  timeoutSeconds: 5
-                  failureThreshold: 3
+                  timeoutSeconds: 15
+                  failureThreshold: 5
               readiness: *probes
               startup:
                 enabled: false
@@ -54,8 +54,8 @@ spec:
             resources:
               requests:
                 gpu.intel.com/i915: 1
-                cpu: 100m
-                memory: 512Mi
+                cpu: 2
+                memory: 3Gi
               limits:
                 gpu.intel.com/i915: 1
                 memory: 12Gi

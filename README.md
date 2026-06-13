@@ -56,7 +56,9 @@ helmfile apply -f talos/flux-helmfile.yaml
 - [go-task](https://github.com/go-task/task)
 - [pre-commit](https://github.com/pre-commit/pre-commit)
 - [helm](https://helm.sh/)
+- [helmfile](https://github.com/helmfile/helmfile)
 - [kustomize](https://kustomize.io/)
+- [mise](https://mise.jdx.dev/)
 
 ## Testing
 
@@ -103,23 +105,30 @@ task test:flux:diff:all
 
 ## Components
 
-- [authentik](https://goauthentik.io) - IDp + SSO
-- [cert-manager](https://cert-manager.io/) - SSL certificates - with Cloudflare DNS challenge
+- [cilium](https://cilium.io) - CNI, kube-proxy replacement, and load balancer
+- [authentik](https://goauthentik.io) - IdP + SSO
+- [cert-manager](https://cert-manager.io/) - SSL certificates, with Cloudflare DNS challenge
+- [external-secrets](https://external-secrets.io) - syncs secrets from Bitwarden
 - [flux](https://toolkit.fluxcd.io/) - GitOps tool for deploying manifests from the `cluster` directory
-- [kasten k10](https://www.kasten.io/product/) - backup implementation
-- [kyverno](https://kverno.io) - policy engine
+- [kyverno](https://kyverno.io) - policy engine
 - [reloader](https://github.com/stakater/Reloader) - restart pods when Kubernetes `configmap` or `secret` changes
-- [traefik](https://traefik.io) - ingress controller
+- [traefik](https://traefik.io) - ingress controller (Gateway API)
 - [rook](https://rook.io) - operator for ceph
+- [volsync](https://volsync.readthedocs.io) - restic-based volume backups (`backups` namespace)
 
 ## :open_file_folder:&nbsp; Repository structure
 
-The Git repository contains the following directories under `cluster` and are ordered below by how Flux will apply them.
+Cluster state lives under `cluster/`:
 
-- **base** directory is the entrypoint to Flux
-- **crds** directory contains custom resource definitions (CRDs) that need to exist globally in your cluster before anything else exists
-- **core** directory (depends on **crds**) are important infrastructure applications (grouped by namespace) that should never be pruned by Flux
-- **apps** directory (depends on **core**) is where your common applications (grouped by namespace) could be placed, Flux will prune resources here if they are not tracked by Git anymore
+- **apps/** — all workloads, grouped by namespace (`monitoring`, `networking`, `databases`, ...).
+  Each app is `apps/<namespace>/<app>/` with a Flux `ks.yaml` plus an `app/` kustomize dir.
+  `apps/flux-system/` bootstraps Flux itself (flux-operator + flux-instance) and is the entrypoint;
+  `apps/kustomization.yaml` lists every namespace.
+- **flux/** — Flux machinery: `flux/meta/repositories/` holds chart sources (`oci/`, `helm/`),
+  and the cluster-wide SOPS secrets / `postBuild` substitution values.
+- **templates/** — reusable kustomize components (e.g. volsync).
+
+Talos node configuration lives under `talos/` ([talconfig.yaml](talos/talconfig.yaml)).
 
 ## My Cluster
 

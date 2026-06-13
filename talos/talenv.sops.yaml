@@ -1,0 +1,16 @@
+SECRET_DOMAIN: ENC[AES256_GCM,data:UDqCwL7HAIUyVkJ3,iv:+qV2UAdSPR1S1ImuzBCidIHa+NfEU/TScCBMDFpJPqU=,tag:0cYeynG9T2b5h1rS6fdX7Q==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAxb3ZJQ2Qrd0JIY0g4cGxs
+            aVpIMitqY3NSN01HVktVeTNRbVUvYU8rZVNBCnltZnB3TXd4c21uTCtuTldDSnkr
+            MGpPUkpZWEtneDhjQVhFU1UzT0JuckEKLS0tIHJoYWVLMHgwNHlZZ0tjZGNYelFk
+            UWZCRHNIdFcveFgrUHdoYnlkYW1kZlkKgk4n6Sm3+93IwCdmEIDqWxehTg1ktqHi
+            3hX4GSKcGIzGMJzo+OcSy3VSLurJYZRlqP/h9TxmsGFGfDf/GcmC0w==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age10ls774hqamu0vgl65vwxrfu2tqm6h7p7pj9k6gagcpluxllypfwsk3hqzm
+    lastmodified: "2026-06-13T10:12:27Z"
+    mac: ENC[AES256_GCM,data:gypmxLBvOyrbyz+2X6C6OdYK6fQC371lo4bMzcV5SgY4KVYBKiHmTARYL5ESBtK//97j43Xp9EwRm8bCx18YpqOCAaA/W1UqwUNEkMhIQmcy62YdWdXfMHWb9cA7wibQKclCI/eeRq68Cp7bWPXeWMJprVF2/T7wl6T3g8Y8CC4=,iv:YZq7kLEN3icOOmKQkGPp7nNWfnMWTjcGyMyB91LUNEc=,tag:d4CjLSTu2FWzVTaQebO+Rg==,type:str]
+    unencrypted_suffix: _unencrypted
+    version: 3.13.1

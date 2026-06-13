@@ -28,4 +28,5 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: homeassistant-config
       VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_START_MINUTE: "55"
+      VOLSYNC_NFS_START_MINUTE: "40"
+      VOLSYNC_B2_START_MINUTE: "12"

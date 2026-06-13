@@ -29,4 +29,5 @@ spec:
       GATUS_SUBDOMAIN: meals
       VOLSYNC_CLAIM: mealie-api-data
       VOLSYNC_CAPACITY: 10Gi
-      VOLSYNC_START_MINUTE: "33"
+      VOLSYNC_NFS_START_MINUTE: "34"
+      VOLSYNC_B2_START_MINUTE: "59"

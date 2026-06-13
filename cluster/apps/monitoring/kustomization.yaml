@@ -6,6 +6,7 @@ resources:
   - gatus/ks.yaml
   - goldilocks/ks.yaml
   - grafana/ks.yaml
+  - headlamp/ks.yaml
   - loki/ks.yaml
   - prometheus-operator/ks.yaml
   # - loki-stack/ks.yaml

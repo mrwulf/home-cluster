@@ -28,7 +28,8 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 200Gi
-      VOLSYNC_START_MINUTE: "37"
+      VOLSYNC_NFS_START_MINUTE: "25"
+      VOLSYNC_B2_START_MINUTE: "55"
       VOLSYNC_CACHE_CAPACITY: "30Gi"
 ---
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
@@ -62,4 +63,5 @@ spec:
       APP_UID: "568"
       APP_GID: "568"
       VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_START_MINUTE: "37"
+      VOLSYNC_NFS_START_MINUTE: "48"
+      VOLSYNC_B2_START_MINUTE: "13"

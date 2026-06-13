@@ -1,0 +1,42 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cilium
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: cilium
+  url: https://raw.githubusercontent.com/cilium/cilium/v1.19.4/install/kubernetes/cilium/files/cilium-agent/dashboards/cilium-dashboard.json
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cilium-operator
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: cilium
+  url: https://raw.githubusercontent.com/cilium/cilium/v1.19.4/install/kubernetes/cilium/files/cilium-operator/dashboards/cilium-operator-dashboard.json
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: hubble
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: cilium
+  url: https://raw.githubusercontent.com/cilium/cilium/v1.19.4/install/kubernetes/cilium/files/hubble/dashboards/hubble-dashboard.json
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus

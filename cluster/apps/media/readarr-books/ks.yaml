@@ -26,6 +26,7 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: readarr-books-config
       VOLSYNC_CAPACITY: 10Gi
-      VOLSYNC_START_MINUTE: "38"
+      VOLSYNC_NFS_START_MINUTE: "43"
+      VOLSYNC_B2_START_MINUTE: "08"
       APP_UID: "568"
       APP_GID: "568"

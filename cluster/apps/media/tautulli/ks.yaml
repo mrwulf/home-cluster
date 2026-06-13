@@ -28,4 +28,5 @@ spec:
       APP_GID: "1000"
       VOLSYNC_CLAIM: tautulli-config
       VOLSYNC_CAPACITY: 10Gi
-      VOLSYNC_START_MINUTE: "22"
+      VOLSYNC_NFS_START_MINUTE: "21"
+      VOLSYNC_B2_START_MINUTE: "46"

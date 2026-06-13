@@ -4,10 +4,11 @@ kind: Service
 metadata:
   name: gatus-egress-ip
   namespace: monitoring
-  annotations:
-    io.cilium/lb-ipam-ips: 10.0.10.99
 spec:
-  type: LoadBalancer
+  type: NodePort
+  externalTrafficPolicy: Local
+  externalIPs:
+    - 10.0.10.99
   selector:
     app.kubernetes.io/name: gatus
   ports:
@@ -30,5 +31,5 @@ spec:
   egressGateway:
     nodeSelector:
       matchLabels:
-        kubernetes.io/os: linux
+        egress-gateway-gatus: "true"
     egressIP: 10.0.10.99

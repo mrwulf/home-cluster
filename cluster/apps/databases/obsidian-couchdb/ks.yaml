@@ -25,5 +25,6 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CLAIM: data-obsidian-couchdb-0
-      VOLSYNC_START_MINUTE: "11"
       VOLSYNC_CAPACITY: 10Gi
+      VOLSYNC_NFS_START_MINUTE: "14"
+      VOLSYNC_B2_START_MINUTE: "39"

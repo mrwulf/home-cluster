@@ -44,7 +44,7 @@ spec:
               tag: 1.43.2.10687
 
             env:
-              PLEX_ADVERTISE_URL: "https://plex.media.home.${SECRET_DOMAIN}:32400/,https://${DDNS_TARGET}:12233/,https://plex.${SECRET_DOMAIN}:443/"
+              PLEX_ADVERTISE_URL: "https://plex.media.home.${SECRET_DOMAIN}:32400/,https://plex.${SECRET_DOMAIN}/"
               PLEX_PREFERENCE_GPU: "HardwareAcceleratedCodecs=1"
               # CLAIM_TOKEN: ''
 
@@ -58,8 +58,8 @@ spec:
                     port: 32400
                   initialDelaySeconds: 0
                   periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
+                  timeoutSeconds: 3
+                  failureThreshold: 5
               readiness: *probes
               startup:
                 enabled: true
@@ -75,7 +75,7 @@ spec:
 
             resources:
               requests:
-                cpu: 1
+                cpu: 2
                 memory: 3Gi
                 gpu.intel.com/i915: 1
               limits:
@@ -98,13 +98,11 @@ spec:
       main:
         enabled: true
         annotations:
+          # cloudflare-proxied must stay on the route: external-dns reads provider-specific
+          # annotations only from the HTTPRoute, not the parent Gateway (unlike target).
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
-            group: external
-            gated: true
-            # client:
-            #   dns-resolver: "tcp://10.0.0.1:53053"
             conditions:
               - "[STATUS] == 401"
         parentRefs:
@@ -133,6 +131,10 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /transcode
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
 
       logs:
         type: emptyDir

@@ -21,7 +21,7 @@ spec:
           main:
             image:
               repository: ghcr.io/unpoller/unpoller
-              tag: v3.2.0
+              tag: v3.3.0
             env:
               TZ: "${TIMEZONE}"
               UP_UNIFI_DEFAULT_ROLE: home-ops

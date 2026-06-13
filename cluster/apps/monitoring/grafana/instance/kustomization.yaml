@@ -9,5 +9,10 @@ resources:
   - ./datasources/datasource-alertmanager.yaml
   - ./datasources/datasource-loki.yaml
   - ./folders/folders.yaml
-  - ./dashboards/dashboards.yaml
+  - ./dashboards/dashboards-apps.yaml
+  - ./dashboards/dashboards-ceph.yaml
+  - ./dashboards/dashboards-cilium.yaml
+  - ./dashboards/dashboards-flux.yaml
+  - ./dashboards/dashboards-kubernetes.yaml
+  - ./dashboards/dashboards-unifi.yaml
   - ./dashboards/dashboard-home.yaml

@@ -47,6 +47,7 @@ tasks:
         grep -v '/configs/.*\.\(yaml\|yml\)$' | \
         grep -v '/resources/.*\.\(yaml\|yml\)$' | \
         grep -v 'for-config\.yaml$' | \
+        grep -v 'cloud-init\.yaml$' | \
         xargs kubeconform \
           -strict \
           -ignore-missing-schemas \

@@ -1,0 +1,15 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: kubernetes
+spec:
+  name: Kubernetes
+  clientID: 287821e5-f31e-4073-9b2c-c30775e9fee6
+  isPublic: true
+  pkceEnabled: true
+  callbackUrls:
+    - http://localhost:8000/
+    - http://localhost:18000/
+  allowedUserGroups:
+    - name: k8s-admin

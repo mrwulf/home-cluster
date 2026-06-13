@@ -29,4 +29,5 @@ spec:
       GATUS_SUBDOMAIN: code
       VOLSYNC_CLAIM: code-server-storage
       VOLSYNC_CAPACITY: 20Gi
-      VOLSYNC_START_MINUTE: "55"
+      VOLSYNC_NFS_START_MINUTE: "08"
+      VOLSYNC_B2_START_MINUTE: "33"

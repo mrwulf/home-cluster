@@ -49,6 +49,8 @@ spec:
               TOKEN_TIME: 720
               OPENAI_BASE_URL: http://ollama.ai.svc.cluster.local:11424/v1
               OPENAI_API_KEY: ignored
+              MEALIE_TRUSTED_PROXIES: "10.244.0.0/16"
+              MEALIE_FORWARDED_ALLOW_IPS: "10.244.0.0/16"
             envFrom:
               - secretRef:
                   name: *app
@@ -75,9 +77,6 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
-          gatus.io/endpoint: |
-            group: external
-            guarded: true
         parentRefs:
           - name: external-gateway
             namespace: networking

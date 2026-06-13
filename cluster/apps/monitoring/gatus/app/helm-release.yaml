@@ -33,7 +33,7 @@ spec:
             dependsOn: init-db
             image:
               repository: ghcr.io/home-operations/gatus-sidecar
-              tag: 0.0.19
+              tag: 0.2.2
             args:
               - --enable-ingress
               - --enable-httproute
@@ -79,6 +79,31 @@ spec:
                 memory: 128Mi
               limits:
                 memory: 256Mi
+          node-labeler:
+            image:
+              repository: alpine/kubectl
+              tag: 1.36.2
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                trap 'echo "Removing label from $NODE_NAME"; kubectl label nodes "$NODE_NAME" egress-gateway-gatus- --overwrite; exit 0' SIGTERM SIGINT
+                echo "Removing label from other nodes"
+                kubectl label nodes -l egress-gateway-gatus=true egress-gateway-gatus- --overwrite
+                echo "Adding label to $NODE_NAME"
+                kubectl label nodes "$NODE_NAME" egress-gateway-gatus=true --overwrite
+                sleep infinity &
+                wait $!
+            env:
+              - name: NODE_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
+            resources:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
         pod:
           dnsConfig:
             options:

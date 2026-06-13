@@ -1,0 +1,81 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app headlamp
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: *app
+    namespace: flux-system
+  values:
+    replicaCount: 2
+
+    # Full feature surface for evaluation: SA bound to cluster-admin.
+    # Access is gated at the gateway (rfc1918 + Authentik forward-auth), so
+    # anyone who reaches the UI inherits this binding.
+    clusterRoleBinding:
+      create: true
+      clusterRoleName: cluster-admin
+
+    config:
+      # Plugins are copied here by the init containers below (shared emptyDir).
+      pluginsDir: /build/plugins
+
+    # Telemetry is opt-in and default-off; there is no separate "disable" flag.
+    # metrics-enabled uses a Prometheus *pull* exporter on :4466/metrics only.
+    # tracing-enabled stays false, so the otlp-endpoint default is never used
+    # and nothing is exported off-cluster. Headlamp has no usage analytics.
+    extraArgs:
+      - "--metrics-enabled=true"
+
+    # Plugin manager sidecar (npm-based) has been flaky upstream; instead we
+    # bake pinned plugin images in via init containers that copy into the
+    # shared plugins volume. NOTE: the Prometheus plugin is not published as a
+    # container image, so it is intentionally omitted here.
+    pluginsManager:
+      enabled: false
+
+    initContainers:
+      - name: headlamp-plugin-flux
+        image: ghcr.io/headlamp-k8s/headlamp-plugin-flux:v0.6.0
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - -c
+          - mkdir -p /build/plugins && cp -r /plugins/* /build/plugins/ && chown -R 100:101 /build
+        securityContext:
+          runAsNonRoot: false
+          privileged: false
+          runAsUser: 0
+          runAsGroup: 0
+        volumeMounts:
+          - mountPath: /build/plugins
+            name: headlamp-plugins
+      - name: headlamp-plugin-cert-manager
+        image: ghcr.io/headlamp-k8s/headlamp-plugin-cert-manager:v0.1.0
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - -c
+          - cp -r /plugins/* /build/plugins/ && chown -R 100:101 /build
+        securityContext:
+          runAsNonRoot: false
+          privileged: false
+          runAsUser: 0
+          runAsGroup: 0
+        volumeMounts:
+          - mountPath: /build/plugins
+            name: headlamp-plugins
+
+    persistentVolumeClaim:
+      enabled: false
+
+    volumeMounts:
+      - mountPath: /build/plugins
+        name: headlamp-plugins
+
+    volumes:
+      - name: headlamp-plugins
+        emptyDir: {}

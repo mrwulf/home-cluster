@@ -123,10 +123,10 @@ endpoints:
       hide-url: true
   - name: VPS Tunnel Server Endpoint
     group: external
-    url: "tcp://ingress.${SECRET_DOMAIN}:8080"
+    url: "http://vps-direct.${SECRET_DOMAIN}:7500"
     interval: 1m
     conditions:
-      - "[CONNECTED] == true"
+      - "[STATUS] == 401"
     alerts: *alerts
     ui:
       hide-hostname: true
@@ -137,6 +137,36 @@ endpoints:
     interval: 2m
     conditions:
       - "[STATUS] < 500"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: SMTP Relay
+    group: services
+    url: "tcp://smtp-relay.system.svc.cluster.local:2525"
+    interval: 1m
+    conditions:
+      - "[CONNECTED] == true"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: LDAP Outpost
+    group: services
+    url: "tcp://ak-outpost-ldap.auth.svc.cluster.local:389"
+    interval: 1m
+    conditions:
+      - "[CONNECTED] == true"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: Ollama
+    group: services
+    url: "http://ollama.ai.svc.cluster.local:11434/api/version"
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
     alerts: *alerts
     ui:
       hide-hostname: true

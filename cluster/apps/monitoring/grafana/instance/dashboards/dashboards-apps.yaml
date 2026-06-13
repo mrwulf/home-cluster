@@ -1,0 +1,155 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cert-manager
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cloudflared
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  # renovate: depName=17457
+  url: https://grafana.com/api/dashboards/17457/revisions/6/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: external-dns
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  # renovate: depName=15038
+  url: https://grafana.com/api/dashboards/15038/revisions/3/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: external-secrets
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  url: https://raw.githubusercontent.com/external-secrets/external-secrets/main/docs/snippets/dashboard.json
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: minio
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  # renovate: depName=13502
+  url: https://grafana.com/api/dashboards/13502/revisions/19/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: spegel
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  url: https://raw.githubusercontent.com/spegel-org/spegel/v0.7.1/charts/spegel/monitoring/grafana-dashboard.json
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: volsync
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  # renovate: depName=21356
+  url: https://grafana.com/api/dashboards/21356/revisions/3/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: traefik
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: traefik
+  # renovate: depName=17346
+  url: https://grafana.com/api/dashboards/17346/revisions/9/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cloudnative-pg
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: postgres
+  # renovate: depName=20417
+  url: https://grafana.com/api/dashboards/20417/revisions/4/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: dragonfly
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: dragonfly
+  # renovate: depName=21444
+  url: https://grafana.com/api/dashboards/21444/revisions/1/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: vector
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: vector
+  # renovate: depName=17045
+  url: https://grafana.com/api/dashboards/17045/revisions/1/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus

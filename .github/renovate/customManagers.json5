@@ -13,6 +13,9 @@
         // # renovate: depName=kubernetes/kubernetes datasource=github-releases
         // version: 1.29.1
         "depName=(?<depName>\\S+) datasource=(?<datasource>\\S+)\\n.+ (?<currentValue>(v|\\d)\\S+)",
+        // # renovate: depName=pocket-id/pocket-id datasource=github-releases
+        // image: ghcr.io/pocket-id/pocket-id:v2.8.0
+        "depName=(?<depName>\\S+) datasource=(?<datasource>\\S+)\\n.+:(?<currentValue>(v|\\d)\\S+)",
         // # renovate: depName=rancher/system-upgrade-controller datasource=github-releases
         // https://github.com/rancher/system-upgrade-controller/releases/download/v0.13.2/crd.yaml
         "depName=(?<depName>\\S+) datasource=(?<datasource>\\S+)\\n.+/(?<currentValue>(v|\\d)[^/]+)",
@@ -32,7 +35,7 @@
       description: ["Process OS image versions in Terraform/OpenTofu files"],
       fileMatch: ["(^|/)cluster/.+\\.tf$"],
       matchStrings: [
-        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s*\\n\\s*image\\s*=\\s*\"\\S+-(?<currentValue>[^\"]+)\"",
+        '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s*\\n\\s*image\\s*=\\s*"\\S+-(?<currentValue>[^"]+)"',
       ],
     },
   ],

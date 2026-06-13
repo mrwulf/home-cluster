@@ -24,7 +24,7 @@ spec:
           main:
             image:
               repository: johannesjo/super-productivity
-              tag: v18.9.1
+              tag: v18.10.0
             resources:
               requests:
                 cpu: 10m
@@ -43,8 +43,8 @@ spec:
         containers:
           main:
             image:
-              repository: iari/supersync
-              tag: latest
+              repository: ghcr.io/warreth/super-sync-server
+              tag: v18.9.1
             env:
               - name: NODE_ENV
                 value: production
@@ -106,8 +106,6 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
-          gatus.io/endpoint: |
-            group: external
         parentRefs:
           - name: external-gateway
             namespace: networking
@@ -121,8 +119,6 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
-          gatus.io/endpoint: |
-            group: external
         parentRefs:
           - name: external-gateway
             namespace: networking

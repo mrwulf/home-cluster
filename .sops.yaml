@@ -7,6 +7,10 @@ creation_rules:
   - path_regex: talos/.*\.ya?ml$
     age: >-
       age10ls774hqamu0vgl65vwxrfu2tqm6h7p7pj9k6gagcpluxllypfwsk3hqzm
+  - path_regex: .*/users\.sops\.ya?ml$
+    encrypted_regex: "^(value)$"
+    age: >-
+      age10ls774hqamu0vgl65vwxrfu2tqm6h7p7pj9k6gagcpluxllypfwsk3hqzm
   - path_regex: .*\.ya?ml$
     encrypted_regex: "^(data|stringData)$"
     age: >-

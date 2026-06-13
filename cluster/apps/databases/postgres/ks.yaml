@@ -100,4 +100,5 @@ spec:
       APP_GID: "5050"
       VOLSYNC_CLAIM: pgadmin-config
       VOLSYNC_CAPACITY: 2Gi
-      VOLSYNC_START_MINUTE: "44"
+      VOLSYNC_NFS_START_MINUTE: "27"
+      VOLSYNC_B2_START_MINUTE: "52"

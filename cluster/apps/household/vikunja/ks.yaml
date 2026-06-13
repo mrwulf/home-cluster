@@ -28,4 +28,5 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: vikunja-files-pvc
       VOLSYNC_CAPACITY: 10Gi
-      VOLSYNC_START_MINUTE: "33"
+      VOLSYNC_NFS_START_MINUTE: "48"
+      VOLSYNC_B2_START_MINUTE: "13"

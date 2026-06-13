@@ -1,0 +1,104 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: node-exporter-full
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  # renovate: depName=1860
+  url: https://grafana.com/api/dashboards/1860/revisions/37/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: k8s-system-api-server
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: kubernetes
+  # renovate: depName=15761
+  url: https://grafana.com/api/dashboards/15761/revisions/17/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: k8s-views-global
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: kubernetes
+  # renovate: depName=15757
+  url: https://grafana.com/api/dashboards/15757/revisions/42/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: k8s-views-nodes
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: kubernetes
+  # renovate: depName=15759
+  url: https://grafana.com/api/dashboards/15759/revisions/32/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: k8s-views-namespaces
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: kubernetes
+  # renovate: depName=15758
+  url: https://grafana.com/api/dashboards/15758/revisions/38/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: k8s-views-pods
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: kubernetes
+  # renovate: depName=15760
+  url: https://grafana.com/api/dashboards/15760/revisions/32/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: k8s-volumes
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: kubernetes
+  # renovate: depName=11454
+  url: https://grafana.com/api/dashboards/11454/revisions/14/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
