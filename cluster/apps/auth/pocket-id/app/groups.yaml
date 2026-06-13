@@ -7,3 +7,14 @@ spec:
   users:
     userRefs:
       - name: brandon
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: household-users
+spec:
+  users:
+    userRefs:
+      - name: brandon
+      - name: chelsea
+      - name: emerald

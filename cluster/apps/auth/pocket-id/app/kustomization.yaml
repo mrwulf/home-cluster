@@ -6,6 +6,6 @@ resources:
   - ./secret.sops.yaml
   - ./httproute.yaml
   - ./clusterresourcebinding.yaml
-  - ./users.yaml
+  - ./users.sops.yaml
   - ./groups.yaml
   - ./oidc-clients.yaml
