@@ -44,6 +44,10 @@ spec:
               key: DATABASE_URL
         fileBackend: database
         appUrl: "https://id.${SECRET_DOMAIN}"
+        emailNotifications:
+          verification: true
+          oneTimeAccessAsAdmin: true
+          oneTimeAccessAsUnauthenticated: true
         smtp:
           host: smtp-relay.system.svc.cluster.local
           port: 2525
