@@ -82,7 +82,7 @@ spec:
           node-labeler:
             image:
               repository: alpine/kubectl
-              tag: 1.36.1
+              tag: 1.36.2
             command: ["/bin/sh", "-c"]
             args:
               - |
