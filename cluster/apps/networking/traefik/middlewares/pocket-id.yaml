@@ -5,10 +5,9 @@ metadata:
   name: traefik-middleware-pocket-id-forward-auth
 spec:
   forwardAuth:
-    address: http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth
+    address: http://oauth2-proxy.auth.svc.cluster.local:4180/
     trustForwardHeader: true
-    authSignIn: https://oauth.${SECRET_DOMAIN}/oauth2/start?rd={url}
     authResponseHeaders:
-      - X-Auth-User
-      - X-Auth-Email
+      - X-Auth-Request-User
+      - X-Auth-Request-Email
       - Authorization

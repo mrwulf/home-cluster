@@ -11,4 +11,3 @@ resources:
   - rate-limit.yaml
   - stripprefix-api.yaml
   - pocket-id.yaml
-

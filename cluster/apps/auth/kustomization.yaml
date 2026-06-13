@@ -6,4 +6,3 @@ resources:
   - pocket-id/ks.yaml
   - oauth2-proxy/ks.yaml
   - whoami/ks.yaml
-

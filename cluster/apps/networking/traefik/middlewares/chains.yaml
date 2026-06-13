@@ -82,4 +82,3 @@ spec:
       - name: networking-traefik-middleware-cloudflare-tunnel@kubernetescrd
       - name: networking-traefik-middleware-compress@kubernetescrd
       - name: networking-traefik-middleware-pocket-id-forward-auth@kubernetescrd
-
