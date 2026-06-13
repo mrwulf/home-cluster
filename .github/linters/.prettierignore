@@ -1,2 +1,4 @@
 *.sops.*
 gotk-components.yaml
+../../talos/clusterconfig/
+**/talos/clusterconfig/**
