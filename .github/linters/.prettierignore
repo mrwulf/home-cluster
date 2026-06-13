@@ -5,3 +5,5 @@ gotk-components.yaml
 **/.terraform/**
 **/.terraform.lock.hcl
 **/*.sops.yaml
+**/*.tfstate
+**/*.tfstate.backup
