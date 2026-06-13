@@ -76,7 +76,7 @@ spec:
         annotations:
           gatus.io/enabled: "true"
         parentRefs:
-          - name: external-gateway
+          - name: external-direct-gateway
             namespace: networking
         hostnames:
           - "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
@@ -86,7 +86,7 @@ spec:
                 extensionRef:
                   group: traefik.io
                   kind: Middleware
-                  name: traefik-middleware-chain-no-auth
+                  name: traefik-middleware-chain-direct
             backendRefs:
               - identifier: main
                 port: http
