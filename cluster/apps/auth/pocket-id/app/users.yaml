@@ -1,0 +1,15 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUser
+metadata:
+  name: brandon
+spec:
+  admin: true
+  email:
+    value: brandon@${EMAIL_DOMAIN}
+  firstName:
+    value: Brandon
+  lastName:
+    value: Wulf
+  username:
+    value: brandon

@@ -6,3 +6,4 @@ resources:
   - ./secret.sops.yaml
   - ./httproute.yaml
   - ./clusterresourcebinding.yaml
+  - ./users.yaml

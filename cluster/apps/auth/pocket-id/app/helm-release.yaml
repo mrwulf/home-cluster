@@ -44,6 +44,11 @@ spec:
               key: DATABASE_URL
         fileBackend: database
         appUrl: "https://id.${SECRET_DOMAIN}"
+        smtp:
+          host: smtp-relay.system.svc.cluster.local
+          port: 2525
+          from: pocket-id@${SECRET_DOMAIN}
+          tls: none
         persistence:
           enabled: false
         resources:
