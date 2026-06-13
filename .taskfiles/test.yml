@@ -13,12 +13,12 @@ tasks:
 
   lint:all:
     desc: Run all linters
-    cmds:
-      - task: lint:markdown
-      - task: lint:yaml
-      - task: lint:kubernetes
-      - task: lint:tofu
-      - task: lint:format
+    deps:
+      - lint:markdown
+      - lint:yaml
+      - lint:kubernetes
+      - lint:tofu
+      - lint:format
 
   lint:markdown:
     desc: Lint Markdown files
