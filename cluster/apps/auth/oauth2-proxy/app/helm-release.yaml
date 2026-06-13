@@ -39,6 +39,8 @@ spec:
                 value: "*"
               - name: OAUTH2_PROXY_SKIP_PROVIDER_BUTTON
                 value: "true"
+              - name: OAUTH2_PROXY_REVERSE_PROXY
+                value: "true"
             envFrom:
               - secretRef:
                   name: oauth2-proxy-secret
