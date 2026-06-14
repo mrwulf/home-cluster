@@ -50,7 +50,7 @@ spec:
               - name: OAUTH_MERGE_ACCOUNTS_BY_EMAIL
                 value: "true"
               - name: OAUTH_PROVIDER_NAME
-                value: "Pocket ID"
+                value: "Home PocketID"
               - name: OAUTH_SCOPES
                 value: "openid profile email groups"
               - name: ENABLE_OAUTH_ROLE_MANAGEMENT

@@ -51,9 +51,9 @@ spec:
                     "APPS": [
                       {
                         "provider_id": "pocketid",
-                        "name": "Pocket ID",
-                        "client_id": "${PAPERLESS_OIDC_CLIENT_ID}",
-                        "secret": "${PAPERLESS_OIDC_CLIENT_SECRET}",
+                        "name": "Home PocketID",
+                        "client_id": "$${PAPERLESS_OIDC_CLIENT_ID}",
+                        "secret": "$${PAPERLESS_OIDC_CLIENT_SECRET}",
                         "settings": {
                           "server_url": "https://id.${SECRET_DOMAIN}"
                         }
