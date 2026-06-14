@@ -12,6 +12,10 @@ spec:
   values:
     replicaCount: 1
 
+    env:
+      - name: OIDC_USE_PKCE
+        value: "true"
+
     # Full feature surface for evaluation: SA bound to cluster-admin.
     # Access is gated at the gateway (rfc1918 + Authentik forward-auth), so
     # anyone who reaches the UI inherits this binding.
