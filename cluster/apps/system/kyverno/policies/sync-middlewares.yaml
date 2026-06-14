@@ -82,6 +82,7 @@ spec:
                 - flux-system
                 - household
                 - media
+                - monitoring
                 - other
                 - vaultwarden
       generate:
