@@ -29,16 +29,18 @@ spec:
           name: headlamp-oidc-credentials
         usePKCE: true
 
+    env:
+      - name: OIDC_USE_PKCE
+        value: "true"
+      - name: OIDC_SCOPES
+        value: "openid,profile,email"
+
     # Telemetry is opt-in and default-off; there is no separate "disable" flag.
     # metrics-enabled uses a Prometheus *pull* exporter on :4466/metrics only.
     # tracing-enabled stays false, so the otlp-endpoint default is never used
     # and nothing is exported off-cluster. Headlamp has no usage analytics.
     extraArgs:
       - "--metrics-enabled=true"
-      - "-oidc-client-id=$(OIDC_CLIENT_ID)"
-      - "-oidc-client-secret=$(OIDC_CLIENT_SECRET)"
-      - "-oidc-idp-issuer-url=$(OIDC_ISSUER_URL)"
-      - "-oidc-use-pkce=true"
 
     # Plugin manager sidecar (npm-based) has been flaky upstream; instead we
     # bake pinned plugin images in via init containers that copy into the
