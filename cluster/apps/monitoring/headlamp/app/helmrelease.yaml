@@ -10,14 +10,21 @@ spec:
     name: *app
     namespace: flux-system
   values:
-    replicaCount: 2
+    replicaCount: 1
+
+    oidc:
+      secret:
+        create: false
+      externalSecret:
+        enabled: true
+        name: headlamp-oidc-credentials
 
     # Full feature surface for evaluation: SA bound to cluster-admin.
     # Access is gated at the gateway (rfc1918 + Authentik forward-auth), so
     # anyone who reaches the UI inherits this binding.
-    clusterRoleBinding:
-      create: true
-      clusterRoleName: cluster-admin
+    # clusterRoleBinding:
+    #   create: true
+    #   clusterRoleName: cluster-admin
 
     config:
       # Plugins are copied here by the init containers below (shared emptyDir).

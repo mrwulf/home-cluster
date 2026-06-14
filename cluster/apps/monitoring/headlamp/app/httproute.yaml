@@ -24,7 +24,8 @@ spec:
           extensionRef:
             group: traefik.io
             kind: Middleware
-            name: traefik-middleware-chain-authentik
+            name: traefik-middleware-chain-internal-no-auth
+
       backendRefs:
         - name: headlamp
           port: 80

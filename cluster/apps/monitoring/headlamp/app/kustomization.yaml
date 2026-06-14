@@ -5,3 +5,4 @@ resources:
   - httproute.yaml
   - servicemonitor.yaml
   - dashboard.yaml
+  - oidc-client.yaml
