@@ -23,7 +23,7 @@ spec:
             env:
               - name: OAUTH2_PROXY_PROVIDER
                 value: oidc
-              - name: OAUTH2_PROXY_UPSTREAM
+              - name: OAUTH2_PROXY_UPSTREAMS
                 value: static://202
               - name: OAUTH2_PROXY_HTTP_ADDRESS
                 value: 0.0.0.0:4180
