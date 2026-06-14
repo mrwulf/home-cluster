@@ -32,8 +32,8 @@ spec:
             command: ["/bin/sh", "-c"]
             args:
               - |
-                sed -e "s|VIKUNJA_CLIENT_ID_PLACEHOLDER|${VIKUNJA_AUTH_OPENID_PROVIDERS_POCKETID_CLIENTID}|g" \
-                    -e "s|VIKUNJA_CLIENT_SECRET_PLACEHOLDER|${VIKUNJA_AUTH_OPENID_PROVIDERS_POCKETID_CLIENTSECRET}|g" \
+                sed -e "s|VIKUNJA_CLIENT_ID_PLACEHOLDER|$VIKUNJA_AUTH_OPENID_PROVIDERS_POCKETID_CLIENTID|g" \
+                    -e "s|VIKUNJA_CLIENT_SECRET_PLACEHOLDER|$VIKUNJA_AUTH_OPENID_PROVIDERS_POCKETID_CLIENTSECRET|g" \
                     /etc/vikunja-template/config.yml > /etc/vikunja/config.yml
             envFrom:
               - secretRef:
@@ -64,9 +64,6 @@ spec:
             image:
               repository: vikunja/api
               tag: 0.22.1
-            envFrom:
-              - secretRef:
-                  name: vikunja-oidc-credentials
             env:
               - name: VIKUNJA_SERVICE_TIMEZONE
                 value: ${TIMEZONE}
