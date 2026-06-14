@@ -5,6 +5,7 @@ metadata:
   name: outline
 spec:
   name: Outline
+  launchUrl: https://docs.${SECRET_DOMAIN}/
   callbackUrls:
     - https://docs.${SECRET_DOMAIN}/auth/oidc.callback
   logoutCallbackUrls:

@@ -5,6 +5,7 @@ metadata:
   name: minio
 spec:
   name: MinIO
+  launchUrl: https://minio.home.${SECRET_DOMAIN}/
   callbackUrls:
     - https://minio.home.${SECRET_DOMAIN}/oauth_callback
   logoutCallbackUrls:

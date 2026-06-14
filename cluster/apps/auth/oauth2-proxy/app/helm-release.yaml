@@ -45,6 +45,8 @@ spec:
                 value: "true"
               - name: OAUTH2_PROXY_SET_AUTHORIZATION_HEADER
                 value: "true"
+              - name: OAUTH2_PROXY_CODE_CHALLENGE_METHOD
+                value: "S256"
             envFrom:
               - secretRef:
                   name: oauth2-proxy-secret

@@ -5,6 +5,7 @@ metadata:
   name: forgejo
 spec:
   name: Forgejo
+  launchUrl: https://git.home.${SECRET_DOMAIN}/
   callbackUrls:
     - https://git.home.${SECRET_DOMAIN}/user/oauth2/pocket-id/callback
   logoutCallbackUrls:

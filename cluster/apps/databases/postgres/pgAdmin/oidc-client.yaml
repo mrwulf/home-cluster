@@ -5,6 +5,7 @@ metadata:
   name: pgadmin
 spec:
   name: pgAdmin
+  launchUrl: https://pgadmin.home.${SECRET_DOMAIN}/
   callbackUrls:
     - https://pgadmin.home.${SECRET_DOMAIN}/oauth2/authorize
   logoutCallbackUrls:
@@ -12,6 +13,7 @@ spec:
   allowedUserGroups:
     - name: admin
       namespace: auth
+  pkceEnabled: true
   secret:
     name: pgadmin-oidc-credentials
     keys:

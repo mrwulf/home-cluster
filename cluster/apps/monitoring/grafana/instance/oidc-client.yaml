@@ -5,6 +5,7 @@ metadata:
   name: grafana
 spec:
   name: Grafana
+  launchUrl: https://grafana.home.${SECRET_DOMAIN}/
   callbackUrls:
     - https://grafana.home.${SECRET_DOMAIN}/login/generic_oauth
   logoutCallbackUrls:
@@ -12,6 +13,7 @@ spec:
   allowedUserGroups:
     - name: admin
       namespace: auth
+  pkceEnabled: true
   secret:
     name: grafana-oidc-credentials
     keys:

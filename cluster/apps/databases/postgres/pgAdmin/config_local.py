@@ -14,6 +14,8 @@ OAUTH2_CONFIG = [{
     'OAUTH2_USERINFO_ENDPOINT' : 'https://id.${SECRET_DOMAIN}/api/oidc/userinfo',
     'OAUTH2_SERVER_METADATA_URL' : 'https://id.${SECRET_DOMAIN}/.well-known/openid-configuration',
     'OAUTH2_SCOPE' : 'openid email profile',
+    'OAUTH2_CHALLENGE_METHOD' : 'S256',
+    'OAUTH2_RESPONSE_TYPE' : 'code',
     'OAUTH2_ICON' : 'fa-openid',
     'OAUTH2_BUTTON_COLOR' : '#2db1fd'
 }]

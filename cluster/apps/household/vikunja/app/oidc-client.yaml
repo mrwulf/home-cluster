@@ -5,6 +5,7 @@ metadata:
   name: vikunja
 spec:
   name: Vikunja
+  launchUrl: https://lists.${SECRET_DOMAIN}/
   callbackUrls:
     - https://lists.${SECRET_DOMAIN}/auth/openid/pocketid
   logoutCallbackUrls:
