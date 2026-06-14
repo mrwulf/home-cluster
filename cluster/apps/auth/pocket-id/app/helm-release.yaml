@@ -26,10 +26,27 @@ spec:
         requests:
           cpu: 10m
           memory: 64Mi
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+      prometheusRule:
+        enabled: true
+      dashboard:
+        enabled: true
+        grafanaDashboard:
+          enabled: true
+          instanceSelector:
+            matchLabels:
+              dashboards: grafana
     instance:
       enabled: true
       name: pocket-id
+      serviceMonitor:
+        enabled: true
       spec:
+        ui:
+          appName: "Home PocketID"
         # renovate: depName=pocket-id/pocket-id datasource=github-releases
         image: ghcr.io/pocket-id/pocket-id:v2.8.0
         encryptionKey:
@@ -44,6 +61,12 @@ spec:
               key: DATABASE_URL
         fileBackend: database
         appUrl: "https://id.${SECRET_DOMAIN}"
+        geoip:
+          maxmindLicenseKey:
+            valueFrom:
+              secretKeyRef:
+                name: pocket-id-secret
+                key: MAXMIND_LICENSE_KEY
         emailNotifications:
           verification: true
           oneTimeAccessAsAdmin: true
@@ -55,6 +78,8 @@ spec:
           tls: none
         persistence:
           enabled: false
+        metrics:
+          enabled: true
         resources:
           limits:
             memory: 256Mi
