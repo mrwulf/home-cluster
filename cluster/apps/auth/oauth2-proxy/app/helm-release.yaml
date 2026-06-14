@@ -47,6 +47,8 @@ spec:
                 value: "true"
               - name: OAUTH2_PROXY_CODE_CHALLENGE_METHOD
                 value: "S256"
+              - name: OAUTH2_PROXY_SCOPE
+                value: "openid email profile groups"
             envFrom:
               - secretRef:
                   name: oauth2-proxy-secret
