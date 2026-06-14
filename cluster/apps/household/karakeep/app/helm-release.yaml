@@ -60,6 +60,7 @@ spec:
               OLLAMA_BASE_URL: "http://ollama.ai.svc.cluster.local:11434"
               OLLAMA_KEEP_ALIVE: 5m
               OAUTH_PROVIDER_NAME: "Pocket ID"
+              OAUTH_ALLOW_DANGEROUS_EMAIL_ACCOUNT_LINKING: true
             envFrom:
               - secretRef:
                   name: *app
