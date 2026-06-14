@@ -33,7 +33,6 @@ spec:
       create: true
       clusterRoleName: cluster-admin
 
-
     config:
       # Plugins are copied here by the init containers below (shared emptyDir).
       pluginsDir: /build/plugins
