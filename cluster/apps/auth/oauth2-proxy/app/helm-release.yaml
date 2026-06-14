@@ -41,6 +41,10 @@ spec:
                 value: "true"
               - name: OAUTH2_PROXY_REVERSE_PROXY
                 value: "true"
+              - name: OAUTH2_PROXY_SET_XAUTHREQUEST
+                value: "true"
+              - name: OAUTH2_PROXY_SET_AUTHORIZATION_HEADER
+                value: "true"
             envFrom:
               - secretRef:
                   name: oauth2-proxy-secret
