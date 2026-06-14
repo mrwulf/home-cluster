@@ -42,8 +42,6 @@ spec:
     instance:
       enabled: true
       name: pocket-id
-      serviceMonitor:
-        enabled: true
       spec:
         ui:
           appName: "Home PocketID"
