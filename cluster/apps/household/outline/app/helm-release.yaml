@@ -49,7 +49,7 @@ spec:
               AWS_S3_UPLOAD_MAX_SIZE: "26214400"
               ENABLE_UPDATES: "false"
               OIDC_AUTH_URI: "https://id.${SECRET_DOMAIN}/authorize"
-              OIDC_DISPLAY_NAME: "Pocket ID"
+              OIDC_DISPLAY_NAME: "Home PocketID"
               OIDC_SCOPES: "openid profile email offline_access"
               OIDC_TOKEN_URI: "https://id.${SECRET_DOMAIN}/api/oidc/token"
               OIDC_USERINFO_URI: "https://id.${SECRET_DOMAIN}/api/oidc/userinfo"

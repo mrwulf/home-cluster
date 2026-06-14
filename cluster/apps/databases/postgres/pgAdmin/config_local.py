@@ -5,7 +5,7 @@ OAUTH2_AUTO_CREATE_USER = True
 MASTER_PASSWORD_REQUIRED = False
 OAUTH2_CONFIG = [{
     'OAUTH2_NAME' : 'pocket-id',
-    'OAUTH2_DISPLAY_NAME' : 'Pocket ID',
+    'OAUTH2_DISPLAY_NAME' : 'Home PocketID',
     'OAUTH2_CLIENT_ID' : os.environ.get('PGADMIN_OAUTH_CLIENT_ID'),
     'OAUTH2_CLIENT_SECRET' : os.environ.get('PGADMIN_OAUTH_SECRET'),
     'OAUTH2_TOKEN_URL' : 'https://id.${SECRET_DOMAIN}/api/oidc/token',

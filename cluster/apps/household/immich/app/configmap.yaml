@@ -12,9 +12,9 @@ data:
   REDIS_HOSTNAME: dragonfly.databases.svc.cluster.local
   REDIS_DBINDEX: "4"
   OAUTH_ENABLED: "true"
-  OAUTH_ISSUER_URL: "https://auth.${SECRET_DOMAIN}/application/o/immich/.well-known/openid-configuration"
+  OAUTH_ISSUER_URL: "https://id.${SECRET_DOMAIN}/.well-known/openid-configuration"
   OAUTH_AUTO_REGISTER: "true"
-  OAUTH_BUTTON_TEXT: "Login with Authentik"
+  OAUTH_BUTTON_TEXT: "Login with Home PocketID"
   PUBLIC_IMMICH_SERVER_URL: "https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
   IMMICH_PORT: "3001"
   TZ: "${TIMEZONE}"

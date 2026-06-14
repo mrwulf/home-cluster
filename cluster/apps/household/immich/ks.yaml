@@ -13,7 +13,7 @@ spec:
   dependsOn:
     - name: postgres-cluster
     - name: dragonfly-cluster
-    - name: authentik
+    - name: pocket-id
   path: ./cluster/apps/household/immich/app
   prune: true
   sourceRef:

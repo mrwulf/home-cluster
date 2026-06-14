@@ -54,7 +54,7 @@ spec:
               MINIO_IDENTITY_OPENID_SCOPES: "openid,profile,email"
               MINIO_IDENTITY_OPENID_REDIRECT_URI: "https://minio.home.${SECRET_DOMAIN}/oauth_callback"
               MINIO_IDENTITY_OPENID_ROLE_POLICY: "consoleAdmin"
-              MINIO_IDENTITY_OPENID_DISPLAY_NAME: "Pocket ID"
+              MINIO_IDENTITY_OPENID_DISPLAY_NAME: "Home PocketID"
             envFrom:
               - secretRef:
                   name: minio-secret
