@@ -11,6 +11,7 @@ spec:
   allowedUserGroups:
     - name: admin
       namespace: auth
+  pkceEnabled: true
   secret:
     name: headlamp-oidc-credentials
     keys:

@@ -12,13 +12,6 @@ spec:
   values:
     replicaCount: 1
 
-    oidc:
-      secret:
-        create: false
-      externalSecret:
-        enabled: true
-        name: headlamp-oidc-credentials
-
     # Full feature surface for evaluation: SA bound to cluster-admin.
     # Access is gated at the gateway (rfc1918 + Authentik forward-auth), so
     # anyone who reaches the UI inherits this binding.
@@ -29,6 +22,13 @@ spec:
     config:
       # Plugins are copied here by the init containers below (shared emptyDir).
       pluginsDir: /build/plugins
+      oidc:
+        secret:
+          create: false
+        externalSecret:
+          enabled: true
+          name: headlamp-oidc-credentials
+        usePKCE: true
 
     # Telemetry is opt-in and default-off; there is no separate "disable" flag.
     # metrics-enabled uses a Prometheus *pull* exporter on :4466/metrics only.
