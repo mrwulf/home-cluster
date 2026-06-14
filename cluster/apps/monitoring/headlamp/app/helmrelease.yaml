@@ -28,7 +28,7 @@ spec:
           enabled: false
         clientID: "287821e5-f31e-4073-9b2c-c30775e9fee6"
         issuerURL: "https://id.${SECRET_DOMAIN}"
-        scopes: "openid,profile,email"
+        scopes: "openid,profile,email,groups"
         usePKCE: true
       extraArgs:
         - "--metrics-enabled=true"
