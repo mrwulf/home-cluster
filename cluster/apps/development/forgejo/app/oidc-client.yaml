@@ -1,0 +1,19 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: forgejo
+spec:
+  name: Forgejo
+  callbackUrls:
+    - https://git.home.${SECRET_DOMAIN}/user/oauth2/pocket-id/callback
+  logoutCallbackUrls:
+    - https://git.home.${SECRET_DOMAIN}/
+  allowedUserGroups:
+    - name: admin
+      namespace: auth
+  secret:
+    name: forgejo-oidc-credentials
+    keys:
+      clientID: key
+      clientSecret: secret

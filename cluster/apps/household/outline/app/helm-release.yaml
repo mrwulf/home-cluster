@@ -39,6 +39,8 @@ spec:
             envFrom:
               - secretRef:
                   name: outline-secret
+              - secretRef:
+                  name: outline-oidc-credentials
             env:
               AWS_S3_ACL: private
               AWS_S3_FORCE_PATH_STYLE: "true"
@@ -46,14 +48,12 @@ spec:
               AWS_S3_UPLOAD_BUCKET_URL: "https://cdn.${SECRET_DOMAIN}"
               AWS_S3_UPLOAD_MAX_SIZE: "26214400"
               ENABLE_UPDATES: "false"
-              OIDC_AUTH_URI: "https://auth.${SECRET_DOMAIN}/application/o/authorize/"
-              OIDC_CLIENT_ID: "outline"
-              OIDC_CLIENT_SECRET: "${SECRET_OUTLINE_OAUTH_CLIENT_SECRET}"
-              OIDC_DISPLAY_NAME: Authentik
+              OIDC_AUTH_URI: "https://id.${SECRET_DOMAIN}/api/oidc/authorize"
+              OIDC_DISPLAY_NAME: "Pocket ID"
               OIDC_SCOPES: "openid profile email offline_access"
-              OIDC_TOKEN_URI: "https://auth.${SECRET_DOMAIN}/application/o/token/"
-              OIDC_USERINFO_URI: "https://auth.${SECRET_DOMAIN}/application/o/userinfo/"
-              OIDC_LOGOUT_URI: "https://auth.${SECRET_DOMAIN}/application/o/outline/end-session/"
+              OIDC_TOKEN_URI: "https://id.${SECRET_DOMAIN}/api/oidc/token"
+              OIDC_USERINFO_URI: "https://id.${SECRET_DOMAIN}/api/oidc/userinfo"
+              OIDC_LOGOUT_URI: "https://id.${SECRET_DOMAIN}/api/oidc/end-session"
               OIDC_USERNAME_CLAIM: email
               PORT: 8080
               REDIS_URL: redis://dragonfly.databases.svc.cluster.local:6379/6

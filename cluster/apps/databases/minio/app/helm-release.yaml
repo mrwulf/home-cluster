@@ -50,9 +50,15 @@ spec:
               MINIO_PROMETHEUS_AUTH_TYPE: public
               MINIO_BROWSER_REDIRECT_URL: "https://minio.home.${SECRET_DOMAIN}"
               MINIO_SERVER_URL: "https://cdn.${SECRET_DOMAIN}"
+              MINIO_IDENTITY_OPENID_CONFIG_URL: "https://id.${SECRET_DOMAIN}/.well-known/openid-configuration"
+              MINIO_IDENTITY_OPENID_SCOPES: "openid,profile,email"
+              MINIO_IDENTITY_OPENID_REDIRECT_URI: "https://minio.home.${SECRET_DOMAIN}/oauth_callback"
+              MINIO_IDENTITY_OPENID_ROLE_POLICY: "consoleAdmin"
             envFrom:
               - secretRef:
                   name: minio-secret
+              - secretRef:
+                  name: minio-oidc-credentials
             args: ["server", "/data", "--console-address", ":9001"]
             resources:
               requests:

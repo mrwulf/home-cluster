@@ -8,8 +8,10 @@ spec:
   clientID: a5c0b4d2-7e1a-4c9f-8d2b-6f8a3c9e1b7d
   callbackUrls:
     - https://box.home.${SECRET_DOMAIN}/api/v1/users/login/oidc/callback
+  logoutCallbackUrls:
+    - https://box.home.${SECRET_DOMAIN}/
   allowedUserGroups:
-    - name: household-users
+    - name: users
       namespace: auth
   secret:
     name: box-oidc-credentials

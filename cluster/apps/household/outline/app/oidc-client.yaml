@@ -1,0 +1,19 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: outline
+spec:
+  name: Outline
+  callbackUrls:
+    - https://docs.${SECRET_DOMAIN}/auth/oidc.callback
+  logoutCallbackUrls:
+    - https://docs.${SECRET_DOMAIN}/
+  allowedUserGroups:
+    - name: users
+      namespace: auth
+  secret:
+    name: outline-oidc-credentials
+    keys:
+      clientID: OIDC_CLIENT_ID
+      clientSecret: OIDC_CLIENT_SECRET

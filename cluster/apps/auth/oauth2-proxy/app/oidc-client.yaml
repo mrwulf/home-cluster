@@ -8,8 +8,11 @@ spec:
   clientID: c6c0b4d2-7e1a-4c9f-8d2b-6f8a3c9e1b7d
   callbackUrls:
     - https://oauth.${SECRET_DOMAIN}/oauth2/callback
+  logoutCallbackUrls:
+    - https://oauth.${SECRET_DOMAIN}/oauth2/sign_out
+    - https://oauth.${SECRET_DOMAIN}/
   allowedUserGroups:
-    - name: household-users
+    - name: users
       namespace: auth
   secret:
     name: oauth2-proxy-oidc-credentials

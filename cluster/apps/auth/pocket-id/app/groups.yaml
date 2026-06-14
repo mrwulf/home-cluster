@@ -2,7 +2,7 @@
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDUserGroup
 metadata:
-  name: k8s-admin
+  name: admin
 spec:
   users:
     userRefs:
@@ -11,7 +11,7 @@ spec:
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDUserGroup
 metadata:
-  name: household-users
+  name: users
 spec:
   users:
     userRefs:

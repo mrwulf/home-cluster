@@ -50,6 +50,9 @@ spec:
             image:
               repository: vikunja/api
               tag: 0.22.1
+            envFrom:
+              - secretRef:
+                  name: vikunja-oidc-credentials
             env:
               - name: VIKUNJA_SERVICE_TIMEZONE
                 value: ${TIMEZONE}

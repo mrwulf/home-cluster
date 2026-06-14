@@ -35,6 +35,8 @@ spec:
             envFrom:
               - secretRef:
                   name: pgadmin-secrets
+              - secretRef:
+                  name: pgadmin-oidc-credentials
             resources:
               requests:
                 cpu: 50m

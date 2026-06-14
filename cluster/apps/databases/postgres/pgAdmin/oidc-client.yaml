@@ -1,0 +1,19 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: pgadmin
+spec:
+  name: pgAdmin
+  callbackUrls:
+    - https://pgadmin.home.${SECRET_DOMAIN}/oauth2/authorize
+  logoutCallbackUrls:
+    - https://pgadmin.home.${SECRET_DOMAIN}/
+  allowedUserGroups:
+    - name: admin
+      namespace: auth
+  secret:
+    name: pgadmin-oidc-credentials
+    keys:
+      clientID: PGADMIN_OAUTH_CLIENT_ID
+      clientSecret: PGADMIN_OAUTH_SECRET

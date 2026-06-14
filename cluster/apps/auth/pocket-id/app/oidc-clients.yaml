@@ -12,4 +12,4 @@ spec:
     - http://localhost:8000/
     - http://localhost:18000/
   allowedUserGroups:
-    - name: k8s-admin
+    - name: admin
