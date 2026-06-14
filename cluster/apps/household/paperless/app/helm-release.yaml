@@ -103,7 +103,7 @@ spec:
               PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
               PAPERLESS_SOCIALACCOUNT_PROVIDERS_FILE: "/config/socialaccount_providers.json"
               PAPERLESS_SOCIAL_AUTO_SIGNUP: "true"
-              PAPERLESS_REDIRECT_LOGIN_TO_SSO: "true"
+              PAPERLESS_REDIRECT_LOGIN_TO_SSO: "false"
               PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: "true"
             envFrom:
               - secretRef:
