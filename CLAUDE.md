@@ -39,7 +39,7 @@ These apply to **every** change. Do not check anything in that violates them.
 | GitOps engine     | Flux                                                                                                                           |
 | CNI / LB          | Cilium (BPF, no kube-proxy; L2/BGP LB)                                                                                         |
 | Ingress           | Traefik via **Gateway API** (`internal-gateway` / `external-gateway` in `networking`)                                          |
-| Auth              | Authentik (OIDC for capable apps; Traefik forward-auth via embedded outpost otherwise)                                         |
+| Auth              | Pocket ID (OIDC for capable apps; Traefik forward-auth via oauth2-proxy otherwise)                                             |
 | Secrets           | SOPS+age (in-repo) and External Secrets Operator → Bitwarden (`ClusterSecretStore`)                                            |
 | Policy            | Kyverno                                                                                                                        |
 | Generic app chart | **bjw-s `app-template`** (OCI, pinned in [oci/app-template.yaml](cluster/flux/meta/repositories/oci/app-template.yaml))        |
@@ -97,13 +97,11 @@ talos/                       # talconfig.yaml, talsecret.sops.yaml
 ### Exposing a web UI (networking)
 
 - Create an `HTTPRoute` (Gateway API), `parentRefs` → `internal-gateway` (or `external-gateway`) in `networking`, hostname `*.home.${SECRET_DOMAIN}` for internal.
-- Attach Traefik middleware via `ExtensionRef` filters. `rfc1918-ips` restricts to LAN/VPN; `traefik-middleware-chain-authentik` adds Authentik forward-auth.
+- Attach Traefik middleware via `ExtensionRef` filters. `rfc1918-ips` restricts to LAN/VPN; `traefik-middleware-chain-pocket-id` adds Pocket ID forward-auth.
 - Add `gatus.io/enabled: "true"` so the route is picked up by Gatus uptime monitoring.
 - **Middleware availability:** Traefik resolves `ExtensionRef` middleware in the route's **own namespace**.
   Middlewares live in `networking` and are copied into other namespaces by the Kyverno policy [sync-middlewares.yaml](cluster/apps/system/kyverno/policies/sync-middlewares.yaml).
   If you reference a middleware in a namespace that doesn't yet receive it, add that namespace (or a new clone rule) to that policy.
-- **Authentik forward-auth has a manual step:** Authentik is not blueprint-managed here, so a forward-auth app requires creating a Proxy Provider + Application in the Authentik UI and binding it to the embedded outpost.
-  The repo manifests alone are not sufficient.
 
 ### Monitoring an app
 

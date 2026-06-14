@@ -50,7 +50,7 @@ spec:
           FORCE_TRUST_SERVER_CERT: true
         auth:
           ENABLE_AUTO_REGISTRATION: true
-          DISABLE_REGISTRATION: false # Set to true if you only want Authentik logins
+          DISABLE_REGISTRATION: true # Set to true if you only want Home PocketID logins
         security:
           INSTALL_LOCK: true
       oauth:

@@ -106,7 +106,7 @@ task test:flux:diff:all
 ## Components
 
 - [cilium](https://cilium.io) - CNI, kube-proxy replacement, and load balancer
-- [authentik](https://goauthentik.io) - IdP + SSO
+- [pocket-id](https://pocket-id.org) - IdP + SSO
 - [cert-manager](https://cert-manager.io/) - SSL certificates, with Cloudflare DNS challenge
 - [external-secrets](https://external-secrets.io) - syncs secrets from Bitwarden
 - [flux](https://toolkit.fluxcd.io/) - GitOps tool for deploying manifests from the `cluster` directory

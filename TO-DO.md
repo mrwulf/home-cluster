@@ -5,7 +5,6 @@
 - subgen (integrates with bazarr) - [generates subtitles with AI](https://github.com/McCloudS/subgen?tab=readme-ov-file#docker)
 - autobrr/autobrr- indexers faster
 - [ai generated subtitles](https://github.com/McCloudS/subgen)
-- [passkeys for authentik](https://docs.goauthentik.io/add-secure-apps/flows-stages/stages/authenticator_webauthn/)
 - dify.ai
 - [dawarich - google timeline replacement](https://dawarich.app/docs/intro)
 - [sdnext - image & video creation](https://github.com/vladmandic/sdnext)

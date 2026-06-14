@@ -14,7 +14,7 @@ spec:
     - "headlamp.home.${SECRET_DOMAIN}"
   rules:
     - filters:
-        # Network-level allow (RFC1918) first, then Authentik forward-auth.
+        # Network-level allow (RFC1918).
         - type: ExtensionRef
           extensionRef:
             group: traefik.io

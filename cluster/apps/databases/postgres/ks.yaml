@@ -81,7 +81,6 @@ spec:
   dependsOn:
     - name: postgres
     - name: volsync
-    - name: authentik
     - name: traefik-external
   components:
     - ../../../../templates/volsync/primary
