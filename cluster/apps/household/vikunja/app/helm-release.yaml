@@ -24,6 +24,20 @@ spec:
             options:
               - name: ndots
                 value: "1"
+        initContainers:
+          init-config:
+            image:
+              repository: alpine
+              tag: 3.19.1
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                sed -e "s|VIKUNJA_CLIENT_ID_PLACEHOLDER|${VIKUNJA_AUTH_OPENID_PROVIDERS_POCKETID_CLIENTID}|g" \
+                    -e "s|VIKUNJA_CLIENT_SECRET_PLACEHOLDER|${VIKUNJA_AUTH_OPENID_PROVIDERS_POCKETID_CLIENTSECRET}|g" \
+                    /etc/vikunja-template/config.yml > /etc/vikunja/config.yml
+            envFrom:
+              - secretRef:
+                  name: vikunja-oidc-credentials
         containers:
           main:
             image:
@@ -127,16 +141,24 @@ spec:
           main:
             api:
               - path: /app/vikunja/files
-      config:
+      config-template:
         type: custom
         volumeSpec:
           configMap:
             name: vikunja
         advancedMounts:
           main:
-            api:
-              - path: /etc/vikunja/config.yml
+            init-config:
+              - path: /etc/vikunja-template/config.yml
                 subPath: config.yml
+      config:
+        type: emptyDir
+        advancedMounts:
+          main:
+            init-config:
+              - path: /etc/vikunja
+            api:
+              - path: /etc/vikunja
       caddy-config:
         type: "custom"
         volumeSpec:
