@@ -25,18 +25,14 @@ spec:
         secret:
           create: false
         externalSecret:
-          enabled: true
-          name: headlamp-oidc-credentials
+          enabled: false
+        clientID: "287821e5-f31e-4073-9b2c-c30775e9fee6"
+        issuerURL: "https://id.${SECRET_DOMAIN}"
+        scopes: "openid,profile,email"
         usePKCE: true
       extraArgs:
         - "--metrics-enabled=true"
         - "-oidc-skip-tls-verify=true"
-
-    env:
-      - name: OIDC_USE_PKCE
-        value: "true"
-      - name: OIDC_SCOPES
-        value: "openid,profile,email"
 
     # Telemetry is opt-in and default-off; there is no separate "disable" flag.
     # metrics-enabled uses a Prometheus *pull* exporter on :4466/metrics only.

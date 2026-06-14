@@ -11,5 +11,6 @@ spec:
   callbackUrls:
     - http://localhost:8000/
     - http://localhost:18000/
+    - https://headlamp.home.${SECRET_DOMAIN}/oidc-callback
   allowedUserGroups:
     - name: admin
