@@ -28,7 +28,7 @@ spec:
           init-config:
             image:
               repository: alpine
-              tag: 3.19.9
+              tag: 3.24.0
             command: ["/bin/sh", "-c"]
             args:
               - |
