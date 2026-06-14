@@ -108,6 +108,8 @@ spec:
               metadata:
                 name: forgejo
                 namespace: development
+                annotations:
+                  reloader.stakater.com/auto: "true"
 
               spec:
                 template:

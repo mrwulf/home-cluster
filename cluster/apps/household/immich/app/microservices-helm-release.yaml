@@ -22,8 +22,7 @@ spec:
         rollingUpdate:
           unavailable: 1
         annotations:
-          configmap.reloader.stakater.com/reload: &configMap immich-configmap
-          secret.reloader.stakater.com/reload: &secret immich-secret
+          reloader.stakater.com/auto: "true"
         pod:
           enableServiceLinks: false
           topologySpreadConstraints:
@@ -45,9 +44,9 @@ spec:
               IMMICH_WORKERS_EXCLUDE: "api"
             envFrom:
               - configMapRef:
-                  name: *configMap
+                  name: immich-configmap
               - secretRef:
-                  name: *secret
+                  name: immich-secret
               - secretRef:
                   name: immich-oidc-credentials
             resources:

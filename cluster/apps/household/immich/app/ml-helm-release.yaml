@@ -21,8 +21,7 @@ spec:
         replicas: 1
         strategy: Recreate
         annotations:
-          configmap.reloader.stakater.com/reload: &configMap immich-configmap
-          secret.reloader.stakater.com/reload: &secret immich-secret
+          reloader.stakater.com/auto: "true"
         pod:
           topologySpreadConstraints:
             - maxSkew: 1
@@ -41,9 +40,9 @@ spec:
               IMMICH_PORT: &port 3003
             envFrom:
               - configMapRef:
-                  name: *configMap
+                  name: immich-configmap
               - secretRef:
-                  name: *secret
+                  name: immich-secret
             resources:
               requests:
                 cpu: 500m

@@ -17,6 +17,8 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          reloader.stakater.com/auto: "true"
         pod:
           securityContext:
             runAsNonRoot: true
