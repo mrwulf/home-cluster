@@ -21,7 +21,7 @@ spec:
       enabled: "true"
       name: "Pocket ID"
       scopes: "openid profile email offline_access"
-      auth_url: "https://id.${SECRET_DOMAIN}/api/oidc/authorize"
+      auth_url: "https://id.${SECRET_DOMAIN}/authorize"
       token_url: "https://id.${SECRET_DOMAIN}/api/oidc/token"
       api_url: "https://id.${SECRET_DOMAIN}/api/oidc/userinfo"
       allow_sign_up: "true"

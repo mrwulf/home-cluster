@@ -9,7 +9,7 @@ OAUTH2_CONFIG = [{
     'OAUTH2_CLIENT_ID' : os.environ.get('PGADMIN_OAUTH_CLIENT_ID'),
     'OAUTH2_CLIENT_SECRET' : os.environ.get('PGADMIN_OAUTH_SECRET'),
     'OAUTH2_TOKEN_URL' : 'https://id.${SECRET_DOMAIN}/api/oidc/token',
-    'OAUTH2_AUTHORIZATION_URL' : 'https://id.${SECRET_DOMAIN}/api/oidc/authorize',
+    'OAUTH2_AUTHORIZATION_URL' : 'https://id.${SECRET_DOMAIN}/authorize',
     'OAUTH2_API_BASE_URL' : 'https://id.${SECRET_DOMAIN}/',
     'OAUTH2_USERINFO_ENDPOINT' : 'https://id.${SECRET_DOMAIN}/api/oidc/userinfo',
     'OAUTH2_SERVER_METADATA_URL' : 'https://id.${SECRET_DOMAIN}/.well-known/openid-configuration',
