@@ -14,5 +14,6 @@ spec:
   secret:
     name: headlamp-oidc-credentials
     keys:
-      clientID: clientID
-      clientSecret: clientSecret
+      clientID: OIDC_CLIENT_ID
+      clientSecret: OIDC_CLIENT_SECRET
+      issuerUrl: OIDC_ISSUER_URL
