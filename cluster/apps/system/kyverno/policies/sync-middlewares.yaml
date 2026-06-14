@@ -67,7 +67,7 @@ spec:
         clone:
           namespace: networking
           name: traefik-middleware-chain-direct
-    - name: sync-chain-internal-no-auth
+    - name: sync-chain-internal-no-auth-v2
       match:
         any:
           - resources:
