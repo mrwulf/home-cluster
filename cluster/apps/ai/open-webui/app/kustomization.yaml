@@ -5,3 +5,4 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./helm-release.yaml
+  - ./oidc-client.yaml

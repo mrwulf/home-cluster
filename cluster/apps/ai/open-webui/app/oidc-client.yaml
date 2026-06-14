@@ -1,0 +1,19 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: open-webui
+spec:
+  name: Open WebUI
+  launchUrl: https://chat.${SECRET_DOMAIN}/
+  callbackUrls:
+    - https://chat.${SECRET_DOMAIN}/oauth/oidc/callback
+  allowedUserGroups:
+    - name: users
+      namespace: auth
+  secret:
+    name: openwebui-oidc-credentials
+    keys:
+      clientID: OAUTH_CLIENT_ID
+      clientSecret: OAUTH_CLIENT_SECRET
+      discoveryUrl: OPENID_PROVIDER_URL

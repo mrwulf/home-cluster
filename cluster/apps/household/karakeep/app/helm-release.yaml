@@ -59,9 +59,12 @@ spec:
               INFERENCE_JOB_TIMEOUT_SEC: 600 # 10 Minutes
               OLLAMA_BASE_URL: "http://ollama.ai.svc.cluster.local:11434"
               OLLAMA_KEEP_ALIVE: 5m
+              OAUTH_PROVIDER_NAME: "Pocket ID"
             envFrom:
               - secretRef:
                   name: *app
+              - secretRef:
+                  name: karakeep-oidc-credentials
             probes:
               liveness:
                 enabled: true

@@ -6,6 +6,8 @@ resources:
   - helm-release-tika.yaml
   - helm-release-gotenberg.yaml
   - helm-release.yaml
+  - oidc-client.yaml
+
 labels:
   - pairs:
       app.kubernetes.io/name: paperless

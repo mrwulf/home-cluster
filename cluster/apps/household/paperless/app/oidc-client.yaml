@@ -1,0 +1,18 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: paperless
+spec:
+  name: Paperless
+  launchUrl: https://paperless.home.${SECRET_DOMAIN}/
+  callbackUrls:
+    - https://paperless.home.${SECRET_DOMAIN}/accounts/oidc/pocketid/login/callback/
+  allowedUserGroups:
+    - name: users
+      namespace: auth
+  secret:
+    name: paperless-oidc-credentials
+    keys:
+      clientID: PAPERLESS_OIDC_CLIENT_ID
+      clientSecret: PAPERLESS_OIDC_CLIENT_SECRET

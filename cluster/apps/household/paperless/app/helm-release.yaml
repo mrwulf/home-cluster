@@ -34,9 +34,46 @@ spec:
             image:
               repository: ghcr.io/home-operations/postgres-init
               tag: 18.4
-            envFrom: &envFrom
+            envFrom:
               - secretRef:
                   name: paperless-secret
+          init-oidc:
+            image:
+              repository: alpine
+              tag: 3.24.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                cat <<EOF > /config/socialaccount_providers.json
+                {
+                  "openid_connect": {
+                    "OAUTH_PKCE_ENABLED": true,
+                    "APPS": [
+                      {
+                        "provider_id": "pocketid",
+                        "name": "Pocket ID",
+                        "client_id": "${PAPERLESS_OIDC_CLIENT_ID}",
+                        "secret": "${PAPERLESS_OIDC_CLIENT_SECRET}",
+                        "settings": {
+                          "server_url": "https://id.${SECRET_DOMAIN}"
+                        }
+                      }
+                    ],
+                    "SCOPE": ["openid", "profile", "email", "groups"]
+                  }
+                }
+                EOF
+            env:
+              - name: PAPERLESS_OIDC_CLIENT_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-oidc-credentials
+                    key: PAPERLESS_OIDC_CLIENT_ID
+              - name: PAPERLESS_OIDC_CLIENT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-oidc-credentials
+                    key: PAPERLESS_OIDC_CLIENT_SECRET
         containers:
           main:
             image:
@@ -63,7 +100,14 @@ spec:
               PAPERLESS_TIKA_ENABLED: true
               PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
               PAPERLESS_TIKA_ENDPOINT: http://tika:9998
-            envFrom: *envFrom
+              PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
+              PAPERLESS_SOCIALACCOUNT_PROVIDERS_FILE: "/config/socialaccount_providers.json"
+              PAPERLESS_SOCIAL_AUTO_SIGNUP: "true"
+              PAPERLESS_REDIRECT_LOGIN_TO_SSO: "true"
+              PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: "true"
+            envFrom:
+              - secretRef:
+                  name: paperless-secret
             probes:
               startup:
                 enabled: false
@@ -125,3 +169,11 @@ spec:
                 path: /data/nas/consume
               - subPath: export
                 path: /data/nas/export
+      config:
+        type: emptyDir
+        advancedMounts:
+          main:
+            init-oidc:
+              - path: /config
+            main:
+              - path: /config

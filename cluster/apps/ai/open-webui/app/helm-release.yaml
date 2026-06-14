@@ -24,7 +24,7 @@ spec:
             image:
               repository: ghcr.io/rafaribe/postgres-init
               tag: 16
-            envFrom: &envFrom
+            envFrom:
               - secretRef:
                   name: openwebui
         containers:
@@ -45,7 +45,25 @@ spec:
                 value: searxng
               - name: SEARXNG_QUERY_URL
                 value: http://searxng.ai.svc.cluster.local:8080/search?q=<query>
-            envFrom: *envFrom
+              - name: ENABLE_OAUTH_SIGNUP
+                value: "true"
+              - name: OAUTH_MERGE_ACCOUNTS_BY_EMAIL
+                value: "true"
+              - name: OAUTH_PROVIDER_NAME
+                value: "Pocket ID"
+              - name: OAUTH_SCOPES
+                value: "openid profile email groups"
+              - name: ENABLE_OAUTH_ROLE_MANAGEMENT
+                value: "true"
+              - name: OAUTH_ROLES_CLAIM
+                value: "groups"
+              - name: OAUTH_ADMIN_ROLES
+                value: "admin"
+            envFrom:
+              - secretRef:
+                  name: openwebui
+              - secretRef:
+                  name: openwebui-oidc-credentials
             resources:
               requests:
                 cpu: 500m

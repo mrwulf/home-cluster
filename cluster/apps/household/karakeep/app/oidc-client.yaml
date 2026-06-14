@@ -1,0 +1,19 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: karakeep
+spec:
+  name: Karakeep
+  launchUrl: https://karakeep.home.${SECRET_DOMAIN}/
+  callbackUrls:
+    - https://karakeep.home.${SECRET_DOMAIN}/api/auth/callback/custom
+  allowedUserGroups:
+    - name: users
+      namespace: auth
+  secret:
+    name: karakeep-oidc-credentials
+    keys:
+      clientID: OAUTH_CLIENT_ID
+      clientSecret: OAUTH_CLIENT_SECRET
+      discoveryUrl: OAUTH_WELLKNOWN_URL
