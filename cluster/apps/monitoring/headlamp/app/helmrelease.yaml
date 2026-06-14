@@ -28,6 +28,9 @@ spec:
           enabled: true
           name: headlamp-oidc-credentials
         usePKCE: true
+      extraArgs:
+        - "--metrics-enabled=true"
+        - "-oidc-skip-tls-verify=true"
 
     env:
       - name: OIDC_USE_PKCE
@@ -39,8 +42,6 @@ spec:
     # metrics-enabled uses a Prometheus *pull* exporter on :4466/metrics only.
     # tracing-enabled stays false, so the otlp-endpoint default is never used
     # and nothing is exported off-cluster. Headlamp has no usage analytics.
-    extraArgs:
-      - "--metrics-enabled=true"
 
     # Plugin manager sidecar (npm-based) has been flaky upstream; instead we
     # bake pinned plugin images in via init containers that copy into the
