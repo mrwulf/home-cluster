@@ -1,0 +1,20 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: mealie
+spec:
+  name: Mealie
+  isPublic: true
+  pkceEnabled: true
+  launchUrl: https://meals.${SECRET_DOMAIN}/
+  callbackUrls:
+    - https://meals.${SECRET_DOMAIN}/login
+    - https://meals.${SECRET_DOMAIN}/login?direct=1
+  allowedUserGroups:
+    - name: users
+      namespace: auth
+  secret:
+    name: mealie-oidc-credentials
+    keys:
+      clientID: OIDC_CLIENT_ID

@@ -51,9 +51,16 @@ spec:
               OPENAI_API_KEY: ignored
               MEALIE_TRUSTED_PROXIES: "10.244.0.0/16"
               MEALIE_FORWARDED_ALLOW_IPS: "10.244.0.0/16"
+              OIDC_CONFIGURATION_URL: https://id.${SECRET_DOMAIN}/.well-known/openid-configuration
+              OIDC_PROVIDER_NAME: PocketID
+              OIDC_ADMIN_GROUP: admin
+              OIDC_CLIENT_SECRET: ""
             envFrom:
               - secretRef:
                   name: *app
+              - secretRef:
+                  name: mealie-oidc-credentials
+
             resources:
               requests:
                 cpu: 10m
