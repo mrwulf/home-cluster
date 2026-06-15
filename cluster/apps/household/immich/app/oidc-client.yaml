@@ -6,6 +6,8 @@ metadata:
 spec:
   name: Immich
   launchUrl: https://photos.${SECRET_DOMAIN}/
+  clientSecretRotation:
+    enabled: false
   callbackUrls:
     - app.immich:///oauth-callback
     - https://photos.${SECRET_DOMAIN}/auth/login
