@@ -151,16 +151,6 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
-  - name: LDAP Outpost
-    group: services
-    url: "tcp://ak-outpost-ldap.auth.svc.cluster.local:389"
-    interval: 1m
-    conditions:
-      - "[CONNECTED] == true"
-    alerts: *alerts
-    ui:
-      hide-hostname: true
-      hide-url: true
   - name: Ollama
     group: services
     url: "http://ollama.ai.svc.cluster.local:11434/api/version"

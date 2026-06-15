@@ -61,8 +61,49 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  # renovate: depName=13502
-  url: https://grafana.com/api/dashboards/13502/revisions/19/download
+  url: https://raw.githubusercontent.com/FedericoAntoniazzi/minio-grafana-dashboard-metrics-v3/main/dashboard.json
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: minio-api
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  # renovate: depName=25426
+  url: https://grafana.com/api/dashboards/25426/revisions/1/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: minio-cluster
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  # renovate: depName=25437
+  url: https://grafana.com/api/dashboards/25437/revisions/1/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: minio-system
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  # renovate: depName=25451
+  url: https://grafana.com/api/dashboards/25451/revisions/1/download
   datasources:
     - inputName: DS_PROMETHEUS
       datasourceName: Prometheus

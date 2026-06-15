@@ -98,7 +98,7 @@ spec:
         endpoints:
           - port: api
             scheme: http
-            path: /minio/v2/metrics/cluster
+            path: /minio/metrics/v3
             interval: 1m
             scrapeTimeout: 10s
             # bearerTokenSecret:
