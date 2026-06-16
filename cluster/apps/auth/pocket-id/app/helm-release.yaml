@@ -45,7 +45,6 @@ spec:
       spec:
         ui:
           appName: "Home PocketID"
-        # renovate: depName=pocket-id/pocket-id datasource=github-releases
         image: ghcr.io/pocket-id/pocket-id:v2.8.0
         encryptionKey:
           valueFrom:

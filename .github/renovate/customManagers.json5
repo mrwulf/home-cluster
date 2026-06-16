@@ -13,9 +13,6 @@
         // # renovate: depName=kubernetes/kubernetes datasource=github-releases
         // version: 1.29.1
         "depName=(?<depName>\\S+) datasource=(?<datasource>\\S+)\\n.+ (?<currentValue>(v|\\d)\\S+)",
-        // # renovate: depName=pocket-id/pocket-id datasource=github-releases
-        // image: ghcr.io/pocket-id/pocket-id:v2.8.0
-        "depName=(?<depName>\\S+) datasource=(?<datasource>\\S+)\\n.+:(?<currentValue>(v|\\d)\\S+)",
         // # renovate: depName=rancher/system-upgrade-controller datasource=github-releases
         // https://github.com/rancher/system-upgrade-controller/releases/download/v0.13.2/crd.yaml
         "depName=(?<depName>\\S+) datasource=(?<datasource>\\S+)\\n.+/(?<currentValue>(v|\\d)[^/]+)",
