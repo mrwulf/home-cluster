@@ -53,7 +53,7 @@ spec:
           - name: internal-gateway
             namespace: networking
         hostnames:
-          - "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+          - "${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef
