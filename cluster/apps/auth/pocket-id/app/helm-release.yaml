@@ -45,7 +45,7 @@ spec:
       spec:
         ui:
           appName: "Home PocketID"
-        image: ghcr.io/pocket-id/pocket-id:v2.8.0
+        image: ghcr.io/pocket-id/pocket-id:v2.9.0
         encryptionKey:
           valueFrom:
             secretKeyRef:
