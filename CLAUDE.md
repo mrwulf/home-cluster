@@ -85,7 +85,8 @@ talos/                       # talconfig.yaml, talsecret.sops.yaml
    Always prefer the postgres16 database instance - the postgres instance is mostly just used for immich since it needs vector extensions.
 7. **Namespaces:** Do not specify `metadata.namespace` in application resource manifests (like Ingress, Service, ConfigMap, Secrets) unless absolutely necessary.
    Let the Flux `Kustomization`'s `targetNamespace` handle namespace assignment automatically.
-8. Run `mise x -- task test:all`.
+8. **Stagger VolSync backups:** If the app uses VolSync, you MUST run `python3 scripts/stagger-volsync.py` to calculate and apply staggered backup start minutes to its `ks.yaml`.
+9. Run `mise x -- task test:all`.
 
 ### Secrets
 

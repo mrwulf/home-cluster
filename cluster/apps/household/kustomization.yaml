@@ -12,5 +12,6 @@ resources:
   - n8n/ks.yaml
   - outline/ks.yaml
   - paperless/ks.yaml
+  - stirling-pdf/ks.yaml
   - super-productivity/ks.yaml
   - vikunja/ks.yaml

@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app stirling-pdf
+  namespace: flux-system
+spec:
+  targetNamespace: household
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: volsync
+  interval: 30m
+  path: ./cluster/apps/household/stirling-pdf/app
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  retryInterval: 1m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CLAIM: stirling-pdf-data
+      VOLSYNC_CAPACITY: 2Gi
+      VOLSYNC_NFS_START_MINUTE: "44"
+      VOLSYNC_B2_START_MINUTE: "09"
+      GATUS_SUBDOMAIN: pdf
