@@ -31,12 +31,13 @@ spec:
               PGID: 568
               SECURITY_ENABLELOGIN: "false"
               SYSTEM_DEFAULTLOCALE: en-US
+              JAVA_TOOL_OPTIONS: "-Xms512m -Xmx1024m -XX:MaxMetaspaceSize=512m"
             resources:
               requests:
                 cpu: 50m
-                memory: 512Mi
+                memory: 1Gi
               limits:
-                memory: 1024Mi
+                memory: 2Gi
     service:
       main:
         controller: main
