@@ -1,0 +1,32 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dragonfly-operator-crds
+  namespace: databases
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: dragonfly-operator
+    namespace: flux-system
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  # Deploy only the CRDs; disable everything else in the chart
+  values:
+    crds:
+      install: true
+      keep: true
+    replicaCount: 0
+    rbacProxy:
+      enabled: false
+    serviceMonitor:
+      enabled: false
