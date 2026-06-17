@@ -59,13 +59,12 @@ spec:
       externalTrafficPolicy: Local
       ipFamilies:
         - "IPv4"
-    logs:
-      general:
-        format: json
-        # level: DEBUG
-      access:
-        enabled: true
-        format: json
+    log:
+      format: json
+      # level: DEBUG
+    accessLog:
+      enabled: true
+      format: json
     ingressClass:
       enabled: true
       isDefaultClass: false
