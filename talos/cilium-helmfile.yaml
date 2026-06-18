@@ -12,8 +12,10 @@ repositories:
 releases:
   - name: cilium
     namespace: kube-system
+    # renovate: registryUrl=https://helm.cilium.io
+    # chart: cilium
     chart: cilium/cilium
-    version: 1.18.1
+    version: 1.19.5
     values: ["../cluster/apps/kube-system/cilium/helm-values.yaml"]
     # hooks:
     #   - events: ["postsync"]

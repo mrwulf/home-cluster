@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://helm.cilium.io
       chart: cilium
-      version: 1.19.4
+      version: 1.19.5
       sourceRef:
         kind: HelmRepository
         name: cilium-charts
@@ -28,7 +28,6 @@ spec:
       enabled: true
     kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
     ipv4NativeRoutingCIDR: "${NETWORK_K8S_CLUSTER_CIDR}"
-    nativeRoutingCIDR: "${NETWORK_K8S_CLUSTER_CIDR}"
     autoDirectNodeRoutes: true
     k8sServiceHost: localhost
     k8sServicePort: 7445
