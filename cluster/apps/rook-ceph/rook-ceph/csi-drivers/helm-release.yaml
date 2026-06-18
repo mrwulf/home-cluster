@@ -24,6 +24,18 @@ spec:
           name: rook-csi-operator-image-set-configmap
         nodePlugin:
           priorityClassName: system-node-critical
+        controllerPlugin:
+          priorityClassName: system-cluster-critical
+        enableMetadata: true
+        snapshotPolicy: volumeSnapshot
+        kernelMountOptions:
+          ms_mode: prefer-crc
+
+    drivers:
+      rbd:
+        enabled: true
+        name: rook-ceph.rbd.csi.ceph.com
+        nodePlugin:
           resources:
             registrar:
               requests:
@@ -56,7 +68,6 @@ spec:
               limits:
                 memory: 64Mi
         controllerPlugin:
-          priorityClassName: system-cluster-critical
           resources:
             attacher:
               requests:
@@ -112,15 +123,6 @@ spec:
                 memory: 32Mi
               limits:
                 memory: 64Mi
-        enableMetadata: true
-        snapshotPolicy: volumeSnapshot
-        kernelMountOptions:
-          ms_mode: prefer-crc
-
-    drivers:
-      rbd:
-        enabled: true
-        name: rook-ceph.rbd.csi.ceph.com
       cephfs:
         enabled: false # Disabled since CephFS is not utilized in this cluster
       nfs:
