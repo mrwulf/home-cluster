@@ -17,27 +17,6 @@ spec:
       retries: 3
   values:
     enableDiscoveryDaemon: true
-    csi:
-      enableCephfsDriver: false
-      enableCephfsSnapshotter: false
-      enableLiveness: true
-      enableVolumeGroupSnapshot: false
-      cephFSKernelMountOptions: ms_mode=prefer-crc
-      enableMetadata: true
-      csiRBDProvisionerResource:
-        - name: csi-provisioner
-          resource:
-            requests:
-              memory: 128Mi
-              cpu: 100m
-        - name: csi-resizer
-          resource:
-            requests:
-              memory: 128Mi
-              cpu: 100m
-
-      # snapshotter:
-      #   tag: v8.2.0   # TODO: Remove after ceph 1.16 fix is in
     crds:
       enabled: true
     resources:

@@ -31,6 +31,8 @@ These apply to **every** change. Do not check anything in that violates them.
    When you add/remove a component, change the repo layout, swap a tool, or alter the workflow, update the affected docs.
    Docs must stay factual — describe what the repo actually does, not what it used to or might.
 
+6. **Never set CPU limits.** CPU limits can cause unnecessary throttling in Kubernetes. Always define CPU requests to guarantee resources, but avoid setting CPU limits.
+
 ## Toolchain
 
 | Concern           | Choice                                                                                                                         |
