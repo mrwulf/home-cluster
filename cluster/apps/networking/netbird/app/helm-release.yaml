@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: netbirdio/netbird
-              tag: 0.72.4
+              tag: v0.73.0
             env:
               NB_ENABLE_ROSENPASS: true
               NB_ROSENPASS_PERMISSIVE: true
