@@ -39,7 +39,7 @@
   customManagers: [
     {
       customType: "regex",
-      managerFilePatterns: ["/cluster/.+\\.ya?ml$/"],
+      managerFilePatterns: ["/(cluster|talos)/.+\\.ya?ml$/"],
       matchStrings: [
         "registryUrl=(?<registryUrl>.*?)\n *chart: (?<depName>.*?)\n *version: (?<currentValue>.*)\n",
       ],
