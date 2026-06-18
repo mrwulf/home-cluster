@@ -67,6 +67,17 @@ jobs:
           tool_versions: |
             github:home-operations/flate latest
 
+      - name: Suspend private other resources
+        run: |
+          if [ -d "./pull/cluster/apps/other" ]; then
+            yq eval -i '.spec.suspend = true' ./pull/cluster/apps/other/ks.yaml
+            yq eval -i '.spec.suspend = true' ./pull/cluster/apps/other/gitrepo.yaml
+          fi
+          if [ -d "./default/cluster/apps/other" ]; then
+            yq eval -i '.spec.suspend = true' ./default/cluster/apps/other/ks.yaml
+            yq eval -i '.spec.suspend = true' ./default/cluster/apps/other/gitrepo.yaml
+          fi
+
       - name: Run flate test
         env:
           KIND: ${{ matrix.kind }}
