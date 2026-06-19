@@ -44,6 +44,10 @@ spec:
               serverPort: &serverPort 8266
               webUIPort: &webUIPort 8265
               inContainer: "true"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 10m

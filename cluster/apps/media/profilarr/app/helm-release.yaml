@@ -33,19 +33,104 @@ spec:
             env:
               PUID: 568
               PGID: 568
+              HOST: 0.0.0.0
+              PORT: &port 6868
               ORIGIN: "https://profilarr.home.${SECRET_DOMAIN}"
+              APP_BASE_PATH: /config
+              AUTH: "off"
+              UMASK: "022"
+              PARSER_HOST: profilarr-parser
+              PARSER_PORT: &parserPort 5000
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v1/health
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v1/health
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 30
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 10m
                 memory: 128Mi
               limits:
                 memory: 2Gi
+      parser:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/dictionarry-hub/profilarr-parser
+              tag: 2.0.8@sha256:083a6bcd3234c1eb98cf3a202daa4070cd93fecce08f8cf51e4ab0a035d95a56
+            env:
+              ASPNETCORE_URLS: http://+:5000
+              ASPNETCORE_ENVIRONMENT: Production
+            probes:
+              liveness: &parserProbes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *parserPort
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              readiness: *parserProbes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *parserPort
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 30
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
     service:
       app:
         controller: profilarr
         ports:
           http:
             port: 6868
+      parser:
+        controller: parser
+        ports:
+          http:
+            port: *parserPort
     route:
       main:
         enabled: true
@@ -69,5 +154,11 @@ spec:
     persistence:
       config:
         existingClaim: "${VOLSYNC_CLAIM}"
+        advancedMounts:
+          profilarr:
+            app:
+              - path: /config
+      tmp:
+        type: emptyDir
         globalMounts:
-          - path: /config
+          - path: /tmp
