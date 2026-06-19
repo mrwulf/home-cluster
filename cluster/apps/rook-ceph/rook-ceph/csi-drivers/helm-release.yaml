@@ -35,6 +35,7 @@ spec:
       rbd:
         enabled: true
         name: rook-ceph.rbd.csi.ceph.com
+        snapshotPolicy: volumeSnapshot
         nodePlugin:
           resources:
             registrar:
