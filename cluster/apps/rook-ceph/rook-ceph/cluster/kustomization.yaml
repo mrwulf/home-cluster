@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - ./helm-release.yaml
   - ./route.yaml
+  - ./grafana-config-job.yaml

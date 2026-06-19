@@ -1,0 +1,94 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ceph-dashboard-grafana-config
+  namespace: rook-ceph
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      serviceAccountName: rook-ceph-default
+      containers:
+        - name: config
+          image: quay.io/ceph/ceph:v20.2.1
+          command:
+            - /bin/bash
+            - -c
+            - |
+              # Write ceph config
+              CEPH_CONFIG="/etc/ceph/ceph.conf"
+              MON_CONFIG="/etc/rook/mon-endpoints"
+              KEYRING_FILE="/etc/ceph/keyring"
+
+              write_endpoints() {
+                endpoints=$(cat ${MON_CONFIG})
+                mon_endpoints=$(echo "${endpoints}" | sed 's/[a-z0-9_-]\+=//g')
+                cat <<EOF > ${CEPH_CONFIG}
+              [global]
+              mon_host = ${mon_endpoints}
+              [client.admin]
+              keyring = ${KEYRING_FILE}
+              EOF
+              }
+
+              ceph_secret=$(cat /var/lib/rook-ceph-mon/secret.keyring)
+              cat <<EOF > ${KEYRING_FILE}
+              [${ROOK_CEPH_USERNAME}]
+              key = ${ceph_secret}
+              EOF
+
+              write_endpoints
+
+              # Check current configuration to be idempotent
+              current_url=$(ceph config-key get mgr/dashboard/grafana_api_url 2>/dev/null || true)
+              if [[ "${current_url}" == "http://grafana-service.monitoring.svc.cluster.local:3000" ]]; then
+                echo "Grafana configuration is already set correctly. Exiting."
+                exit 0
+              fi
+
+              echo "Setting Ceph Dashboard Grafana settings..."
+              ceph dashboard set-grafana-api-url "http://grafana-service.monitoring.svc.cluster.local:3000"
+              ceph dashboard set-grafana-api-ssl-verify False
+              ceph dashboard set-grafana-frontend-api-url "https://grafana.home.${SECRET_DOMAIN}"
+              echo "Done!"
+          env:
+            - name: ROOK_CEPH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: ceph-username
+                  name: rook-ceph-mon
+            - name: SECRET_DOMAIN
+              value: "${SECRET_DOMAIN}"
+          volumeMounts:
+            - mountPath: /etc/ceph
+              name: ceph-config
+            - mountPath: /etc/rook
+              name: mon-endpoint-volume
+            - mountPath: /var/lib/rook-ceph-mon
+              name: ceph-admin-secret
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            runAsGroup: 2016
+            runAsNonRoot: true
+            runAsUser: 2016
+      restartPolicy: OnFailure
+      volumes:
+        - name: ceph-admin-secret
+          secret:
+            defaultMode: 420
+            items:
+              - key: ceph-secret
+                path: secret.keyring
+            secretName: rook-ceph-mon
+        - configMap:
+            defaultMode: 420
+            items:
+              - key: data
+                path: mon-endpoints
+            name: rook-ceph-mon-endpoints
+          name: mon-endpoint-volume
+        - emptyDir: {}
+          name: ceph-config
