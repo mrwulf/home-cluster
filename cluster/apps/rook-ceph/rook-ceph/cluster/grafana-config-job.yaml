@@ -22,19 +22,19 @@ spec:
               KEYRING_FILE="/etc/ceph/keyring"
 
               write_endpoints() {
-                endpoints=$(cat "${MON_CONFIG}")
-                mon_endpoints=$(echo "${endpoints}" | sed 's/[a-z0-9_-]\+=//g')
-                printf "[global]\nmon_host = %s\n\n[client.admin]\nkeyring = %s\n" "${mon_endpoints}" "${KEYRING_FILE}" > "${CEPH_CONFIG}"
+                endpoints=$(cat "$MON_CONFIG")
+                mon_endpoints=$(echo "$endpoints" | sed 's/[a-z0-9_-]\+=//g')
+                printf "[global]\nmon_host = %s\n\n[client.admin]\nkeyring = %s\n" "$mon_endpoints" "$KEYRING_FILE" > "$CEPH_CONFIG"
               }
 
               ceph_secret=$(cat /var/lib/rook-ceph-mon/secret.keyring)
-              printf "[%s]\nkey = %s\n" "${ROOK_CEPH_USERNAME}" "${ceph_secret}" > "${KEYRING_FILE}"
+              printf "[%s]\nkey = %s\n" "$ROOK_CEPH_USERNAME" "$ceph_secret" > "$KEYRING_FILE"
 
               write_endpoints
 
               # Check current configuration to be idempotent
               current_url=$(ceph config-key get mgr/dashboard/grafana_api_url 2>/dev/null || true)
-              if [[ "${current_url}" == "http://grafana-service.monitoring.svc.cluster.local:3000" ]]; then
+              if [[ "$current_url" == "http://grafana-service.monitoring.svc.cluster.local:3000" ]]; then
                 echo "Grafana configuration is already set correctly. Exiting."
                 exit 0
               fi
