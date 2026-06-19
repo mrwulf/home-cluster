@@ -43,8 +43,8 @@ spec:
             env:
               # PUID: 568
               # PGID: 568
-              nodeIP: 0.0.0.0
-              nodePort: 8267
+              # nodeIP: 0.0.0.0
+              # nodePort: 8267
               serverIP: tdarr-server.media.svc.cluster.local.
               serverPort: 8266
               inContainer: "true"
@@ -57,9 +57,9 @@ spec:
               # s6-rmrf: fatal: unable to remove /run/s6: Read-only file system
               readOnlyRootFilesystem: false
               # s6-applyuidgid: fatal: unable to set supplementary group list: Operation not permitted
-              capabilities:
-                add:
-                  - CHOWN
+              # capabilities:
+              #   add:
+              #     - CHOWN
             resources:
               requests:
                 cpu: 10m
