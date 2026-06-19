@@ -150,9 +150,9 @@ spec:
             plugin:
               requests:
                 cpu: 100m
-                memory: 128Mi
-              limits:
                 memory: 256Mi
+              limits:
+                memory: 1Gi
             addons:
               requests:
                 cpu: 10m
