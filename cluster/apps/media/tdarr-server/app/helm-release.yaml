@@ -24,6 +24,7 @@ spec:
         fsGroupChangePolicy: "OnRootMismatch"
         runAsNonRoot: false
         seccompProfile:
+          type: RuntimeDefault
         supplementalGroups:
           - 44
           - 226
