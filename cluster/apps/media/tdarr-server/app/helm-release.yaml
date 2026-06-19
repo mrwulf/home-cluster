@@ -17,10 +17,16 @@ spec:
           - name: ndots
             value: "1"
       securityContext:
-        runAsUser: 568
-        runAsGroup: 568
-        fsGroup: 568
-        fsGroupChangePolicy: OnRootMismatch
+      # s6-overlay-suexec: warning: unable to gain root privileges (is the suid bit set?)
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+        runAsNonRoot: false
+        seccompProfile:
+        supplementalGroups:
+          - 44
+          - 226
     controllers:
       tdarr-server:
         annotations:
