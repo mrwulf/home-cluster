@@ -23,7 +23,7 @@ spec:
           app:
             image:
               repository: ghcr.io/arabcoders/watchstate
-              tag: v1.8.7
+              tag: v1.9.0
             env:
               WS_SECURE_API_ENDPOINTS: "true"
             probes:
