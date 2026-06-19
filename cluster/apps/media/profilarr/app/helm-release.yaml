@@ -1,8 +1,9 @@
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: radarr
+  name: profilarr
 spec:
   interval: 30m
   chartRef:
@@ -21,32 +22,30 @@ spec:
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      app:
+      profilarr:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
           main:
             image:
-              repository: ghcr.io/home-operations/radarr
-              tag: "6.2.1.10461"
+              repository: ghcr.io/dictionarry-hub/profilarr
+              tag: v2.0.8
             env:
-              RADARR__INSTANCE_NAME: Radarr
-              RADARR__PORT: &port 7878
-              RADARR__APPLICATION_URL: "https://radarr.home.${SECRET_DOMAIN}"
-              RADARR__LOG_LEVEL: info
-              RADARR__AUTH__APIKEY: "${RADARR_APIKEY}"
+              PUID: 568
+              PGID: 568
+              ORIGIN: "https://profilarr.home.${SECRET_DOMAIN}"
             resources:
               requests:
-                cpu: 15m
-                memory: 1312M
+                cpu: 10m
+                memory: 128Mi
               limits:
-                memory: 4655M
+                memory: 512Mi
     service:
       app:
-        controller: app
+        controller: profilarr
         ports:
           http:
-            port: *port
+            port: 6868
     route:
       main:
         enabled: true
@@ -56,7 +55,7 @@ spec:
           - name: internal-gateway
             namespace: networking
         hostnames:
-          - "radarr.home.${SECRET_DOMAIN}"
+          - "profilarr.home.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef
@@ -67,25 +66,8 @@ spec:
             backendRefs:
               - identifier: app
                 port: http
-
     persistence:
       config:
         existingClaim: "${VOLSYNC_CLAIM}"
-      downloads:
-        type: nfs
-        server: "${CORE_NFS_SERVER:=nas0}"
-        path: /mnt/user/k8s/media-downloaded
         globalMounts:
-          - path: /downloads
-      movies:
-        type: nfs
-        server: "${CORE_NFS_SERVER:=nas0}"
-        path: /mnt/user/Movies
-        globalMounts:
-          - path: /Movies
-      backups:
-        type: nfs
-        server: "${CORE_NFS_SERVER:=nas0}"
-        path: "/mnt/user/backups/radarr"
-        globalMounts:
-          - path: /config/Backups
+          - path: /config

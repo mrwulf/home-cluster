@@ -1,8 +1,9 @@
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: radarr
+  name: tdarr-server
 spec:
   interval: 30m
   chartRef:
@@ -21,32 +22,35 @@ spec:
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      app:
+      tdarr-server:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
           main:
             image:
-              repository: ghcr.io/home-operations/radarr
-              tag: "6.2.1.10461"
+              repository: ghcr.io/haveagitgat/tdarr
+              tag: 2.78.01
             env:
-              RADARR__INSTANCE_NAME: Radarr
-              RADARR__PORT: &port 7878
-              RADARR__APPLICATION_URL: "https://radarr.home.${SECRET_DOMAIN}"
-              RADARR__LOG_LEVEL: info
-              RADARR__AUTH__APIKEY: "${RADARR_APIKEY}"
+              PUID: 568
+              PGID: 568
+              serverIP: 0.0.0.0
+              serverPort: &serverPort 8266
+              webUIPort: &webUIPort 8265
+              inContainer: "true"
             resources:
               requests:
-                cpu: 15m
-                memory: 1312M
+                cpu: 10m
+                memory: 512Mi
               limits:
-                memory: 4655M
+                memory: 2Gi
     service:
       app:
-        controller: app
+        controller: tdarr-server
         ports:
           http:
-            port: *port
+            port: *webUIPort
+          server:
+            port: *serverPort
     route:
       main:
         enabled: true
@@ -56,7 +60,7 @@ spec:
           - name: internal-gateway
             namespace: networking
         hostnames:
-          - "radarr.home.${SECRET_DOMAIN}"
+          - "tdarr.home.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef
@@ -67,25 +71,33 @@ spec:
             backendRefs:
               - identifier: app
                 port: http
-
     persistence:
       config:
         existingClaim: "${VOLSYNC_CLAIM}"
-      downloads:
-        type: nfs
-        server: "${CORE_NFS_SERVER:=nas0}"
-        path: /mnt/user/k8s/media-downloaded
         globalMounts:
-          - path: /downloads
+          - path: /app/server
+            subPath: server
+          - path: /app/configs
+            subPath: configs
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /app/logs
       movies:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
         path: /mnt/user/Movies
         globalMounts:
           - path: /Movies
-      backups:
+      tv:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
-        path: "/mnt/user/backups/radarr"
+        path: /mnt/user/TV
         globalMounts:
-          - path: /config/Backups
+          - path: /TVShows
+      other:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/OtherStorage/Normal
+        globalMounts:
+          - path: /other

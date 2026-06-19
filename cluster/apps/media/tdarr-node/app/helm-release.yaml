@@ -1,0 +1,80 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tdarr-node
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  values:
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups:
+          - 44
+          - 100
+          - 109
+          - 65534
+          - 65539
+    controllers:
+      tdarr-node:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: ghcr.io/haveagitgat/tdarr_node
+              tag: 2.78.01
+            env:
+              PUID: 568
+              PGID: 568
+              nodeIP: 0.0.0.0
+              nodePort: 8267
+              nodeName: internal-node
+              serverIP: tdarr-server.media.svc.cluster.local.
+              serverPort: 8266
+              inContainer: "true"
+            resources:
+              requests:
+                cpu: 10m
+                memory: 1Gi
+                gpu.intel.com/i915: 1
+              limits:
+                memory: 4Gi
+                gpu.intel.com/i915: 1
+    persistence:
+      temp:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 15Gi
+        globalMounts:
+          - path: /temp
+      movies:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/Movies
+        globalMounts:
+          - path: /Movies
+      tv:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/TV
+        globalMounts:
+          - path: /TVShows
+      other:
+        type: nfs
+        server: "${CORE_NFS_SERVER:=nas0}"
+        path: /mnt/user/OtherStorage/Normal
+        globalMounts:
+          - path: /other

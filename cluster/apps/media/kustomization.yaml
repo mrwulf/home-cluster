@@ -9,9 +9,12 @@ resources:
   - lidarr/ks.yaml
   - ombi/ks.yaml
   - plex/ks.yaml
+  - profilarr/ks.yaml
   - radarr/ks.yaml
   - readarr-audio/ks.yaml
   - readarr-books/ks.yaml
   - sonarr/ks.yaml
   - tautulli/ks.yaml
+  - tdarr-node/ks.yaml
+  - tdarr-server/ks.yaml
   - watchstate/ks.yaml
