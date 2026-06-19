@@ -37,9 +37,7 @@ spec:
               HOST: 0.0.0.0
               PORT: &port 6868
               ORIGIN: "https://profilarr.home.${SECRET_DOMAIN}"
-              DENO_SQLITE_PATH: /config/deno
               AUTH: "off"
-              UMASK: "022"
               PARSER_HOST: profilarr-parser
               PARSER_PORT: &parserPort 5000
             probes:
@@ -87,7 +85,6 @@ spec:
             env:
               ASPNETCORE_URLS: http://+:5000
               ASPNETCORE_ENVIRONMENT: Production
-              DENO_SQLITE_PATH: /tmp/deno
             probes:
               liveness: &parserProbes
                 enabled: true
@@ -164,3 +161,7 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /tmp
+      db:
+        type: emptyDir
+        globalMounts:
+          - path: /.cache
