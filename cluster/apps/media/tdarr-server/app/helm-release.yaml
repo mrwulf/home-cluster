@@ -20,7 +20,7 @@ spec:
       # s6-overlay-suexec: warning: unable to gain root privileges (is the suid bit set?)
         runAsUser: 0
         runAsGroup: 0
-        fsGroup: 1000
+        fsGroup: 568
         fsGroupChangePolicy: "OnRootMismatch"
         runAsNonRoot: false
         seccompProfile:
@@ -113,6 +113,6 @@ spec:
       other:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
-        path: /mnt/user/OtherStorage/Normal
+        path: /mnt/user/OtherStorage
         globalMounts:
           - path: /other

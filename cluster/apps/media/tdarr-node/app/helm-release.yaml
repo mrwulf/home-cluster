@@ -41,10 +41,13 @@ spec:
               PGID: 568
               nodeIP: 0.0.0.0
               nodePort: 8267
-              nodeName: internal-node
               serverIP: tdarr-server.media.svc.cluster.local.
               serverPort: 8266
               inContainer: "true"
+              nodeName:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
             resources:
               requests:
                 cpu: 10m
@@ -75,6 +78,6 @@ spec:
       other:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
-        path: /mnt/user/OtherStorage/Normal
+        path: /mnt/user/OtherStorage
         globalMounts:
           - path: /other
