@@ -126,6 +126,7 @@ spec:
                 memory: 64Mi
       cephfs:
         enabled: true
+        name: rook-ceph.cephfs.csi.ceph.com
         nodePlugin:
           resources:
             registrar:
