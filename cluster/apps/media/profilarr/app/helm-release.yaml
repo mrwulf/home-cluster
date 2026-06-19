@@ -87,6 +87,7 @@ spec:
             env:
               ASPNETCORE_URLS: http://+:5000
               ASPNETCORE_ENVIRONMENT: Production
+              DENO_SQLITE_PATH: /tmp/deno
             probes:
               liveness: &parserProbes
                 enabled: true
