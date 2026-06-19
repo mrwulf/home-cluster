@@ -78,10 +78,8 @@ spec:
                 memory: 4Gi
                 gpu.intel.com/i915: 1
     persistence:
-      temp:
-        type: emptyDir
-        medium: Memory
-        sizeLimit: 15Gi
+      shared-cache:
+        existingClaim: tdarr-shared-cache
         globalMounts:
           - path: /temp
       movies:

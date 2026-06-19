@@ -101,6 +101,10 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /app/logs
+      shared-cache:
+        existingClaim: tdarr-shared-cache
+        globalMounts:
+          - path: /temp
       movies:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
