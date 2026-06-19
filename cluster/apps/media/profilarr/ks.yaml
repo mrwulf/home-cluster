@@ -28,6 +28,7 @@ spec:
       APP: *app
       APP_UID: "568"
       APP_GID: "568"
+      VOLSYNC_CLAIM: *app
       VOLSYNC_CAPACITY: 2Gi
       VOLSYNC_NFS_START_MINUTE: "52"
       VOLSYNC_B2_START_MINUTE: "17"
