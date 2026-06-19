@@ -48,6 +48,7 @@ spec:
               serverIP: tdarr-server.media.svc.cluster.local.
               serverPort: 8266
               inContainer: "true"
+              unmappedNodeCache: "/temp/unmappedNodeCache"
               nodeName:
                 valueFrom:
                   fieldRef:
