@@ -28,6 +28,9 @@ spec:
         supplementalGroups:
           - 44
           - 226
+          - 568
+          - 65534
+          - 65539
     controllers:
       tdarr-server:
         annotations:
