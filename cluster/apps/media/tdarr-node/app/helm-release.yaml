@@ -41,8 +41,8 @@ spec:
               repository: ghcr.io/haveagitgat/tdarr_node
               tag: 2.78.01
             env:
-              PUID: 568
-              PGID: 568
+              # PUID: 568
+              # PGID: 568
               nodeIP: 0.0.0.0
               nodePort: 8267
               serverIP: tdarr-server.media.svc.cluster.local.
@@ -57,9 +57,9 @@ spec:
               # s6-rmrf: fatal: unable to remove /run/s6: Read-only file system
               readOnlyRootFilesystem: false
               # s6-applyuidgid: fatal: unable to set supplementary group list: Operation not permitted
-              #capabilities:
-                #drop:
-                  #- ALL
+              capabilities:
+                add:
+                  - CHOWN
             resources:
               requests:
                 cpu: 10m
