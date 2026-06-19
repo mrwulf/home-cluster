@@ -17,6 +17,10 @@ spec:
       disable_login_form: "false"
       signout_redirect_url: "https://id.${SECRET_DOMAIN}/api/oidc/end-session?post_logout_redirect_uri=https://grafana.home.${SECRET_DOMAIN}/"
       oauth_auto_login: "true"
+    auth.anonymous:
+      enabled: "true"
+      org_name: "Main Org."
+      org_role: "Viewer"
     auth.generic_oauth:
       enabled: "true"
       name: "Pocket ID"
@@ -37,6 +41,7 @@ spec:
       news_feed_enabled: "false"
     security:
       cookie_samesite: "lax"
+      allow_embedding: "true"
     server:
       root_url: "https://grafana.home.${SECRET_DOMAIN}"
     date_formats:

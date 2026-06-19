@@ -17,3 +17,22 @@ spec:
     uid: PBFA97CFB590B2093
     jsonData:
       prometheusType: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: prometheus-ceph
+  namespace: monitoring
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasource:
+    name: Dashboard1
+    type: prometheus
+    access: proxy
+    url: http://vmsingle-stack.monitoring.svc.cluster.local:8428
+    isDefault: false
+    uid: PBFA97CFB590B2093-ceph
+    jsonData:
+      prometheusType: Prometheus

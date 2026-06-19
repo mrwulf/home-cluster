@@ -47,6 +47,10 @@ spec:
           bluestore_slow_ops_warn_lifetime: "300"
           # bluestore_slow_ops_warn_threshold: "10"
           # osd_op_complaint_time: "60.0"
+        mgr:
+          mgr/dashboard/grafana_api_url: "http://grafana-service.monitoring.svc.cluster.local:3000"
+          mgr/dashboard/grafana_api_ssl_verify: "false"
+          mgr/dashboard/grafana_frontend_api_url: "https://grafana.home.${SECRET_DOMAIN}"
       crashCollector:
         disable: false
       csi:
