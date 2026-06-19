@@ -4,30 +4,78 @@ kind: GrafanaDashboard
 metadata:
   name: ceph-cluster
 spec:
+  uid: "edtb0oxdq"
   instanceSelector:
     matchLabels:
       dashboards: grafana
   folder: ceph
-  # renovate: depName=2842
-  url: https://grafana.com/api/dashboards/2842/revisions/18/download
-  datasources:
-    - inputName: DS_PROMETHEUS
-      datasourceName: Prometheus
+  # renovate: depName=ceph/ceph datasource=github-releases
+  url: https://raw.githubusercontent.com/ceph/ceph/v19.2.3/monitoring/ceph-mixin/dashboards_out/ceph-cluster.json
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: ceph-osd
+  name: cephfs-overview
 spec:
+  uid: "718Bruins"
   instanceSelector:
     matchLabels:
       dashboards: grafana
   folder: ceph
-  # renovate: depName=5336
-  url: https://grafana.com/api/dashboards/5336/revisions/9/download
-  datasources:
-    - inputName: DS_PROMETHEUS
-      datasourceName: Prometheus
+  # renovate: depName=ceph/ceph datasource=github-releases
+  url: https://raw.githubusercontent.com/ceph/ceph/v19.2.3/monitoring/ceph-mixin/dashboards_out/cephfs-overview.json
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: ceph-hosts-overview
+spec:
+  uid: "y0KGL0iZz"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: ceph
+  # renovate: depName=ceph/ceph datasource=github-releases
+  url: https://raw.githubusercontent.com/ceph/ceph/v19.2.3/monitoring/ceph-mixin/dashboards_out/hosts-overview.json
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: ceph-host-details
+spec:
+  uid: "rtOg0AiWz"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: ceph
+  # renovate: depName=ceph/ceph datasource=github-releases
+  url: https://raw.githubusercontent.com/ceph/ceph/v19.2.3/monitoring/ceph-mixin/dashboards_out/host-details.json
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: ceph-osds-overview
+spec:
+  uid: "lo02I1Aiz"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: ceph
+  # renovate: depName=ceph/ceph datasource=github-releases
+  url: https://raw.githubusercontent.com/ceph/ceph/v19.2.3/monitoring/ceph-mixin/dashboards_out/osds-overview.json
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: ceph-osd-details
+spec:
+  uid: "CrAHE0iZz"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: ceph
+  # renovate: depName=ceph/ceph datasource=github-releases
+  url: https://raw.githubusercontent.com/ceph/ceph/v19.2.3/monitoring/ceph-mixin/dashboards_out/osd-device-details.json
 ---
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
@@ -38,8 +86,5 @@ spec:
     matchLabels:
       dashboards: grafana
   folder: ceph
-  # renovate: depName=5342
-  url: https://grafana.com/api/dashboards/5342/revisions/9/download
-  datasources:
-    - inputName: DS_PROMETHEUS
-      datasourceName: Prometheus
+  # renovate: depName=ceph/ceph datasource=github-releases
+  url: https://raw.githubusercontent.com/ceph/ceph/v19.2.3/monitoring/ceph-mixin/dashboards_out/pool-overview.json
