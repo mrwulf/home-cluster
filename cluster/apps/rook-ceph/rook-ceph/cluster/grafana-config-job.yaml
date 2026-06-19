@@ -22,21 +22,13 @@ spec:
               KEYRING_FILE="/etc/ceph/keyring"
 
               write_endpoints() {
-                endpoints=$(cat ${MON_CONFIG})
+                endpoints=$(cat "${MON_CONFIG}")
                 mon_endpoints=$(echo "${endpoints}" | sed 's/[a-z0-9_-]\+=//g')
-                cat <<EOF > ${CEPH_CONFIG}
-              [global]
-              mon_host = ${mon_endpoints}
-              [client.admin]
-              keyring = ${KEYRING_FILE}
-              EOF
+                printf "[global]\nmon_host = %s\n\n[client.admin]\nkeyring = %s\n" "${mon_endpoints}" "${KEYRING_FILE}" > "${CEPH_CONFIG}"
               }
 
               ceph_secret=$(cat /var/lib/rook-ceph-mon/secret.keyring)
-              cat <<EOF > ${KEYRING_FILE}
-              [${ROOK_CEPH_USERNAME}]
-              key = ${ceph_secret}
-              EOF
+              printf "[%s]\nkey = %s\n" "${ROOK_CEPH_USERNAME}" "${ceph_secret}" > "${KEYRING_FILE}"
 
               write_endpoints
 
