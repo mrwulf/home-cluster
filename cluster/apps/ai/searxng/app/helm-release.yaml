@@ -22,7 +22,7 @@ spec:
           main:
             image:
               repository: docker.io/searxng/searxng
-              tag: 2026.6.20-fd42d4fda
+              tag: 2026.6.23-e3713717f
             env:
               SEARXNG_BASE_URL: "https://search.home.${SECRET_DOMAIN}"
               SEARXNG_URL: "https://search.home.${SECRET_DOMAIN}"
