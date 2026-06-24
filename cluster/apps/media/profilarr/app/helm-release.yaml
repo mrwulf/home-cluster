@@ -30,7 +30,7 @@ spec:
           app:
             image:
               repository: ghcr.io/dictionarry-hub/profilarr
-              tag: 2.0.8
+              tag: 2.0.9
             env:
               PUID: 568
               PGID: 568
