@@ -49,7 +49,7 @@ spec:
 
                   tree_out = subprocess.check_output(["ceph", "osd", "tree", "--format", "json"]).decode("utf-8")
                   tree_data = json.loads(tree_out)
-                  weights = {node["id"]: node["weight"] for node in tree_data.get("nodes", []) if node.get("type") == "osd"}
+                  weights = {node["id"]: node["crush_weight"] for node in tree_data.get("nodes", []) if node.get("type") == "osd"}
 
                   for osd in osds:
                       osd_id = osd.get("id")
