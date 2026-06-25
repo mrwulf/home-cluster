@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: descheduler-rules
+spec:
+  groups:
+    - name: descheduler.rules
+      rules:
+        - alert: DeschedulerPodEvicted
+          expr: |-
+            increase(descheduler_pods_evicted_total[5m]) > 0
+          annotations:
+            summary: >-
+              Descheduler evicted pod(s) on node {{ $labels.node }} in namespace {{ $labels.namespace }} via strategy {{ $labels.strategy }} within the last 5 minutes
+          labels:
+            severity: warning
