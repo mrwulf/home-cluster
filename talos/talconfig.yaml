@@ -304,6 +304,10 @@ patches:
         net.ipv4.tcp_wmem: 4096 65536 33554432 # 10Gb/s
         net.ipv4.tcp_window_scaling: 1         # 10Gb/s
         vm.nr_hugepages: 1024                  # Postgres
+        vm.dirty_ratio: 5                      # etcd optimization
+        vm.dirty_background_ratio: 2           # etcd optimization
+        vm.dirty_expire_centisecs: 100         # etcd optimization
+        vm.dirty_writeback_centisecs: 100      # etcd optimization
         net.ipv4.conf.all.arp_ignore: "1"
         net.ipv4.conf.all.arp_announce: "2"
         net.ipv4.conf.default.arp_ignore: "1"
