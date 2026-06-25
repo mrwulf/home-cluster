@@ -25,6 +25,3 @@ spec:
       name: ingress-tunnel-secrets
   writeOutputsToSecret:
     name: vps-tunnel-output
-  tfstate:
-    forceUnlock: yes
-    lockIdentifier: "8b24a051-4d98-2512-8d2f-d92b86088a49"
