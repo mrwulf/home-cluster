@@ -1,0 +1,116 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ceph-osd-primary-affinity
+  namespace: rook-ceph
+spec:
+  schedule: "*/30 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: rook-ceph-default
+          containers:
+            - name: adjust-affinity
+              image: quay.io/ceph/ceph:v20.2.2
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  # Write ceph config
+                  CEPH_CONFIG="/etc/ceph/ceph.conf"
+                  MON_CONFIG="/etc/rook/mon-endpoints"
+                  KEYRING_FILE="/etc/ceph/keyring"
+
+                  write_endpoints() {
+                    endpoints=$(cat "$MON_CONFIG")
+                    mon_endpoints=$(echo "$endpoints" | sed 's/[a-z0-9_-]\+=//g')
+                    printf "[global]\nmon_host = %s\n\n[client.admin]\nkeyring = %s\n" "$mon_endpoints" "$KEYRING_FILE" > "$CEPH_CONFIG"
+                  }
+
+                  ceph_secret=$(cat /var/lib/rook-ceph-mon/secret.keyring)
+                  printf "[%s]\nkey = %s\n" "$ROOK_CEPH_USERNAME" "$ceph_secret" > "$KEYRING_FILE"
+
+                  write_endpoints
+
+                  python3 <<'EOF'
+                  import json, subprocess
+
+                  meta_out = subprocess.check_output(["ceph", "osd", "metadata", "--format", "json"]).decode("utf-8")
+                  osds = json.loads(meta_out)
+
+                  dump_out = subprocess.check_output(["ceph", "osd", "dump", "--format", "json"]).decode("utf-8")
+                  dump_data = json.loads(dump_out)
+                  affinities = {osd["osd"]: osd["primary_affinity"] for osd in dump_data.get("osds", [])}
+
+                  tree_out = subprocess.check_output(["ceph", "osd", "tree", "--format", "json"]).decode("utf-8")
+                  tree_data = json.loads(tree_out)
+                  weights = {node["id"]: node["weight"] for node in tree_data.get("nodes", []) if node.get("type") == "osd"}
+
+                  for osd in osds:
+                      osd_id = osd.get("id")
+                      devices_info = " ".join([
+                          osd.get("devices", ""),
+                          osd.get("osd_data_devices", ""),
+                          osd.get("device_ids", "")
+                      ]).lower()
+
+                      if "kingston" in devices_info:
+                          # Check and set primary-affinity
+                          current_aff = affinities.get(osd_id, 1.0)
+                          if current_aff > 0.0:
+                              print(f"Setting primary-affinity to 0 for system-disk OSD {osd_id} (current: {current_aff})")
+                              subprocess.check_call(["ceph", "osd", "primary-affinity", str(osd_id), "0"])
+                          else:
+                              print(f"OSD {osd_id} already has primary-affinity 0. Skipping.")
+
+                          # Check and set CRUSH weight to 0.6
+                          current_weight = weights.get(osd_id, 0.0)
+                          if abs(current_weight - 0.6) > 0.01:
+                              print(f"Reweighting system-disk OSD {osd_id} to 0.6 (current: {current_weight})")
+                              subprocess.check_call(["ceph", "osd", "crush", "reweight", f"osd.{osd_id}", "0.6"])
+                          else:
+                              print(f"OSD {osd_id} already has weight 0.6. Skipping.")
+                  EOF
+              env:
+                - name: ROOK_CEPH_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: ceph-username
+                      name: rook-ceph-mon
+              volumeMounts:
+                - mountPath: /etc/ceph
+                  name: ceph-config
+                - mountPath: /etc/rook
+                  name: mon-endpoint-volume
+                - mountPath: /var/lib/rook-ceph-mon
+                  name: ceph-admin-secret
+              securityContext:
+                capabilities:
+                  drop:
+                    - ALL
+                runAsGroup: 2016
+                runAsNonRoot: true
+                runAsUser: 2016
+          restartPolicy: OnFailure
+          volumes:
+            - name: ceph-admin-secret
+              secret:
+                defaultMode: 420
+                items:
+                  - key: ceph-secret
+                    path: secret.keyring
+                secretName: rook-ceph-mon
+            - configMap:
+                defaultMode: 420
+                items:
+                  - key: data
+                    path: mon-endpoints
+                name: rook-ceph-mon-endpoints
+              name: mon-endpoint-volume
+            - emptyDir: {}
+              name: ceph-config
