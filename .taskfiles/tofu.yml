@@ -25,3 +25,45 @@ tasks:
     defer:
       # Cleanup state file on exit
       - rm -f terraform.tfstate
+
+  list-locks:
+    desc: List all locked Terraform resources across the cluster
+    cmds:
+      - |
+        LOCKS=$(kubectl get terraform -A -o json | jq -r '.items[] | select(.status.lock != null and .status.lock != {}) | "\(.metadata.namespace)/\(.metadata.name)\t\(.status.lock.lastApplied // .status.lock.pending // "N/A")"')
+        if [ -z "$LOCKS" ]; then
+          echo "No locked Terraform states found."
+        else
+          echo -e "NAMESPACE/NAME\tLOCK_ID"
+          echo -e "$LOCKS"
+        fi
+
+  unlock:
+    desc: Force unlock a Terraform state directly in the cluster
+    vars:
+      NAME: '{{.NAME | default "ingress-tunnel-infra"}}'
+      NS: '{{.NS | default "networking"}}'
+      LOCK_ID: "{{.LOCK_ID}}"
+    cmds:
+      - |
+        if [ -z "{{.LOCK_ID}}" ]; then
+          echo "Error: LOCK_ID is required."
+          echo "Usage: task tofu:unlock LOCK_ID=<lock-id> [NAME=ingress-tunnel-infra] [NS=networking]"
+          exit 1
+        fi
+        echo "Applying force-unlock patch to Terraform CR {{.NS}}/{{.NAME}}..."
+        kubectl patch terraform "{{.NAME}}" -n "{{.NS}}" --type merge -p '{"spec":{"tfstate":{"forceUnlock":"yes","lockIdentifier":"{{.LOCK_ID}}","lockTimeout":"0s"}}}'
+
+        echo "Waiting for state lock to be released..."
+        for i in {1..30}; do
+          LOCKED=$(kubectl get terraform "{{.NAME}}" -n "{{.NS}}" -o jsonpath='{.status.conditions[?(@.type=="StateLocked")].status}')
+          if [ "$LOCKED" != "True" ]; then
+            echo "State lock successfully released!"
+            break
+          fi
+          echo -n "."
+          sleep 2
+        done
+
+        echo "Removing force-unlock block from Terraform CR..."
+        kubectl patch terraform "{{.NAME}}" -n "{{.NS}}" --type merge -p '{"spec":{"tfstate":null}}'
