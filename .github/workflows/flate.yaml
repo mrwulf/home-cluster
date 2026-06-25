@@ -88,13 +88,14 @@ jobs:
         env:
           KIND: ${{ matrix.kind }}
         run: |
-          {
-            echo 'diff<<EOF'
-            flate diff "$KIND" --path ./pull --path-orig ./default
-            echo 'EOF'
-          } >> $GITHUB_OUTPUT
+          flate diff "$KIND" --path ./pull --path-orig ./default > diff.txt
+          if [ -s diff.txt ]; then
+            echo "has_diff=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_diff=false" >> $GITHUB_OUTPUT
+          fi
 
-      - if: ${{ steps.diff.outputs.diff != '' }}
+      - if: ${{ steps.diff.outputs.has_diff == 'true' }}
         name: Generate Token
         uses: actions/create-github-app-token@v3
         id: app-token
@@ -102,31 +103,46 @@ jobs:
           app-id: "${{ secrets.BOT_APP_ID }}"
           private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
 
-      - if: ${{ steps.diff.outputs.diff != '' }}
+      - if: ${{ steps.diff.outputs.has_diff == 'true' }}
         name: Add or Update Comment
         uses: actions/github-script@v9
         env:
-          DIFF: ${{ steps.diff.outputs.diff }}
           KIND: ${{ matrix.kind }}
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
-            const { DIFF, KIND } = process.env;
+            const fs = require('fs');
+            const { KIND } = process.env;
+            const diff = fs.readFileSync('diff.txt', 'utf8');
             const label = { helmrelease: "HelmRelease", kustomization: "Kustomization" }[KIND];
             const { owner, repo } = context.repo;
             const issue_number = context.issue.number;
             const marker = `<!-- Sticky Pull Request Comment${issue_number}/cluster/${KIND} -->`;
-            const body = [
+            let displayDiff = diff;
+            const maxCommentLength = 65000;
+            const header = [
               marker,
               `<details open><summary>${label} diff</summary>`,
               ``,
               "```diff",
-              DIFF,
+            ].join("\n");
+            const footer = [
               "```",
               ``,
               `</details>`,
               ``,
               `<sub>[Workflow run](${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId})</sub>`,
+            ].join("\n");
+
+            const maxDiffLength = maxCommentLength - header.length - footer.length - 100;
+            if (diff.length > maxDiffLength) {
+              displayDiff = diff.substring(0, maxDiffLength) + "\n\n... [TRUNCATED - Diff exceeds GitHub comment limit of 65k characters]";
+            }
+
+            const body = [
+              header,
+              displayDiff,
+              footer,
             ].join("\n");
 
             const comments = await github.paginate(github.rest.issues.listComments, {
