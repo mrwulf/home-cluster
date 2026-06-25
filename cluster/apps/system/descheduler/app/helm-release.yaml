@@ -60,6 +60,11 @@ spec:
                   memory: 20
                   pods: 25
                 useDeviationThresholds: true
+            - name: PodLifeTime
+              args:
+                maxPodLifeTimeSeconds: 300
+                states:
+                  - CreateContainerError
             - name: RemoveDuplicates
               args:
                 excludeOwnerKinds:
@@ -91,3 +96,4 @@ spec:
                 - RemovePodsViolatingNodeTaints
                 - RemovePodsViolatingNodeAffinity
                 - RemovePodsViolatingInterPodAntiAffinity
+                - PodLifeTime
