@@ -28,5 +28,9 @@ spec:
     serviceMonitor:
       enabled: true
       interval: 30m
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: instance
+          action: replace
     prometheusRules:
       enabled: true
