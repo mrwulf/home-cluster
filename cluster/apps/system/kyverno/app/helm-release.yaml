@@ -105,6 +105,8 @@ spec:
             memory: 226M
           limits:
             memory: 285M
+      extraArgs:
+        allowedResults: fail,warn,error
 
     grafana:
       enabled: true
