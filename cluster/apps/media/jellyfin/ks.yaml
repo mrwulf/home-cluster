@@ -30,8 +30,8 @@ spec:
       VOLSYNC_NFS_START_MINUTE: "25"
       VOLSYNC_B2_START_MINUTE: "55"
       VOLSYNC_CACHE_CAPACITY: "30Gi"
-      VOLSYNC_MOVER_MEMORY_REQUEST: 1Gi
-      VOLSYNC_MOVER_MEMORY_LIMIT: 2Gi
+      VOLSYNC_MOVER_MEMORY_REQUEST: 2Gi
+      VOLSYNC_MOVER_MEMORY_LIMIT: 4Gi
   retryInterval: 2m
 ---
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
