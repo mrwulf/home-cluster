@@ -22,13 +22,12 @@ spec:
     timezone: ${TIMEZONE}
     cronJobTimeZone: true
 
-    bootstrap:
-      resources:
-        requests:
-          cpu: 10m
-          memory: 32Mi
-        limits:
-          memory: 64Mi
+    initContainerResources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        memory: 64Mi
 
     webhook:
       certManager:
