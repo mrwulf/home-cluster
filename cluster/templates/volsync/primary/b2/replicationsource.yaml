@@ -11,10 +11,10 @@ spec:
   restic:
     moverResources:
       requests:
-        cpu: 100m
-        memory: 256Mi
+        cpu: "${VOLSYNC_MOVER_CPU_REQUEST:-100m}"
+        memory: "${VOLSYNC_MOVER_MEMORY_REQUEST:-256Mi}"
       limits:
-        memory: 512Mi
+        memory: "${VOLSYNC_MOVER_MEMORY_LIMIT:-512Mi}"
     repository: ${APP}-volsync-b2 # secret name
     pruneIntervalDays: 10
     retain:

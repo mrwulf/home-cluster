@@ -64,4 +64,6 @@ spec:
       VOLSYNC_CACHE_CAPACITY: "60Gi"
       APP_UID: "985"
       APP_GID: "977"
+      VOLSYNC_MOVER_MEMORY_REQUEST: 2Gi
+      VOLSYNC_MOVER_MEMORY_LIMIT: 4Gi
   retryInterval: 2m

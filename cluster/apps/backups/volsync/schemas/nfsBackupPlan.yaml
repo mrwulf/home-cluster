@@ -25,6 +25,9 @@ spec:
         retain: 'map[string]integer | default={"daily": 3, "weekly": 6, "monthly": 12}'
         cacheCapacity: string | default="20Gi"
         cacheStorageClass: string | default="openebs-hostpath"
+        moverCPURequest: string | default="100m"
+        moverMemoryRequest: string | default="256Mi"
+        moverMemoryLimit: string | default="512Mi"
       schedule: string | default="30 4 * * *"
     status:
       volumeStatus: ${pv.status.phase}
@@ -105,10 +108,10 @@ spec:
           restic:
             moverResources:
               requests:
-                cpu: 100m
-                memory: 256Mi
+                cpu: ${schema.spec.restic.moverCPURequest}
+                memory: ${schema.spec.restic.moverMemoryRequest}
               limits:
-                memory: 512Mi
+                memory: ${schema.spec.restic.moverMemoryLimit}
             repository: ${secret.metadata.name}
             pruneIntervalDays: ${schema.spec.restic.pruneIntervalDays}
             retain: ${schema.spec.restic.retain}
