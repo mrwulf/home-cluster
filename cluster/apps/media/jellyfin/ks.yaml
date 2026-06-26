@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -12,7 +11,7 @@ spec:
   dependsOn:
     - name: rook-ceph-cluster
     - name: intel-device-plugins-gpu
-  interval: 30m
+  interval: 1h
   path: ./cluster/apps/media/jellyfin/app
   components:
     - ../../../../templates/volsync/primary
@@ -31,6 +30,7 @@ spec:
       VOLSYNC_NFS_START_MINUTE: "25"
       VOLSYNC_B2_START_MINUTE: "55"
       VOLSYNC_CACHE_CAPACITY: "30Gi"
+  retryInterval: 2m
 ---
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -45,7 +45,7 @@ spec:
   dependsOn:
     - name: rook-ceph-cluster
     - name: jellyfin
-  interval: 30m
+  interval: 1h
   path: ./cluster/apps/media/jellyfin/meilisearch
   components:
     - ../../../../templates/volsync/primary
@@ -65,3 +65,4 @@ spec:
       VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_NFS_START_MINUTE: "48"
       VOLSYNC_B2_START_MINUTE: "13"
+  retryInterval: 2m

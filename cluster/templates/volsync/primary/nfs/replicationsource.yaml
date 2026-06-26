@@ -8,6 +8,12 @@ spec:
   sourcePVC: "${VOLSYNC_CLAIM:=${APP}}"
   trigger:
     schedule: "${VOLSYNC_NFS_START_MINUTE:=0} * * * *"
+  moverResources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
   restic:
     repository: ${APP}-volsync-nfs # secret name
     pruneIntervalDays: 10

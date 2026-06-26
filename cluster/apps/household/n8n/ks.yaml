@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://k8s-schemas.bjw-s.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -10,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  interval: 30m
+  interval: 1h
   timeout: 5m
   path: ./cluster/apps/household/n8n/app
   prune: true
@@ -33,3 +32,4 @@ spec:
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_NFS_START_MINUTE: "37"
       VOLSYNC_B2_START_MINUTE: "02"
+  retryInterval: 2m

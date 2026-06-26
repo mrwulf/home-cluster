@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -9,7 +8,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  interval: 30m
+  interval: 1h
   path: ./cluster/apps/vpn/qbittorrent/app/
   components:
     - ../../../../templates/volsync/primary
@@ -33,6 +32,7 @@ spec:
       VOLSYNC_NFS_START_MINUTE: "41"
       VOLSYNC_B2_START_MINUTE: "06"
 
+  retryInterval: 2m
 ---
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -44,7 +44,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  interval: 30m
+  interval: 1h
   path: ./cluster/templates/volsync/local-only
   prune: true
   sourceRef:
@@ -64,3 +64,4 @@ spec:
       VOLSYNC_CACHE_CAPACITY: "60Gi"
       APP_UID: "985"
       APP_GID: "977"
+  retryInterval: 2m

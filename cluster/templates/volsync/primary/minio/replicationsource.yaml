@@ -8,6 +8,12 @@ spec:
   sourcePVC: "${VOLSYNC_CLAIM:=${APP}}"
   trigger:
     schedule: "${VOLSYNC_MINIO_START_MINUTE:=0} */2 * * *"
+  moverResources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
   restic:
     repository: ${APP}-volsync-minio # secret name
     pruneIntervalDays: 10

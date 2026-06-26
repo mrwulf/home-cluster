@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -13,7 +12,7 @@ spec:
     - name: external-secrets-stores
     - name: volsync
     - name: dragonfly-cluster
-  interval: 30m
+  interval: 1h
   path: ./cluster/apps/household/paperless/app
   components:
     - ../../../../templates/volsync/primary
@@ -32,3 +31,4 @@ spec:
       VOLSYNC_CAPACITY: 20Gi
       VOLSYNC_NFS_START_MINUTE: "48"
       VOLSYNC_B2_START_MINUTE: "13"
+  retryInterval: 2m

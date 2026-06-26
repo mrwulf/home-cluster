@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -16,7 +15,7 @@ spec:
     kind: GitRepository
     name: flux-system
   wait: false
-  interval: 30m
+  interval: 1h
   retryInterval: 1m
   timeout: 5m
   postBuild:

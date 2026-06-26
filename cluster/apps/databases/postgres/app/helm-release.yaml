@@ -1,11 +1,10 @@
----
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: postgres
   namespace: databases
 spec:
-  interval: 30m
+  interval: 1h
   chart:
     spec:
       chart: cloudnative-pg

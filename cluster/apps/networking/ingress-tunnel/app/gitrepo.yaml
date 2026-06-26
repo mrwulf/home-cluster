@@ -4,7 +4,7 @@ metadata:
   name: tofu-infra-git
   namespace: networking
 spec:
-  interval: 30m
+  interval: 1h
   url: https://github.com/mrwulf/home-cluster.git
   ref:
     branch: main

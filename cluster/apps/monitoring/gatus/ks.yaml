@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -12,7 +11,7 @@ spec:
   dependsOn:
     - name: postgres-cluster
     - name: external-secrets-stores
-  interval: 30m
+  interval: 1h
   path: ./cluster/apps/monitoring/gatus/app
   prune: true
   sourceRef:
@@ -25,3 +24,4 @@ spec:
   postBuild:
     substitute:
       APP: *app
+  retryInterval: 2m

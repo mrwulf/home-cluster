@@ -1,11 +1,10 @@
----
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: external-dns-git
   namespace: flux-system
 spec:
-  interval: 30m
+  interval: 1h
   url: https://github.com/kubernetes-sigs/external-dns.git
   ref:
     tag: v0.21.0
@@ -21,10 +20,11 @@ metadata:
   name: 1-core-dns-external-dns-crds
   namespace: flux-system
 spec:
-  interval: 5m
+  interval: 1h
   prune: false
   wait: true
   dependsOn: []
   sourceRef:
     kind: GitRepository
     name: external-dns-git
+  retryInterval: 2m

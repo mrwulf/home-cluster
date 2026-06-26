@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/helmrepository-source-v1beta2.json
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
@@ -6,5 +5,5 @@ metadata:
   name: intel-charts
   namespace: flux-system
 spec:
-  interval: 2h
+  interval: 1h
   url: https://intel.github.io/helm-charts

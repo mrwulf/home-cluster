@@ -1,11 +1,10 @@
----
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: other-git
   namespace: flux-system
 spec:
-  interval: 30m
+  interval: 1h
   url: http://git.home.${SECRET_DOMAIN}/brandon/other.git
   ref:
     branch: main

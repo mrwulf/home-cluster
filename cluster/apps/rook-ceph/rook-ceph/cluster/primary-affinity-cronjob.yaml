@@ -17,6 +17,12 @@ spec:
           containers:
             - name: adjust-affinity
               image: quay.io/ceph/ceph:v20.2.2
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 128Mi
+                limits:
+                  memory: 256Mi
               command:
                 - /bin/bash
                 - -c

@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -9,7 +8,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  interval: 30m
+  interval: 1h
   path: ./cluster/apps/media/radarr/app
   components:
     - ../../../../templates/volsync/primary
@@ -31,3 +30,4 @@ spec:
       VOLSYNC_B2_START_MINUTE: "26"
       APP_UID: "568"
       APP_GID: "568"
+  retryInterval: 2m

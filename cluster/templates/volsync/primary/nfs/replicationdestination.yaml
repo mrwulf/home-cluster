@@ -7,6 +7,12 @@ metadata:
 spec:
   trigger:
     manual: restore-once
+  moverResources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
   restic:
     copyMethod: "${VOLSYNC_COPY_METHOD:-Snapshot}"
     ### Source (backup repository)

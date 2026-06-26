@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -12,7 +11,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: volsync
-  interval: 30m
+  interval: 1h
   path: ./cluster/apps/household/stirling-pdf/app
   components:
     - ../../../../templates/volsync/primary

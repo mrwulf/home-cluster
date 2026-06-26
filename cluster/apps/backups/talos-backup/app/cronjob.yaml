@@ -18,6 +18,12 @@ spec:
               image: ghcr.io/siderolabs/talosctl:latest
               workingDir: /tmp
               imagePullPolicy: IfNotPresent
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 64Mi
               securityContext:
                 runAsUser: 1000
                 runAsGroup: 1000

@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -21,7 +20,7 @@ spec:
     kind: GitRepository
     name: flux-system
   wait: false
-  interval: 30m
+  interval: 1h
   timeout: 5m
   postBuild:
     substitute:
@@ -31,3 +30,4 @@ spec:
       VOLSYNC_CAPACITY: 20Gi
       VOLSYNC_NFS_START_MINUTE: "08"
       VOLSYNC_B2_START_MINUTE: "33"
+  retryInterval: 2m

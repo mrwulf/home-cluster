@@ -102,6 +102,12 @@ spec:
           sourcePVC: ${pvc.metadata.name}
           trigger:
             schedule: ${schema.spec.schedule}
+          moverResources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
           restic:
             repository: ${secret.metadata.name}
             pruneIntervalDays: ${schema.spec.restic.pruneIntervalDays}
