@@ -8,13 +8,13 @@ spec:
   sourcePVC: "${VOLSYNC_CLAIM:=${APP}}"
   trigger:
     schedule: "${VOLSYNC_B2_START_MINUTE:=0} */4 * * *"
-  moverResources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      memory: 512Mi
   restic:
+    moverResources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
     repository: ${APP}-volsync-b2 # secret name
     pruneIntervalDays: 10
     retain:
