@@ -41,3 +41,39 @@ tasks:
     cmds:
       - |
         kubectl get nodes -owide --sort-by='{.metadata.creationTimestamp}'
+
+  sync-antigravity:
+    desc: "Sync local Antigravity extensions to code-server pod"
+    interactive: false
+    silent: false
+    cmds:
+      - |
+        POD_NAME=$(kubectl get pods -n development -l app.kubernetes.io/name=code-server -o jsonpath='{.items[0].metadata.name}')
+        if [ -z "$POD_NAME" ]; then
+          echo "Error: code-server pod not found in development namespace."
+          exit 1
+        fi
+        echo "Found code-server pod: $POD_NAME"
+        for ext in antigravity antigravity-code-executor antigravity-dev-containers antigravity-remote-openssh antigravity-remote-wsl; do
+          if [ -d "/opt/antigravity-ide-Linux/resources/app/extensions/$ext" ]; then
+            echo "Copying $ext to pod..."
+            kubectl cp -n development "/opt/antigravity-ide-Linux/resources/app/extensions/$ext" "$POD_NAME:/home/coder/.vscode/$ext"
+          else
+            echo "Warning: Local extension directory /opt/antigravity-ide-Linux/resources/app/extensions/$ext not found."
+          fi
+        done
+        for ext in antigravity antigravity-code-executor; do
+          echo "Patching extensionKind in $ext..."
+          kubectl exec -n development "$POD_NAME" -- node -e "
+            const fs = require('fs');
+            const path = '/home/coder/.vscode/$ext/package.json';
+            if (fs.existsSync(path)) {
+              const p = JSON.parse(fs.readFileSync(path, 'utf8'));
+              p.extensionKind = ['workspace'];
+              fs.writeFileSync(path, JSON.stringify(p, null, 2));
+              console.log('Successfully set extensionKind to [workspace] in ' + path);
+            }
+          "
+        done
+        echo "Restarting code-server pod to load new extensions..."
+        kubectl rollout restart -n development statefulset/code-server

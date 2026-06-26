@@ -41,6 +41,10 @@ spec:
               - /home/coder/.vscode
               - --port
               - "8080"
+              - --enable-proposed-api
+              - google.antigravity
+              - --enable-proposed-api
+              - google.antigravity-code-executor
               - --proxy-domain
               - &host "code.home.${SECRET_DOMAIN}"
               - /home/coder
