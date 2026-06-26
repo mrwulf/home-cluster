@@ -6,6 +6,7 @@ metadata:
 spec:
   name: Kubernetes
   clientID: 287821e5-f31e-4073-9b2c-c30775e9fee6
+  launchUrl: https://headlamp.home.${SECRET_DOMAIN}/
   isPublic: true
   pkceEnabled: true
   callbackUrls:
