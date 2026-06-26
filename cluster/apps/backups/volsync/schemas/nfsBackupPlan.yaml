@@ -27,7 +27,7 @@ spec:
         cacheStorageClass: string | default="openebs-hostpath"
         moverCPURequest: string | default="100m"
         moverMemoryRequest: string | default="256Mi"
-        moverMemoryLimit: string | default="512Mi"
+        moverMemoryLimit: string | default="1Gi"
       schedule: string | default="30 4 * * *"
     status:
       volumeStatus: ${pv.status.phase}

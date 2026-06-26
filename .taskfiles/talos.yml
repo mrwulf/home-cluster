@@ -22,6 +22,8 @@ vars:
     sh: echo '{{.NODE_LIST_MASTERSFIRST}}' | tr ',' '\n' | tac | tr '\n' ',' | sed 's/,$//' | sed 's/^,//'
   ONE_MASTER:
     sh: echo '{{.MASTER_LIST}}' | tr ',' '\n' | shuf | head -n1
+  # renovate: depName=brytonsalisbury/meshcmd datasource=docker
+  MESHCMD_IMAGE: brytonsalisbury/meshcmd:amd64@sha256:e2462d90f44370f9acf1d7108aee80a3826b5c50a17c9fa738d37070ca651201
 
 tasks:
   list:
@@ -113,6 +115,14 @@ tasks:
         xdg-open http://localhost:8080/ >/dev/null 2>&1
         docker run --rm -it --volume ${HOME}/.talos/config:/opt/talosconfig:ro --env TALOSCONFIG=/opt/talosconfig \
                             --publish 8080:8080 ghcr.io/siderolabs/theila:latest --address 0.0.0.0 >/dev/null 2>&1
+
+  kvm:
+    desc: Run Mesh Commander
+    interactive: true
+    cmds:
+      - |
+        docker run --name mesh -p 3000:3000 --network host --rm -it {{.MESHCMD_IMAGE}}
+
   generate-secrets:
     dir: "{{.PROJECT_DIR}}"
     vars:

@@ -14,7 +14,7 @@ spec:
         cpu: "${VOLSYNC_MOVER_CPU_REQUEST:-100m}"
         memory: "${VOLSYNC_MOVER_MEMORY_REQUEST:-256Mi}"
       limits:
-        memory: "${VOLSYNC_MOVER_MEMORY_LIMIT:-512Mi}"
+        memory: "${VOLSYNC_MOVER_MEMORY_LIMIT:-1Gi}"
     repository: ${APP}-volsync-nfs # secret name
     pruneIntervalDays: 10
     retain:

@@ -16,6 +16,9 @@
         // # renovate: depName=rancher/system-upgrade-controller datasource=github-releases
         // https://github.com/rancher/system-upgrade-controller/releases/download/v0.13.2/crd.yaml
         "depName=(?<depName>\\S+) datasource=(?<datasource>\\S+)\\n.+/(?<currentValue>(v|\\d)[^/]+)",
+        // # renovate: depName=brytonsalisbury/meshcmd datasource=docker
+        // MESHCMD_IMAGE: brytonsalisbury/meshcmd:amd64@sha256:e2462d90f44370f9acf1d7108aee80a3826b5c50a17c9fa738d37070ca651201
+        "depName=(?<depName>\\S+) datasource=(?<datasource>\\S+)\\n.+ \\S+:(?<currentValue>[a-zA-Z0-9._-]+)@(?<currentDigest>sha256:[0-9a-f]{64})",
       ],
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
     },
