@@ -1,9 +1,0 @@
----
-apiVersion: toolhive.stacklok.dev/v1beta1
-kind: MCPServer
-metadata:
-  name: mcp-traefik
-spec:
-  # renovate: depName=ghcr.io/stacklok/toolhive/mcp-traefik datasource=docker
-  image: ghcr.io/stacklok/toolhive/mcp-traefik:v0.1.0
-  transport: sse

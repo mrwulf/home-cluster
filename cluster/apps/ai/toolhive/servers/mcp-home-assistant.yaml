@@ -4,6 +4,21 @@ kind: MCPServer
 metadata:
   name: mcp-home-assistant
 spec:
-  # renovate: depName=ghcr.io/stacklok/toolhive/mcp-home-assistant datasource=docker
-  image: ghcr.io/stacklok/toolhive/mcp-home-assistant:v0.1.0
-  transport: sse
+  # renovate: depName=ghcr.io/homeassistant-ai/ha-mcp datasource=docker
+  image: ghcr.io/homeassistant-ai/ha-mcp:2.3.1
+  transport: streamable-http
+  env:
+    - name: HOMEASSISTANT_URL
+      value: http://home-assistant.household.svc.cluster.local:8123
+  podTemplateSpec:
+    spec:
+      containers:
+        - name: mcp
+          command:
+            - ha-mcp-web
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

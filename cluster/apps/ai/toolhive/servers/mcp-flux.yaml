@@ -4,6 +4,28 @@ kind: MCPServer
 metadata:
   name: mcp-flux
 spec:
-  # renovate: depName=ghcr.io/stacklok/toolhive/mcp-flux datasource=docker
-  image: ghcr.io/stacklok/toolhive/mcp-flux:v0.1.0
-  transport: sse
+  # renovate: depName=ghcr.io/controlplaneio-fluxcd/flux-operator-mcp datasource=docker
+  image: ghcr.io/controlplaneio-fluxcd/flux-operator-mcp:v0.21.0
+  transport: streamable-http
+  proxyMode: streamable-http
+  proxyPort: 8080
+  mcpPort: 8000
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+  podTemplateSpec:
+    spec:
+      containers:
+        - name: mcp
+          args:
+            - serve
+            - --transport=http
+            - --port=8000
+          env:
+            - name: RUNTIME_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

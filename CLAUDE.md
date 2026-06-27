@@ -45,6 +45,8 @@ These apply to **every** change. Do not check anything in that violates them.
 10. **Completely fulfill approved implementation plans.** Before concluding execution, review the approved implementation plan to verify that
     all agreed-upon design details (authentication, secrets, networking, observability) are fully built and tested.
 
+11. **Verify and pin container image tags.** Never use mutable `latest` image tags — always specify explicit, stable version tags for all container workloads and MCP servers.
+
 ## Toolchain
 
 | Concern           | Choice                                                                                                                         |

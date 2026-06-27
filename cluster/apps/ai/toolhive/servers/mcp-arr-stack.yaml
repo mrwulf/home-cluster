@@ -4,13 +4,47 @@ kind: MCPServer
 metadata:
   name: mcp-arr-stack
 spec:
-  # renovate: depName=ghcr.io/stacklok/toolhive/mcp-arr-stack datasource=docker
-  image: ghcr.io/stacklok/toolhive/mcp-arr-stack:v0.1.0
-  transport: sse
+  # renovate: depName=docker.io/node datasource=docker
+  image: docker.io/node:24-alpine
+  transport: stdio
+  proxyMode: streamable-http
+  proxyPort: 8080
   env:
+    - name: HOME
+      value: /tmp
+    - name: NPM_CONFIG_CACHE
+      value: /tmp/.npm
+    - name: SONARR_URL
+      value: http://sonarr.media.svc.cluster.local:8989
+    - name: RADARR_URL
+      value: http://radarr.media.svc.cluster.local:7878
+    - name: PROWLARR_URL
+      value: http://prowlarr.vpn.svc.cluster.local:9696
     - name: SONARR_API_KEY
       value: "${SONARR_APIKEY}"
     - name: RADARR_API_KEY
       value: "${RADARR_APIKEY}"
     - name: PROWLARR_API_KEY
       value: "${PROWLARR_APIKEY}"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+  podTemplateSpec:
+    spec:
+      containers:
+        - name: mcp
+          image: docker.io/node:24-alpine
+          command:
+            - npx
+          args:
+            - -y
+            - mcp-arr-server@1.5.4
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
