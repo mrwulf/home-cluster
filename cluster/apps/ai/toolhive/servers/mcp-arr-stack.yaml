@@ -7,13 +7,10 @@ spec:
   # renovate: depName=ghcr.io/stacklok/toolhive/mcp-arr-stack datasource=docker
   image: ghcr.io/stacklok/toolhive/mcp-arr-stack:v0.1.0
   transport: sse
-  secrets:
-    - name: mcp-arr-secret
-      key: SONARR_APIKEY
-      targetEnvName: SONARR_API_KEY
-    - name: mcp-arr-secret
-      key: RADARR_APIKEY
-      targetEnvName: RADARR_API_KEY
-    - name: mcp-arr-secret
-      key: PROWLARR_APIKEY
-      targetEnvName: PROWLARR_API_KEY
+  env:
+    - name: SONARR_API_KEY
+      value: "${SONARR_APIKEY}"
+    - name: RADARR_API_KEY
+      value: "${RADARR_APIKEY}"
+    - name: PROWLARR_API_KEY
+      value: "${PROWLARR_APIKEY}"

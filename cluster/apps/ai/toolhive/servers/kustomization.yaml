@@ -7,7 +7,6 @@ resources:
   - ./externalsecret-forgejo.yaml
   - ./externalsecret-github.yaml
   - ./externalsecret-postgres.yaml
-  - ./externalsecret-arr.yaml
   - ./mcp-kubernetes.yaml
   - ./mcp-flux.yaml
   - ./mcp-postgres.yaml
