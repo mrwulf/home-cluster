@@ -10,3 +10,9 @@ spec:
   env:
     - name: HOMEASSISTANT_URL
       value: http://home-assistant.household.svc.cluster.local:8123
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi

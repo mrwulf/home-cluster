@@ -10,3 +10,9 @@ spec:
   env:
     - name: GITHUB_PERSONAL_ACCESS_TOKEN
       value: "${GITHUB_TOKEN}"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi

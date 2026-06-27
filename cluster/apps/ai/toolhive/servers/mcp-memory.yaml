@@ -7,3 +7,9 @@ spec:
   # renovate: depName=ghcr.io/bjw-s-labs/mcp-memory datasource=docker
   image: ghcr.io/bjw-s-labs/mcp-memory:2026.1.26@sha256:df4a7e3709dfe363cd9048df13b2aed7f13ee135f07d07cd318d69f7e058abd8
   transport: sse
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
