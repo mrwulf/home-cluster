@@ -86,8 +86,8 @@ For AI frameworks running directly inside the Kubernetes cluster (e.g., **Open W
 | **`mcp-kubernetes`** | Pod logs, crashes, events, resource status | Cluster RBAC |
 | **`mcp-github`** | GitHub PRs, issues & workflow status | `mcp-github-secret` |
 | **`mcp-memory`** | Persistent AI knowledge graph storage | In-Memory / PVC |
-| **`mcp-flux`** | Flux GitOps reconciliation & drift auditing | Cluster RBAC |
-| **`mcp-home-assistant`** | Home Assistant IoT entity & automation control | Local Network |
+| **`mcp-flux`** | Flux GitOps reconciliation & drift auditing | `mcp-flux` RBAC |
+| **`mcp-home-assistant`** | Home Assistant IoT entity & automation control | `mcp-home-assistant-secret` |
 | **`mcp-arr-stack`** | Sonarr, Radarr, Prowlarr management | Flux Secrets / Env |
 
 ---

@@ -1,8 +1,61 @@
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mcp-flux
+  namespace: ai
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: mcp-flux-readonly
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubectl-mcp-readonly
+subjects:
+  - kind: ServiceAccount
+    name: mcp-flux
+    namespace: ai
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: mcp-flux-write
+rules:
+  - apiGroups:
+      - fluxcd.controlplane.io
+      - helm.toolkit.fluxcd.io
+      - image.toolkit.fluxcd.io
+      - kustomize.toolkit.fluxcd.io
+      - notification.toolkit.fluxcd.io
+      - source.toolkit.fluxcd.io
+    resources:
+      - "*"
+    verbs:
+      - create
+      - patch
+      - update
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: mcp-flux-write
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: mcp-flux-write
+subjects:
+  - kind: ServiceAccount
+    name: mcp-flux
+    namespace: ai
+---
 apiVersion: toolhive.stacklok.dev/v1beta1
 kind: MCPServer
 metadata:
   name: mcp-flux
+  namespace: ai
 spec:
   # renovate: depName=ghcr.io/controlplaneio-fluxcd/flux-operator-mcp datasource=docker
   image: ghcr.io/controlplaneio-fluxcd/flux-operator-mcp:v0.21.0
@@ -10,6 +63,7 @@ spec:
   proxyMode: streamable-http
   proxyPort: 8080
   mcpPort: 8000
+  serviceAccount: mcp-flux
   resources:
     requests:
       cpu: 100m
