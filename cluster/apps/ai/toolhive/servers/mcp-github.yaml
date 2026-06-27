@@ -7,9 +7,10 @@ spec:
   # renovate: depName=ghcr.io/github/github-mcp-server datasource=docker
   image: ghcr.io/github/github-mcp-server:v0.1.0
   transport: sse
-  env:
-    - name: GITHUB_PERSONAL_ACCESS_TOKEN
-      value: "${GITHUB_TOKEN}"
+  secrets:
+    - name: mcp-github-secret
+      key: GITHUB_TOKEN
+      targetEnvName: GITHUB_PERSONAL_ACCESS_TOKEN
   resources:
     requests:
       cpu: 50m
