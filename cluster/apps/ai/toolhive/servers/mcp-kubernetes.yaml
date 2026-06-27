@@ -6,7 +6,9 @@ metadata:
 spec:
   # renovate: depName=mcp/kubernetes datasource=docker
   image: mcp/kubernetes:latest@sha256:bc47271be7b8a49c151e04ed06f2b3fdb4e2a28629e7cace76b18669a430f3f0
-  transport: sse
+  transport: stdio
+  proxyMode: streamable-http
+  proxyPort: 8080
   resources:
     requests:
       cpu: 50m
