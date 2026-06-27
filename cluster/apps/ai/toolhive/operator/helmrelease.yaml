@@ -13,10 +13,7 @@ spec:
   values:
     operator:
       rbac:
-        scope: namespace
-      allowedNamespaces:
-        - ai
-        - development
+        scope: cluster
       resources:
         requests:
           cpu: 100m
