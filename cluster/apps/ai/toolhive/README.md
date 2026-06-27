@@ -84,3 +84,4 @@ For AI frameworks running directly inside the Kubernetes cluster (e.g., **Open W
 | **`mcp-traefik`**         | Ingress route & middleware inspection      | Cluster RBAC            |
 | **`mcp-kyverno`**         | Cluster policy compliance auditing         | Cluster RBAC            |
 | **`mcp-memory`**          | Persistent AI knowledge graph storage      | In-Memory / PVC         |
+| **`mcp-searxng`**         | Privacy-preserving web search & markdown   | Internal Cluster DNS    |

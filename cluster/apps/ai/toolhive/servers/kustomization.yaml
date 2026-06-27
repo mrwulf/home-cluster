@@ -20,3 +20,4 @@ resources:
   - ./mcp-traefik.yaml
   - ./mcp-kyverno.yaml
   - ./mcp-memory.yaml
+  - ./mcp-searxng.yaml

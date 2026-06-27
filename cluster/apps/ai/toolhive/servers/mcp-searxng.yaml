@@ -1,0 +1,12 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: mcp-searxng
+spec:
+  # renovate: depName=ghcr.io/stacklok/toolhive/mcp-searxng datasource=docker
+  image: ghcr.io/stacklok/toolhive/mcp-searxng:v0.1.0
+  transport: sse
+  env:
+    - name: SEARXNG_URL
+      value: "http://searxng.ai.svc.cluster.local:8080"
