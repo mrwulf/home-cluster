@@ -33,6 +33,9 @@ These apply to **every** change. Do not check anything in that violates them.
 
 6. **Never set CPU limits.** CPU limits can cause unnecessary throttling in Kubernetes. Always define CPU requests to guarantee resources, but avoid setting CPU limits.
 
+7. **Protect PII and local paths.** Never commit local filesystem paths, personal usernames, or any Personally Identifiable Information (PII).
+   Since this repository is public, all local paths and personal metadata must be kept strictly out of committed code and documentation.
+
 ## Toolchain
 
 | Concern           | Choice                                                                                                                         |
@@ -83,7 +86,7 @@ talos/                       # talconfig.yaml, talsecret.sops.yaml
 3. **`ks.yaml`** — copy an existing one (e.g. [goldilocks](cluster/apps/monitoring/goldilocks/ks.yaml)): `targetNamespace`, `path: ./cluster/apps/<ns>/<app>/app`, `postBuild.substitute.APP`.
 4. **`app/kustomization.yaml`** lists the resources.
 5. **Register** the app's `ks.yaml` in `cluster/apps/<namespace>/kustomization.yaml`.
-6. **Postgres database backups:** If the app uses a PostgreSQL database, you MUST add its database name to the `POSTGRES_DB` list in the `postgres-backup` CronJob at [cronjob.yaml](cluster/apps/databases/postgres/backups/cronjob.yaml).
+6. **Postgres database backups:** If the app uses a PostgreSQL database, you MUST add its database name to the `POSTGRES_DB` list in the `postgres16-backup` CronJob at [cronjob16.yaml](cluster/apps/databases/postgres/backups/cronjob16.yaml).
    Always prefer the postgres16 database instance - the postgres instance is mostly just used for immich since it needs vector extensions.
 7. **Namespaces:** Do not specify `metadata.namespace` in application resource manifests (like Ingress, Service, ConfigMap, Secrets) unless absolutely necessary.
    Let the Flux `Kustomization`'s `targetNamespace` handle namespace assignment automatically.

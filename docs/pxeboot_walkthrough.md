@@ -2,7 +2,7 @@
 
 This walkthrough summarizes the actions taken to set up PXE booting for your Talos cluster on your native network.
 
-We have prepared all the necessary files in your local workspace: `/home/bwulf/myhome/GitRoot/home-cluster/pxe-files/`
+We have prepared all the necessary files in your local workspace: `./pxe-files/`
 This includes:
 
 - `vmlinuz-v1.12.4` and `initramfs-v1.12.4.xz` for Talos Linux `v1.12.4`
@@ -21,13 +21,13 @@ Since we don't have the IP of your OPNsense firewall, you will need to replace `
 ssh root@<OPNsense-IP> "mkdir -p /usr/local/tftp/talos /usr/local/etc/dhcpd.opnsense.d"
 
 # Copy the TFTP files
-scp /home/bwulf/myhome/GitRoot/home-cluster/pxe-files/ipxe.efi root@<OPNsense-IP>:/usr/local/tftp/
-scp /home/bwulf/myhome/GitRoot/home-cluster/pxe-files/boot.ipxe root@<OPNsense-IP>:/usr/local/tftp/
-scp /home/bwulf/myhome/GitRoot/home-cluster/pxe-files/vmlinuz-v1.12.4 root@<OPNsense-IP>:/usr/local/tftp/talos/
-scp /home/bwulf/myhome/GitRoot/home-cluster/pxe-files/initramfs-v1.12.4.xz root@<OPNsense-IP>:/usr/local/tftp/talos/
+scp pxe-files/ipxe.efi root@<OPNsense-IP>:/usr/local/tftp/
+scp pxe-files/boot.ipxe root@<OPNsense-IP>:/usr/local/tftp/
+scp pxe-files/vmlinuz-v1.12.4 root@<OPNsense-IP>:/usr/local/tftp/talos/
+scp pxe-files/initramfs-v1.12.4.xz root@<OPNsense-IP>:/usr/local/tftp/talos/
 
 # Copy the DHCP custom configuration
-scp /home/bwulf/myhome/GitRoot/home-cluster/pxe-files/boot.conf root@<OPNsense-IP>:/usr/local/etc/dhcpd.opnsense.d/
+scp pxe-files/boot.conf root@<OPNsense-IP>:/usr/local/etc/dhcpd.opnsense.d/
 ```
 
 ### 2. Configure OPNsense GUI

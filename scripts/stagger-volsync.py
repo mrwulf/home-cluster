@@ -3,7 +3,7 @@ import os
 import re
 import hashlib
 
-root_dir = "/home/bwulf/myhome/GitRoot/home-cluster"
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 def get_staggered_minutes(app_name, doc):
     # Search for VOLSYNC_CAPACITY: e.g. "20Gi", "200Gi", "500Mi"
