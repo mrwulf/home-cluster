@@ -1,0 +1,9 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: mcp-home-assistant
+spec:
+  # renovate: depName=ghcr.io/stacklok/toolhive/mcp-home-assistant datasource=docker
+  image: ghcr.io/stacklok/toolhive/mcp-home-assistant:v0.1.0
+  transport: sse

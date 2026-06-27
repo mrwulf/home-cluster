@@ -1,0 +1,28 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: toolhive
+  annotations:
+    gatus.io/enabled: "true"
+spec:
+  parentRefs:
+    - name: internal-gateway
+      namespace: networking
+  hostnames:
+    - "toolhive.home.${SECRET_DOMAIN}"
+  rules:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: rfc1918-ips
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: traefik-middleware-chain-pocket-id
+      backendRefs:
+        - name: toolhive-operator-proxy
+          port: 8080

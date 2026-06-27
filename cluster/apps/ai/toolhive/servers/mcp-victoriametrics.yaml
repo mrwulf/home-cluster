@@ -1,0 +1,9 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: mcp-victoriametrics
+spec:
+  # renovate: depName=ghcr.io/stacklok/toolhive/mcp-victoriametrics datasource=docker
+  image: ghcr.io/stacklok/toolhive/mcp-victoriametrics:v0.1.0
+  transport: sse

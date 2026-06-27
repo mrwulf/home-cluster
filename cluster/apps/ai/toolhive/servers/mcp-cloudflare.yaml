@@ -1,0 +1,13 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: mcp-cloudflare
+spec:
+  # renovate: depName=ghcr.io/stacklok/toolhive/mcp-cloudflare datasource=docker
+  image: ghcr.io/stacklok/toolhive/mcp-cloudflare:v0.1.0
+  transport: sse
+  secrets:
+    - name: mcp-cloudflare-secret
+      key: CLOUDFLARE_API_TOKEN
+      targetEnvName: CLOUDFLARE_API_TOKEN

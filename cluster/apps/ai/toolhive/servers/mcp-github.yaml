@@ -1,0 +1,13 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: mcp-github
+spec:
+  # renovate: depName=ghcr.io/github/github-mcp-server datasource=docker
+  image: ghcr.io/github/github-mcp-server:v1.0.0
+  transport: sse
+  secrets:
+    - name: mcp-github-secret
+      key: GITHUB_TOKEN
+      targetEnvName: GITHUB_PERSONAL_ACCESS_TOKEN

@@ -1,0 +1,29 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: toolhive
+  labels:
+    app.kubernetes.io/name: toolhive
+spec:
+  groups:
+    - name: toolhive
+      rules:
+        - alert: ToolHiveOperatorAbsent
+          annotations:
+            description: ToolHive Operator pod is absent or failing health checks.
+            summary: ToolHive Operator is down.
+          expr: |
+            absent(up{job=~".*toolhive-operator.*"} == 1)
+          for: 10m
+          labels:
+            severity: critical
+        - alert: ToolHiveMCPServerCrashLooping
+          annotations:
+            description: MCPServer pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is crashlooping.
+            summary: ToolHive MCPServer instance is crashing.
+          expr: |
+            rate(kube_pod_container_status_restarts_total{pod=~"mcp-.*"}[5m]) * 60 > 2
+          for: 5m
+          labels:
+            severity: warning

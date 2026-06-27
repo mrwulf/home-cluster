@@ -134,6 +134,7 @@ spec:
               kinds:
                 - Namespace
               names:
+                - ai
                 - auth
       generate:
         generateExisting: true
@@ -152,6 +153,7 @@ spec:
               kinds:
                 - Namespace
               names:
+                - ai
                 - auth
       generate:
         generateExisting: true

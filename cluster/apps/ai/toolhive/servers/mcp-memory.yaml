@@ -1,0 +1,9 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: mcp-memory
+spec:
+  # renovate: depName=ghcr.io/stacklok/toolhive/mcp-memory datasource=docker
+  image: ghcr.io/stacklok/toolhive/mcp-memory:v0.1.0
+  transport: sse

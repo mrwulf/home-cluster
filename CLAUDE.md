@@ -36,6 +36,15 @@ These apply to **every** change. Do not check anything in that violates them.
 7. **Protect PII and local paths.** Never commit local filesystem paths, personal usernames, or any Personally Identifiable Information (PII).
    Since this repository is public, all local paths and personal metadata must be kept strictly out of committed code and documentation.
 
+8. **Strictly adhere to the DRY (Don't Repeat Yourself) principle.** Never duplicate configurations, secrets, credentials, or code patterns across the cluster unless explicitly allowed to deviate.
+   Any intentional deviation must be documented with a clear comment explaining why.
+
+9. **Enforce least privilege and security isolation.** Workloads and tools must only have access to the bare minimum secrets, credentials, and network permissions required for their specific function.
+   Never create monolithic shared secrets across multiple separate components.
+
+10. **Completely fulfill approved implementation plans.** Before concluding execution, review the approved implementation plan to verify that
+    all agreed-upon design details (authentication, secrets, networking, observability) are fully built and tested.
+
 ## Toolchain
 
 | Concern           | Choice                                                                                                                         |

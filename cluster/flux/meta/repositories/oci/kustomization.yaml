@@ -9,3 +9,5 @@ resources:
   - ./forgejo-runner.yaml
   - ./pocket-id-operator.yaml
   - ./ceph-csi-drivers.yaml
+  - ./toolhive-operator-crds.yaml
+  - ./toolhive-operator.yaml

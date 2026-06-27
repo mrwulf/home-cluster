@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./externalsecret-cloudflare.yaml
+  - ./externalsecret-forgejo.yaml
+  - ./externalsecret-github.yaml
+  - ./externalsecret-postgres.yaml
+  - ./externalsecret-arr.yaml
+  - ./mcp-kubernetes.yaml
+  - ./mcp-flux.yaml
+  - ./mcp-postgres.yaml
+  - ./mcp-forgejo.yaml
+  - ./mcp-github.yaml
+  - ./mcp-gatus.yaml
+  - ./mcp-victoriametrics.yaml
+  - ./mcp-home-assistant.yaml
+  - ./mcp-arr-stack.yaml
+  - ./mcp-cloudflare.yaml
+  - ./mcp-traefik.yaml
+  - ./mcp-kyverno.yaml
+  - ./mcp-memory.yaml
