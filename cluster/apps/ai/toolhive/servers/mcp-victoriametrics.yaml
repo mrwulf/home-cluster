@@ -16,6 +16,8 @@ spec:
       value: http://vmsingle-stack.monitoring.svc.cluster.local:8428
     - name: VM_INSTANCE_TYPE
       value: single
+    - name: MCP_LOG_LEVEL
+      value: error
   resources:
     requests:
       cpu: 50m
