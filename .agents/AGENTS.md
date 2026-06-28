@@ -14,30 +14,18 @@
 10. **Fulfill Implementation Plans**: Verify all design components (auth, secrets, networking, observability) before completion.
 11. **Pin Container Tags**: Never use unpinned `latest` tags without immutable SHA256 digests.
 
-## ToolHive & MCP Server Operations
+## Mandatory Tool Usage & Operation Rules
 
-1. **ToolHive Transport Architecture**:
-   - Container binaries that run over standard I/O (e.g., `github-mcp-server`, `mcp/kubernetes`, `mcp-memory`, `ha-mcp`, `flux-operator-mcp`, `mcp-arr-server`) MUST be configured in `MCPServer` CRDs with `transport: stdio` and `proxyMode: streamable-http` (port `8080`).
-   - ToolHive proxy runner executes stdio binaries locally inside the pod and exposes a streamable HTTP/SSE endpoint on port 8080.
+1. **Tool-First Policy**: NEVER write bespoke Python scripts, shell scripts, or raw HTTP/curl scripts to interact with systems covered by active MCP tools. Dedicated MCP tools MUST always be used first. Writing custom scripts is strictly prohibited unless an MCP tool explicitly lacks the required capability.
 
-2. **Virtual MCP Server (vMCP) Gateway Aggregation**:
-   - Instead of routing external Gateway API traffic to individual per-server proxy services or a non-existent central operator proxy, aggregate backend workloads into an `MCPGroup` (`toolhive-servers`).
-   - Deploy a `VirtualMCPServer` (`toolhive-gateway`) with `incomingAuth.type: anonymous` and `groupRef.name: toolhive-servers`.
-   - Configure `spec.config.aggregation.conflictResolution: priority` to preserve concise native tool names (preventing tool names from exceeding the 64-character regex limit `^[a-zA-Z0-9_-]{1,64}$` when client prefixes are prepended).
-   - Point HTTPRoute backends to `vmcp-toolhive-gateway` on port `4483` so clients connect to a single unified SSE URL (`/sse`).
-
-3. **Flux & Bitwarden Secret Mapping**:
-   - Always verify secret key names in `cluster/flux/meta/cluster-secrets.sops.yaml`.
-   - GitHub API token variable is `${BW_GITHUB}`.
-   - Home Assistant API token variable is `${BW_HOMEASSISTANT}`.
-   - ExternalSecrets matching custom fields in Bitwarden must reference property names explicitly (e.g., `property: "flux-notifier-apikey"` or `property: "token"`).
-
-4. **Kubernetes StatefulSet Lifecycle**:
-   - Updating `MCPServer` CRDs updates deployment proxy runners, but existing `statefulset.apps/mcp-<name>` pods do NOT automatically restart or pick up spec changes.
-   - Recycle statefulset pods via `kubectl delete pod mcp-<name>-0 -n ai` after CRD generation updates to force clean reconciliation.
-
-5. **Resource Limits & Admission Policies**:
-   - Every `MCPServer` and `VirtualMCPServer` spec MUST include container resource requests (`cpu: 50m`, `memory: 64Mi`) and memory limits (`memory: 256Mi` / `512Mi`) to comply with cluster Kyverno admission policies (`require-requests-limits`).
-
-6. **Writable Temporary Storage for Python Workloads**:
-   - Python-based MCP servers (e.g. `ha-mcp` / `fastmcp`) require a writable `/tmp` directory for IPC pipes and temporary buffers. Under read-only/restricted security contexts, explicitly attach an `emptyDir` volume mounted at `/tmp` via `podTemplateSpec`.
+2. **MCP Server Tool Matrix**:
+   - **`mcp-kubernetes`**: Inspecting pods, deployments, services, events, logs, and metrics in the cluster. Prefer over raw `kubectl`.
+   - **`mcp-github`**: Searching code, checking commits, managing pull requests/issues, and inspecting GHCR.io container registries.
+   - **`mcp-flux`**: Inspecting Flux `GitRepository`, `Kustomization`, and `HelmRelease` statuses or debugging reconciliation failures.
+   - **`mcp-grafana`**: Querying Loki logs, inspecting Grafana dashboards, viewing panels, and checking alert manager routing/rules.
+   - **`mcp-victoriametrics`**: Running PromQL queries to inspect cluster memory/CPU usage trends, node statistics, and metrics.
+   - **`mcp-searxng`**: Web searching via private internal SearXNG meta-search engine for documentation, releases, or troubleshooting.
+   - **`mcp-kubesearch`**: Searching upstream Helm charts, chart values (`values.yaml`), release history, and container image versions.
+   - **`mcp-arr-stack`**: Checking Radarr/Sonarr download queues, reviewing media libraries, searching missing episodes/movies, and indexer status via Prowlarr.
+   - **`mcp-home-assistant`**: Inspecting smart home entity states, listing devices/areas, evaluating HA templates, and triggering automation events.
+   - **`mcp-memory`**: Storing and retrieving entity relationships, complex project context, and long-term knowledge across agent sessions.
