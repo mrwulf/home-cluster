@@ -59,7 +59,7 @@ spec:
           - name: internal-gateway
             namespace: networking
         hostnames:
-          - "odysseus.internal.${SECRET_DOMAIN}"
+          - "odysseus.home.${SECRET_DOMAIN}"
         rules:
           - backendRefs:
               - identifier: app
