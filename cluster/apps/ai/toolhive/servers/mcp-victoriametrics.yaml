@@ -12,7 +12,7 @@ spec:
   proxyMode: streamable-http
   proxyPort: 8080
   env:
-    - name: VM_URL
+    - name: VM_INSTANCE_ENTRYPOINT
       value: http://vmsingle-stack.monitoring.svc.cluster.local:8428
   resources:
     requests:
