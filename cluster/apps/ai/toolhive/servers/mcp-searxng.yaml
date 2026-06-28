@@ -1,0 +1,22 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: mcp-searxng
+spec:
+  groupRef:
+    name: toolhive-servers
+  # renovate: depName=docker.io/isokoliuk/mcp-searxng datasource=docker
+  image: docker.io/isokoliuk/mcp-searxng:v1.8.0@sha256:787626c360cc00559093416bc701bf029075615da0c67b7026e6bc11c7386f19
+  transport: stdio
+  proxyMode: streamable-http
+  proxyPort: 8080
+  env:
+    - name: SEARXNG_URL
+      value: http://searxng.ai.svc.cluster.local:8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi

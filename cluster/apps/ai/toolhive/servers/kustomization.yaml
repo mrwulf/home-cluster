@@ -12,4 +12,8 @@ resources:
   - ./mcp-flux.yaml
   - ./mcp-home-assistant.yaml
   - ./mcp-arr-stack.yaml
+  - ./mcp-searxng.yaml
+  - ./mcp-victoriametrics.yaml
+  - ./mcp-grafana.yaml
+  - ./mcp-kubesearch.yaml
   - ./virtualmcpserver.yaml

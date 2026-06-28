@@ -1,0 +1,22 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: mcp-victoriametrics
+spec:
+  groupRef:
+    name: toolhive-servers
+  # renovate: depName=ghcr.io/victoriametrics/mcp-victoriametrics datasource=docker
+  image: ghcr.io/victoriametrics/mcp-victoriametrics:v1.20.2@sha256:bcbf84f945d6efb03fb8b2d2ccc3294420dccdc0b445752dce96f02619416dfe
+  transport: stdio
+  proxyMode: streamable-http
+  proxyPort: 8080
+  env:
+    - name: VM_URL
+      value: http://vmsingle-stack.monitoring.svc.cluster.local:8428
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
