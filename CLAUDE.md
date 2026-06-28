@@ -98,6 +98,7 @@ talos/                       # talconfig.yaml, talsecret.sops.yaml
 4. **`app/kustomization.yaml`** lists the resources.
 5. **Register** the app's `ks.yaml` in `cluster/apps/<namespace>/kustomization.yaml`.
 6. **Postgres database backups:** If the app uses a PostgreSQL database, you MUST add its database name to the `POSTGRES_DB` list in the `postgres16-backup` CronJob at [cronjob16.yaml](cluster/apps/databases/postgres/backups/cronjob16.yaml).
+6. **Postgres database backups:** If the app uses a PostgreSQL database, you MUST add its database name to the `POSTGRES_DB` list in the `postgres16-backup` CronJob at [cronjob16.yaml](cluster/apps/databases/postgres/backups/cronjob16.yaml).
    Always prefer the postgres16 database instance - the postgres instance is mostly just used for immich since it needs vector extensions.
 7. **Namespaces:** Do not specify `metadata.namespace` in application resource manifests (like Ingress, Service, ConfigMap, Secrets) unless absolutely necessary.
    Let the Flux `Kustomization`'s `targetNamespace` handle namespace assignment automatically.
