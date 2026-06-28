@@ -21,7 +21,7 @@ spec:
           main:
             image:
               repository: docker.io/chromadb/chroma
-              tag: 0.6.3
+              tag: 1.5.9
             env:
               ANONYMIZED_TELEMETRY: "False"
               IS_PERSISTENT: "TRUE"
