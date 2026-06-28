@@ -26,6 +26,18 @@ spec:
         - path:
             type: PathPrefix
             value: /mcp/
+        - path:
+            type: PathPrefix
+            value: /message
+        - path:
+            type: PathPrefix
+            value: /message/
+        - path:
+            type: PathPrefix
+            value: /messages
+        - path:
+            type: PathPrefix
+            value: /messages/
       filters:
         - type: ExtensionRef
           extensionRef:
