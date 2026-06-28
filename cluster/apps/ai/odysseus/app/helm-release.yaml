@@ -25,8 +25,11 @@ spec:
             env:
               PUID: "1000"
               PGID: "1000"
+              HOSTNAME: "0.0.0.0"
+              HOST: "0.0.0.0"
               APP_BIND: "0.0.0.0"
-              APP_PORT: &port 7000
+              PORT: &port 7000
+              APP_PORT: *port
               ODYSSEUS_ADMIN_USER: "admin"
               OLLAMA_BASE_URL: "http://ollama.ai.svc.cluster.local:11434"
               SEARXNG_URL: "http://searxng.ai.svc.cluster.local:8080"
