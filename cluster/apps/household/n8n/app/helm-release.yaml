@@ -46,10 +46,10 @@ spec:
                     key: N8N_ENCRYPTION_KEY
             resources:
               requests:
-                cpu: 5m
-                memory: 128Mi
+                cpu: 100m
+                memory: 512Mi
               limits:
-                memory: 2Gi
+                memory: 1.5Gi
 
     service:
       app:

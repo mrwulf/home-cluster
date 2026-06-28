@@ -61,8 +61,8 @@ spec:
                   name: openwebui-oidc-credentials
             resources:
               requests:
-                cpu: 500m
-                memory: 2Gi
+                cpu: 250m
+                memory: 768Mi
               limits:
                 memory: 2Gi
     service:

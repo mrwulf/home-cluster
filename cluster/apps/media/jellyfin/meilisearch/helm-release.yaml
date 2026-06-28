@@ -35,10 +35,10 @@ spec:
                     key: MEILI_MASTER_KEY
             resources:
               requests:
-                cpu: 10m
-                memory: 256Mi
+                cpu: 100m
+                memory: 1Gi
               limits:
-                memory: 4Gi
+                memory: 2.5Gi
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false

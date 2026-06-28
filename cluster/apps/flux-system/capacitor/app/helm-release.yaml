@@ -32,11 +32,11 @@ spec:
               tag: v0.4.8
             resources:
               requests:
-                cpu: 350m
-                memory: 2Gi
+                cpu: 100m
+                memory: 512Mi
                 ephemeral-storage: 1Gi
               limits:
-                memory: 4Gi
+                memory: 2Gi
                 ephemeral-storage: 2Gi
             securityContext:
               allowPrivilegeEscalation: false

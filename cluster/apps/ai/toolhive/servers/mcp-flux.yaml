@@ -67,10 +67,10 @@ spec:
   serviceAccount: mcp-flux
   resources:
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 50m
+      memory: 64Mi
     limits:
-      memory: 512Mi
+      memory: 256Mi
   podTemplateSpec:
     metadata:
       annotations:

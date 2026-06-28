@@ -39,11 +39,10 @@ spec:
                   name: paperless-ai
             resources:
               requests:
-                cpu: 500m
-                memory: 512Mi
+                cpu: 250m
+                memory: 1Gi
               limits:
-                cpu: 700m
-                memory: 2Gi
+                memory: 2.5Gi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
