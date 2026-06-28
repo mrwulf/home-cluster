@@ -11,6 +11,7 @@ resources:
   - household
   - kube-system
   - media
+  - mlm
   - monitoring
   - networking
   - other

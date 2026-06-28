@@ -23,6 +23,9 @@ spec:
             env:
               DEBUG: "true"
               SMTP_DOMAIN: "${SECRET_DOMAIN}"
+              SMTP_DOMAIN_1: "${SECRET_MLM_DOMAIN_1}"
+              SMTP_DOMAIN_2: "${SECRET_MLM_DOMAIN_2}"
+              SMTP_DOMAIN_3: "${SECRET_MLM_DOMAIN_3}"
               SMTP_PORT: "465"
             envFrom:
               - secretRef:

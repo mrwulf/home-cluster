@@ -1,0 +1,82 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app wordpress
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsUser: 33
+            runAsGroup: 33
+            fsGroup: 33
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        containers:
+          main:
+            image:
+              repository: docker.io/library/wordpress
+              tag: 6.5.2-php8.2-apache
+            env:
+              WORDPRESS_DB_HOST: mariadb:3306
+              WORDPRESS_CONFIG_EXTRA: |
+                if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+                    $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+                }
+                if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+                    $_SERVER['HTTPS'] = 'on';
+                }
+            envFrom:
+              - secretRef:
+                  name: wordpress-secret
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: 80
+
+    route:
+      main:
+        enabled: true
+        annotations:
+          gatus.io/enabled: "true"
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "${SECRET_MLM_DOMAIN_1}"
+          - "${SECRET_MLM_DOMAIN_2}"
+          - "${SECRET_MLM_DOMAIN_3}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: traefik-middleware-chain-no-auth
+            backendRefs:
+              - identifier: main
+                port: http
+
+    persistence:
+      wordpress-data:
+        existingClaim: "${VOLSYNC_CLAIM}"
+        globalMounts:
+          - path: /var/www/html

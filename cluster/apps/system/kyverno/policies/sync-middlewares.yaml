@@ -28,6 +28,7 @@ spec:
                 - flux-system
                 - household
                 - media
+                - mlm
                 - other
                 - vaultwarden
       generate:

@@ -95,9 +95,10 @@ def process_file(filepath):
 
     if modified:
         new_content = "\n---".join(new_docs)
-        with open(filepath, "w") as f:
-            f.write(new_content)
-        print(f"Updated {os.path.relpath(filepath, root_dir)}")
+        if new_content != content:
+            with open(filepath, "w") as f:
+                f.write(new_content)
+            print(f"Updated {os.path.relpath(filepath, root_dir)}")
 
 def main():
     for dirpath, _, filenames in os.walk(os.path.join(root_dir, "cluster/apps")):

@@ -36,3 +36,4 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: "wildcard-${SECRET_DOMAIN/./-}-tls"
+          - name: mlm-domains-tls

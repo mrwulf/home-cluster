@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app mariadb
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            fsGroup: 999
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        containers:
+          main:
+            image:
+              repository: docker.io/library/mariadb
+              tag: 11.3.2
+            envFrom:
+              - secretRef:
+                  name: wordpress-secret
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 256Mi
+          metrics:
+            image:
+              repository: quay.io/prometheus/mysqld-exporter
+              tag: v0.15.1
+            env:
+              DATA_SOURCE_NAME: "$(MARIADB_USER):$(MARIADB_PASSWORD)@(127.0.0.1:3306)/$(MARIADB_DATABASE)"
+            envFrom:
+              - secretRef:
+                  name: wordpress-secret
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 64Mi
+
+    service:
+      main:
+        controller: main
+        ports:
+          mysql:
+            port: 3306
+          metrics:
+            port: 9104
+
+    persistence:
+      mariadb-data:
+        existingClaim: "${VOLSYNC_CLAIM}"
+        globalMounts:
+          - path: /var/lib/mysql

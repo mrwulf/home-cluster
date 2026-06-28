@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app wordpress
+  namespace: flux-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: volsync
+    - name: mariadb
+  interval: 1h
+  path: ./cluster/apps/mlm/wordpress/app
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: mlm
+  timeout: 5m
+  wait: false
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CLAIM: wordpress-data
+      VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_NFS_START_MINUTE: "52"
+      VOLSYNC_B2_START_MINUTE: "17"
+      APP_UID: "33"
+      APP_GID: "33"
+  retryInterval: 2m

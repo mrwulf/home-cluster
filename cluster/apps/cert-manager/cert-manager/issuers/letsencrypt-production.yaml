@@ -19,3 +19,6 @@ spec:
         selector:
           dnsZones:
             - ${SECRET_DOMAIN}
+            - ${SECRET_MLM_DOMAIN_1}
+            - ${SECRET_MLM_DOMAIN_2}
+            - ${SECRET_MLM_DOMAIN_3}
