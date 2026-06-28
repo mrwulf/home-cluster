@@ -58,7 +58,7 @@ metadata:
   namespace: ai
 spec:
   # renovate: depName=ghcr.io/controlplaneio-fluxcd/flux-operator-mcp datasource=docker
-  image: ghcr.io/controlplaneio-fluxcd/flux-operator-mcp:v0.21.0
+  image: ghcr.io/controlplaneio-fluxcd/flux-operator-mcp:v0.52.0
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
