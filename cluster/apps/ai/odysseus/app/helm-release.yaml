@@ -34,6 +34,8 @@ spec:
               OLLAMA_BASE_URL: "http://ollama.ai.svc.cluster.local:11434"
               SEARXNG_URL: "http://searxng.ai.svc.cluster.local:8080"
               NTFY_URL: "http://ntfy.ai.svc.cluster.local:80"
+              CHROMADB_HOST: "chromadb.ai.svc.cluster.local"
+              CHROMADB_PORT: "8000"
               CHROMADB_URL: "http://chromadb.ai.svc.cluster.local:8000"
               DATABASE_URL: "sqlite:////app/data/app.db"
             resources:
@@ -58,6 +60,10 @@ spec:
             namespace: networking
         hostnames:
           - "odysseus.internal.${SECRET_DOMAIN}"
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
 
     persistence:
       config:
