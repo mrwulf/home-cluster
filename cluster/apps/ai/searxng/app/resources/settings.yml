@@ -10,6 +10,9 @@ server:
 search:
   autocomplete: google
   favicon_resolver: duckduckgo
+  formats:
+    - html
+    - json
   languages:
     - all
     - en
