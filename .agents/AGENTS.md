@@ -29,3 +29,14 @@
    - **`mcp-arr-stack`**: Checking Radarr/Sonarr download queues, reviewing media libraries, searching missing episodes/movies, and indexer status via Prowlarr.
    - **`mcp-home-assistant`**: Inspecting smart home entity states, listing devices/areas, evaluating HA templates, and triggering automation events.
    - **`mcp-memory`**: Storing and retrieving entity relationships, complex project context, and long-term knowledge across agent sessions.
+
+## Operational & Maintenance Procedures
+
+### Weekly Cluster Workload Resource Optimization
+- **Schedule & Frequency**: Perform a comprehensive cluster-wide workload resource optimization review weekly.
+- **Telemetry Sources**: Query VictoriaMetrics (`query_prometheus`) for 7-day peak memory working sets (`max by (namespace, pod, container) (max_over_time(container_memory_working_set_bytes{container!=""}[7d]))`) and Loki for OOMKill events.
+- **Governance Alignment**:
+  - Right-size CPU requests to prevent node over-commit while ensuring hardware offloading (e.g. Intel GPU i915) is accounted for.
+  - Enforce No CPU Limits (Rule 6 in CLAUDE.md) across all non-system containers.
+  - Right-size memory requests/limits based on actual peak telemetry buffers to eliminate OOMKills and reclaim unused node allocations.
+- **Execution Tool**: Recommend using the `/schedule` command or setting background timers when initiating multi-phase resource analyses.
