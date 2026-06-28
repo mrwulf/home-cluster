@@ -16,7 +16,16 @@ spec:
     - matches:
         - path:
             type: PathPrefix
+            value: /sse
+        - path:
+            type: PathPrefix
             value: /sse/
+        - path:
+            type: PathPrefix
+            value: /mcp
+        - path:
+            type: PathPrefix
+            value: /mcp/
       filters:
         - type: ExtensionRef
           extensionRef:
