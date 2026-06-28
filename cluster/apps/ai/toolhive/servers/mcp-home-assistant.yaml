@@ -24,3 +24,13 @@ spec:
       memory: 64Mi
     limits:
       memory: 256Mi
+  podTemplateSpec:
+    spec:
+      containers:
+        - name: mcp
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

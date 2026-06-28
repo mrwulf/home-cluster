@@ -37,3 +37,6 @@
 
 5. **Resource Limits & Admission Policies**:
    - Every `MCPServer` and `VirtualMCPServer` spec MUST include container resource requests (`cpu: 50m`, `memory: 64Mi`) and memory limits (`memory: 256Mi` / `512Mi`) to comply with cluster Kyverno admission policies (`require-requests-limits`).
+
+6. **Writable Temporary Storage for Python Workloads**:
+   - Python-based MCP servers (e.g. `ha-mcp` / `fastmcp`) require a writable `/tmp` directory for IPC pipes and temporary buffers. Under read-only/restricted security contexts, explicitly attach an `emptyDir` volume mounted at `/tmp` via `podTemplateSpec`.
