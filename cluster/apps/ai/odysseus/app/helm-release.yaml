@@ -13,7 +13,7 @@ spec:
   values:
     controllers:
       odysseus:
-        strategy: Recreate
+        strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
 
