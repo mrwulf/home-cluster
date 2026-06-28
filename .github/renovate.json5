@@ -130,5 +130,10 @@
       matchPackageNames: ["docker.io/searxng/searxng", "searxng/searxng"],
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?:[0-9a-f]+)$",
     },
+    {
+      matchDatasources: ["docker"],
+      matchPackageNames: ["docker.io/library/wordpress", "wordpress"],
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?-php(?<compatibility>\\d+\\.\\d+)-apache$",
+    },
   ],
 }
