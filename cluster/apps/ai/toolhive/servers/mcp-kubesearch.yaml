@@ -7,7 +7,7 @@ spec:
   groupRef:
     name: toolhive-servers
   # renovate: depName=ghcr.io/perfectra1n/kubesearch-mcp datasource=docker
-  image: ghcr.io/perfectra1n/kubesearch-mcp:1.0.1@sha256:a8e2129500321b491893e08700d6f87fe8f9078efbea546e0ba8d5183c127df1
+  image: ghcr.io/perfectra1n/kubesearch-mcp:sha-405e7b2
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
