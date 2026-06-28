@@ -1,11 +1,11 @@
 ---
 name: rook-ceph
-description: Instructions for monitoring, diagnosing, and cleaning up Rook-Ceph storage clusters, OSDs, pools, block storage, and crash dumps in Kubernetes.
+description: Instructions for monitoring, diagnosing, and cleaning up Rook-Ceph storage clusters, OSDs, pools, block storage, released PVs, trashed snapshots, and crash dumps in Kubernetes.
 ---
 
 # Rook-Ceph Operational & Maintenance Handbook
 
-This skill provides standardized operational workflows for inspecting, monitoring, and maintaining Rook-Ceph storage clusters across the Kubernetes environment.
+This skill provides standardized operational workflows for inspecting, monitoring, and maintaining Rook-Ceph storage clusters, utilizing repository taskfiles (`.taskfiles/rook.yml`) and maintenance scripts (`scripts/cleanup-trashed-snapshots.sh`).
 
 ---
 
@@ -15,7 +15,7 @@ The `rook-ceph-tools` pod runs continuously in the `rook-ceph` namespace with fu
 
 ### Standard Status Checks
 When investigating cluster state or responding to alerts, run the following commands via the `rook-ceph-tools` deployment pod:
-- **Cluster Health Summary**: `ceph status` or `ceph health detail`
+- **Cluster Health Summary**: `ceph status` or `ceph health detail` (or run `task rook:ack-warnings` to archive crashes)
 - **OSD Status & Map Tree**: `ceph osd status` and `ceph osd tree`
 - **Storage Pool Utilization**: `ceph df` and `ceph df detail`
 - **Active Placement Groups**: `ceph pg stat`
@@ -24,7 +24,7 @@ When investigating cluster state or responding to alerts, run the following comm
 If Ceph health reports `RECENT_CRASH` warnings:
 1. List recent crash dumps: `ceph crash ls`
 2. Inspect crash details: `ceph crash info <crash_id>`
-3. Archive resolved crashes: `ceph crash archive-all` or `ceph crash archive <crash_id>`
+3. Archive resolved crashes: Run `task rook:ack-warnings` (executes `ceph crash archive-all`).
 
 ---
 
@@ -43,13 +43,29 @@ Use `mcp-victoriametrics` (`query_prometheus`) to inspect active storage trends 
 
 ---
 
-## 3. Storage Maintenance & Cleanup Workflows
+## 3. Storage Maintenance, Volume & Snapshot Cleanup Workflows
 
-### VolSync Snapshot & Trash Cleanup
-When cleaning up stale backup snapshots or unreferenced persistent volume claims:
-1. Identify unattached PVCs across namespaces:
-   `kubectl get pvc --all-namespaces | grep -i Bound | grep -v Attached` (or inspect via `mcp-kubernetes`).
-2. Verify snapshot replication status before purging orphaned snapshot objects.
+### 3.1 Repository Taskfile Utilities (`.taskfiles/rook.yml`)
+Use the established `task` shortcuts for common storage maintenance operations:
+- **Collect Unused & Dangling RBD Images**:
+  `task rook:get-unused-images`
+  *Correlates all `csi-vol-` RBD images in `ceph-blockpool` against active Kubernetes PVs and lists orphaned storage images in `image_list.txt`.*
+- **Clean Up Released PVs**:
+  `task rook:clean-up-all-pv` (or single volume: `task rook:clean-up-pv -- <pv_name>`)
+  *Checks for active RBD image dependencies/children before safely deleting released PVs and underlying storage images.*
+- **Clean Up Specific RBD Image**:
+  `task rook:clean-up-img -- <img_name>`
+- **Debug an Active PVC**:
+  `VOLUME=<pvc_name> task rook:debug-pvc`
+  *Attaches a debug container with curl, vim, and rsync to inspect files inside an active PVC.*
+- **Browse Volume Snapshot Contents**:
+  `task rook:browse-volume-snapshot -- <pvc_name>`
+
+### 3.2 Automated Trashed Snapshot Dependency Cleanup (`scripts/cleanup-trashed-snapshots.sh`)
+When CSI snapshots are deleted, they move to the RBD trash but cannot be purged if Kubernetes previously created live clone volumes from them.
+- **Run Script**: `bash scripts/cleanup-trashed-snapshots.sh`
+- **What it does**: Deploys an in-memory python script to `deploy/rook-ceph-tools` that identifies live clones dependent on `csi-snap-` in the RBD trash, sorts them ascending by size, progressively flattens them (`rbd flatten`), and purges the associated snapshot (`rbd trash rm`) to reclaim storage space.
+- **Monitoring Progress**: In a secondary terminal, watch I/O activity with `kubectl exec -it -n rook-ceph deploy/rook-ceph-tools -- watch ceph status` (observe `client: ... MiB/s wr`).
 
 ---
 
