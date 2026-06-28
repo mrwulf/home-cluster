@@ -40,11 +40,6 @@ spec:
               limits:
                 memory: 2.5Gi
 
-    defaultPodOptions:
-      securityContext:
-        fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
-
     service:
       app:
         controller: *app
