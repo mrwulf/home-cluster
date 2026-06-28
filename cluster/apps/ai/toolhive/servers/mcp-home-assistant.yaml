@@ -4,6 +4,8 @@ kind: MCPServer
 metadata:
   name: mcp-home-assistant
 spec:
+  groupRef:
+    name: toolhive-servers
   # renovate: depName=ghcr.io/homeassistant-ai/ha-mcp datasource=docker
   image: ghcr.io/homeassistant-ai/ha-mcp:7.9.0
   transport: stdio

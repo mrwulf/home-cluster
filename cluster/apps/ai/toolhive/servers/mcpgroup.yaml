@@ -1,0 +1,7 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPGroup
+metadata:
+  name: toolhive-servers
+spec:
+  description: Group of all active home-cluster MCP servers

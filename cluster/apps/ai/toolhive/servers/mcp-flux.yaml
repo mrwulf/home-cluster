@@ -57,6 +57,8 @@ metadata:
   name: mcp-flux
   namespace: ai
 spec:
+  groupRef:
+    name: toolhive-servers
   # renovate: depName=ghcr.io/controlplaneio-fluxcd/flux-operator-mcp datasource=docker
   image: ghcr.io/controlplaneio-fluxcd/flux-operator-mcp:v0.52.0
   transport: stdio

@@ -24,8 +24,8 @@ spec:
             kind: Middleware
             name: rfc1918-ips
       backendRefs:
-        - name: toolhive-operator-proxy
-          port: 8080
+        - name: vmcp-toolhive-gateway
+          port: 4483
     # Browser UI & all other paths - OIDC protected
     - filters:
         - type: ExtensionRef
@@ -39,5 +39,5 @@ spec:
             kind: Middleware
             name: traefik-middleware-chain-pocket-id
       backendRefs:
-        - name: toolhive-operator-proxy
-          port: 8080
+        - name: vmcp-toolhive-gateway
+          port: 4483

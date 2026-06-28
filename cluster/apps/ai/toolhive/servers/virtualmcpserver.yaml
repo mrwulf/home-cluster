@@ -1,0 +1,20 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: VirtualMCPServer
+metadata:
+  name: toolhive-gateway
+spec:
+  groupRef:
+    name: toolhive-servers
+  incomingAuth:
+    type: anonymous
+  podTemplateSpec:
+    spec:
+      containers:
+        - name: vmcp
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi

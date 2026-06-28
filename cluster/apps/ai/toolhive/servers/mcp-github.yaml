@@ -4,6 +4,8 @@ kind: MCPServer
 metadata:
   name: mcp-github
 spec:
+  groupRef:
+    name: toolhive-servers
   # renovate: depName=ghcr.io/github/github-mcp-server datasource=docker
   image: ghcr.io/github/github-mcp-server:v1.5.0
   transport: stdio

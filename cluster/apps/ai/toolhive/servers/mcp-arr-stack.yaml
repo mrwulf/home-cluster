@@ -4,6 +4,8 @@ kind: MCPServer
 metadata:
   name: mcp-arr-stack
 spec:
+  groupRef:
+    name: toolhive-servers
   # renovate: depName=docker.io/node datasource=docker
   image: docker.io/node:24-alpine
   transport: stdio

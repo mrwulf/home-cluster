@@ -5,9 +5,11 @@ kind: Kustomization
 resources:
   - ./externalsecret-github.yaml
   - ./externalsecret-home-assistant.yaml
+  - ./mcpgroup.yaml
   - ./mcp-kubernetes.yaml
   - ./mcp-github.yaml
   - ./mcp-memory.yaml
   - ./mcp-flux.yaml
   - ./mcp-home-assistant.yaml
   - ./mcp-arr-stack.yaml
+  - ./virtualmcpserver.yaml

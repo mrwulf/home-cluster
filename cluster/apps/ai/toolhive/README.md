@@ -15,37 +15,17 @@ ToolHive operates in two distinct tiers:
 
 ## Connecting External IDEs & Workstation Agents
 
-To connect workstation AI clients (Claude Code, Antigravity, Cursor, Claude Desktop) to cluster-hosted MCP tools, configure SSE transport pointing to your internal Gateway API endpoint.
+ToolHive aggregates all active backend MCP servers behind a single **Virtual MCP Server (vMCP)** gateway (`toolhive-gateway`). Instead of configuring multiple endpoints, point your client to the unified SSE gateway URL.
 
 ### 1. Claude Desktop & Claude Code
 
-Add the SSE endpoints to your configuration file (e.g., `~/.claude.json` or `claude_desktop_config.json`):
+Add the unified vMCP endpoint to your configuration file (e.g., `~/.claude.json` or `claude_desktop_config.json`):
 
 ```json
 {
   "mcpServers": {
-    "toolhive-kubernetes": {
-      "url": "https://toolhive.home.${SECRET_DOMAIN}/sse/mcp-kubernetes",
-      "transport": "sse"
-    },
-    "toolhive-github": {
-      "url": "https://toolhive.home.${SECRET_DOMAIN}/sse/mcp-github",
-      "transport": "sse"
-    },
-    "toolhive-memory": {
-      "url": "https://toolhive.home.${SECRET_DOMAIN}/sse/mcp-memory",
-      "transport": "sse"
-    },
-    "toolhive-flux": {
-      "url": "https://toolhive.home.${SECRET_DOMAIN}/sse/mcp-flux",
-      "transport": "sse"
-    },
-    "toolhive-home-assistant": {
-      "url": "https://toolhive.home.${SECRET_DOMAIN}/sse/mcp-home-assistant",
-      "transport": "sse"
-    },
-    "toolhive-arr-stack": {
-      "url": "https://toolhive.home.${SECRET_DOMAIN}/sse/mcp-arr-stack",
+    "toolhive": {
+      "url": "https://toolhive.home.${SECRET_DOMAIN}/sse",
       "transport": "sse"
     }
   }
@@ -54,10 +34,10 @@ Add the SSE endpoints to your configuration file (e.g., `~/.claude.json` or `cla
 
 ### 2. Antigravity / Cursor / Windsurf
 
-Add new SSE MCP servers under your IDE settings:
+Add a single SSE MCP server under your IDE settings:
 
 - **Type**: SSE
-- **URL**: `https://toolhive.home.${SECRET_DOMAIN}/sse/<server-name>` (e.g. `mcp-kubernetes`, `mcp-github`)
+- **URL**: `https://toolhive.home.${SECRET_DOMAIN}/sse`
 
 _Note: If connecting outside your LAN, authenticating through Pocket ID OIDC is required via browser redirect or cookie session._
 
@@ -65,16 +45,16 @@ _Note: If connecting outside your LAN, authenticating through Pocket ID OIDC is 
 
 ## Connecting In-Cluster Local LLM Deployments
 
-For AI frameworks running directly inside the Kubernetes cluster (e.g., **Open WebUI** or **OpenClaw** in the `ai` namespace), connect over high-speed internal Kubernetes DNS without public ingress overhead.
+For AI frameworks running directly inside the Kubernetes cluster (e.g., **Open WebUI** or **OpenClaw** in the `ai` namespace), connect over high-speed internal Kubernetes DNS.
 
 ### Internal Endpoint Format
 
-`http://toolhive-operator-proxy.ai.svc.cluster.local:8080/sse/<server-name>`
+`http://vmcp-toolhive-gateway.ai.svc.cluster.local:4483/sse`
 
 ### Open WebUI Setup
 
 1. Navigate to **Admin Panel** $\rightarrow$ **Settings** $\rightarrow$ **Tools / MCP**.
-2. Add the internal cluster URL: `http://toolhive-operator-proxy.ai.svc.cluster.local:8080/sse/mcp-kubernetes`.
+2. Add the internal cluster URL: `http://vmcp-toolhive-gateway.ai.svc.cluster.local:4483/sse`.
 3. Save and verify tool availability across chat sessions.
 
 ---
