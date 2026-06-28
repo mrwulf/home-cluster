@@ -72,6 +72,9 @@ spec:
     limits:
       memory: 512Mi
   podTemplateSpec:
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
     spec:
       containers:
         - name: mcp

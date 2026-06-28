@@ -20,3 +20,7 @@ spec:
       memory: 64Mi
     limits:
       memory: 256Mi
+  podTemplateSpec:
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
