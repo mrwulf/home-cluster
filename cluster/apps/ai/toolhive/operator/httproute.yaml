@@ -5,6 +5,9 @@ metadata:
   name: toolhive
   annotations:
     gatus.io/enabled: "true"
+    gatus.io/endpoint: |
+      conditions:
+        - "[STATUS] == 406"
 spec:
   parentRefs:
     - name: internal-gateway
