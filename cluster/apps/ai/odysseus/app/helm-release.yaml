@@ -23,6 +23,8 @@ spec:
               repository: ghcr.io/pewdiepie-archdaemon/odysseus
               tag: latest
             env:
+              PUID: "1000"
+              PGID: "1000"
               APP_BIND: "0.0.0.0"
               APP_PORT: &port 7000
               ODYSSEUS_ADMIN_USER: "admin"
@@ -43,6 +45,15 @@ spec:
               capabilities:
                 drop:
                   - ALL
+
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
 
     service:
       app:
