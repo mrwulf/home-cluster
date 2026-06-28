@@ -33,6 +33,7 @@
 ## Operational & Maintenance Procedures
 
 ### Weekly Cluster Workload Resource Optimization
+
 - **Schedule & Frequency**: Perform a comprehensive cluster-wide workload resource optimization review weekly.
 - **Telemetry Sources**: Query VictoriaMetrics (`query_prometheus`) for 7-day peak memory working sets (`max by (namespace, pod, container) (max_over_time(container_memory_working_set_bytes{container!=""}[7d]))`) and Loki for OOMKill events.
 - **Governance Alignment**:
