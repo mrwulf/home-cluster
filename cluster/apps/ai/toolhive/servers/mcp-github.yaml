@@ -5,7 +5,7 @@ metadata:
   name: mcp-github
 spec:
   # renovate: depName=ghcr.io/github/github-mcp-server datasource=docker
-  image: ghcr.io/github/github-mcp-server:v0.1.0
+  image: ghcr.io/github/github-mcp-server:v0.1.1
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
