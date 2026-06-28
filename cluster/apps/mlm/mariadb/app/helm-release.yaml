@@ -39,24 +39,9 @@ spec:
             image:
               repository: quay.io/prometheus/mysqld-exporter
               tag: v0.15.1
-            env:
-              - name: MARIADB_USER
-                valueFrom:
-                  secretKeyRef:
-                    name: wordpress-secret
-                    key: MARIADB_USER
-              - name: MARIADB_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    name: wordpress-secret
-                    key: MARIADB_PASSWORD
-              - name: MARIADB_DATABASE
-                valueFrom:
-                  secretKeyRef:
-                    name: wordpress-secret
-                    key: MARIADB_DATABASE
-              - name: DATA_SOURCE_NAME
-                value: "$(MARIADB_USER):$(MARIADB_PASSWORD)@(127.0.0.1:3306)/$(MARIADB_DATABASE)"
+            envFrom:
+              - secretRef:
+                  name: wordpress-secret
             resources:
               requests:
                 cpu: 10m
