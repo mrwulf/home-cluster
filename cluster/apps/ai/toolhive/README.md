@@ -59,7 +59,7 @@ Add new SSE MCP servers under your IDE settings:
 - **Type**: SSE
 - **URL**: `https://toolhive.home.${SECRET_DOMAIN}/sse/<server-name>` (e.g. `mcp-kubernetes`, `mcp-github`)
 
-*Note: If connecting outside your LAN, authenticating through Pocket ID OIDC is required via browser redirect or cookie session.*
+_Note: If connecting outside your LAN, authenticating through Pocket ID OIDC is required via browser redirect or cookie session._
 
 ---
 
@@ -81,14 +81,14 @@ For AI frameworks running directly inside the Kubernetes cluster (e.g., **Open W
 
 ## Active MCP Tool Inventory
 
-| Server Name | Purpose | Credentials Source |
-| :--- | :--- | :--- |
-| **`mcp-kubernetes`** | Pod logs, crashes, events, resource status | Cluster RBAC |
-| **`mcp-github`** | GitHub PRs, issues & workflow status | `mcp-github-secret` |
-| **`mcp-memory`** | Persistent AI knowledge graph storage | In-Memory / PVC |
-| **`mcp-flux`** | Flux GitOps reconciliation & drift auditing | `mcp-flux` RBAC |
+| Server Name              | Purpose                                        | Credentials Source          |
+| :----------------------- | :--------------------------------------------- | :-------------------------- |
+| **`mcp-kubernetes`**     | Pod logs, crashes, events, resource status     | Cluster RBAC                |
+| **`mcp-github`**         | GitHub PRs, issues & workflow status           | `mcp-github-secret`         |
+| **`mcp-memory`**         | Persistent AI knowledge graph storage          | In-Memory / PVC             |
+| **`mcp-flux`**           | Flux GitOps reconciliation & drift auditing    | `mcp-flux` RBAC             |
 | **`mcp-home-assistant`** | Home Assistant IoT entity & automation control | `mcp-home-assistant-secret` |
-| **`mcp-arr-stack`** | Sonarr, Radarr, Prowlarr management | Flux Secrets / Env |
+| **`mcp-arr-stack`**      | Sonarr, Radarr, Prowlarr management            | Flux Secrets / Env          |
 
 ---
 
@@ -96,14 +96,14 @@ For AI frameworks running directly inside the Kubernetes cluster (e.g., **Open W
 
 The following target servers are desired for future deployment once verified public images or official solutions are established:
 
-| Server Name | Target Purpose | Desired Integration |
-| :--- | :--- | :--- |
-| **`mcp-talos`** | Talos Linux OS cluster node management | Sidero / Official Talos Server |
-| **`mcp-postgres`** | Read-only SQL schema inspection and queries | CloudNative-PG Cluster |
-| **`mcp-forgejo`** | Self-hosted Forgejo repositories and pull requests | Forgejo Service |
-| **`mcp-gatus`** | Endpoint health checks and uptime monitoring | Gatus Dashboard |
-| **`mcp-victoriametrics`** | PromQL metrics queries and alert inspection | VictoriaMetrics Cluster |
-| **`mcp-cloudflare`** | Public DNS and Zero Trust tunnel auditing | Cloudflare API |
-| **`mcp-traefik`** | Ingress routing and middleware inspection | Traefik Controller |
-| **`mcp-kyverno`** | Policy violation auditing and security compliance | Kyverno Engine |
-| **`mcp-searxng`** | Privacy-focused local web search integration | SearXNG AI Instance |
+| Server Name               | Target Purpose                                     | Desired Integration            |
+| :------------------------ | :------------------------------------------------- | :----------------------------- |
+| **`mcp-talos`**           | Talos Linux OS cluster node management             | Sidero / Official Talos Server |
+| **`mcp-postgres`**        | Read-only SQL schema inspection and queries        | CloudNative-PG Cluster         |
+| **`mcp-forgejo`**         | Self-hosted Forgejo repositories and pull requests | Forgejo Service                |
+| **`mcp-gatus`**           | Endpoint health checks and uptime monitoring       | Gatus Dashboard                |
+| **`mcp-victoriametrics`** | PromQL metrics queries and alert inspection        | VictoriaMetrics Cluster        |
+| **`mcp-cloudflare`**      | Public DNS and Zero Trust tunnel auditing          | Cloudflare API                 |
+| **`mcp-traefik`**         | Ingress routing and middleware inspection          | Traefik Controller             |
+| **`mcp-kyverno`**         | Policy violation auditing and security compliance  | Kyverno Engine                 |
+| **`mcp-searxng`**         | Privacy-focused local web search integration       | SearXNG AI Instance            |

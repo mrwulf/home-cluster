@@ -12,6 +12,21 @@ spec:
   hostnames:
     - "toolhive.home.${SECRET_DOMAIN}"
   rules:
+    # Machine-client SSE/MCP endpoints - no OIDC, LAN-only
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /sse/
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: rfc1918-ips
+      backendRefs:
+        - name: toolhive-operator-proxy
+          port: 8080
+    # Browser UI & all other paths - OIDC protected
     - filters:
         - type: ExtensionRef
           extensionRef:
