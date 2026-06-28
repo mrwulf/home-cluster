@@ -11,6 +11,9 @@ spec:
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
+  args:
+    - "-t"
+    - "stdio"
   env:
     - name: GRAFANA_URL
       value: http://grafana-service.monitoring.svc.cluster.local:3000
