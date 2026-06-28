@@ -25,6 +25,7 @@ spec:
             env:
               ANONYMIZED_TELEMETRY: "False"
               IS_PERSISTENT: "TRUE"
+              PERSIST_DIRECTORY: "/chroma/chroma"
               PERSISTENT_DATA_KEEP_SINGLE_FILE: "TRUE"
             resources:
               requests:
@@ -32,21 +33,11 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 1Gi
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: false
-              capabilities:
-                drop:
-                  - ALL
 
     defaultPodOptions:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
-        seccompProfile: { type: RuntimeDefault }
 
     service:
       app:
