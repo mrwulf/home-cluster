@@ -39,9 +39,8 @@ spec:
             image:
               repository: quay.io/prometheus/mysqld-exporter
               tag: v0.15.1
-            envFrom:
-              - secretRef:
-                  name: wordpress-secret
+            args:
+              - --config.my-cnf=/etc/mysqld-exporter/.my.cnf
             resources:
               requests:
                 cpu: 10m
@@ -63,3 +62,11 @@ spec:
         existingClaim: "${VOLSYNC_CLAIM}"
         globalMounts:
           - path: /var/lib/mysql
+      secret-config:
+        type: secret
+        name: wordpress-secret
+        advancedMounts:
+          main:
+            metrics:
+              - path: /etc/mysqld-exporter/.my.cnf
+                subPath: .my.cnf
