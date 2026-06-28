@@ -8,6 +8,17 @@ spec:
     name: toolhive-servers
   incomingAuth:
     type: anonymous
+  config:
+    aggregation:
+      conflictResolution: priority
+      conflictResolutionConfig:
+        priorityOrder:
+          - mcp-kubernetes
+          - mcp-github
+          - mcp-memory
+          - mcp-flux
+          - mcp-home-assistant
+          - mcp-arr-stack
   podTemplateSpec:
     spec:
       containers:

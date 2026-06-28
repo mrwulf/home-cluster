@@ -23,6 +23,7 @@
 2. **Virtual MCP Server (vMCP) Gateway Aggregation**:
    - Instead of routing external Gateway API traffic to individual per-server proxy services or a non-existent central operator proxy, aggregate backend workloads into an `MCPGroup` (`toolhive-servers`).
    - Deploy a `VirtualMCPServer` (`toolhive-gateway`) with `incomingAuth.type: anonymous` and `groupRef.name: toolhive-servers`.
+   - Configure `spec.config.aggregation.conflictResolution: priority` to preserve concise native tool names (preventing tool names from exceeding the 64-character regex limit `^[a-zA-Z0-9_-]{1,64}$` when client prefixes are prepended).
    - Point HTTPRoute backends to `vmcp-toolhive-gateway` on port `4483` so clients connect to a single unified SSE URL (`/sse`).
 
 3. **Flux & Bitwarden Secret Mapping**:

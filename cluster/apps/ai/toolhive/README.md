@@ -15,11 +15,13 @@ ToolHive operates in two distinct tiers:
 
 ## Connecting External IDEs & Workstation Agents
 
-ToolHive aggregates all active backend MCP servers behind a single **Virtual MCP Server (vMCP)** gateway (`toolhive-gateway`). Instead of configuring multiple endpoints, point your client to the unified SSE gateway URL.
+ToolHive aggregates all active backend MCP servers into a single **Virtual MCP Server (vMCP)** gateway (`toolhive-gateway`).
+**You only need to configure a single MCP entry in your agent/IDE settings.**
+Do NOT configure individual per-server endpoints; the single vMCP connection automatically exposes all 92+ tools across all backend servers.
 
 ### 1. Claude Desktop & Claude Code
 
-Add the unified vMCP endpoint to your configuration file (e.g., `~/.claude.json` or `claude_desktop_config.json`):
+Add the single unified vMCP endpoint to your configuration file (e.g., `~/.claude.json` or `claude_desktop_config.json`):
 
 ```json
 {
