@@ -25,7 +25,7 @@ spec:
           main:
             image:
               repository: docker.io/library/mariadb
-              tag: 11.3.2
+              tag: 12.3.2
             envFrom:
               - secretRef:
                   name: wordpress-secret
