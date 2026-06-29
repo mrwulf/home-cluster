@@ -1,0 +1,20 @@
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: mlm-wildcard-cnames
+  namespace: mlm
+spec:
+  endpoints:
+    - dnsName: "*.${SECRET_MLM_DOMAIN_1}"
+      recordType: CNAME
+      targets:
+        - "${SECRET_MLM_DOMAIN_1}"
+    - dnsName: "*.${SECRET_MLM_DOMAIN_2}"
+      recordType: CNAME
+      targets:
+        - "${SECRET_MLM_DOMAIN_2}"
+    - dnsName: "*.${SECRET_MLM_DOMAIN_3}"
+      recordType: CNAME
+      targets:
+        - "${SECRET_MLM_DOMAIN_3}"

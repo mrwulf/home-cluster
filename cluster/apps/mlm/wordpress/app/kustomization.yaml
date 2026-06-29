@@ -6,4 +6,5 @@ resources:
   - ./netpol.yaml
   - ./servicemonitor.yaml
   - ./dashboard.yaml
+  - ./dnsendpoint.yaml
   - ./helm-release.yaml
