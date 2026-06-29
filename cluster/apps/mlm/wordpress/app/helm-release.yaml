@@ -25,7 +25,7 @@ spec:
           main:
             image:
               repository: docker.io/library/wordpress
-              tag: 6.7.1-php8.3-apache
+              tag: 6.9.4-php8.3-apache
             env:
               WORDPRESS_DB_HOST: mariadb:3306
               WORDPRESS_CONFIG_EXTRA: |
