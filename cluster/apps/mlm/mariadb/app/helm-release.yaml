@@ -38,7 +38,7 @@ spec:
           metrics:
             image:
               repository: quay.io/prometheus/mysqld-exporter
-              tag: v0.15.1
+              tag: v0.19.0
             args:
               - --config.my-cnf=/etc/mysqld-exporter/.my.cnf
             resources:
