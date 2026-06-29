@@ -44,6 +44,18 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 512Mi
+          metrics:
+            image:
+              repository: quay.io/lusotycoon/apache-exporter
+              tag: v0.13.4
+            args:
+              - --scrape_uri=http://localhost:80/server-status?auto
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 64Mi
 
     service:
       main:
@@ -51,6 +63,8 @@ spec:
         ports:
           http:
             port: 80
+          metrics:
+            port: 9117
 
     route:
       main:

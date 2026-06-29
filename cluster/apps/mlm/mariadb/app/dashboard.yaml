@@ -4,6 +4,7 @@ kind: GrafanaDashboard
 metadata:
   name: mariadb
 spec:
+  allowCrossNamespaceImport: true
   instanceSelector:
     matchLabels:
       dashboards: grafana

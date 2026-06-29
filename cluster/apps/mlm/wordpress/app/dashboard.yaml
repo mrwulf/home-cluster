@@ -4,6 +4,7 @@ kind: GrafanaDashboard
 metadata:
   name: wordpress
 spec:
+  allowCrossNamespaceImport: true
   instanceSelector:
     matchLabels:
       dashboards: grafana
@@ -26,37 +27,37 @@ spec:
       "graphTooltip": 0,
       "links": [],
       "schemaVersion": 39,
-      "tags": ["wordpress", "mlm"],
+      "tags": ["wordpress", "apache", "mlm"],
       "time": { "from": "now-6h", "to": "now" },
-      "title": "WordPress & MariaDB Stack",
+      "title": "WordPress & Apache Performance",
       "uid": "wordpress-mlm",
       "panels": [
         {
-          "title": "Pod Memory Working Set",
+          "title": "Apache Requests Rate",
           "type": "timeseries",
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
-          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-              "expr": "sum by (container) (container_memory_working_set_bytes{namespace=\"mlm\", container!=\"\"})",
-              "legendFormat": "{{container}}",
+              "expr": "rate(apache_accesses_total{namespace=\"mlm\"}[5m])",
+              "legendFormat": "requests/s",
               "refId": "A"
             }
           ]
         },
         {
-          "title": "Pod CPU Usage",
+          "title": "Apache Worker Status",
           "type": "timeseries",
           "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
-          "fieldConfig": { "defaults": { "unit": "cores" }, "overrides": [] },
+          "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-              "expr": "sum by (container) (node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace=\"mlm\", container!=\"\"})",
-              "legendFormat": "{{container}}",
+              "expr": "apache_workers{namespace=\"mlm\"}",
+              "legendFormat": "{{state}} workers",
               "refId": "A"
             }
           ]

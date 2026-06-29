@@ -26,6 +26,9 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9117
   egress:
     # Allow outbound traffic to MariaDB in the same namespace
     - to:
