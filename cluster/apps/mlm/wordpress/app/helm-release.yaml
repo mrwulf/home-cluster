@@ -35,6 +35,37 @@ spec:
                 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
                     $_SERVER['HTTPS'] = 'on';
                 }
+                if (isset($_SERVER['REQUEST_URI'])) {
+                    $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+                    if ($request_path === '/' || $request_path === '/index.html') {
+                        if (file_exists('/var/www/static/index.html')) {
+                            header('Content-Type: text/html; charset=UTF-8');
+                            readfile('/var/www/static/index.html');
+                            exit;
+                        }
+                    } else {
+                        $static_file = '/var/www/static' . $request_path;
+                        if (file_exists($static_file) && !is_dir($static_file)) {
+                            $ext = pathinfo($static_file, PATHINFO_EXTENSION);
+                            $mimetypes = [
+                                'css' => 'text/css',
+                                'js' => 'application/javascript',
+                                'jpg' => 'image/jpeg',
+                                'jpeg' => 'image/jpeg',
+                                'png' => 'image/png',
+                                'gif' => 'image/gif',
+                                'svg' => 'image/svg+xml',
+                                'ico' => 'image/x-icon',
+                                'html' => 'text/html',
+                                'xml' => 'application/xml'
+                            ];
+                            $content_type = isset($mimetypes[$ext]) ? $mimetypes[$ext] : (mime_content_type($static_file) ?: 'application/octet-stream');
+                            header('Content-Type: ' . $content_type);
+                            readfile($static_file);
+                            exit;
+                        }
+                    }
+                }
             envFrom:
               - secretRef:
                   name: wordpress-secret
@@ -71,6 +102,8 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
+          gatus.io/endpoint: |
+            path: /wp-login.php
         parentRefs:
           - name: external-gateway
             namespace: networking
@@ -93,4 +126,9 @@ spec:
       wordpress-data:
         existingClaim: "${VOLSYNC_CLAIM}"
         globalMounts:
-          - path: /var/www/html
+          - path: /var/www/html/wp-content
+            subPath: wp-content
+          - path: /var/www/static
+            subPath: static
+          - path: /var/www/backup
+            subPath: backup
