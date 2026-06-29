@@ -46,7 +46,7 @@ spec:
                 memory: 512Mi
           metrics:
             image:
-              repository: quay.io/lusotycoon/apache-exporter
+              repository: docker.io/lusotycoon/apache-exporter
               tag: v0.13.4
             args:
               - --scrape_uri=http://localhost:80/server-status?auto
