@@ -29,6 +29,8 @@ spec:
             env:
               WORDPRESS_DB_HOST: mariadb:3306
               WORDPRESS_CONFIG_EXTRA: |
+                $GLOBALS['table_prefix'] = '4xvG3_';
+                $table_prefix = '4xvG3_';
                 if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
                     $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
                 }
