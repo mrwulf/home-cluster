@@ -39,6 +39,15 @@ spec:
                 }
                 if (isset($_SERVER['REQUEST_URI'])) {
                     $request_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+                    if (strpos($request_path, '/server-status') === 0) {
+                        $ht = '/var/www/html/.htaccess';
+                        if (file_exists($ht) && strpos(file_get_contents($ht), 'server-status') === false) {
+                            $c = file_get_contents($ht);
+                            $u = str_replace("RewriteRule ^index\\.php$ - [L]", "RewriteRule ^index\\.php$ - [L]\nRewriteCond %{REQUEST_URI} !^/server-status", $c);
+                            @file_put_contents($ht, $u);
+                        }
+                        return;
+                    }
                     if ($request_path === '/' || $request_path === '/index.html') {
                         if (file_exists('/var/www/static/index.html')) {
                             header('Content-Type: text/html; charset=UTF-8');
@@ -71,6 +80,28 @@ spec:
             envFrom:
               - secretRef:
                   name: wordpress-secret
+            lifecycle:
+              postStart:
+                exec:
+                  command:
+                    - bash
+                    - -c
+                    - |
+                      cat << 'EOF' > /var/www/html/.htaccess
+                      # BEGIN WordPress
+                      <IfModule mod_rewrite.c>
+                      RewriteEngine On
+                      RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+                      RewriteBase /
+                      RewriteRule ^index\.php$ - [L]
+                      RewriteCond %{REQUEST_URI} !^/server-status
+                      RewriteCond %{REQUEST_FILENAME} !-f
+                      RewriteCond %{REQUEST_FILENAME} !-d
+                      RewriteRule . /index.php [L]
+                      </IfModule>
+                      # END WordPress
+                      EOF
+                      chown www-data:www-data /var/www/html/.htaccess
             resources:
               requests:
                 cpu: 100m
