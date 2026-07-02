@@ -63,7 +63,13 @@ spec:
                   failureThreshold: 3
               readiness: *probe
               startup:
-                enabled: false
+                enabled: true
+                spec:
+                  httpGet:
+                    path: /server/ping
+                    port: 3001
+                  failureThreshold: 30
+                  periodSeconds: 5
             resources:
               requests:
                 cpu: 100m
