@@ -61,6 +61,13 @@ spec:
           - immich
           - outline
           - vikunja
+        roles:
+          - app
+          - authentik
+          - immich-admin
+          - linkding
+          - outlineAdmin
+          - vikunja
         source:
           externalCluster: postgres-15-migration
   externalClusters:
