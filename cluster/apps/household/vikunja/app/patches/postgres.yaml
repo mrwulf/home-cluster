@@ -15,7 +15,7 @@ spec:
               tag: 18.4
             env:
               - name: INIT_POSTGRES_HOST
-                value: postgres-rw.databases.svc.cluster.local
+                value: postgres17-rw.databases.svc.cluster.local
               - name: INIT_POSTGRES_DBNAME
                 value: vikunja
               - name: INIT_POSTGRES_SUPER_USER

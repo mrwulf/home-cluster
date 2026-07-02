@@ -30,7 +30,7 @@ spec:
           ALLOWED_HOST_LIST: "external,loopback,*.svc.cluster.local,*.${SECRET_DOMAIN}"
         database:
           DB_TYPE: postgres
-          HOST: postgres16-rw.databases.svc.cluster.local:5432
+          HOST: postgres17-rw.databases.svc.cluster.local:5432
           NAME: forgejo
         server:
           DOMAIN: "git.home.${SECRET_DOMAIN}"

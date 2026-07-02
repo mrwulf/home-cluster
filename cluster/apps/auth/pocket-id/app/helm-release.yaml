@@ -90,7 +90,7 @@ spec:
                 image: ghcr.io/home-operations/postgres-init:18.4
                 env:
                   - name: INIT_POSTGRES_HOST
-                    value: postgres16-rw.databases.svc.cluster.local.
+                    value: postgres17-rw.databases.svc.cluster.local.
                   - name: INIT_POSTGRES_DBNAME
                     value: pocketid
                   - name: INIT_POSTGRES_SUPER_PASS
