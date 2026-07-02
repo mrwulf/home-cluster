@@ -6,6 +6,8 @@ resources:
   - secret.sops.yaml
   - cluster.yaml
   - cluster16.yaml
+  - cluster17.yaml
   - scheduledbackup.yaml
   - scheduledbackup16.yaml
+  - scheduledbackup17.yaml
   - prometheusrule.yaml

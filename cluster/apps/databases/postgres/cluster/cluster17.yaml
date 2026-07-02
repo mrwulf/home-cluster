@@ -1,0 +1,75 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres17
+  annotations:
+    kyverno.io/ignore: "true"
+spec:
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17.5-0.4.3
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 50Gi
+    storageClass: ceph-block
+  superuserSecret:
+    name: postgres-superuser
+  enableSuperuserAccess: true
+  monitoring:
+    enablePodMonitor: true
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 8Gi
+    limits:
+      memory: 8Gi
+  postgresql:
+    parameters:
+      auto_explain.log_min_duration: "10s"
+      max_connections: "300"
+      max_wal_size: "2GB"
+      min_wal_size: "256MB"
+      checkpoint_completion_target: "0.9"
+      shared_buffers: 2048MB
+      pg_stat_statements.max: "10000"
+      pg_stat_statements.track: all
+    shared_preload_libraries:
+      - "vchord.so"
+  stopDelay: 300
+  smartShutdownTimeout: 30
+  backup:
+    retentionPolicy: 30d
+    barmanObjectStore:
+      wal:
+        compression: bzip2
+        maxParallel: 8
+      destinationPath: s3://postgresql/
+      endpointURL: https://cdn.${SECRET_DOMAIN}
+      serverName: postgres-17
+      s3Credentials:
+        accessKeyId:
+          name: postgres-minio
+          key: MINIO_ACCESS_KEY
+        secretAccessKey:
+          name: postgres-minio
+          key: MINIO_SECRET_KEY
+  bootstrap:
+    initdb:
+      import:
+        type: monolith
+        databases:
+          - immich
+          - outline
+          - vikunja
+        source:
+          externalCluster: postgres-15-migration
+  externalClusters:
+    - name: postgres-15-migration
+      connectionParameters:
+        host: postgres-rw.databases.svc.cluster.local
+        user: postgres
+        dbname: postgres
+        sslmode: disable
+      password:
+        name: postgres-superuser
+        key: password
