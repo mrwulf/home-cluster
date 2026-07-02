@@ -53,30 +53,27 @@ spec:
         secretAccessKey:
           name: postgres-minio
           key: MINIO_SECRET_KEY
-  bootstrap:
-    initdb:
-      import:
-        type: monolith
-        databases:
-          - immich
-          - outline
-          - vikunja
-        roles:
-          - app
-          - authentik
-          - immich-admin
-          - linkding
-          - outlineAdmin
-          - vikunja
-        source:
-          externalCluster: postgres-15-migration
-  externalClusters:
-    - name: postgres-15-migration
-      connectionParameters:
-        host: postgres-rw.databases.svc.cluster.local
-        user: postgres
-        dbname: postgres
-        sslmode: disable
-      password:
-        name: postgres-superuser
-        key: password
+# DISASTER RECOVERY RESTORE GUIDE
+# If the Kubernetes cluster or this DB cluster is completely destroyed and you need to restore from Barman backups:
+# 1. Ensure the postgres-minio S3 credentials secret exists in the databases namespace.
+# 2. Add/uncomment the recovery bootstrap below to restore from the MinIO S3 backups:
+#
+#   bootstrap:
+#     recovery:
+#       source: postgres-recovery-source
+#
+#   externalClusters:
+#     - name: postgres-recovery-source
+#       barmanObjectStore:
+#         destinationPath: s3://postgresql/
+#         endpointURL: https://cdn.${SECRET_DOMAIN}
+#         serverName: postgres-17  # Must match the serverName of the backup (postgres-17)
+#         s3Credentials:
+#           accessKeyId:
+#             name: postgres-minio
+#             key: MINIO_ACCESS_KEY
+#           secretAccessKey:
+#             name: postgres-minio
+#             key: MINIO_SECRET_KEY
+#         wal:
+#           maxParallel: 8
