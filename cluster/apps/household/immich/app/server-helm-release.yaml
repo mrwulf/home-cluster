@@ -68,7 +68,7 @@ spec:
                   httpGet:
                     path: /server/ping
                     port: 3001
-                  failureThreshold: 30
+                  failureThreshold: 180
                   periodSeconds: 5
             resources:
               requests:
