@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: jellyfin
+  name: &app jellyfin-pg
 spec:
   interval: 1h
   chartRef:
@@ -11,20 +11,33 @@ spec:
     namespace: flux-system
   values:
     controllers:
-      jellyfin:
+      jellyfin-pg:
+        replicas: 0
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          01-init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 18.4
+              pullPolicy: IfNotPresent
+            envFrom:
+              - secretRef:
+                  name: &secret jellyfin-pg-secret
         containers:
           app:
             image:
-              repository: jellyfin/jellyfin
-              tag: 10.11.11
+              repository: ghcr.io/jpvenson/jellyfin.pgsql
+              tag: 10.11.11-1
               pullPolicy: IfNotPresent
             env:
               DOTNET_SYSTEM_IO_DISABLEFILELOCKING: "true"
               JELLYFIN_FFmpeg__probesize: 50000000
               JELLYFIN_FFmpeg__analyzeduration: 50000000
-              JELLYFIN_PublishedServerUrl: https://jellyfin.home.${SECRET_DOMAIN}
+              JELLYFIN_PublishedServerUrl: https://jellyfin-pg.home.${SECRET_DOMAIN}
+            envFrom:
+              - secretRef:
+                  name: *secret
             probes:
               liveness: &probes
                 enabled: true
@@ -62,11 +75,7 @@ spec:
             supplementalGroups: [44, 10000, 65539]
     service:
       app:
-        controller: jellyfin
-        # type: LoadBalancer
-        # annotations:
-        #   lbipam.cilium.io/ips: 10.0.42.128
-        # externalTrafficPolicy: Local
+        controller: jellyfin-pg
         ports:
           http:
             port: 8096
@@ -79,7 +88,7 @@ spec:
           - name: internal-gateway
             namespace: networking
         hostnames:
-          - "jellyfin.home.${SECRET_DOMAIN}"
+          - "jellyfin-pg.home.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef
@@ -92,7 +101,7 @@ spec:
                 port: http
     persistence:
       config:
-        existingClaim: jellyfin
+        existingClaim: jellyfin-pg
         globalMounts:
           - path: /config
       tmp:
@@ -106,7 +115,7 @@ spec:
       backups:
         type: nfs
         server: "${CORE_NFS_SERVER:=nas0}"
-        path: "/mnt/user/backups/jellyfin-backups"
+        path: "/mnt/user/backups/jellyfin-pg-backups"
         globalMounts:
           - path: /backups
       movies:

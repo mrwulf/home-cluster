@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app jellyfin-pg
+  namespace: flux-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: rook-ceph-cluster
+    - name: intel-device-plugins-gpu
+  interval: 1h
+  path: ./cluster/apps/media/jellyfin-pg/app
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: media
+  timeout: 5m
+  wait: false
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 50Gi
+      VOLSYNC_NFS_START_MINUTE: "25"
+      VOLSYNC_B2_START_MINUTE: "55"
+      VOLSYNC_CACHE_CAPACITY: "10Gi"
+      VOLSYNC_MOVER_MEMORY_REQUEST: 2Gi
+      VOLSYNC_MOVER_MEMORY_LIMIT: 8Gi
+  retryInterval: 2m
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app jellyfin-pg-meilisearch
+  namespace: flux-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: rook-ceph-cluster
+    - name: jellyfin-pg
+  interval: 1h
+  path: ./cluster/apps/media/jellyfin-pg/meilisearch
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: media
+  timeout: 5m
+  wait: false
+  postBuild:
+    substitute:
+      APP: *app
+      APP_UID: "568"
+      APP_GID: "568"
+      VOLSYNC_CAPACITY: 10Gi
+      VOLSYNC_NFS_START_MINUTE: "48"
+      VOLSYNC_B2_START_MINUTE: "13"
+  retryInterval: 2m
