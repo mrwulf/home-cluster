@@ -17,3 +17,4 @@ resources:
   - ./dashboards/dashboards-kubernetes.yaml
   - ./dashboards/dashboards-unifi.yaml
   - ./dashboards/dashboard-home.yaml
+  - ./dashboards/dashboards-etcd.yaml
