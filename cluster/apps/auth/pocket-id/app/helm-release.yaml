@@ -86,7 +86,7 @@ spec:
         userManagement:
           allowOwnAccountEdit: true
           allowUserSignups: "withToken"
-          emailsVerified: true
+          emailsVerified: false
           signupDefaultCustomClaims: '["immich_role": "user"]'
           signupDefaultUserGroupIds:
             - "d6504cb4-24d3-417b-8c57-3ed44ff1b6bc"
