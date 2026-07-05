@@ -5,4 +5,4 @@ resources:
   - ./helm-release.yaml
   - ./route.yaml
   - ./grafana-config-job.yaml
-  - ./primary-affinity-cronjob.yaml
+  # - ./primary-affinity-cronjob.yaml
