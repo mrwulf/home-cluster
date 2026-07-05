@@ -6,7 +6,7 @@ resources:
   - bazarr/ks.yaml
   - isponsorblocktv/ks.yaml
   - jellyfin/ks.yaml
-  - jellyfin-pg/ks.yaml
+  # - jellyfin-pg/ks.yaml # revert for now
   - lidarr/ks.yaml
   - ombi/ks.yaml
   - plex/ks.yaml
