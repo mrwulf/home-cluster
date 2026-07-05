@@ -97,12 +97,11 @@ talos/                       # talconfig.yaml, talsecret.sops.yaml
 3. **`ks.yaml`** — copy an existing one (e.g. [goldilocks](cluster/apps/monitoring/goldilocks/ks.yaml)): `targetNamespace`, `path: ./cluster/apps/<ns>/<app>/app`, `postBuild.substitute.APP`.
 4. **`app/kustomization.yaml`** lists the resources.
 5. **Register** the app's `ks.yaml` in `cluster/apps/<namespace>/kustomization.yaml`.
-6. **Postgres database backups:** If the app uses a PostgreSQL database, you MUST add its database name to the `POSTGRES_DB` list in the `postgres16-backup` CronJob at [cronjob16.yaml](cluster/apps/databases/postgres/backups/cronjob16.yaml).
    Always prefer the postgres16 database instance - the postgres instance is mostly just used for immich since it needs vector extensions.
-7. **Namespaces:** Do not specify `metadata.namespace` in application resource manifests (like Ingress, Service, ConfigMap, Secrets) unless absolutely necessary.
+6. **Namespaces:** Do not specify `metadata.namespace` in application resource manifests (like Ingress, Service, ConfigMap, Secrets) unless absolutely necessary.
    Let the Flux `Kustomization`'s `targetNamespace` handle namespace assignment automatically.
-8. **Stagger VolSync backups:** If the app uses VolSync, you MUST run `python3 scripts/stagger-volsync.py` to calculate and apply staggered backup start minutes to its `ks.yaml`.
-9. Run `mise x -- task test:all`.
+7. **Stagger VolSync backups:** If the app uses VolSync, you MUST run `python3 scripts/stagger-volsync.py` to calculate and apply staggered backup start minutes to its `ks.yaml`.
+8. Run `mise x -- task test:all`.
 
 ### Secrets
 
