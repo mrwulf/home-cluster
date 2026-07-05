@@ -111,3 +111,72 @@ data:
    ```
 
    You should see all 6 OSDs listed as `up` and `in` in the tree.
+
+---
+
+## Decommissioning Log: Kingston NVMe Retirement
+
+The retirement and decommissioning of OSDs `0`, `4`, and `5` (on the Kingston OS
+disk partitions) was executed on July 5, 2026. This section logs the active
+procedure followed to ensure clean removal from the active cluster topology.
+
+### Decommissioning Steps Followed
+
+1. **GitOps Specification Update**: Commented out the Kingston disk devices
+   (`/dev/disk/by-partlabel/r-rook-vol`) in `helm-release.yaml` and retired the
+   `ceph-osd-primary-affinity` cronjob in `kustomization.yaml`. Pushed commit
+   `3c8a20706` to the GitOps repository.
+2. **Reconciliation**: Verified that Flux successfully pulled and applied the
+   configuration updates to the `rook-ceph` namespace resources.
+3. **Data Migration (Marking Out)**: Marked OSDs `0`, `4`, and `5` as `out`
+   inside the `rook-ceph-tools` pod:
+
+   ```bash
+   ceph osd out 0 4 5
+   ```
+
+4. **Tuning for Backfill Concurrency**: Enabled mClock overrides and increased
+   backfill limits to speed up data migration to the Samsung/T-Force SSDs over
+   the 10G network:
+
+   ```bash
+   ceph config set osd osd_mclock_override_recovery_settings true
+   ceph config set osd osd_max_backfills 16
+   ceph config set osd osd_recovery_max_active_ssd 32
+   ceph tell osd.* injectargs \
+     --osd_mclock_override_recovery_settings true \
+     --osd_max_backfills 16 \
+     --osd_recovery_max_active 16 \
+     --osd_recovery_max_active_ssd 32 \
+     --osd_recovery_sleep_ssd 0
+   ```
+
+5. **Monitoring Migration & Safety Checks**: Monitored rebalancing using
+   `ceph status` and verified each OSD was safe to destroy:
+
+   ```bash
+   ceph osd safe-to-destroy 0 4 5
+   ```
+
+6. **Deployments Stop**: Scaled OSD deployments `rook-ceph-osd-0`,
+   `rook-ceph-osd-4`, and `rook-ceph-osd-5` to `0` replicas.
+7. **Purging from Topology**: Purged the retired OSDs from Ceph, removing them
+   from the CRUSH map:
+
+   ```bash
+   ceph osd purge 0 --yes-i-really-mean-it
+   ceph osd purge 4 --yes-i-really-mean-it
+   ceph osd purge 5 --yes-i-really-mean-it
+   ```
+
+8. **Tuning Cleanup**: Reverted all dynamic recovery overrides back to defaults
+   (mClock profile `high_recovery_ops`).
+
+### Post-Decommission Verification
+
+- **Ceph Health**: `HEALTH_OK`
+- **OSD Count**: `3 osds: 3 up, 3 in` (`osd.1`, `osd.2`, `osd.3`)
+- **CRUSH Map**: Verified `ceph osd tree` only lists the primary Samsung and
+  T-Force 1TB NVMe drives.
+- **Client Traffic Impact**: Resolved etcd latency warnings completely by
+  redirecting all write/read traffic to the dedicated SSD storage tier.

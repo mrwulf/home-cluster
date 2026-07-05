@@ -81,3 +81,63 @@ When CSI snapshots are deleted, they move to the RBD trash but cannot be purged 
 
 - **Never Define CPU Limits**: Ensure all Ceph operator and plugin manifests rely on CPU requests without CPU limits to prevent IO latency spikes under heavy write operations.
 - **Hardware Acceleration**: Account for dedicated storage controllers and bluefs expansion settings when analyzing node allocations.
+
+---
+
+## 5. OSD Decommissioning & Backfill Tuning Workflow
+
+When removing OSDs (e.g. retiring old OS disk partitions or migrating to larger hardware), follow this workflow to safely evacuate data, optimize backfill speeds on high-bandwidth networks, and purge OSDs.
+
+### 5.1 Safely Evacuating OSDs
+
+1. **GitOps Update**: Update the `CephCluster` or Helm release spec to exclude the target devices first, then apply GitOps changes.
+2. **Mark Out**: Mark the target OSDs as `out` inside the toolbox pod to trigger data migration:
+   ```bash
+   ceph osd out <OSD_ID>
+   ```
+3. **Safety Verification**: Before stopping or deleting OSD deployments, check if Ceph has finished remapping all placement groups off the OSDs:
+   ```bash
+   ceph osd safe-to-destroy <OSD_ID>
+   ```
+   _Do NOT scale down or purge an OSD if this command returns EBUSY (indicating PGs are still mapped). Stopping multiple OSDs prematurely can result in data loss._
+
+### 5.2 Optimizing Backfill & Recovery Speed
+
+If backfill is bottlenecked (e.g. on 10G links with SSDs), mClock defaults might throttle concurrency to a single active PG. Tweak these configs to speed it up:
+
+1. **Enable Overrides**: Tell the mClock scheduler to respect manual parameters:
+   ```bash
+   ceph config set osd osd_mclock_override_recovery_settings true
+   ceph tell osd.* injectargs --osd_mclock_override_recovery_settings true
+   ```
+2. **Increase Concurrency & Remove Sleep**:
+   ```bash
+   ceph config set osd osd_max_backfills 16
+   ceph config set osd osd_recovery_max_active_ssd 32
+   ceph tell osd.* injectargs \
+     --osd_max_backfills 16 \
+     --osd_recovery_max_active 16 \
+     --osd_recovery_max_active_ssd 32 \
+     --osd_recovery_sleep_ssd 0
+   ```
+
+### 5.3 Purging and Reversion
+
+Once `safe-to-destroy` returns success:
+
+1. **Scale Down**: Scale down the Kubernetes deployments for the retired OSDs to `0` replicas.
+2. **Purge OSDs**: Run the purge command in the toolbox pod:
+   ```bash
+   ceph osd purge <OSD_ID> --yes-i-really-mean-it
+   ```
+3. **Clean Up Overrides**: Restore the default mClock performance profiles:
+   ```bash
+   ceph config set osd osd_mclock_override_recovery_settings false
+   ceph config rm osd osd_max_backfills
+   ceph config rm osd osd_recovery_max_active_ssd
+   ceph tell osd.* injectargs \
+     --osd_mclock_override_recovery_settings false \
+     --osd_max_backfills 1 \
+     --osd_recovery_max_active 0 \
+     --osd_recovery_max_active_ssd 10
+   ```
