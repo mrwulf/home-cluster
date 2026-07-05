@@ -43,6 +43,7 @@ spec:
       spec:
         ui:
           appName: "Home PocketID"
+          homePageUrl: "/settings/apps"
         image: ghcr.io/pocket-id/pocket-id:v2.9.0
         encryptionKey:
           valueFrom:
@@ -63,9 +64,10 @@ spec:
                 name: pocket-id-secret
                 key: MAXMIND_LICENSE_KEY
         emailNotifications:
-          verification: true
+          loginNotification: true
           oneTimeAccessAsAdmin: true
           oneTimeAccessAsUnauthenticated: true
+          verification: true
         smtp:
           host: smtp-relay.system.svc.cluster.local
           port: 2525
@@ -81,6 +83,13 @@ spec:
           requests:
             cpu: 10m
             memory: 64Mi
+        userManagement:
+          allowOwnAccountEdit: true
+          allowUserSignups: "withToken"
+          emailsVerified: true
+          signupDefaultCustomClaims: '["immich_role": "user"]'
+          signupDefaultUserGroupIds:
+            - "d6504cb4-24d3-417b-8c57-3ed44ff1b6bc"
         versionCheckDisabled: true
         analyticsDisabled: true
         podTemplate:
