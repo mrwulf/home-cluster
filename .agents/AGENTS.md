@@ -41,3 +41,42 @@
   - Enforce No CPU Limits (Rule 6 in CLAUDE.md) across all non-system containers.
   - Right-size memory requests/limits based on actual peak telemetry buffers to eliminate OOMKills and reclaim unused node allocations.
 - **Execution Tool**: Recommend using the `/schedule` command or setting background timers when initiating multi-phase resource analyses.
+
+## Grafana Dashboard Deployment Workflow
+
+When asked to add or audit Grafana dashboards in this cluster:
+
+### 1. Audit live Grafana FIRST (before any file changes)
+- Use `mcp-grafana` `search_dashboards` (with an empty query to list all) to enumerate what is currently deployed.
+- Cross-reference against the git YAML files in `cluster/apps/monitoring/grafana/instance/dashboards/` to confirm parity.
+- Do NOT add a dashboard that is already present. Do NOT assume git = live.
+
+### 2. GrafanaDashboard CR pattern (grafana.com dashboards)
+```yaml
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: <slug>
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana   # mandatory — matches the Grafana instance
+  folder: <folder-name>     # must match an existing GrafanaFolder in folders.yaml
+  # renovate: depName=<ID>  # required for Renovate tracking of grafana.com IDs
+  url: https://grafana.com/api/dashboards/<ID>/revisions/<rev>/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+```
+- **Datasource mapping**: The standard input is `DS_PROMETHEUS` → `Prometheus`.
+- **Raw JSON dashboards** (GitHub-hosted) omit the `# renovate:` comment but pin to a specific git tag/SHA in the URL.
+- **Folder must pre-exist**: verify the `folder:` value exists as a `GrafanaFolder` in `cluster/apps/monitoring/grafana/instance/folders/folders.yaml` before referencing it.
+
+### 3. File placement & kustomization
+- Central dashboards file: `cluster/apps/monitoring/grafana/instance/dashboards/dashboards-<category>.yaml`
+- Always add the new file to `cluster/apps/monitoring/grafana/instance/kustomization.yaml`.
+- App-specific dashboards live alongside the app in its own namespace directory.
+
+### 4. Validate before committing
+- Run `mise x -- task test:all` to confirm the Flux kustomization compiles cleanly.
