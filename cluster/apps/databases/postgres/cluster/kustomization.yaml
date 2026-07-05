@@ -7,3 +7,4 @@ resources:
   - cluster17.yaml
   - scheduledbackup17.yaml
   - prometheusrule.yaml
+  - cronjob.yaml

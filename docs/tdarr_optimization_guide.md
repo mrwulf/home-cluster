@@ -20,7 +20,7 @@ In Tdarr, original file replacement is the default behavior if an explicit Outpu
 
 Since you are managing the cluster via GitOps, the absolute safest way to test is to temporarily configure your media volumes as **read-only** in the Helm Release. If Tdarr attempts to delete or write back to the source folder, it will fail with a permission error, ensuring your source files remain 100% untouched.
 
-You can modify [tdarr-server's helm-release.yaml](file:///home/bwulf/myhome/GitRoot/home-cluster/cluster/apps/media/tdarr-server/app/helm-release.yaml) and [tdarr-node's helm-release.yaml](file:///home/bwulf/myhome/GitRoot/home-cluster/cluster/apps/media/tdarr-node/app/helm-release.yaml) like this:
+You can modify [tdarr-server's helm-release.yaml](../cluster/apps/media/tdarr-server/app/helm-release.yaml) and [tdarr-node's helm-release.yaml](../cluster/apps/media/tdarr-node/app/helm-release.yaml) like this:
 
 ```yaml
 movies:

@@ -34,15 +34,15 @@ resources:
 ### Declare variables in 'fluxtomization' file (`ks.yaml`)
 
 ```yaml
-  postBuild:
-    substitute:
-      APP: *app
-      APP_UID: # set if defined in values
-      APP_GID: # set if defined in values
-      VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_STORAGECLASS: ceph-block # default
-      VOLSYNC_SNAPSHOTCLASS: csi-ceph-block # update with storageclass
-      VOLSYNC_COPY_METHOD: Snapshot # default; change to "Clone" for local-path
+postBuild:
+  substitute:
+    APP: *app
+    APP_UID: # set if defined in values
+    APP_GID: # set if defined in values
+    VOLSYNC_CAPACITY: 5Gi
+    VOLSYNC_STORAGECLASS: ceph-block # default
+    VOLSYNC_SNAPSHOTCLASS: csi-ceph-block # update with storageclass
+    VOLSYNC_COPY_METHOD: Snapshot # default; change to "Clone" for local-path
 ```
 
 ### Available Variables

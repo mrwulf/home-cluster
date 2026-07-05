@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres17-backup
+  namespace: databases
+spec:
+  schedule: "0 3 * * *" # Daily at 3:00 AM
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          automountServiceAccountToken: false
+          enableServiceLinks: false
+          securityContext:
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+          containers:
+            - name: postgres17-backup
+              image: docker.io/prodrigestivill/postgres-backup-local:17@sha256:e803bd9eb4bfb42e9b3e74ba411227f3d55da292905800395659cc579b6641e8
+              imagePullPolicy: IfNotPresent
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 128Mi
+                limits:
+                  memory: 256Mi
+              command:
+                - "/backup.sh"
+              env:
+                - name: POSTGRES_HOST
+                  value: postgres17-ro.databases.svc.cluster.local
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-superuser
+                      key: username
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-superuser
+                      key: password
+                - name: BACKUP_KEEP_MINS
+                  value: "1440" # Keep backups for 24 hours locally
+              volumeMounts:
+                - name: nas-backups
+                  mountPath: /backups
+          restartPolicy: OnFailure
+          volumes:
+            - name: nas-backups
+              nfs:
+                server: "${CORE_NFS_SERVER:=nas0}"
+                path: "/mnt/user/backups/postgres-backup"

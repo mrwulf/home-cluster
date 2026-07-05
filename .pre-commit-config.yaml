@@ -39,3 +39,14 @@ repos:
   #   rev: v8.22.0
   #   hooks:
   #     - id: gitleaks
+  - repo: local
+    hooks:
+      - id: forbid-local-paths
+        name: Forbid local filesystem paths (Rule 7)
+        entry: '(/home/(?!node|coder|postgres|runner|root|linuxbrew\b)[a-zA-Z0-9_-]+|/Users/(?!Shared\b)[a-zA-Z0-9_-]+|file:///(?!tmp/))'
+        language: pygrep
+        types: [text]
+        exclude: |
+          (?x)^(
+              .pre-commit-config.yaml
+          )$

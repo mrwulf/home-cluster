@@ -19,6 +19,7 @@ tasks:
       - lint:kubernetes
       - lint:tofu
       - lint:format
+      - lint:paths
 
   lint:markdown:
     desc: Lint Markdown files
@@ -74,6 +75,13 @@ tasks:
     cmds:
       - echo "Checking formatting..."
       - prettier --ignore-path '{{.LINTERS_DIR}}/.prettierignore' --config '{{.LINTERS_DIR}}/.prettierrc.yaml' --check .
+    ignore_error: false
+
+  lint:paths:
+    desc: Check for forbidden local paths and PII (Rule 7)
+    cmds:
+      - echo "Checking for forbidden local paths..."
+      - pre-commit run forbid-local-paths --all-files
     ignore_error: false
 
   lint:format:fix:
