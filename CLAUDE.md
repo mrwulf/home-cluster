@@ -47,6 +47,8 @@ These apply to **every** change. Do not check anything in that violates them.
 
 11. **Verify and pin container image tags.** Never use mutable `latest` image tags — always specify explicit, stable version tags for all container workloads and MCP servers.
 
+12. **Use the tools you have.** Use the MCP servers you have whenever possible. Additional local tools are managed via `mise`. There are some common tasks defined in `Taskfile.yml`. You can also run `task` to see the available tasks.
+
 ## Toolchain
 
 | Concern           | Choice                                                                                                                         |

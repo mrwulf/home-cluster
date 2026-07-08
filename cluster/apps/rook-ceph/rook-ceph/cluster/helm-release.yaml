@@ -100,6 +100,8 @@ spec:
             devices:
               # - name: "/dev/disk/by-partlabel/r-rook-vol" # Disabled to prevent etcd I/O contention (see docs/storage.md)
               - name: "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_1TB_S6S1NJ0TB02681R"
+              # Using this one since the samsung is crap:
+              - name: "/dev/disk/by-id/nvme-KINGSTON_OM8PGP41024N-A0_50026B7383950522"
           # node2 (10.0.1.52) — Kingston NVMe is the OS disk; r-rook-vol is 644 GB raw
           - name: "node2"
             devices:

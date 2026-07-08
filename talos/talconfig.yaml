@@ -1,8 +1,8 @@
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 clusterName: k8s
-talosVersion: v1.13.4
-kubernetesVersion: v1.36.1
+talosVersion: v1.13.5
+kubernetesVersion: v1.36.2
 endpoint: https://${clusterEndpointIP}:6443
 
 additionalApiServerCertSans: &sans
@@ -27,7 +27,8 @@ nodes:
       - 10.0.0.1
       - 10.0.1.1
     installDiskSelector:
-      model: KINGSTON OM8PGP41024N-A0
+      # model: KINGSTON OM8PGP41024N-A0
+      model: Micron MTFDHBA512TDV
     networkInterfaces:
       - interface: bond0
         addresses:
@@ -62,23 +63,24 @@ nodes:
     #         match: "system_disk"
     #       minSize: 100GiB
     #       maxSize: 100GiB
-    patches:
-      - |-
-        apiVersion: v1alpha1
-        kind: VolumeConfig
-        name: EPHEMERAL
-        provisioning:
-          minSize: 100GiB
-          grow: true
-      - |-
-        apiVersion: v1alpha1
-        kind: RawVolumeConfig
-        name: rook-vol
-        provisioning:
-          diskSelector:
-            match: "system_disk"
-          minSize: 600GiB
-          maxSize: 600GiB
+    # patches:
+    #   - |-
+    #     apiVersion: v1alpha1
+    #     kind: VolumeConfig
+    #     name: EPHEMERAL
+    #     provisioning:
+    #       minSize: 100GiB
+    #       maxSize: 350GiB
+    #       grow: true
+    #   - |-
+    #     apiVersion: v1alpha1
+    #     kind: RawVolumeConfig
+    #     name: rook-vol
+    #     provisioning:
+    #       diskSelector:
+    #         match: "system_disk"
+    #       minSize: 600GiB
+    #       maxSize: 600GiB
 
   - hostname: node2.home
     controlPlane: true
@@ -130,6 +132,7 @@ nodes:
         name: EPHEMERAL
         provisioning:
           minSize: 100GiB
+          maxSize: 350GiB
           grow: true
       - |-
         apiVersion: v1alpha1
@@ -191,6 +194,7 @@ nodes:
         name: EPHEMERAL
         provisioning:
           minSize: 100GiB
+          maxSize: 350GiB
           grow: true
       - |-
         apiVersion: v1alpha1
