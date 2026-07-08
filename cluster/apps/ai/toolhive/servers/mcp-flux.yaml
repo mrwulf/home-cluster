@@ -60,7 +60,7 @@ spec:
   groupRef:
     name: toolhive-servers
   # renovate: depName=ghcr.io/controlplaneio-fluxcd/flux-operator-mcp datasource=docker
-  image: ghcr.io/controlplaneio-fluxcd/flux-operator-mcp:v0.54.0
+  image: ghcr.io/controlplaneio-fluxcd/flux-operator-mcp:v0.54.1
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
