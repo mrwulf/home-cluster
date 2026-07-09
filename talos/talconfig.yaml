@@ -90,7 +90,8 @@ nodes:
       - 10.0.0.1
       - 10.0.1.1
     installDiskSelector:
-      model: KINGSTON OM8PGP41024N-A0
+      # model: KINGSTON OM8PGP41024N-A0
+      model: SAMSUNG MZVLB256HBHQ-000L7
     networkInterfaces:
       - interface: bond0
         addresses:
@@ -125,24 +126,24 @@ nodes:
     #         match: "system_disk"
     #       minSize: 100GiB
     #       maxSize: 100GiB
-    patches:
-      - |-
-        apiVersion: v1alpha1
-        kind: VolumeConfig
-        name: EPHEMERAL
-        provisioning:
-          minSize: 100GiB
-          maxSize: 350GiB
-          grow: true
-      - |-
-        apiVersion: v1alpha1
-        kind: RawVolumeConfig
-        name: rook-vol
-        provisioning:
-          diskSelector:
-            match: "system_disk"
-          minSize: 600GiB
-          maxSize: 600GiB
+    # patches:
+    #   - |-
+    #     apiVersion: v1alpha1
+    #     kind: VolumeConfig
+    #     name: EPHEMERAL
+    #     provisioning:
+    #       minSize: 100GiB
+    #       maxSize: 350GiB
+    #       grow: true
+    #   - |-
+    #     apiVersion: v1alpha1
+    #     kind: RawVolumeConfig
+    #     name: rook-vol
+    #     provisioning:
+    #       diskSelector:
+    #         match: "system_disk"
+    #       minSize: 600GiB
+    #       maxSize: 600GiB
 
   - hostname: node3.home
     controlPlane: true
@@ -152,7 +153,8 @@ nodes:
       - 10.0.0.1
       - 10.0.1.1
     installDiskSelector:
-      model: KINGSTON OM8PGP41024N-A0
+      # model: KINGSTON OM8PGP41024N-A0
+      model: SAMSUNG MZVLV256HCHP-000L2
     networkInterfaces:
       - interface: bond0
         addresses:
@@ -187,24 +189,24 @@ nodes:
     #         match: "system_disk"
     #       minSize: 100GiB
     #       maxSize: 100GiB
-    patches:
-      - |-
-        apiVersion: v1alpha1
-        kind: VolumeConfig
-        name: EPHEMERAL
-        provisioning:
-          minSize: 100GiB
-          maxSize: 350GiB
-          grow: true
-      - |-
-        apiVersion: v1alpha1
-        kind: RawVolumeConfig
-        name: rook-vol
-        provisioning:
-          diskSelector:
-            match: "system_disk"
-          minSize: 600GiB
-          maxSize: 600GiB
+    # patches:
+    #   - |-
+    #     apiVersion: v1alpha1
+    #     kind: VolumeConfig
+    #     name: EPHEMERAL
+    #     provisioning:
+    #       minSize: 100GiB
+    #       maxSize: 350GiB
+    #       grow: true
+    #   - |-
+    #     apiVersion: v1alpha1
+    #     kind: RawVolumeConfig
+    #     name: rook-vol
+    #     provisioning:
+    #       diskSelector:
+    #         match: "system_disk"
+    #       minSize: 600GiB
+    #       maxSize: 600GiB
 
   # - hostname: replacement.home
   #   controlPlane: true

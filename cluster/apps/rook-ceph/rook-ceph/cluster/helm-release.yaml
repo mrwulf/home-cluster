@@ -107,11 +107,13 @@ spec:
             devices:
               # - name: "/dev/disk/by-partlabel/r-rook-vol" # Disabled to prevent etcd I/O contention (see docs/storage.md)
               - name: "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5P2NL0W811711P"
+              - name: "/dev/disk/by-id/nvme-KINGSTON_OM8PGP41024N-A0_50026B7383950858"
           # node3 (10.0.1.53) — Kingston NVMe is the OS disk; r-rook-vol is 644 GB raw
           - name: "node3"
             devices:
               # - name: "/dev/disk/by-partlabel/r-rook-vol" # Disabled to prevent etcd I/O contention (see docs/storage.md)
               - name: "/dev/disk/by-id/nvme-T-FORCE_TM8FP7001T_TPBF2404260090101808"
+              - name: "/dev/disk/by-id/nvme-KINGSTON_OM8PGP41024N-A0_50026B7383951956"
     cephBlockPools:
       - name: ceph-blockpool
         spec:
