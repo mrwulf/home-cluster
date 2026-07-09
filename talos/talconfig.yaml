@@ -28,7 +28,7 @@ nodes:
       - 10.0.1.1
     installDiskSelector:
       # model: KINGSTON OM8PGP41024N-A0
-      model: Micron MTFDHBA512TDV
+      model: Samsung SSD 970 EVO 250GB
     networkInterfaces:
       - interface: bond0
         addresses:
