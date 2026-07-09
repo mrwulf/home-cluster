@@ -7,7 +7,7 @@ spec:
   groupRef:
     name: toolhive-servers
   # renovate: depName=ghcr.io/homeassistant-ai/ha-mcp datasource=docker
-  image: ghcr.io/homeassistant-ai/ha-mcp:7.11.0
+  image: ghcr.io/homeassistant-ai/ha-mcp:7.12.0
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
