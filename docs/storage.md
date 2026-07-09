@@ -19,6 +19,24 @@ The cluster utilizes two storage tiers:
      `node1`, `node2`, and `node3`.
    - Previously mapped to OSDs `0`, `4`, and `5`.
 
+### Talos Disk Layout (Kingston NVMe — OS Disks)
+
+The Kingston OS disks on each node host multiple Talos system partitions plus
+the two user volumes. The Talos volume provisioner lays them out in this order:
+
+| Partition     | Size       | Description                       |
+|---------------|------------|-----------------------------------|
+| System parts  | <1 GiB     | Talos boot, STATE, etc.           |
+| `EPHEMERAL`   | 100–250 GiB| `/var` — kubelet, container data  |
+| `r-rook-vol`  | 600 GiB    | Raw Ceph OSD partition            |
+
+**Important**: The `EPHEMERAL` volume in `talos/talconfig.yaml` is configured
+with `grow: true` **and** `maxSize: 250GiB`. The `maxSize` is mandatory — without
+it, `EPHEMERAL` would greedily consume all remaining disk space before
+`r-rook-vol` can be allocated, causing the 600 GiB partition to never be
+created. `grow: true` allows `EPHEMERAL` to expand up to 250 GiB, filling
+space not reserved for `r-rook-vol`.
+
 ### Rationale for Disabling OS Disk Partitions
 
 The `r-rook-vol` partitions reside on the same physical disks as the Talos
@@ -92,7 +110,7 @@ steps to re-enable the 600G partitions to restore redundancy or expand storage.
 
 Once Flux applies the changes, the Rook-Ceph operator will automatically detect
 the new devices in the spec, partition them, and spin up new OSD deployments
-(`rook-ceph-osd-0`, `rook-ceph-osd-4`, and `rook-ceph-osd-5`).
+for the Kingston `r-rook-vol` partitions.
 
 Verify that the OSDs are successfully created and that Ceph begins rebalancing
 data:
@@ -180,3 +198,50 @@ procedure followed to ensure clean removal from the active cluster topology.
   T-Force 1TB NVMe drives.
 - **Client Traffic Impact**: Resolved etcd latency warnings completely by
   redirecting all write/read traffic to the dedicated SSD storage tier.
+
+### Clearing OSD Signatures After Decommission
+
+Even after purging OSDs from Ceph, the Rook operator's prepare job
+(`ceph-volume raw list`) will detect the residual BlueStore superblock
+signatures on the Kingston partitions and auto-adopt them, recreating the OSD
+deployments. To permanently prevent this, the signatures must be wiped from
+each partition.
+
+The cleanest approach uses `talosctl debug` to run a privileged Alpine
+container directly on the node with host `/dev` access — no Kubernetes pod
+manifest or cleanup required.
+
+> [!NOTE]
+> `wipefs` is not included in Alpine's base image. Install it first with
+> `apk update && apk add util-linux` inside the debug shell.
+
+First, identify which partition on each node holds the Ceph signature. The
+`r-rook-vol` label is the most reliable way to find it:
+
+```bash
+# On each node, find the partition device path
+talosctl get volumestatus --nodes <node>.home | grep r-rook-vol
+# or from a debug shell on the node:
+lsblk -o NAME,PARTLABEL | grep r-rook-vol
+```
+
+Then for each affected node, open a debug shell and wipe the signature:
+
+```bash
+talosctl debug docker.io/library/alpine:latest \
+  --nodes <node>.home \
+  --namespace system \
+  --args /bin/sh
+# inside the shell:
+apk add util-linux
+wipefs -a /dev/<partition>   # e.g. /dev/nvme0n1p6
+```
+
+After wiping each node, confirm Rook no longer spawns OSD prepare jobs for
+these devices:
+
+```bash
+kubectl -n rook-ceph get pods -w | grep osd-prepare
+```
+
+No new prepare pods should appear after the next Rook reconciliation cycle.
