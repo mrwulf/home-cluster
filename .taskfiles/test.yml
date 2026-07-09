@@ -25,14 +25,17 @@ tasks:
     desc: Lint Markdown files
     cmds:
       - echo "Linting Markdown files..."
-      - markdownlint -c '{{.LINTERS_DIR}}/.markdownlint.yaml' '**/*.md' --ignore node_modules --ignore .git
+      - markdownlint -c '{{.LINTERS_DIR}}/.markdownlint.yaml' '**/*.md' --ignore node_modules --ignore .git --ignore .venv --ignore .terraform --ignore talos/backups
     ignore_error: false
 
   lint:yaml:
     desc: Lint YAML files
     cmds:
       - echo "Linting YAML files..."
-      - yamllint -c '{{.LINTERS_DIR}}/.yamllint.yaml' .
+      - |
+        find cluster talos .github -name '*.yaml' -o -name '*.yml' | \
+        grep -v '\.sops\.yaml$' | \
+        xargs -P 8 -n 50 yamllint -c '{{.LINTERS_DIR}}/.yamllint.yaml'
     ignore_error: false
 
   lint:kubernetes:
@@ -53,6 +56,7 @@ tasks:
         xargs kubeconform \
           -strict \
           -ignore-missing-schemas \
+          -n 8 \
           -schema-location default \
           -schema-location 'https://kubernetes-schemas.pages.dev/{{`{{.NormalizedKubernetesVersion}}`}}-standalone-strict/{{`{{.ResourceKind}}`}}-{{`{{.ResourceAPIVersion}}`}}.json' \
           -verbose

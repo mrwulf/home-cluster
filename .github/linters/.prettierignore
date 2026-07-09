@@ -7,3 +7,7 @@ gotk-components.yaml
 **/*.sops.yaml
 **/*.tfstate
 **/*.tfstate.backup
+../../pxe-files/
+../../talos/clusterconfig/
+../../talos/backups/
+../../.venv/

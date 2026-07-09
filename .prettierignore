@@ -1,4 +1,0 @@
-# SOPS-encrypted files contain binary-encoded ciphertext and cannot be
-# formatted by Prettier. Ignore all sops files cluster-wide.
-**/*.sops.yaml
-**/*.sops.yml

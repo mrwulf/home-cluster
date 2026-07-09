@@ -247,7 +247,7 @@ output "VPS_PUBLIC_IP" {
 
 provider "kubernetes" {}
 
-resource "kubernetes_endpoints" "frps_dashboard" {
+resource "kubernetes_endpoints_v1" "frps_dashboard" {
   metadata {
     name      = "frps-dashboard"
     namespace = "networking"

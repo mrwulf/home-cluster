@@ -1,6 +1,11 @@
 ignore: |
   *.sops.*
   gotk-components.yaml
+  *vps-cloud-init.yaml
+  .venv/
+  .terraform/
+  talos/backups/
+  node_modules/
 extends: default
 rules:
   truthy:

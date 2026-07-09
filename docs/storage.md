@@ -24,11 +24,11 @@ The cluster utilizes two storage tiers:
 The Kingston OS disks on each node host multiple Talos system partitions plus
 the two user volumes. The Talos volume provisioner lays them out in this order:
 
-| Partition     | Size       | Description                       |
-|---------------|------------|-----------------------------------|
-| System parts  | <1 GiB     | Talos boot, STATE, etc.           |
-| `EPHEMERAL`   | 100–250 GiB| `/var` — kubelet, container data  |
-| `r-rook-vol`  | 600 GiB    | Raw Ceph OSD partition            |
+| Partition    | Size        | Description                      |
+| ------------ | ----------- | -------------------------------- |
+| System parts | <1 GiB      | Talos boot, STATE, etc.          |
+| `EPHEMERAL`  | 100–250 GiB | `/var` — kubelet, container data |
+| `r-rook-vol` | 600 GiB     | Raw Ceph OSD partition           |
 
 **Important**: The `EPHEMERAL` volume in `talos/talconfig.yaml` is configured
 with `grow: true` **and** `maxSize: 250GiB`. The `maxSize` is mandatory — without
