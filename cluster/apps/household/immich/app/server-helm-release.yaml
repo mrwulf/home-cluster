@@ -38,7 +38,7 @@ spec:
           main:
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: v3.0.1
+              tag: v3.0.2
             env:
               NODE_OPTIONS: "--max-old-space-size=8192"
               IMMICH_WORKERS_INCLUDE: "api"
