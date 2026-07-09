@@ -2,12 +2,12 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: openebs
+  name: local-path-provisioner
 spec:
   interval: 1h
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 4.4.0
-  url: oci://ghcr.io/home-operations/charts-mirror/openebs
+    tag: 0.0.36
+  url: oci://dp.apps.rancher.io/charts/local-path-provisioner

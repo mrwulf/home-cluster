@@ -24,7 +24,7 @@ spec:
         pruneIntervalDays: integer | default=30
         retain: 'map[string]integer | default={"daily": 3, "weekly": 6, "monthly": 12}'
         cacheCapacity: string | default="20Gi"
-        cacheStorageClass: string | default="openebs-hostpath"
+        cacheStorageClass: string | default="local-path"
         moverCPURequest: string | default="100m"
         moverMemoryRequest: string | default="256Mi"
         moverMemoryLimit: string | default="1Gi"

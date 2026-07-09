@@ -11,7 +11,7 @@ spec:
   interval: 1h
   path: ./cluster/apps/backups/volsync/app
   dependsOn:
-    - name: openebs
+    - name: local-path-provisioner
   prune: true
   sourceRef:
     kind: GitRepository

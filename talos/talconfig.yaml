@@ -284,7 +284,7 @@ patches:
           shutdownGracePeriod: 60s
           shutdownGracePeriodCriticalPods: 30s
         extraMounts:
-          # Mount openebs-hostpath in kubelet
+          # Mount local-path in kubelet
           - destination: /var/mnt/extra
             type: bind
             source: /var/mnt/extra
