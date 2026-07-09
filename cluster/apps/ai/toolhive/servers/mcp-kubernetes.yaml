@@ -26,7 +26,7 @@ spec:
   groupRef:
     name: toolhive-servers
   # renovate: depName=mcp/kubernetes datasource=docker
-  image: mcp/kubernetes:latest@sha256:bc47271be7b8a49c151e04ed06f2b3fdb4e2a28629e7cace76b18669a430f3f0
+  image: mcp/kubernetes:latest@sha256:5ffbf7f0a8aa7a58dfcf8d34807fd42a9cd7d88d88a5de88f472edfc3133af73
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
