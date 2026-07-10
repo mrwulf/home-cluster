@@ -7,6 +7,7 @@ metadata:
 spec:
   trigger:
     manual: restore-once
+  paused: "${VOLSYNC_PAUSE_RESTORE:-false}"
   restic:
     moverResources:
       requests:
@@ -15,7 +16,6 @@ spec:
       limits:
         memory: "${VOLSYNC_MOVER_MEMORY_LIMIT:-1Gi}"
     copyMethod: "${VOLSYNC_COPY_METHOD:-Snapshot}"
-    paused: "${VOLSYNC_PAUSE_RESTORE:-false}"
     ### Source (backup repository)
     repository: ${APP}-volsync-nfs
     volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-csi-ceph-block}" # same as source
