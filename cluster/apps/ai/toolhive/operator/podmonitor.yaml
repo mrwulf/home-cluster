@@ -1,12 +1,13 @@
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/podmonitor_v1.json
 apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
+kind: PodMonitor
 metadata:
   name: toolhive-operator
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: toolhive-operator
-  endpoints:
+  podMetricsEndpoints:
     - port: metrics
       interval: 30s

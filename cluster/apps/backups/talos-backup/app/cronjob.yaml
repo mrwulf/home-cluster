@@ -21,9 +21,10 @@ spec:
               resources:
                 requests:
                   cpu: 10m
-                  memory: 32Mi
+                  memory: 64Mi
                 limits:
-                  memory: 128Mi
+                  memory: 512Mi
+
               securityContext:
                 runAsUser: 1000
                 runAsGroup: 1000
