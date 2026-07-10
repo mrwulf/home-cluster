@@ -5,8 +5,8 @@ kind: ReplicationDestination
 metadata:
   name: "${APP}-nfs-dst"
 spec:
-  trigger:
-    manual: restore-once
+  #  trigger:
+  #    manual: restore-once
   restic:
     moverResources:
       requests:

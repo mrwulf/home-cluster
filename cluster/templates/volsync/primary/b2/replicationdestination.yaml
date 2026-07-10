@@ -5,8 +5,8 @@ kind: ReplicationDestination
 metadata:
   name: "${APP}-b2-dst"
 spec:
-  trigger:
-    manual: restore-once
+  #  trigger:
+  #    manual: restore-once
   restic:
     moverResources:
       requests:
