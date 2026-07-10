@@ -85,3 +85,9 @@ spec:
 ### 4. Validate before committing
 
 - Run `mise x -- task test:all` to confirm the Flux kustomization compiles cleanly.
+
+## Development & Infrastructure Lessons Learned
+
+- **Prettier Ignore Paths**: Patterns in `--ignore-path` resolve relative to the ignore file. Prefix root ignores with `../../` (e.g. `../../.venv/`) when config lives in `.github/linters/`.
+- **Kubeconform Caching**: Avoid `-cache` in CRD-heavy clusters. Upstream 404s cache as HTML, causing subsequent JSON parser crashes. Use concurrency (`-n 8`) instead.
+- **RWO PVC Deployments**: Single-replica ReadWriteOnce PVC mounts require the `Recreate` strategy to prevent deadlocks. Explicitly define `rollingUpdate: null` to clear default API server fields during upgrades.
