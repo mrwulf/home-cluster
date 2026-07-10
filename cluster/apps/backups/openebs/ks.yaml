@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app local-path-provisioner
+  name: &app openebs
   namespace: flux-system
 spec:
   targetNamespace: backups
@@ -16,7 +16,7 @@ spec:
       name: *app
       namespace: backups
   interval: 1h
-  path: ./cluster/apps/backups/local-path-provisioner/app
+  path: ./cluster/apps/backups/openebs/app
   prune: true
   retryInterval: 2m
   sourceRef:
