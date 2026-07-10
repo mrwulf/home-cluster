@@ -66,4 +66,5 @@ spec:
       APP_GID: "977"
       VOLSYNC_MOVER_MEMORY_REQUEST: 2Gi
       VOLSYNC_MOVER_MEMORY_LIMIT: 4Gi
+      VOLSYNC_PAUSE_RESTORE: true
   retryInterval: 2m
