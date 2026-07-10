@@ -10,4 +10,4 @@ spec:
     operation: copy
   ref:
     tag: 0.0.36
-  url: oci://dp.apps.rancher.io/charts/local-path-provisioner
+  url: oci://ghcr.io/home-operations/charts-mirror/local-path-provisioner
