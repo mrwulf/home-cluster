@@ -355,3 +355,34 @@ tasks:
         ignore_error: true
         vars:
           NODE: "{{.NODE}}"
+
+  upgrade-health:
+    desc: Identify failing health checks blocking the Talos upgrade
+    silent: true
+    cmds:
+      - echo "========================================================================"
+      - echo "                   TALOS UPGRADE HEALTH CHECK REPORT                    "
+      - echo "========================================================================"
+      - echo ""
+      - echo "--> 1. TalosUpgrade Status:"
+      - kubectl get talosupgrade -A -o custom-columns=NAME:.metadata.name,PHASE:.status.phase,CURRENT_NODE:.status.currentNode,COMPLETED:.status.completedNodes,MESSAGE:.status.message || true
+      - echo ""
+      - echo "--> 2. CephCluster Health Check:"
+      - kubectl get cephcluster -A -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,HEALTH:.status.ceph.health || true
+      - echo ""
+      - echo "--> 3. CNPG PostgreSQL Cluster Health Check:"
+      - kubectl get cluster.postgresql.cnpg.io -A -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,INSTANCES:.status.instances,READY:.status.readyInstances || true
+      - echo ""
+      - echo "--> 4. VolSync ReplicationSources (Currently Synchronizing):"
+      - |
+        stuck=$(kubectl get replicationsources --all-namespaces -o json | jq -r '.items[] | select(.status.conditions[]? | select(.type=="Synchronizing" and .status=="True")) | "   - \(.metadata.namespace)/\(.metadata.name) (started at \(.status.lastSyncStartTime))"' 2>/dev/null || true)
+        if [ -n "$stuck" ]; then
+          echo "$stuck"
+        else
+          echo "   ✔ None (All ReplicationSources idle/ready)"
+        fi
+      - echo ""
+      - echo "--> 5. Recent tuppr operator health check logs:"
+      - |
+        kubectl logs -n system-upgrade deploy/tuppr --tail=200 2>/dev/null | grep -E "Health check not satisfied|Not all health checks passed" | tail -n 10 || echo "   ✔ No failing health check logs found in tail"
+      - echo "========================================================================"
