@@ -86,6 +86,7 @@ spec:
                   secretKeyRef:
                     name: restic-rest-server-secret
                     key: restic-password
+              RESTIC_CACHE_DIR: /tmp/restic-cache
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
