@@ -9,6 +9,6 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    # renovate: depName=openebs/openebs datasource=github-releases
-    tag: 4.4.0
-  url: oci://ghcr.io/home-operations/charts-mirror/openebs
+    # renovate: depName=openebs/charts/openebs datasource=docker
+    tag: 4.5.1
+  url: oci://ghcr.io/openebs/charts/openebs
