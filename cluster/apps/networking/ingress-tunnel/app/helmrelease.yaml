@@ -57,7 +57,7 @@ spec:
           app:
             image:
               repository: docker.io/fatedier/frpc
-              tag: v0.69.1
+              tag: v0.70.0
             args:
               - -c
               - /etc/tunnel/config/tunnel.toml
