@@ -44,7 +44,7 @@ spec:
         ui:
           appName: "Home PocketID"
           homePageUrl: "/settings/apps"
-        image: ghcr.io/pocket-id/pocket-id:v2.10.0
+        image: ghcr.io/pocket-id/pocket-id:v2.11.0
         env:
           - name: TRUST_PROXY
             value: "true"
