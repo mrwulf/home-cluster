@@ -34,13 +34,14 @@ write_files:
       WantedBy=multi-user.target
 
 runcmd:
-  # 3. Download and Install FRP Binary Natively
-  # renovate: depName=fatedier/frp datasource=github-releases
-  - 'curl -L -H "User-Agent: Mozilla/5.0" -o /tmp/frp.tar.gz https://github.com/fatedier/frp/releases/download/v0.70.0/frp_0.70.0_linux_amd64.tar.gz'
-  - tar -xzf /tmp/frp.tar.gz -C /tmp/
-  - mv /tmp/frp_*_linux_amd64/frps /usr/local/bin/frps
-  - chmod +x /usr/local/bin/frps
-  - rm -rf /tmp/frp.tar.gz /tmp/frp_*_linux_amd64
+  - |
+    # renovate: depName=fatedier/frp datasource=github-releases
+    set -- v0.70.0
+    curl -L -H "User-Agent: Mozilla/5.0" -o /tmp/frp.tar.gz "https://github.com/fatedier/frp/releases/download/$1/frp_${1#v}_linux_amd64.tar.gz"
+    tar -xzf /tmp/frp.tar.gz -C /tmp/
+    mv /tmp/frp_*_linux_amd64/frps /usr/local/bin/frps
+    chmod +x /usr/local/bin/frps
+    rm -rf /tmp/frp.tar.gz /tmp/frp_*_linux_amd64
 
   # 4. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
   - sysctl -w net.core.default_qdisc=fq
