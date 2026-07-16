@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - ./helm-release.yaml
   - ./secret.sops.yaml
-  - ./httproute.yaml
   - ./clusterresourcebinding.yaml
   - ./users.sops.yaml
   - ./groups.yaml

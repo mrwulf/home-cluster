@@ -37,88 +37,104 @@ spec:
           instanceSelector:
             matchLabels:
               dashboards: grafana
-    instance:
-      enabled: true
-      name: pocket-id
-      spec:
-        ui:
-          appName: "Home PocketID"
-          homePageUrl: "/settings/apps"
-        image: ghcr.io/pocket-id/pocket-id:v2.11.0
-        env:
-          - name: TRUST_PROXY
-            value: "true"
-        encryptionKey:
-          valueFrom:
-            secretKeyRef:
-              name: pocket-id-secret
-              key: ENCRYPTION_KEY
-        databaseUrl:
-          valueFrom:
-            secretKeyRef:
-              name: pocket-id-secret
-              key: DATABASE_URL
-        fileBackend: database
-        appUrl: "https://id.${SECRET_DOMAIN}"
-        geoip:
-          maxmindLicenseKey:
+    pocket-id-instance:
+      instance:
+        enabled: true
+        name: pocket-id
+        spec:
+          ui:
+            appName: "Home PocketID"
+            homePageUrl: "/settings/apps"
+          image: ghcr.io/pocket-id/pocket-id:v2.11.0
+          encryptionKey:
             valueFrom:
               secretKeyRef:
                 name: pocket-id-secret
-                key: MAXMIND_LICENSE_KEY
-        emailNotifications:
-          loginNotification: true
-          oneTimeAccessAsAdmin: true
-          oneTimeAccessAsUnauthenticated: true
-          verification: true
-        smtp:
-          host: smtp-relay.system.svc.cluster.local
-          port: 2525
-          from: pocket-id@${SECRET_DOMAIN}
-          tls: none
-        persistence:
-          enabled: false
-        metrics:
-          enabled: true
-        resources:
-          limits:
-            memory: 256Mi
-          requests:
-            cpu: 10m
-            memory: 64Mi
-        userManagement:
-          allowOwnAccountEdit: true
-          allowUserSignups: "withToken"
-          emailsVerified: false
-          signupDefaultCustomClaims: '["immich_role": "user"]'
-          signupDefaultUserGroupIds:
-            - "d6504cb4-24d3-417b-8c57-3ed44ff1b6bc"
-        versionCheckDisabled: true
-        analyticsDisabled: true
-        podTemplate:
-          spec:
-            initContainers:
-              - name: init-db
-                image: ghcr.io/home-operations/postgres-init:18.4
-                env:
-                  - name: INIT_POSTGRES_HOST
-                    value: postgres17-rw.databases.svc.cluster.local.
-                  - name: INIT_POSTGRES_DBNAME
-                    value: pocketid
-                  - name: INIT_POSTGRES_SUPER_PASS
-                    valueFrom:
-                      secretKeyRef:
-                        name: postgres-superuser
-                        key: password
-                  - name: INIT_POSTGRES_SUPER_USER
-                    valueFrom:
-                      secretKeyRef:
-                        name: postgres-superuser
-                        key: username
-                  - name: INIT_POSTGRES_USER
-                    value: pocketid
-                  - name: INIT_POSTGRES_PASS
-                    valueFrom:
-                      secretKeyRef:
-                        name: pocket-id-secret
-                        key: DB_PASS
+                key: ENCRYPTION_KEY
+          databaseUrl:
+            valueFrom:
+              secretKeyRef:
+                name: pocket-id-secret
+                key: DATABASE_URL
+          fileBackend: database
+          appUrl: "https://id.${SECRET_DOMAIN}"
+          route:
+            enabled: true
+            annotations:
+              gatus.io/enabled: "true"
+            parentRefs:
+              - name: external-gateway
+                namespace: networking
+                sectionName: https
+            hostnames:
+              - "id.${SECRET_DOMAIN}"
+            template:
+              rules:
+                - filters:
+                    - type: ExtensionRef
+                      extensionRef:
+                        group: traefik.io
+                        kind: Middleware
+                        name: traefik-middleware-chain-no-auth
+          geoip:
+            maxmindLicenseKey:
+              valueFrom:
+                secretKeyRef:
+                  name: pocket-id-secret
+                  key: MAXMIND_LICENSE_KEY
+          emailNotifications:
+            loginNotification: true
+            oneTimeAccessAsAdmin: true
+            oneTimeAccessAsUnauthenticated: true
+            verification: true
+          smtp:
+            host: smtp-relay.system.svc.cluster.local
+            port: 2525
+            from: pocket-id@${SECRET_DOMAIN}
+            tls: none
+          persistence:
+            enabled: false
+          metrics:
+            enabled: true
+          resources:
+            limits:
+              memory: 256Mi
+            requests:
+              cpu: 10m
+              memory: 64Mi
+          userManagement:
+            allowOwnAccountEdit: true
+            allowUserSignups: "withToken"
+            emailsVerified: false
+            signupDefaultCustomClaims: '["immich_role": "user"]'
+            signupDefaultUserGroupIds:
+              - "d6504cb4-24d3-417b-8c57-3ed44ff1b6bc"
+          versionCheckDisabled: true
+          analyticsDisabled: true
+          podTemplate:
+            spec:
+              initContainers:
+                - name: init-db
+                  image: ghcr.io/home-operations/postgres-init:18.4
+                  env:
+                    - name: INIT_POSTGRES_HOST
+                      value: postgres17-rw.databases.svc.cluster.local.
+                    - name: INIT_POSTGRES_DBNAME
+                      value: pocketid
+                    - name: INIT_POSTGRES_SUPER_PASS
+                      valueFrom:
+                        secretKeyRef:
+                          name: postgres-superuser
+                          key: password
+                    - name: INIT_POSTGRES_SUPER_USER
+                      valueFrom:
+                        secretKeyRef:
+                          name: postgres-superuser
+                          key: username
+                    - name: INIT_POSTGRES_USER
+                      value: pocketid
+                    - name: INIT_POSTGRES_PASS
+                      valueFrom:
+                        secretKeyRef:
+                          name: pocket-id-secret
+                          key: DB_PASS
