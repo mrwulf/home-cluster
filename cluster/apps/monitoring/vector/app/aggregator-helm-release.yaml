@@ -133,6 +133,7 @@ spec:
           inputs:
             - kubernetes_logs
           endpoint: http://loki-headless.monitoring.svc.cluster.local:3100
+          dangerously_allow_unconfined_template_resolution: true
           encoding:
             codec: json
           batch:
@@ -162,6 +163,7 @@ spec:
           inputs:
             - journal_logs
           endpoint: http://loki-headless.monitoring.svc.cluster.local:3100
+          dangerously_allow_unconfined_template_resolution: true
           encoding:
             codec: json
           batch:
@@ -179,6 +181,7 @@ spec:
           inputs:
             - talos_kernel_logs_xform
           endpoint: http://loki-headless.monitoring.svc.cluster.local:3100
+          dangerously_allow_unconfined_template_resolution: true
           encoding:
             codec: json
             except_fields:
@@ -198,6 +201,7 @@ spec:
           inputs:
             - talos_service_logs_xform
           endpoint: http://loki-headless.monitoring.svc.cluster.local:3100
+          dangerously_allow_unconfined_template_resolution: true
           encoding:
             codec: json
             except_fields:
