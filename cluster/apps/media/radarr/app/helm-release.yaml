@@ -27,7 +27,7 @@ spec:
           main:
             image:
               repository: ghcr.io/home-operations/radarr
-              tag: "6.3.0.10514"
+              tag: "6.4.0.10523"
             env:
               RADARR__INSTANCE_NAME: Radarr
               RADARR__PORT: &port 7878
