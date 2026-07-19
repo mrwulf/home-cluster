@@ -40,7 +40,7 @@ spec:
       enabled: true
       bbr: true
     devices: "bond0"
-    enableIPv4BIGTCP: true
+    enableIPv4BIGTCP: false
     bpf:
       datapathMode: veth # switch back to netkit once https://github.com/cilium/cilium/issues/39892 is fixed
       masquerade: true
