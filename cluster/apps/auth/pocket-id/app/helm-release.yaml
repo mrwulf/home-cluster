@@ -115,7 +115,7 @@ spec:
             spec:
               env:
                 - name: TRUST_PROXY
-                  value: "true"            
+                  value: "true"
               initContainers:
                 - name: init-db
                   image: ghcr.io/home-operations/postgres-init:18.4
