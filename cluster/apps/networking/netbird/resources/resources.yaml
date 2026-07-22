@@ -32,7 +32,7 @@ metadata:
   namespace: networking
 spec:
   dnsZoneRef:
-    name: k8s.sysinfra.pro
+    name: "k8s.${SECRET_DOMAIN}"
   workloadOverride:
     replicas: 2
     podTemplate:
@@ -165,7 +165,7 @@ metadata:
   namespace: networking
 spec:
   name: "NAS Storage"
-  address: nas.home.internal
+  address: "${CORE_NFS_SERVER}/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   tcpPorts:
     - 443
@@ -180,7 +180,7 @@ metadata:
   namespace: networking
 spec:
   name: "firewall02"
-  address: firewall02.sysinfra.pro
+  address: "10.0.0.2/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - firewall-peers
@@ -192,7 +192,7 @@ metadata:
   namespace: networking
 spec:
   name: "firewall03"
-  address: firewall03.sysinfra.pro
+  address: "10.0.0.3/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - firewall-peers
@@ -204,7 +204,7 @@ metadata:
   namespace: networking
 spec:
   name: "firewall-active"
-  address: firewall.sysinfra.pro
+  address: "10.0.0.1/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - firewall-peers
@@ -216,7 +216,21 @@ metadata:
   namespace: networking
 spec:
   name: "External Ingress Gateway"
-  address: ingress.sysinfra.pro
+  address: "10.0.10.20/32"
+  networkID: ${NETBIRD_NETWORK_ID:-default}
+  tcpPorts:
+    - 443
+  groups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: internal-ingress
+  namespace: networking
+spec:
+  name: "Internal Ingress Gateway"
+  address: "10.0.10.30/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   tcpPorts:
     - 443
@@ -234,6 +248,18 @@ spec:
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - fullvpn
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: k8s.home
+  namespace: networking
+spec:
+  name: "Kubernetes API Access"
+  address: 10.0.10.201/32
+  networkID: ${NETBIRD_NETWORK_ID:-default}
+  groups:
+    - routing-peers
 ---
 # ==============================================================================
 # Declarative Access Policies (NBPolicy)
