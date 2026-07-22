@@ -45,7 +45,6 @@ spec:
 # ==============================================================================
 # Network Routers (NetworkRouter)
 # ==============================================================================
-# Generates pod instances named 'networkrouter-k8s-...'
 apiVersion: netbird.io/v1alpha1
 kind: NetworkRouter
 metadata:
@@ -156,11 +155,39 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
-  name: k8s-api-server
+  name: public-services
   namespace: networking
 spec:
-  name: "K8s API Server"
-  address: 10.43.0.1
+  name: "Public Services"
+  address: "*.${SECRET_DOMAIN}"
+  networkID: ${NETBIRD_NETWORK_ID:-default}
+  tcpPorts:
+    - 443
+  groups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: private-services
+  namespace: networking
+spec:
+  name: "Private Services"
+  address: "*.home.${SECRET_DOMAIN}"
+  networkID: ${NETBIRD_NETWORK_ID:-default}
+  tcpPorts:
+    - 443
+  groups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: k8s-api-access
+  namespace: networking
+spec:
+  name: "k8s.home"
+  address: "10.0.10.201/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   tcpPorts:
     - 6443
@@ -170,11 +197,11 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
-  name: k8s-nodes-subnet
+  name: k8s-nodes-subnet-talos
   namespace: networking
 spec:
-  name: "K8s Nodes Subnet"
-  address: 10.42.0.0/16
+  name: "K8s Nodes Talos Subnet"
+  address: 10.0.1.51/29
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - routing-peers
@@ -262,20 +289,6 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
-  name: k8s-api-access
-  namespace: networking
-spec:
-  name: "k8s.home"
-  address: "10.0.10.201/32"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
-  tcpPorts:
-    - 6443
-  groups:
-    - routing-peers
----
-apiVersion: netbird.io/v1
-kind: NBResource
-metadata:
   name: full-vpn-exit
   namespace: networking
 spec:
@@ -291,9 +304,9 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBPolicy
 metadata:
-  name: k8s-policy
+  name: k8s-api-policy
 spec:
-  name: "k8s Policy"
+  name: "K8s API Policy"
   sourceGroups:
     - admin-users
   destinationGroups:
