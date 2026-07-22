@@ -321,7 +321,7 @@ spec:
   address: 0.0.0.0/0
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
-    - fullvpn
+    - "FullVPN"
   policySourceGroups:
     - "FullVPN Users"
 ---
@@ -490,4 +490,4 @@ spec:
   sourceGroups:
     - "FullVPN Users"
   destinationGroups:
-    - fullvpn
+    - "FullVPN"
