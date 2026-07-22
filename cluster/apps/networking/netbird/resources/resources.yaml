@@ -159,6 +159,8 @@ kind: NBResource
 metadata:
   name: public-services
   namespace: networking
+  annotations:
+    netbird.io/policy: "public-sites-policy"
 spec:
   name: "Public Services"
   address: "*.${SECRET_DOMAIN}"
@@ -176,6 +178,8 @@ kind: NBResource
 metadata:
   name: private-services
   namespace: networking
+  annotations:
+    netbird.io/policy: "private-sites-policy"
 spec:
   name: "Private Services"
   address: "*.home.${SECRET_DOMAIN}"
@@ -192,6 +196,8 @@ kind: NBResource
 metadata:
   name: k8s-api-access
   namespace: networking
+  annotations:
+    netbird.io/policy: "k8s-api-policy"
 spec:
   name: "k8s.home"
   address: "10.0.10.201/32"
@@ -208,6 +214,8 @@ kind: NBResource
 metadata:
   name: k8s-nodes-subnet-talos
   namespace: networking
+  annotations:
+    netbird.io/policy: "k8s-nodes-policy"
 spec:
   name: "K8s Nodes Talos Subnet"
   address: 10.0.1.51/29
@@ -222,6 +230,8 @@ kind: NBResource
 metadata:
   name: nas-storage
   namespace: networking
+  annotations:
+    netbird.io/policy: "nas-policy"
 spec:
   name: "NAS Storage"
   address: "${CORE_NFS_SERVER}/32"
@@ -240,6 +250,8 @@ kind: NBResource
 metadata:
   name: firewall02
   namespace: networking
+  annotations:
+    netbird.io/policy: "firewall02-policy"
 spec:
   name: "firewall02"
   address: "10.0.0.2/32"
@@ -254,6 +266,8 @@ kind: NBResource
 metadata:
   name: firewall03
   namespace: networking
+  annotations:
+    netbird.io/policy: "firewall03-policy"
 spec:
   name: "firewall03"
   address: "10.0.0.3/32"
@@ -268,6 +282,8 @@ kind: NBResource
 metadata:
   name: firewall-active
   namespace: networking
+  annotations:
+    netbird.io/policy: "firewall-active-policy"
 spec:
   name: "firewall-active"
   address: "${GATEWAY_ADDR}/32"
@@ -283,6 +299,8 @@ kind: NBResource
 metadata:
   name: external-ingress
   namespace: networking
+  annotations:
+    netbird.io/policy: "external-ingress-policy"
 spec:
   name: "External Ingress Gateway"
   address: "10.0.10.20/32"
@@ -299,6 +317,8 @@ kind: NBResource
 metadata:
   name: internal-ingress
   namespace: networking
+  annotations:
+    netbird.io/policy: "internal-ingress-policy"
 spec:
   name: "Internal Ingress Gateway"
   address: "10.0.10.30/32"
@@ -316,6 +336,8 @@ kind: NBResource
 metadata:
   name: full-vpn-exit
   namespace: networking
+  annotations:
+    netbird.io/policy: "internet-access-policy"
 spec:
   name: "Full VPN Internet Egress"
   address: 0.0.0.0/0
