@@ -252,10 +252,10 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
-  name: k8s.home
+  name: k8s-api-access
   namespace: networking
 spec:
-  name: "Kubernetes API Access"
+  name: "k8s.home"
   address: 10.0.10.201/32
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
