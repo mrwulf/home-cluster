@@ -116,14 +116,14 @@ metadata:
   namespace: networking
 spec:
   name: "External-Users"
----
-apiVersion: netbird.io/v1
-kind: NBGroup
-metadata:
-  name: routing-peers
-  namespace: networking
-spec:
-  name: "Routing Peers"
+# ---
+# apiVersion: netbird.io/v1
+# kind: NBGroup
+# metadata:
+#   name: routing-peers
+#   namespace: networking
+# spec:
+#   name: "Routing Peers"
 ---
 apiVersion: netbird.io/v1
 kind: NBGroup
