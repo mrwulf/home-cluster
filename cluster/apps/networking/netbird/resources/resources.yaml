@@ -303,8 +303,21 @@ spec:
 # ==============================================================================
 # Declarative Access Policies (NBPolicy)
 # ==============================================================================
-# Global group-to-group policies (resource-specific access policies are
-# managed automatically by netbird-operator for each NBResource above).
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: k8s-api-policy
+spec:
+  name: "K8s API Policy"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 6443
+---
 apiVersion: netbird.io/v1
 kind: NBPolicy
 metadata:
@@ -315,6 +328,103 @@ spec:
     - admin-users
   destinationGroups:
     - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: nas-policy
+spec:
+  name: "NAS Policy"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 443
+    - 7090
+    - 22
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: firewall02-policy
+spec:
+  name: "firewall02 Policy"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - firewall-peers
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: firewall03-policy
+spec:
+  name: "firewall03 Policy"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - firewall-peers
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: firewall-active-policy
+spec:
+  name: "firewall-active Policy"
+  sourceGroups:
+    - admin-users
+    - users
+  destinationGroups:
+    - firewall-peers
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: external-ingress-policy
+spec:
+  name: "External Ingress Policy"
+  sourceGroups:
+    - external-users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 443
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: internal-ingress-policy
+spec:
+  name: "Internal Ingress Policy"
+  sourceGroups:
+    - users
+    - admin-users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 443
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: git-access-policy
+spec:
+  name: "Git Access"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 22
 ---
 apiVersion: netbird.io/v1
 kind: NBPolicy
