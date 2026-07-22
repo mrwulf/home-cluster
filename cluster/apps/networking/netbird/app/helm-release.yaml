@@ -36,6 +36,7 @@ spec:
       retries: 3
   values:
     managementURL: "https://api.netbird.io"
+    allowAutomaticPolicyCreation: true
     netbirdAPI:
       keyFromSecret:
         name: netbird
