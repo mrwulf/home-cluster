@@ -167,6 +167,9 @@ spec:
     - 443
   groups:
     - routing-peers
+  policySourceGroups:
+    - work
+    - non-work
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -181,6 +184,8 @@ spec:
     - 443
   groups:
     - routing-peers
+  policySourceGroups:
+    - users
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -195,6 +200,8 @@ spec:
     - 6443
   groups:
     - routing-peers
+  policySourceGroups:
+    - admin-users
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -207,6 +214,8 @@ spec:
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - routing-peers
+  policySourceGroups:
+    - admin-users
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -223,6 +232,8 @@ spec:
     - 22
   groups:
     - routing-peers
+  policySourceGroups:
+    - admin-users
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -235,6 +246,8 @@ spec:
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - firewall-peers
+  policySourceGroups:
+    - admin-users
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -247,6 +260,8 @@ spec:
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - firewall-peers
+  policySourceGroups:
+    - admin-users
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -259,6 +274,9 @@ spec:
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - firewall-peers
+  policySourceGroups:
+    - admin-users
+    - users
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -273,6 +291,8 @@ spec:
     - 443
   groups:
     - routing-peers
+  policySourceGroups:
+    - users
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -287,6 +307,9 @@ spec:
     - 443
   groups:
     - routing-peers
+  policySourceGroups:
+    - users
+    - admin-users
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -299,6 +322,8 @@ spec:
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - fullvpn
+  policySourceGroups:
+    - fullvpn-users
 ---
 # ==============================================================================
 # Declarative Access Policies (NBPolicy)
@@ -387,7 +412,7 @@ metadata:
 spec:
   name: "External Ingress Policy"
   sourceGroups:
-    - external-users
+    - users
   destinationGroups:
     - routing-peers
   protocols:
@@ -403,7 +428,6 @@ spec:
   name: "Internal Ingress Policy"
   sourceGroups:
     - users
-    - admin-users
   destinationGroups:
     - routing-peers
   protocols:
