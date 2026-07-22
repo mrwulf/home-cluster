@@ -16,7 +16,7 @@ spec:
           serviceAccountName: rook-ceph-default
           containers:
             - name: adjust-affinity
-              image: quay.io/ceph/ceph:v20.2.2
+              image: quay.io/ceph/ceph:v21.1.0
               resources:
                 requests:
                   cpu: 10m
