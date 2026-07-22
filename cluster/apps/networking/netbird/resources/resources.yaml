@@ -135,6 +135,34 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
+  name: public-services
+  namespace: networking
+spec:
+  name: "Public Services"
+  address: "*.${SECRET_DOMAIN}"
+  networkID: ${NETBIRD_NETWORK_ID:-default}
+  tcpPorts:
+    - 443
+  groups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: private-services
+  namespace: networking
+spec:
+  name: "Private Services"
+  address: "*.home.${SECRET_DOMAIN}"
+  networkID: ${NETBIRD_NETWORK_ID:-default}
+  tcpPorts:
+    - 443
+  groups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
   name: k8s-api-server
   namespace: networking
 spec:
@@ -170,6 +198,7 @@ spec:
   tcpPorts:
     - 443
     - 7090
+    - 22
   groups:
     - routing-peers
 ---
@@ -204,7 +233,7 @@ metadata:
   namespace: networking
 spec:
   name: "firewall-active"
-  address: "10.0.0.1/32"
+  address: "${GATEWAY_ADDR}/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - firewall-peers
@@ -240,6 +269,20 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
+  name: k8s-api-access
+  namespace: networking
+spec:
+  name: "k8s.home"
+  address: "10.0.10.201/32"
+  networkID: ${NETBIRD_NETWORK_ID:-default}
+  tcpPorts:
+    - 6443
+  groups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
   name: full-vpn-exit
   namespace: networking
 spec:
@@ -248,18 +291,6 @@ spec:
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - fullvpn
----
-apiVersion: netbird.io/v1
-kind: NBResource
-metadata:
-  name: k8s-api-access
-  namespace: networking
-spec:
-  name: "k8s.home"
-  address: 10.0.10.201/32
-  networkID: ${NETBIRD_NETWORK_ID:-default}
-  groups:
-    - routing-peers
 ---
 # ==============================================================================
 # Declarative Access Policies (NBPolicy)
@@ -305,6 +336,7 @@ spec:
   ports:
     - 443
     - 7090
+    - 22
 ---
 apiVersion: netbird.io/v1
 kind: NBPolicy
@@ -336,6 +368,7 @@ spec:
   name: "firewall-active Policy"
   sourceGroups:
     - admin-users
+    - users
   destinationGroups:
     - firewall-peers
 ---
@@ -347,6 +380,22 @@ spec:
   name: "external-ingress Access"
   sourceGroups:
     - external-users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 443
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: internal-ingress-policy
+spec:
+  name: "Internal Ingress Policy"
+  sourceGroups:
+    - users
+    - admin-users
   destinationGroups:
     - routing-peers
   protocols:
