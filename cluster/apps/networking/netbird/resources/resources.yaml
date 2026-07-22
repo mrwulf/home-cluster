@@ -1,7 +1,27 @@
 ---
 # ==============================================================================
+# NetBird Declarative Resources & Operational Manual Assumptions
+# ==============================================================================
+# MANUAL DASHBOARD ASSUMPTIONS (NetBird Web Console Requirements):
+# 1. SETUP KEY AUTO-GROUPS:
+#    - In the NetBird Web Console (Setup Keys -> k8s-setup-key), the key MUST
+#      have 'Auto-Groups' set to include 'Routing Peers'.
+#    - Rationale: NetworkRouter peer pods (networkrouter-k8s-...) join via this
+#      setup key. Auto-assigning 'Routing Peers' ensures that access policies
+#      targeting 'destinationGroups: [routing-peers]' automatically match the
+#      cluster routing peers upon registration without traffic drop.
+#
+# 2. ENVIRONMENT & SECRET SUBSTITUTIONS:
+#    - ${SECRET_DOMAIN}: Global cluster root domain
+#    - ${CORE_NFS_SERVER}: Primary NFS storage host IP
+#    - ${GATEWAY_ADDR}: Default network gateway IP
+#    - ${NETBIRD_NETWORK_ID:-default}: NetBird Cloud Network UUID
+# ==============================================================================
+
+# ==============================================================================
 # Setup Keys (NBSetupKey)
 # ==============================================================================
+# NOTE: Ensure 'Auto-Groups' on this key in NetBird Console includes 'Routing Peers'.
 apiVersion: netbird.io/v1
 kind: NBSetupKey
 metadata:
@@ -25,10 +45,11 @@ spec:
 # ==============================================================================
 # Network Routers (NetworkRouter)
 # ==============================================================================
+# Generates pod instances named 'networkrouter-k8s-...'
 apiVersion: netbird.io/v1alpha1
 kind: NetworkRouter
 metadata:
-  name: k8s-cluster-router
+  name: k8s
   namespace: networking
 spec:
   dnsZoneRef:
@@ -132,34 +153,6 @@ spec:
 # ==============================================================================
 # Declarative Network Resources (NBResource)
 # ==============================================================================
-apiVersion: netbird.io/v1
-kind: NBResource
-metadata:
-  name: public-services
-  namespace: networking
-spec:
-  name: "Public Services"
-  address: "*.${SECRET_DOMAIN}"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
-  tcpPorts:
-    - 443
-  groups:
-    - routing-peers
----
-apiVersion: netbird.io/v1
-kind: NBResource
-metadata:
-  name: private-services
-  namespace: networking
-spec:
-  name: "Private Services"
-  address: "*.home.${SECRET_DOMAIN}"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
-  tcpPorts:
-    - 443
-  groups:
-    - routing-peers
----
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:

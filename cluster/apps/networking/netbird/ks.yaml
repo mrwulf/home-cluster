@@ -39,5 +39,5 @@ spec:
     name: flux-system
   wait: true
   interval: 1h
-  retryInterval: 1m
+  retryInterval: 5m
   timeout: 5m
