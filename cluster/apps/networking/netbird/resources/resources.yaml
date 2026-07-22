@@ -168,8 +168,8 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - work
-    - non-work
+    - "Work"
+    - "Non-Work"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -185,7 +185,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - users
+    - "Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -201,7 +201,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - admin-users
+    - "Admin Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -215,7 +215,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - admin-users
+    - "Admin Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -233,7 +233,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - admin-users
+    - "Admin Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -245,9 +245,9 @@ spec:
   address: "10.0.0.2/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
-    - firewall-peers
+    - "Firewall Peers"
   policySourceGroups:
-    - admin-users
+    - "Admin Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -259,9 +259,9 @@ spec:
   address: "10.0.0.3/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
-    - firewall-peers
+    - "Firewall Peers"
   policySourceGroups:
-    - admin-users
+    - "Admin Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -273,10 +273,10 @@ spec:
   address: "${GATEWAY_ADDR}/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
-    - firewall-peers
+    - "Firewall Peers"
   policySourceGroups:
-    - admin-users
-    - users
+    - "Admin Users"
+    - "Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -292,7 +292,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - users
+    - "Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -308,8 +308,8 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - users
-    - admin-users
+    - "Users"
+    - "Admin Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -323,7 +323,7 @@ spec:
   groups:
     - fullvpn
   policySourceGroups:
-    - fullvpn-users
+    - "FullVPN Users"
 ---
 # ==============================================================================
 # Declarative Access Policies (NBPolicy)
@@ -335,7 +335,7 @@ metadata:
 spec:
   name: "K8s API Policy"
   sourceGroups:
-    - admin-users
+    - "Admin Users"
   destinationGroups:
     - routing-peers
   protocols:
@@ -350,7 +350,7 @@ metadata:
 spec:
   name: "k8s nodes Policy"
   sourceGroups:
-    - admin-users
+    - "Admin Users"
   destinationGroups:
     - routing-peers
 ---
@@ -361,7 +361,7 @@ metadata:
 spec:
   name: "NAS Policy"
   sourceGroups:
-    - admin-users
+    - "Admin Users"
   destinationGroups:
     - routing-peers
   protocols:
@@ -378,9 +378,9 @@ metadata:
 spec:
   name: "firewall02 Policy"
   sourceGroups:
-    - admin-users
+    - "Admin Users"
   destinationGroups:
-    - firewall-peers
+    - "Firewall Peers"
 ---
 apiVersion: netbird.io/v1
 kind: NBPolicy
@@ -389,9 +389,9 @@ metadata:
 spec:
   name: "firewall03 Policy"
   sourceGroups:
-    - admin-users
+    - "Admin Users"
   destinationGroups:
-    - firewall-peers
+    - "Firewall Peers"
 ---
 apiVersion: netbird.io/v1
 kind: NBPolicy
@@ -400,10 +400,10 @@ metadata:
 spec:
   name: "firewall-active Policy"
   sourceGroups:
-    - admin-users
-    - users
+    - "Admin Users"
+    - "Users"
   destinationGroups:
-    - firewall-peers
+    - "Firewall Peers"
 ---
 apiVersion: netbird.io/v1
 kind: NBPolicy
@@ -412,7 +412,7 @@ metadata:
 spec:
   name: "External Ingress Policy"
   sourceGroups:
-    - users
+    - "Users"
   destinationGroups:
     - routing-peers
   protocols:
@@ -427,7 +427,7 @@ metadata:
 spec:
   name: "Internal Ingress Policy"
   sourceGroups:
-    - users
+    - "Users"
   destinationGroups:
     - routing-peers
   protocols:
@@ -442,7 +442,7 @@ metadata:
 spec:
   name: "Git Access"
   sourceGroups:
-    - admin-users
+    - "Admin Users"
   destinationGroups:
     - routing-peers
   protocols:
@@ -457,8 +457,8 @@ metadata:
 spec:
   name: "Public Sites Policy"
   sourceGroups:
-    - work
-    - non-work
+    - "Work"
+    - "Non-Work"
   destinationGroups:
     - routing-peers
   protocols:
@@ -473,7 +473,7 @@ metadata:
 spec:
   name: "Private Sites Policy"
   sourceGroups:
-    - users
+    - "Users"
   destinationGroups:
     - routing-peers
   protocols:
@@ -488,6 +488,6 @@ metadata:
 spec:
   name: "Internet Access"
   sourceGroups:
-    - fullvpn-users
+    - "FullVPN Users"
   destinationGroups:
     - fullvpn
