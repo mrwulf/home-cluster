@@ -1,0 +1,386 @@
+---
+# ==============================================================================
+# Setup Keys (NBSetupKey)
+# ==============================================================================
+apiVersion: netbird.io/v1
+kind: NBSetupKey
+metadata:
+  name: k8s-setup-key
+  namespace: networking
+spec:
+  secretKeyRef:
+    name: netbird
+    key: SETUP_KEY
+---
+apiVersion: netbird.io/v1
+kind: NBSetupKey
+metadata:
+  name: opnsense-setup-key
+  namespace: networking
+spec:
+  secretKeyRef:
+    name: netbird
+    key: OPNSENSE_SETUP_KEY
+---
+# ==============================================================================
+# Network Routers (NetworkRouter)
+# ==============================================================================
+apiVersion: netbird.io/v1alpha1
+kind: NetworkRouter
+metadata:
+  name: k8s-cluster-router
+  namespace: networking
+spec:
+  dnsZoneRef:
+    name: k8s.sysinfra.pro
+  workloadOverride:
+    replicas: 2
+    podTemplate:
+      spec:
+        containers:
+          - name: netbird
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 256Mi
+---
+# ==============================================================================
+# Declarative Peer & User Groups (NBGroup)
+# ==============================================================================
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: all
+  namespace: networking
+spec:
+  name: "All"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: users
+  namespace: networking
+spec:
+  name: "Users"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: work
+  namespace: networking
+spec:
+  name: "Work"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: non-work
+  namespace: networking
+spec:
+  name: "Non-Work"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: admin-users
+  namespace: networking
+spec:
+  name: "Admin Users"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: external-users
+  namespace: networking
+spec:
+  name: "External-Users"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: routing-peers
+  namespace: networking
+spec:
+  name: "Routing Peers"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: firewall-peers
+  namespace: networking
+spec:
+  name: "Firewall Peers"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: fullvpn
+  namespace: networking
+spec:
+  name: "FullVPN"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: fullvpn-users
+  namespace: networking
+spec:
+  name: "FullVPN Users"
+---
+# ==============================================================================
+# Declarative Network Resources (NBResource)
+# ==============================================================================
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: k8s-api-server
+  namespace: networking
+spec:
+  name: "K8s API Server"
+  address: 10.43.0.1
+  networkID: ${NETBIRD_NETWORK_ID}
+  tcpPorts:
+    - 6443
+  groups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: k8s-nodes-subnet
+  namespace: networking
+spec:
+  name: "K8s Nodes Subnet"
+  address: 10.42.0.0/16
+  networkID: ${NETBIRD_NETWORK_ID}
+  groups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: nas-storage
+  namespace: networking
+spec:
+  name: "NAS Storage"
+  address: nas.home.internal
+  networkID: ${NETBIRD_NETWORK_ID}
+  tcpPorts:
+    - 443
+    - 7090
+  groups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: firewall02
+  namespace: networking
+spec:
+  name: "firewall02"
+  address: firewall02.sysinfra.pro
+  networkID: ${NETBIRD_NETWORK_ID}
+  groups:
+    - firewall-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: firewall03
+  namespace: networking
+spec:
+  name: "firewall03"
+  address: firewall03.sysinfra.pro
+  networkID: ${NETBIRD_NETWORK_ID}
+  groups:
+    - firewall-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: firewall-active
+  namespace: networking
+spec:
+  name: "firewall-active"
+  address: firewall.sysinfra.pro
+  networkID: ${NETBIRD_NETWORK_ID}
+  groups:
+    - firewall-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: external-ingress
+  namespace: networking
+spec:
+  name: "External Ingress Gateway"
+  address: ingress.sysinfra.pro
+  networkID: ${NETBIRD_NETWORK_ID}
+  tcpPorts:
+    - 443
+  groups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: full-vpn-exit
+  namespace: networking
+spec:
+  name: "Full VPN Internet Egress"
+  address: 0.0.0.0/0
+  networkID: ${NETBIRD_NETWORK_ID}
+  groups:
+    - fullvpn
+---
+# ==============================================================================
+# Declarative Access Policies (NBPolicy)
+# ==============================================================================
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: k8s-policy
+spec:
+  name: "k8s Policy"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 6443
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: k8s-nodes-policy
+spec:
+  name: "k8s nodes Policy"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: nas-policy
+spec:
+  name: "NAS Policy"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 443
+    - 7090
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: firewall02-policy
+spec:
+  name: "firewall02 Policy"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - firewall-peers
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: firewall03-policy
+spec:
+  name: "firewall03 Policy"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - firewall-peers
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: firewall-active-policy
+spec:
+  name: "firewall-active Policy"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - firewall-peers
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: external-ingress-policy
+spec:
+  name: "external-ingress Access"
+  sourceGroups:
+    - external-users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 443
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: internet-access-policy
+spec:
+  name: "Internet Access"
+  sourceGroups:
+    - fullvpn-users
+  destinationGroups:
+    - fullvpn
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: git-access-policy
+spec:
+  name: "Git Access"
+  sourceGroups:
+    - admin-users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 22
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: public-sites-policy
+spec:
+  name: "Public Sites Policy"
+  sourceGroups:
+    - work
+    - non-work
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 443
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: private-sites-policy
+spec:
+  name: "Private Sites Policy"
+  sourceGroups:
+    - users
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 443

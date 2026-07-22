@@ -1,64 +1,42 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: netbird-operator
+  namespace: networking
+spec:
+  interval: 1h
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    # renovate: depName=netbird-operator
+    tag: 0.7.0
+  url: oci://ghcr.io/netbirdio/helm-charts/netbird-operator
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app netbird
+  name: netbird-operator
+  namespace: networking
 spec:
   interval: 1h
   chartRef:
     kind: OCIRepository
-    name: app-template
-    namespace: flux-system
+    name: netbird-operator
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
   values:
-    controllers:
-      router:
-        strategy: RollingUpdate
-        replicas: 3
-        annotations:
-          reloader.stakater.com/auto: "true"
-        containers:
-          app:
-            image:
-              repository: netbirdio/netbird
-              tag: 0.74.7
-            env:
-              NB_ENABLE_ROSENPASS: true
-              NB_ROSENPASS_PERMISSIVE: true
-              NB_HOSTNAME: k8s-router # name that will appear in the management UI
-              NB_LOG_LEVEL: info
-              NB_SETUP_KEY:
-                valueFrom:
-                  secretKeyRef:
-                    name: netbird
-                    key: SETUP_KEY
-            securityContext:
-              capabilities:
-                add:
-                  - "NET_ADMIN"
-                  - "SYS_RESOURCE"
-                  - "SYS_ADMIN"
-
-                # drop:
-                #   - "ALL"
-
-            #   allowPrivilegeEscalation: false
-            #   readOnlyRootFilesystem: false
-            resources:
-              requests:
-                cpu: 100m
-                memory: 256Mi
-              limits:
-                memory: 256Mi
-    defaultPodOptions:
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app.kubernetes.io/name: *app
-
-      # securityContext:
-      #   runAsNonRoot: false
-      #   # runAsUser: 65534
-      #   # runAsGroup: 65534
-      #   seccompProfile: { type: RuntimeDefault }
+    managementURL: "https://api.netbird.io"
+    netbirdAPI:
+      keyFromSecret:
+        name: netbird
+        key: NB_API_KEY
