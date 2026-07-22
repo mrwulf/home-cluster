@@ -140,7 +140,7 @@ metadata:
 spec:
   name: "K8s API Server"
   address: 10.43.0.1
-  networkID: ${NETBIRD_NETWORK_ID}
+  networkID: ${NETBIRD_NETWORK_ID:-default}
   tcpPorts:
     - 6443
   groups:
@@ -154,7 +154,7 @@ metadata:
 spec:
   name: "K8s Nodes Subnet"
   address: 10.42.0.0/16
-  networkID: ${NETBIRD_NETWORK_ID}
+  networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - routing-peers
 ---
@@ -166,7 +166,7 @@ metadata:
 spec:
   name: "NAS Storage"
   address: nas.home.internal
-  networkID: ${NETBIRD_NETWORK_ID}
+  networkID: ${NETBIRD_NETWORK_ID:-default}
   tcpPorts:
     - 443
     - 7090
@@ -181,7 +181,7 @@ metadata:
 spec:
   name: "firewall02"
   address: firewall02.sysinfra.pro
-  networkID: ${NETBIRD_NETWORK_ID}
+  networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - firewall-peers
 ---
@@ -193,7 +193,7 @@ metadata:
 spec:
   name: "firewall03"
   address: firewall03.sysinfra.pro
-  networkID: ${NETBIRD_NETWORK_ID}
+  networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - firewall-peers
 ---
@@ -205,7 +205,7 @@ metadata:
 spec:
   name: "firewall-active"
   address: firewall.sysinfra.pro
-  networkID: ${NETBIRD_NETWORK_ID}
+  networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - firewall-peers
 ---
@@ -217,7 +217,7 @@ metadata:
 spec:
   name: "External Ingress Gateway"
   address: ingress.sysinfra.pro
-  networkID: ${NETBIRD_NETWORK_ID}
+  networkID: ${NETBIRD_NETWORK_ID:-default}
   tcpPorts:
     - 443
   groups:
@@ -231,7 +231,7 @@ metadata:
 spec:
   name: "Full VPN Internet Egress"
   address: 0.0.0.0/0
-  networkID: ${NETBIRD_NETWORK_ID}
+  networkID: ${NETBIRD_NETWORK_ID:-default}
   groups:
     - fullvpn
 ---
