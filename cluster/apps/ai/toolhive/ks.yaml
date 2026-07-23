@@ -37,6 +37,11 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
+  healthChecks:
+    - apiVersion: toolhive.stacklok.dev/v1beta1
+      kind: MCPGroup
+      name: toolhive-servers
+      namespace: ai
   wait: true
   interval: 1h
   timeout: 5m
