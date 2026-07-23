@@ -76,6 +76,9 @@ spec:
       enabled: true
     hubble:
       enabled: true
+      tls:
+        auto:
+          method: cronJob
       serviceMonitor:
         enabled: true
       metrics:
