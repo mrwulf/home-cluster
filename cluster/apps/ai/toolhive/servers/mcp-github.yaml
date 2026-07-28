@@ -8,9 +8,10 @@ spec:
     name: toolhive-servers
   # renovate: depName=ghcr.io/github/github-mcp-server datasource=docker
   image: ghcr.io/github/github-mcp-server:v1.7.0
-  transport: stdio
-  proxyMode: streamable-http
-  proxyPort: 8080
+  args:
+    - http
+  transport: streamable-http
+  mcpPort: 8082
   secrets:
     - name: mcp-github-secret
       key: GITHUB_TOKEN
