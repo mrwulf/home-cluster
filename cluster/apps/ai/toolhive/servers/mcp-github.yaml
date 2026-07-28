@@ -6,8 +6,8 @@ metadata:
 spec:
   groupRef:
     name: toolhive-servers
-  # renovate: depName=ghcr.io/github/github-mcp-server datasource=docker
-  image: ghcr.io/github/github-mcp-server:v1.7.0
+  # renovate: depName=docker.io/node datasource=docker
+  image: docker.io/node:24-alpine
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
@@ -15,6 +15,11 @@ spec:
     - name: mcp-github-secret
       key: GITHUB_TOKEN
       targetEnvName: GITHUB_PERSONAL_ACCESS_TOKEN
+  env:
+    - name: HOME
+      value: /tmp
+    - name: NPM_CONFIG_CACHE
+      value: /tmp/.npm
   resources:
     requests:
       cpu: 50m
@@ -25,3 +30,18 @@ spec:
     metadata:
       annotations:
         reloader.stakater.com/auto: "true"
+    spec:
+      containers:
+        - name: mcp
+          image: docker.io/node:24-alpine
+          command:
+            - npx
+          args:
+            - -y
+            - "@modelcontextprotocol/server-github@2025.4.8"
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
