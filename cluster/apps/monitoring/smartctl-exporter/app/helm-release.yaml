@@ -23,3 +23,9 @@ spec:
           action: replace
     prometheusRules:
       enabled: true
+      rules:
+        smartCTLDDeviceTemperature:
+          expr: smartctl_device_temperature{temperature_type="current"} > 70
+          annotations:
+            summary: Device has temperature higher than 70°C
+            description: Device {{ $labels.device }} on instance {{ $labels.instance }} has temperature higher than 70°C
