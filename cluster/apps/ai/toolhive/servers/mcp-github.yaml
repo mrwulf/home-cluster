@@ -6,7 +6,8 @@ metadata:
 spec:
   groupRef:
     name: toolhive-servers
-  image: ghcr.io/github/github-mcp-server:v1.7.200
+  # renovate: depName=ghcr.io/github/github-mcp-server datasource=docker
+  image: ghcr.io/github/github-mcp-server:v1.7.0
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
