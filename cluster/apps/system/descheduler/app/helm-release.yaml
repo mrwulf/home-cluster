@@ -72,6 +72,8 @@ spec:
                   - ImagePullBackOff
                   - InvalidImageName
                   - OOMKilled
+                  - Pending
+                  - PodInitializing
             - name: RemoveFailedPods
               args:
                 includingInitContainers: true
