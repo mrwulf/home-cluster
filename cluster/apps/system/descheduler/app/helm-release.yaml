@@ -63,7 +63,19 @@ spec:
               args:
                 maxPodLifeTimeSeconds: 300
                 states:
+                  - ContainerCannotRun
+                  - CrashLoopBackOff
+                  - CreateContainerConfigError
                   - CreateContainerError
+                  - ErrImagePull
+                  - Error
+                  - ImagePullBackOff
+                  - InvalidImageName
+                  - OOMKilled
+            - name: RemoveFailedPods
+              args:
+                includingInitContainers: true
+                minPodLifetimeSeconds: 300
             - name: RemoveDuplicates
               args:
                 excludeOwnerKinds:
@@ -78,7 +90,6 @@ spec:
                 nodeAffinityType:
                   - requiredDuringSchedulingIgnoredDuringExecution
             - name: RemovePodsViolatingNodeTaints
-            - name: RemovePodsViolatingInterPodAntiAffinity
             - name: RemovePodsViolatingTopologySpreadConstraint
               args:
                 constraints:
@@ -91,6 +102,7 @@ spec:
                 - LowNodeUtilization
             deschedule:
               enabled:
+                - RemoveFailedPods
                 - RemovePodsHavingTooManyRestarts
                 - RemovePodsViolatingNodeTaints
                 - RemovePodsViolatingNodeAffinity
