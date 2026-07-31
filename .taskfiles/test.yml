@@ -59,7 +59,7 @@ tasks:
           -n 8 \
           -schema-location default \
           -schema-location 'https://kubernetes-schemas.pages.dev/{{`{{.NormalizedKubernetesVersion}}`}}-standalone-strict/{{`{{.ResourceKind}}`}}-{{`{{.ResourceAPIVersion}}`}}.json' \
-          -verbose
+          -summary
     ignore_error: false
     vars:
       K8S_VERSION: "v1.32.0"
@@ -78,7 +78,7 @@ tasks:
     desc: Check code formatting with prettier
     cmds:
       - echo "Checking formatting..."
-      - prettier --ignore-path '{{.LINTERS_DIR}}/.prettierignore' --config '{{.LINTERS_DIR}}/.prettierrc.yaml' --check .
+      - prettier --log-level warn --ignore-path '{{.LINTERS_DIR}}/.prettierignore' --config '{{.LINTERS_DIR}}/.prettierrc.yaml' --check .
     ignore_error: false
 
   lint:paths:
