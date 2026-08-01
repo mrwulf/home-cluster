@@ -297,6 +297,23 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
+  name: firewall-backip
+  namespace: networking
+  annotations:
+    netbird.io/policy: "firewall-backup-policy"
+spec:
+  name: "firewall-backup"
+  address: "10.0.1.1/32"
+  networkID: ${NETBIRD_NETWORK_ID:-default}
+  groups:
+    - "Firewall Peers"
+  policySourceGroups:
+    - "Admin Users"
+    - "Users"
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
   name: external-ingress
   namespace: networking
   annotations:
