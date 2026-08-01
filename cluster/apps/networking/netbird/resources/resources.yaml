@@ -163,6 +163,7 @@ metadata:
     netbird.io/policy: "public-sites-policy"
 spec:
   name: "Public Services"
+  enabled: false
   address: "*.${SECRET_DOMAIN}"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   tcpPorts:
@@ -438,6 +439,18 @@ metadata:
   name: firewall-active-policy
 spec:
   name: "firewall-active Policy"
+  sourceGroups:
+    - "Admin Users"
+    - "Users"
+  destinationGroups:
+    - "Firewall Peers"
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: firewall-backup-policy
+spec:
+  name: "firewall-backup Policy"
   sourceGroups:
     - "Admin Users"
     - "Users"
