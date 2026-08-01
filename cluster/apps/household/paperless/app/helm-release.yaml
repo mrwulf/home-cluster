@@ -15,8 +15,8 @@ spec:
       securityContext:
         runAsNonRoot: false
         runAsUser: 0
-        runAsGroup: 568
-        fsGroup: 568
+        runAsGroup: ${APP_GID}
+        fsGroup: ${APP_GID}
         supplementalGroups: [65534]
         fsGroupChangePolicy: "OnRootMismatch"
 
@@ -91,7 +91,8 @@ spec:
               PAPERLESS_DATA_DIR: /data/local/data
               PAPERLESS_EXPORT_DIR: /data/nas/export
               PAPERLESS_MEDIA_ROOT: /data/local/media
-              USERMAP_GID: "568"
+              USERMAP_UID: "${APP_UID}"
+              USERMAP_GID: "${APP_GID}"
               PAPERLESS_TIKA_ENABLED: true
               PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
               PAPERLESS_TIKA_ENDPOINT: http://tika:9998

@@ -10,6 +10,14 @@ spec:
     name: app-template
     namespace: flux-system
   values:
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: ${APP_UID}
+        runAsGroup: ${APP_GID}
+        fsGroup: ${APP_GID}
+        fsGroupChangePolicy: "OnRootMismatch"
+
     controllers:
       open-webui:
         annotations:
