@@ -163,7 +163,7 @@ metadata:
     netbird.io/policy: "public-sites-policy"
 spec:
   name: "Public Services"
-  enabled: false
+  # enabled: false
   address: "*.${SECRET_DOMAIN}"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   tcpPorts:
