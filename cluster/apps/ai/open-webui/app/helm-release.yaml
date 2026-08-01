@@ -36,9 +36,9 @@ spec:
               tag: 3.24.1
             command: ["/bin/sh", "-c"]
             args:
-              - "chown -R 568:568 /app/backend/data && chmod -R u+rw,g+r,o+r /app/backend/data"
+              - "chmod -R u+rw,g+r,o+r /app/backend/data 2>/dev/null || true"
             securityContext:
-              runAsUser: 0
+              runAsUser: 568
         containers:
           app:
             image:
