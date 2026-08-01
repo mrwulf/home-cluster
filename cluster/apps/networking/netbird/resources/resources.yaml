@@ -171,8 +171,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - "Work"
-    - "Non-Work"
+    - "Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -292,13 +291,12 @@ spec:
   groups:
     - "Firewall Peers"
   policySourceGroups:
-    - "Admin Users"
     - "Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
-  name: firewall-backip
+  name: firewall-backup
   namespace: networking
   annotations:
     netbird.io/policy: "firewall-backup-policy"
@@ -309,7 +307,6 @@ spec:
   groups:
     - "Firewall Peers"
   policySourceGroups:
-    - "Admin Users"
     - "Users"
 ---
 apiVersion: netbird.io/v1
@@ -347,7 +344,6 @@ spec:
     - routing-peers
   policySourceGroups:
     - "Users"
-    - "Admin Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -452,7 +448,6 @@ metadata:
 spec:
   name: "firewall-backup Policy"
   sourceGroups:
-    - "Admin Users"
     - "Users"
   destinationGroups:
     - "Firewall Peers"
@@ -509,8 +504,7 @@ metadata:
 spec:
   name: "Public Sites Policy"
   sourceGroups:
-    - "Work"
-    - "Non-Work"
+    - "Users"
   destinationGroups:
     - routing-peers
   protocols:
