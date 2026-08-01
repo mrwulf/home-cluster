@@ -141,7 +141,7 @@ spec:
           routes:
             - receiver: "null"
               matchers:
-                - alertname =~ "InfoInhibitor|Watchdog|etcdDatabaseHighFragmentationRatio"
+                - alertname =~ "InfoInhibitor|Watchdog|etcdDatabaseHighFragmentationRatio|NodeBondingDegraded|CephNodeNetworkBondDegraded"
             - receiver: "pushover"
               matchers:
                 - severity = critical

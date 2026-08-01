@@ -40,7 +40,7 @@ spec:
                   name: immich-secret
             resources:
               requests:
-                cpu: 500m
+                cpu: 100m
                 memory: 250Mi
                 gpu.intel.com/i915: 1
               limits:

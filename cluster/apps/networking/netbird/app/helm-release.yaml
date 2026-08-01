@@ -35,6 +35,7 @@ spec:
     remediation:
       retries: 3
   values:
+    replicaCount: 1
     managementURL: "https://api.netbird.io"
     ## This doesn't work yet in the operator:
     # ingress:
