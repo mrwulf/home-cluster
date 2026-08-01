@@ -42,8 +42,6 @@ spec:
                   name: immich-configmap
               - secretRef:
                   name: immich-secret
-              - secretRef:
-                  name: immich-oidc-credentials
             resources:
               requests:
                 cpu: 100m

@@ -47,8 +47,6 @@ spec:
                   name: immich-configmap
               - secretRef:
                   name: immich-secret
-              - secretRef:
-                  name: immich-oidc-credentials
             probes:
               liveness: &probe
                 enabled: true

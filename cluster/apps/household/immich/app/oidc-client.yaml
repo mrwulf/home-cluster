@@ -6,8 +6,8 @@ metadata:
 spec:
   name: Immich
   launchUrl: https://photos.${SECRET_DOMAIN}/
-  clientSecretRotation:
-    enabled: false
+  isPublic: true
+  pkceEnabled: true
   callbackUrls:
     - app.immich:///oauth-callback
     - https://photos.${SECRET_DOMAIN}/auth/login
@@ -17,8 +17,3 @@ spec:
   allowedUserGroups:
     - name: users
       namespace: auth
-  secret:
-    name: immich-oidc-credentials
-    keys:
-      clientID: OAUTH_CLIENT_ID
-      clientSecret: OAUTH_CLIENT_SECRET
