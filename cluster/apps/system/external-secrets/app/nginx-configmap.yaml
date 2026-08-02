@@ -5,20 +5,34 @@ metadata:
   name: bitwarden-api-nginx
   namespace: system
 data:
-  nginx.conf: |
-    events {
-        worker_connections 1024;
-    }
-    http {
-        server {
-            listen 8087;
-            location ~ \+ {
-                rewrite ^(.*)\+(.*)$ $1%20$2 last;
-            }
-            location / {
-                proxy_pass http://127.0.0.1:8088;
-                proxy_set_header Host $host;
-                proxy_set_header X-Real-IP $remote_addr;
-            }
-        }
-    }
+  proxy.py: |
+    import http.server
+    import urllib.request
+    import urllib.error
+
+    class ProxyHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            target_path = self.path.replace("+", "%20")
+            url = f"http://127.0.0.1:8088{target_path}"
+            try:
+                req = urllib.request.urlopen(url)
+                self.send_response(req.status)
+                for k, v in req.headers.items():
+                    self.send_header(k, v)
+                self.end_headers()
+                self.wfile.write(req.read())
+            except urllib.error.HTTPError as e:
+                self.send_response(e.code)
+                self.end_headers()
+                self.wfile.write(e.read())
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(str(e).encode())
+
+        def log_message(self, format, *args):
+            pass
+
+    if __name__ == "__main__":
+        server = http.server.HTTPServer(("0.0.0.0", 8087), ProxyHandler)
+        server.serve_forever()

@@ -55,8 +55,11 @@ spec:
                 memory: 512Mi
           proxy:
             image:
-              repository: nginx
-              tag: 1.27.4-alpine
+              repository: python
+              tag: 3.12-alpine
+            command:
+              - python3
+              - /app/proxy.py
             resources:
               requests:
                 cpu: 10m
@@ -74,10 +77,10 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /.config
-      nginx-config:
+      proxy-config:
         type: configMap
         name: bitwarden-api-nginx
         globalMounts:
-          - path: /etc/nginx/nginx.conf
-            subPath: nginx.conf
+          - path: /app/proxy.py
+            subPath: proxy.py
             readOnly: true
