@@ -21,14 +21,18 @@ spec:
         containers:
           main:
             image:
-              repository: ghcr.io/larivierec/bitwarden-cli
-              tag: 2024.9.0
+              repository: node
+              tag: 22-alpine
             command:
-              - /bin/bash
+              - /bin/sh
               - -c
               - |
-                sed -i 's/bw serve --hostname 0.0.0.0/bw serve --hostname 0.0.0.0 --port 8088/g' /entrypoint.sh
-                exec /entrypoint.sh
+                apk add --no-cache curl jq
+                npm install -g @bitwarden/cli@2026.7.0
+                bw config server "${BW_HOST}"
+                bw login --apikey --raw
+                export BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw)
+                exec bw serve --hostname 0.0.0.0 --port 8088
             envFrom:
               - secretRef:
                   name: bitwarden-cli
