@@ -27,12 +27,8 @@ spec:
               - /bin/bash
               - -c
               - |
-                bw config server ${BW_HOST}
-                bw login --apikey --raw
-                export BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw)
-                bw unlock --check
-                echo 'Running bw serve on port 8088'
-                bw serve --hostname 0.0.0.0 --port 8088
+                sed -i 's/bw serve --hostname 0.0.0.0/bw serve --hostname 0.0.0.0 --port 8088/g' /entrypoint.sh
+                exec /entrypoint.sh
             envFrom:
               - secretRef:
                   name: bitwarden-cli
