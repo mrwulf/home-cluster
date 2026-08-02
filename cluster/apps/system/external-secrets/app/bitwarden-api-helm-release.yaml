@@ -29,6 +29,7 @@ spec:
               - |
                 apk add --no-cache curl jq
                 npm install -g @bitwarden/cli@2026.7.0
+                rm -rf ~/.config/* /.config/* 2>/dev/null || true
                 bw config server "${BW_HOST}"
                 bw login --apikey "${BW_CLIENTID}" "${BW_CLIENTSECRET}"
                 export BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw)
@@ -48,6 +49,8 @@ spec:
                         "-c",
                         "curl -X POST -s http://127.0.0.1:8088/sync | jq -e '.success == true'",
                       ]
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
                   timeoutSeconds: 5
               readiness:
                 enabled: false
