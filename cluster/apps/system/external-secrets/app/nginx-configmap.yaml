@@ -8,12 +8,13 @@ data:
   proxy.py: |
     import http.server
     import urllib.request
+    import urllib.parse
     import urllib.error
-    import sys
 
     class ProxyHandler(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
-            target_path = self.path.replace("+", "%20")
+            raw_path = urllib.parse.unquote(self.path)
+            target_path = urllib.parse.quote(raw_path, safe="/:?=&#")
             url = f"http://127.0.0.1:8088{target_path}"
             print(f"[PROXY REQ] {self.path} -> {url}", flush=True)
             try:
@@ -23,7 +24,7 @@ data:
                     self.send_header(k, v)
                 self.end_headers()
                 res_data = req.read()
-                print(f"[PROXY RES {req.status}] {res_data[:100]}", flush=True)
+                print(f"[PROXY RES {req.status}] length={len(res_data)}", flush=True)
                 self.wfile.write(res_data)
             except urllib.error.HTTPError as e:
                 print(f"[PROXY ERR {e.code}] {e}", flush=True)
