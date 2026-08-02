@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: bitwarden-api-nginx
+  name: bitwarden-api-proxy-config
   namespace: system
 data:
   proxy.py: |
@@ -41,6 +41,6 @@ data:
             pass
 
     if __name__ == "__main__":
-        print("Starting Python Proxy on port 8087...", flush=True)
+        print("Starting Bitwarden API Proxy on port 8087...", flush=True)
         server = http.server.HTTPServer(("0.0.0.0", 8087), ProxyHandler)
         server.serve_forever()

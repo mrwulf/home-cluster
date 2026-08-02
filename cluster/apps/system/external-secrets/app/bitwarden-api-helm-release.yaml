@@ -79,7 +79,7 @@ spec:
           - path: /.config
       proxy-config:
         type: configMap
-        name: bitwarden-api-nginx
+        name: bitwarden-api-proxy-config
         globalMounts:
           - path: /app/proxy.py
             subPath: proxy.py

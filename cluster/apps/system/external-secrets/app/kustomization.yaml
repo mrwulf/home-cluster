@@ -8,4 +8,4 @@ resources:
   - secret.sops.yaml
   # - network-policy.yaml
   - bitwarden-api-helm-release.yaml
-  - nginx-configmap.yaml
+  - proxy-configmap.yaml
