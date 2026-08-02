@@ -13,7 +13,7 @@ data:
 
     class ProxyHandler(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
-            raw_path = urllib.parse.unquote_plus(self.path)
+            raw_path = urllib.parse.unquote_plus(self.path).replace("+", " ")
             target_path = urllib.parse.quote(raw_path, safe="/:?=&#")
             url = f"http://127.0.0.1:8088{target_path}"
             print(f"[PROXY REQ] {self.path} -> {url}", flush=True)
