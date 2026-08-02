@@ -9,23 +9,29 @@ data:
     import http.server
     import urllib.request
     import urllib.error
+    import sys
 
     class ProxyHandler(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
             target_path = self.path.replace("+", "%20")
             url = f"http://127.0.0.1:8088{target_path}"
+            print(f"[PROXY REQ] {self.path} -> {url}", flush=True)
             try:
                 req = urllib.request.urlopen(url)
                 self.send_response(req.status)
                 for k, v in req.headers.items():
                     self.send_header(k, v)
                 self.end_headers()
-                self.wfile.write(req.read())
+                res_data = req.read()
+                print(f"[PROXY RES {req.status}] {res_data[:100]}", flush=True)
+                self.wfile.write(res_data)
             except urllib.error.HTTPError as e:
+                print(f"[PROXY ERR {e.code}] {e}", flush=True)
                 self.send_response(e.code)
                 self.end_headers()
                 self.wfile.write(e.read())
             except Exception as e:
+                print(f"[PROXY EXC] {e}", flush=True)
                 self.send_response(500)
                 self.end_headers()
                 self.wfile.write(str(e).encode())
@@ -34,5 +40,6 @@ data:
             pass
 
     if __name__ == "__main__":
+        print("Starting Python Proxy on port 8087...", flush=True)
         server = http.server.HTTPServer(("0.0.0.0", 8087), ProxyHandler)
         server.serve_forever()
