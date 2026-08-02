@@ -30,15 +30,6 @@ spec:
             envFrom:
               - secretRef:
                   name: openwebui
-          fix-permissions:
-            image:
-              repository: alpine
-              tag: 3.24.1
-            command: ["/bin/sh", "-c"]
-            args:
-              - "chmod -R u+rw,g+r,o+r /app/backend/data 2>/dev/null || true"
-            securityContext:
-              runAsUser: 568
         containers:
           app:
             image:
