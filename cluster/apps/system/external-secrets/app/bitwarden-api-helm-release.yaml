@@ -30,7 +30,7 @@ spec:
                 apk add --no-cache curl jq
                 npm install -g @bitwarden/cli@2026.7.0
                 bw config server "${BW_HOST}"
-                bw login --apikey --raw
+                bw login --apikey "${BW_CLIENTID}" "${BW_CLIENTSECRET}"
                 export BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw)
                 exec bw serve --hostname 0.0.0.0 --port 8088
             envFrom:
