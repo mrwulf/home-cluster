@@ -31,10 +31,10 @@ spec:
                 npm install -g @bitwarden/cli@2026.7.0
                 export BITWARDENCLI_APPDATA_DIR=/.config
                 rm -rf /.config/* ~/.config/* 2>/dev/null || true
-                echo "Configuring BW server to: ${BW_HOST}"
-                bw config server "${BW_HOST}"
+                echo "Configuring BW server to: $BW_HOST"
+                bw config server "$BW_HOST"
                 bw status | jq .environmentUrl
-                bw login --apikey "${BW_CLIENTID}" "${BW_CLIENTSECRET}"
+                bw login --apikey "$BW_CLIENTID" "$BW_CLIENTSECRET"
                 export BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw)
                 exec bw serve --hostname 0.0.0.0 --port 8088
             envFrom:
