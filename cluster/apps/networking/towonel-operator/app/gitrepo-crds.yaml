@@ -1,0 +1,28 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: towonel-operator-git
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://github.com/jacaudi/towonel-operator.git
+  ref:
+    branch: main
+  ignore: |
+    /*
+    !/config/crd
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: towonel-operator-crds
+  namespace: flux-system
+spec:
+  interval: 1h
+  prune: false
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: towonel-operator-git
+  path: ./config/crd
+  retryInterval: 2m

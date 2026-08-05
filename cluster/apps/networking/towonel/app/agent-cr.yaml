@@ -1,5 +1,5 @@
 apiVersion: towonel.io/v1alpha1
-kind: Agent
+kind: TowonelAgent
 metadata:
   name: towonel-agent
   namespace: networking
