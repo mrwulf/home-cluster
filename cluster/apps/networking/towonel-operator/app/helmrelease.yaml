@@ -27,7 +27,7 @@ spec:
             image:
               # renovate: depName=jacaudi/towonel-operator datasource=github-releases
               repository: ghcr.io/jacaudi/towonel-operator
-              tag: v0.1.0
+              tag: v1.7.1
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
