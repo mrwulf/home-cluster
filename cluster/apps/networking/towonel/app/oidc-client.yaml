@@ -1,0 +1,22 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: towonel-hub
+  namespace: networking
+spec:
+  name: Towonel Hub
+  launchUrl: https://towonel.home.${SECRET_DOMAIN}/
+  callbackUrls:
+    - https://towonel.home.${SECRET_DOMAIN}/auth/callback
+    - https://towonel.home.${SECRET_DOMAIN}/api/auth/callback/oidc
+  logoutCallbackUrls:
+    - https://towonel.home.${SECRET_DOMAIN}/
+  secret:
+    name: towonel-hub-oidc-credentials
+    keys:
+      clientID: TOWONEL_HUB_OIDC_CLIENT_ID
+      clientSecret: TOWONEL_HUB_OIDC_CLIENT_SECRET
+  allowedUserGroups:
+    - name: admin
+      namespace: auth

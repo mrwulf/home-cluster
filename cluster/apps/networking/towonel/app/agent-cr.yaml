@@ -1,0 +1,15 @@
+apiVersion: towonel.dev/v1alpha1
+kind: Agent
+metadata:
+  name: towonel-agent
+  namespace: networking
+spec:
+  hubUrl: "http://towonel-hub.networking.svc.cluster.local:8080"
+  proxyProtocolVersion: "v2"
+  routes:
+    - hostname: "plex.${SECRET_DOMAIN}"
+      target: "traefik-external.networking.svc.cluster.local:443"
+      tlsPassthrough: true
+    - hostname: "immich.${SECRET_DOMAIN}"
+      target: "traefik-external.networking.svc.cluster.local:443"
+      tlsPassthrough: true

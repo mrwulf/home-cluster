@@ -1,6 +1,6 @@
 #cloud-config
 write_files:
-  # 1. Write FRP Server Configuration
+  # 1. Write FRP Server Configuration (Preserved during parallel transition phase)
   - path: /etc/frp/frps.toml
     permissions: "0600"
     content: |
@@ -33,6 +33,25 @@ write_files:
       [Install]
       WantedBy=multi-user.target
 
+  # 3. Write Systemd Container Service File for Towonel Edge
+  - path: /etc/systemd/system/towonel-edge.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Towonel Edge Node Container
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Restart=always
+      RestartSec=5s
+      ExecStartPre=-/usr/bin/docker rm -f towonel-edge
+      # renovate: depName=eleboucher/towonel datasource=docker
+      ExecStart=/usr/bin/docker run --name towonel-edge --rm --net=host docker.io/eleboucher/towonel:v0.1.0 edge
+
+      [Install]
+      WantedBy=multi-user.target
+
 runcmd:
   - |
     # renovate: depName=fatedier/frp datasource=github-releases
@@ -49,6 +68,7 @@ runcmd:
   - echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 
-  # 5. Enable and start FRP
+  # 5. Enable and start FRP & Towonel Edge
   - systemctl daemon-reload
   - systemctl enable frps --now
+  - systemctl enable towonel-edge --now
