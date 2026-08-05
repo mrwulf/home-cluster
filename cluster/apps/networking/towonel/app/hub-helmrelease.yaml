@@ -50,10 +50,6 @@ spec:
                   name: towonel-hub-secrets
               - secretRef:
                   name: towonel-hub-oidc-credentials
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 10m
@@ -82,8 +78,6 @@ spec:
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 65534
-        runAsGroup: 65534
         seccompProfile: { type: RuntimeDefault }
     persistence:
       tmp:
