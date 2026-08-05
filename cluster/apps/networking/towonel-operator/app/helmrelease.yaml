@@ -43,6 +43,6 @@ spec:
               requests:
                 cpu: 10m
               limits:
-                memory: 128Mi
+                memory: 256Mi
     serviceAccount:
       towonel-operator: {}
