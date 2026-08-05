@@ -9,7 +9,7 @@ CONTROL3: 10.0.1.53
 promVersion: v0.93.0
 
 # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
-gatewayApiVersion: v1.5.1
+gatewayApiVersion: v1.6.1
 
 # renovate: datasource=github-releases depName=kubernetes-sigs/external-dns
 externalDNSVersion: v0.21.0
