@@ -9,5 +9,6 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
+    # renovate: depName=codeberg.org/wrenix/helm-charts/forgejo-runner datasource=docker
     tag: 0.7.6
   url: oci://codeberg.org/wrenix/helm-charts/forgejo-runner
