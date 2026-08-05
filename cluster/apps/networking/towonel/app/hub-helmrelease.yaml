@@ -85,6 +85,15 @@ spec:
         runAsUser: 65534
         runAsGroup: 65534
         seccompProfile: { type: RuntimeDefault }
+    persistence:
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+      data:
+        type: emptyDir
+        globalMounts:
+          - path: /var/lib/towonel
     service:
       app:
         controller: towonel-hub
