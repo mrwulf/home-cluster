@@ -38,6 +38,8 @@ spec:
               limits:
                 memory: 128Mi
     defaultPodOptions:
+      serviceAccountName: towonel-operator
+      automountServiceAccountToken: true
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
