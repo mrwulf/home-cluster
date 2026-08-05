@@ -1,15 +1,29 @@
+---
+apiVersion: towonel.io/v1alpha1
+kind: TowonelTunnel
+metadata:
+  name: towonel-tunnel
+  namespace: networking
+spec:
+  region: US
+  apiKeySecretRef:
+    name: towonel-hub-secrets
+    key: TOWONEL_HUB_OPERATOR_API_KEY
+  tokenExpiry: 0
+  deletionPolicy: Retain
+---
 apiVersion: towonel.io/v1alpha1
 kind: TowonelAgent
 metadata:
   name: towonel-agent
   namespace: networking
 spec:
-  hubUrl: "http://towonel-hub.networking.svc.cluster.local:8080"
-  proxyProtocolVersion: "v2"
-  routes:
+  tunnelRef:
+    name: towonel-tunnel
+  services:
     - hostname: "plex.${SECRET_DOMAIN}"
-      target: "traefik-external.networking.svc.cluster.local:443"
-      tlsPassthrough: true
+      origin: "traefik-external.networking.svc.cluster.local:443"
+      edgeTLSMode: passthrough
     - hostname: "immich.${SECRET_DOMAIN}"
-      target: "traefik-external.networking.svc.cluster.local:443"
-      tlsPassthrough: true
+      origin: "traefik-external.networking.svc.cluster.local:443"
+      edgeTLSMode: passthrough
