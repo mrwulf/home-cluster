@@ -41,6 +41,9 @@ spec:
               # renovate: depName=ghcr.io/home-operations/postgres-init datasource=docker
               repository: ghcr.io/home-operations/postgres-init
               tag: "18.4"
+            securityContext:
+              runAsUser: 65534
+              runAsGroup: 65534
             envFrom:
               - secretRef:
                   name: towonel-hub-secrets
