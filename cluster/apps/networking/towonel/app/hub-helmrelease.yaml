@@ -79,5 +79,4 @@ spec:
                   kind: Middleware
                   name: rfc1918-ips
             backendRefs:
-              - identifier: main
-                port: api
+              - identifier: hub-api
