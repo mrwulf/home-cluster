@@ -67,16 +67,17 @@ spec:
       main:
         enabled: true
         parentRefs:
-          - name: internal-gateway
+          - name: external-gateway
             namespace: networking
+            sectionName: https
         hostnames:
-          - "towonel.home.${SECRET_DOMAIN}"
+          - "towonel-hub.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef
                 extensionRef:
                   group: traefik.io
                   kind: Middleware
-                  name: rfc1918-ips
+                  name: traefik-middleware-chain-no-auth
             backendRefs:
               - port: 8443

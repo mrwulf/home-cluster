@@ -4,4 +4,5 @@ resources:
   - externalsecret.yaml
   - oidc-client.yaml
   - hub-helmrelease.yaml
+  - console-helmrelease.yaml
   - agent-cr.yaml
