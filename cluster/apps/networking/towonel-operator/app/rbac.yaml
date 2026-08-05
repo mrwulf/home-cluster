@@ -10,7 +10,7 @@ kind: ClusterRole
 metadata:
   name: towonel-operator
 rules:
-  - apiGroups: ["towonel.dev"]
+  - apiGroups: ["towonel.io", "towonel.dev"]
     resources: ["*"]
     verbs: ["*"]
   - apiGroups: ["apps"]
