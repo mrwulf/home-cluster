@@ -5,7 +5,7 @@ metadata:
   name: towonel-tunnel
   namespace: networking
 spec:
-  region: US
+  region: EU
   apiKeySecretRef:
     name: towonel-hub-secrets
     key: TOWONEL_HUB_OPERATOR_API_KEY
