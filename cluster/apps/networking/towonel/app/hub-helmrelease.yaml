@@ -34,9 +34,9 @@ spec:
         containers:
           app:
             image:
-              # renovate: depName=eleboucher/towonel datasource=docker
-              repository: docker.io/eleboucher/towonel
-              tag: v0.1.0
+              # renovate: depName=codeberg.org/towonel/towonel-node datasource=docker
+              repository: codeberg.org/towonel/towonel-node
+              tag: latest@sha256:0f2140c494cebd115ee2afa6afe57faae0248b6b08b30a9331fb74374a13f59d
             args:
               - hub
             envFrom:

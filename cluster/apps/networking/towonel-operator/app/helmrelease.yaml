@@ -25,9 +25,9 @@ spec:
         containers:
           app:
             image:
-              # renovate: depName=jacaudi/towonel-operator datasource=github-releases
+              # renovate: depName=ghcr.io/jacaudi/towonel-operator datasource=docker
               repository: ghcr.io/jacaudi/towonel-operator
-              tag: v0.1.0
+              tag: latest@sha256:be7821599b3c739da4dcea8b5e00006ed1f84b77c0eaed7f335d58e562bf315b
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
