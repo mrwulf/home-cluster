@@ -79,4 +79,4 @@ spec:
                   kind: Middleware
                   name: rfc1918-ips
             backendRefs:
-              - identifier: hub-api
+              - port: 8443
