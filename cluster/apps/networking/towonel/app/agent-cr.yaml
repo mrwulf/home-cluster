@@ -1,4 +1,4 @@
-apiVersion: towonel.dev/v1alpha1
+apiVersion: towonel.io/v1alpha1
 kind: Agent
 metadata:
   name: towonel-agent
