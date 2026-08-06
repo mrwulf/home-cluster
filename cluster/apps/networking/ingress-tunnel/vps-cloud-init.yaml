@@ -70,10 +70,11 @@ runcmd:
     chmod +x /usr/local/bin/frps
     rm -rf /tmp/frp.tar.gz /tmp/frp_*_linux_amd64
 
-  # 4. Install Docker
+  # 4. Install Docker & systemd-resolved
   - |
     apt-get update
-    apt-get install -y docker.io docker-cli
+    apt-get install -y docker.io docker-cli systemd-resolved
+    systemctl enable systemd-resolved --now
     systemctl enable docker --now
 
   # 5. Install and connect NetBird client on VPS
