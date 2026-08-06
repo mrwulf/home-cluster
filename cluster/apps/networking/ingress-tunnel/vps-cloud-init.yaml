@@ -49,8 +49,8 @@ write_files:
       # renovate: depName=codeberg.org/towonel/towonel-node datasource=docker
       ExecStart=/usr/bin/docker run --name towonel-edge --rm --net=host codeberg.org/towonel/towonel-node:latest@sha256:0f2140c494cebd115ee2afa6afe57faae0248b6b08b30a9331fb74374a13f59d edge
 
-  [Install]
-  WantedBy=multi-user.target
+      [Install]
+      WantedBy=multi-user.target
 
 runcmd:
   - |
