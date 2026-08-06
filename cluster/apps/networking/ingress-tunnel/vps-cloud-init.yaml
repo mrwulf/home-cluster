@@ -79,9 +79,11 @@ runcmd:
 
   # 4. Install Docker & systemd-resolved
   - |
+    export DEBIAN_FRONTEND=noninteractive
     apt-get update
-    apt-get install -y docker.io docker-cli systemd-resolved
+    apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io docker-cli systemd-resolved
     systemctl enable systemd-resolved --now
+    systemctl restart systemd-resolved
     systemctl enable docker --now
 
   # 5. Install and connect NetBird client on VPS
