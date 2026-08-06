@@ -24,6 +24,6 @@ spec:
     - hostname: "plex.${SECRET_DOMAIN}"
       origin: "traefik-external.networking.svc.cluster.local:443"
       edgeTLSMode: passthrough
-    - hostname: "immich.${SECRET_DOMAIN}"
+    - hostname: "photos.${SECRET_DOMAIN}"
       origin: "traefik-external.networking.svc.cluster.local:443"
       edgeTLSMode: passthrough

@@ -79,7 +79,7 @@ runcmd:
   # 5. Install and connect NetBird client on VPS
   - |
     curl -fsSL https://pkgs.netbird.io/install.sh | sh
-    netbird up --setup-key "${NETBIRD_SETUP_KEY}" --wireguard-port 51821
+    netbird up --setup-key "${NETBIRD_SETUP_KEY}" --enable-rosenpass --enable-ssh-root --allow-server-ssh --rosenpass-permissive --wireguard-port 51821
 
   # 6. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
   - sysctl -w net.core.default_qdisc=fq
