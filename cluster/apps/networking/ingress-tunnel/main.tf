@@ -118,8 +118,8 @@ resource "hcloud_firewall" "tunnel_firewall" {
     direction   = "in"
     protocol    = "tcp"
     port        = "22"
-    source_ips  = [local.home_ip_cidr]
-    description = "Allow SSH from home only"
+    source_ips  = [local.home_ip_cidr, "172.56.222.163/32"]
+    description = "Allow SSH from home and workstation"
   }
 
   rule {
