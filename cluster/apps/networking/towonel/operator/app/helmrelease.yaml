@@ -19,7 +19,7 @@ spec:
       retries: 3
   values:
     towonel:
-      apiURL: http://towonel-hub-towonel-node.networking.svc.cluster.local:8443
+      apiURL: http://towonel-hub.networking.svc.cluster.local:8443
     credentials:
       existingSecret: towonel-hub-secrets
       tokenKey: TOWONEL_K8S_OPERATOR_API_KEY

@@ -40,7 +40,7 @@ spec:
               NODE_ENV: production
               HOST: 0.0.0.0
               PORT: "3000"
-              TOWONEL_HUB_URL: http://towonel-hub-towonel-node.networking.svc.cluster.local:8443
+              TOWONEL_HUB_URL: http://towonel-hub.networking.svc.cluster.local:8443
               TOWONEL_VM_URL: http://vmsingle-stack.monitoring.svc.cluster.local:8428
               TOWONEL_PUBLIC_REGIONS: US,EU
             probes:

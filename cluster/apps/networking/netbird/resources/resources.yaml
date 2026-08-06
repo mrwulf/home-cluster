@@ -573,7 +573,7 @@ metadata:
     netbird.io/policy: "towonel-link-policy"
 spec:
   name: "Towonel Control Link"
-  address: "towonel-hub-towonel-node.networking.svc.cluster.local"
+  address: "towonel-hub.networking.svc.cluster.local"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   tcpPorts:
     - 51444

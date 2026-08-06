@@ -29,6 +29,7 @@ spec:
     remediation:
       retries: 3
   values:
+    fullnameOverride: towonel-hub
     hub:
       enabled: true
     edge:

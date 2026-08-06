@@ -15,7 +15,7 @@ spec:
         - targetLabel: cluster
           replacement: towonel-ops
     - targets:
-        - "towonel-hub-towonel-node.networking.svc.cluster.local:9091"
+        - "towonel-hub.networking.svc.cluster.local:9091"
       scheme: "http"
       path: "/metrics"
       interval: "30s"

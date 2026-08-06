@@ -1,3 +1,4 @@
+---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -5,7 +6,62 @@ metadata:
   namespace: flux-system
 spec:
   targetNamespace: networking
-  path: ./cluster/apps/networking/towonel/app
+  path: ./cluster/apps/networking/towonel/control-plane
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: towonel-operator
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: towonel
+  targetNamespace: networking
+  path: ./cluster/apps/networking/towonel/operator/app
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: towonel-operator-agents
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: towonel-operator
+  targetNamespace: networking
+  path: ./cluster/apps/networking/towonel/operator/agents
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ingress-vps
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: towonel
+  targetNamespace: networking
+  path: ./cluster/apps/networking/towonel/ingress-vps/app
   prune: true
   sourceRef:
     kind: GitRepository
