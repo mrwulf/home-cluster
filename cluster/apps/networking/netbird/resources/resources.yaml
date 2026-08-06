@@ -378,14 +378,14 @@ metadata:
     netbird.io/policy: "clusterdns-policy"
 spec:
   name: "clusterdns"
-  address: 10.96.0.10/32
+  address: "10.96.0.10/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   udpPorts:
     - 53
   groups:
-    - "vps-peers"
-  policySourceGroups:
     - routing-peers
+  policySourceGroups:
+    - "vps-peers"
 ---
 # ==============================================================================
 # Declarative Access Policies (NBPolicy)
@@ -596,3 +596,18 @@ spec:
     - udp
   ports:
     - 53
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: towonel-link-policy
+spec:
+  name: "Towonel Link Policy"
+  sourceGroups:
+    - "vps-peers"
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 51444
