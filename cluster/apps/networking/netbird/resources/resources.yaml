@@ -369,6 +369,24 @@ spec:
   policySourceGroups:
     - "FullVPN Users"
 ---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: clusterdns
+  namespace: networking
+  annotations:
+    netbird.io/policy: "clusterdns-policy"
+spec:
+  name: "clusterdns"
+  address: 10.96.0.10/32
+  networkID: ${NETBIRD_NETWORK_ID:-default}
+  updPorts:
+    - 53
+  groups:
+    - "vps-peers"
+  policySourceGroups:
+    - routing-peers
+---
 # ==============================================================================
 # Declarative Access Policies (NBPolicy)
 # ==============================================================================
@@ -567,14 +585,14 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBPolicy
 metadata:
-  name: towonel-link-policy
+  name: clusterdns-policy
 spec:
-  name: "Towonel Link Policy"
+  name: "clusterdns-policy"
   sourceGroups:
     - "vps-peers"
   destinationGroups:
     - routing-peers
   protocols:
-    - tcp
+    - udp
   ports:
-    - 51444
+    - 53
