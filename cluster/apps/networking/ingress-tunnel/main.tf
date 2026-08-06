@@ -145,6 +145,14 @@ resource "hcloud_firewall" "tunnel_firewall" {
     source_ips  = [local.home_ip_cidr]
     description = "Allow dashboard and metrics scraping from home only"
   }
+
+  rule {
+    direction   = "in"
+    protocol    = "udp"
+    port        = "51810"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+    description = "Allow Iroh UDP transport traffic for Towonel"
+  }
 }
 
 # 4. Attach Firewall to the VPS Server
