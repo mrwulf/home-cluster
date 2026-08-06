@@ -77,7 +77,8 @@ data "http" "home_ip" {
 }
 
 locals {
-  home_ip_cidr = "${chomp(data.http.home_ip.response_body)}/32"
+  home_ip      = chomp(data.http.home_ip.response_body)
+  home_ip_cidr = "${local.home_ip}/32"
 }
 
 # 1. Look up Cloudflare Zone details dynamically using domain name
@@ -107,6 +108,7 @@ resource "hcloud_server" "tunnel_vps" {
     NETBIRD_SETUP_KEY      = var.netbird_setup_key
     TOWONEL_HUB_LINK_PSK   = var.towonel_hub_link_psk
     SECRET_DOMAIN          = var.secret_domain
+    HOME_IP                = local.home_ip
   })
 }
 

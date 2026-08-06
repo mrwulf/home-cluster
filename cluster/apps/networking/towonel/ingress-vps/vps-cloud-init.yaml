@@ -15,6 +15,8 @@ write_files:
       ExecStartPre=-/usr/bin/docker rm -f towonel-edge
       # renovate: depName=codeberg.org/towonel/towonel-node datasource=docker
       ExecStart=/usr/bin/docker run --name towonel-edge --rm --net=host \
+        --log-opt max-size=10m \
+        --log-opt max-file=3 \
         -e TOWONEL_HUB_ENABLED=false \
         -e TOWONEL_EDGE_ENABLED=true \
         -e TOWONEL_EDGE_LISTEN_ADDR=0.0.0.0:443 \
@@ -34,6 +36,52 @@ write_files:
     content: |
       [Resolve]
       DNS=1.1.1.1 185.12.64.2
+
+  # 3. Write Docker daemon configuration for log rotation
+  - path: /etc/docker/daemon.json
+    permissions: "0644"
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+
+  # 4. Write CrowdSec IP Whitelist Parser
+  - path: /etc/crowdsec/parsers/s02-enrich/00-whitelist.yaml
+    permissions: "0644"
+    content: |
+      name: local/whitelist
+      description: "Whitelist trusted IPs and internal networks"
+      filter: "1 == 1"
+      whitelist:
+        reason: "Whitelisted home IP and internal overlay networks"
+        ip:
+          - "${HOME_IP}"
+          - "127.0.0.1"
+          - "::1"
+        cidr:
+          - "100.64.0.0/10"
+          - "10.0.0.0/8"
+          - "172.16.0.0/12"
+          - "192.168.0.0/16"
+
+  # 5. Write CrowdSec Log Acquisition for Towonel Edge and systemd
+  - path: /etc/crowdsec/acquis.d/towonel.yaml
+    permissions: "0644"
+    content: |
+      filenames:
+        - /var/lib/docker/containers/*/*-json.log
+      labels:
+        type: docker
+      ---
+      source: journalctl
+      journalctl_filter:
+        - _SYSTEMD_UNIT=sshd.service
+      labels:
+        type: syslog
 
 runcmd:
   # 1. Install Docker & systemd-resolved
@@ -59,3 +107,12 @@ runcmd:
   # 4. Enable and start Towonel Edge
   - systemctl daemon-reload
   - systemctl enable towonel-edge --now
+
+  # 5. Install & configure CrowdSec Engine + IPTables Firewall Bouncer
+  - |
+    curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | bash
+    apt-get update
+    apt-get install -y crowdsec crowdsec-firewall-bouncer-iptables
+    cscli collections install crowdsecurity/linux crowdsecurity/base-http
+    systemctl restart crowdsec
+    systemctl restart crowdsec-firewall-bouncer
