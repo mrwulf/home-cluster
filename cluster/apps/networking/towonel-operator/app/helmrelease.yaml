@@ -39,12 +39,6 @@ spec:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
-            env:
-              TOWONEL_HUB_OPERATOR_API_KEY:
-                valueFrom:
-                  secretKeyRef:
-                    name: towonel-hub-secrets
-                    key: TOWONEL_HUB_OPERATOR_API_KEY
             resources:
               requests:
                 cpu: 10m

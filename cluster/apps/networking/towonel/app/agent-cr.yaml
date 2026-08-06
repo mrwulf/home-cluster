@@ -8,7 +8,7 @@ spec:
   region: EU
   apiKeySecretRef:
     name: towonel-hub-secrets
-    key: TOWONEL_HUB_OPERATOR_API_KEY
+    key: TOWONEL_K8S_OPERATOR_API_KEY
   tokenExpiry: 0
   deletionPolicy: Retain
 ---
