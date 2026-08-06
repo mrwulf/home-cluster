@@ -48,13 +48,14 @@ write_files:
       ExecStartPre=-/usr/bin/docker rm -f towonel-edge
       # renovate: depName=codeberg.org/towonel/towonel-node datasource=docker
       ExecStart=/usr/bin/docker run --name towonel-edge --rm --net=host \
+        -e TOWONEL_HUB_ENABLED=false \
         -e TOWONEL_EDGE_ENABLED=true \
         -e TOWONEL_EDGE_LISTEN_ADDR=0.0.0.0:443 \
         -e TOWONEL_EDGE_HUB_LINK_ADDR=towonel-hub-towonel-node.networking.svc.cluster.local:51444 \
         -e TOWONEL_EDGE_HUB_LINK_PSK=${TOWONEL_HUB_LINK_PSK} \
         -e TOWONEL_EDGE_ADVERTISED_ADDRESSES=ingress.${SECRET_DOMAIN}:443 \
         -e TOWONEL_EDGE_REGION=EU \
-        codeberg.org/towonel/towonel-node:latest@sha256:0f2140c494cebd115ee2afa6afe57faae0248b6b08b30a9331fb74374a13f59d edge
+        codeberg.org/towonel/towonel-node:latest@sha256:0f2140c494cebd115ee2afa6afe57faae0248b6b08b30a9331fb74374a13f59d serve
 
       [Install]
       WantedBy=multi-user.target
@@ -69,18 +70,25 @@ runcmd:
     chmod +x /usr/local/bin/frps
     rm -rf /tmp/frp.tar.gz /tmp/frp_*_linux_amd64
 
-  # 4. Install and connect NetBird client on VPS
+  # 4. Install Docker
+  - |
+    apt-get update
+    apt-get install -y docker.io docker-cli
+    systemctl enable docker --now
+
+  # 5. Install and connect NetBird client on VPS
   - |
     curl -fsSL https://pkgs.netbird.io/install.sh | sh
-    netbird up --key "${NETBIRD_SETUP_KEY}" --management-url "https://api.netbird.io"
+    netbird up --setup-key "${NETBIRD_SETUP_KEY}" --wireguard-port 51821
 
-  # 5. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
+  # 6. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
   - sysctl -w net.core.default_qdisc=fq
   - sysctl -w net.ipv4.tcp_congestion_control=bbr
   - echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 
-  # 6. Enable and start FRP & Towonel Edge
+  # 7. Enable and start Towonel Edge (and disable FRPS on port 443)
   - systemctl daemon-reload
-  - systemctl enable frps --now
+  - systemctl stop frps || true
+  - systemctl disable frps || true
   - systemctl enable towonel-edge --now
