@@ -10,13 +10,14 @@ spec:
   callbackUrls:
     - https://towonel.home.${SECRET_DOMAIN}/auth/callback
     - https://towonel.home.${SECRET_DOMAIN}/api/auth/callback/oidc
+    - https://towonel.home.${SECRET_DOMAIN}/api/v1/auth/oidc/codeberg/callback
   logoutCallbackUrls:
     - https://towonel.home.${SECRET_DOMAIN}/
   secret:
     name: towonel-hub-oidc-credentials
     keys:
-      clientID: TOWONEL_HUB_OIDC_CLIENT_ID
-      clientSecret: TOWONEL_HUB_OIDC_CLIENT_SECRET
+      clientID: TOWONEL_HUB_OIDC_CODEBERG_CLIENT_ID
+      clientSecret: TOWONEL_HUB_OIDC_CODEBERG_CLIENT_SECRET
   allowedUserGroups:
     - name: admin
       namespace: auth
