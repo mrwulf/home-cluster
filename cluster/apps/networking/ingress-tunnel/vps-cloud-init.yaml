@@ -60,6 +60,13 @@ write_files:
       [Install]
       WantedBy=multi-user.target
 
+  # 4. Write systemd-resolved configuration for upstream DNS
+  - path: /etc/systemd/resolved.conf.d/dns.conf
+    permissions: "0644"
+    content: |
+      [Resolve]
+      DNS=1.1.1.1 185.12.64.2
+
 runcmd:
   - |
     # renovate: depName=fatedier/frp datasource=github-releases
