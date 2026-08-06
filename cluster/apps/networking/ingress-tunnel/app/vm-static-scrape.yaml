@@ -11,13 +11,22 @@ spec:
       scheme: "http"
       path: "/metrics"
       interval: "30s"
+      relabelConfigs:
+        - targetLabel: cluster
+          replacement: towonel-ops
     - targets:
         - "towonel-hub-towonel-node.networking.svc.cluster.local:9091"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
+      relabelConfigs:
+        - targetLabel: cluster
+          replacement: towonel-ops
     - targets:
         - "towonel-agent.networking.svc.cluster.local:9090"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
+      relabelConfigs:
+        - targetLabel: cluster
+          replacement: towonel-ops
