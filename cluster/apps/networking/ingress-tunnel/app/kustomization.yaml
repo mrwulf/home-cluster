@@ -6,3 +6,4 @@ resources:
   - gitrepo.yaml
   - rbac.yaml
   - vm-static-scrape.yaml
+  - vps-direct-route.yaml
