@@ -30,3 +30,6 @@ spec:
     - hostname: "vps-direct.${SECRET_DOMAIN}"
       origin: "traefik-external.networking.svc.cluster.local:443"
       edgeTLSMode: passthrough
+    - hostname: "backups.${SECRET_DOMAIN}"
+      origin: "traefik-external.networking.svc.cluster.local:443"
+      edgeTLSMode: passthrough

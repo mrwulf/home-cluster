@@ -123,10 +123,10 @@ endpoints:
       hide-url: true
   - name: VPS Tunnel Server Endpoint
     group: external
-    url: "http://vps-direct.${SECRET_DOMAIN}:7500"
+    url: "https://vps-direct.${SECRET_DOMAIN}"
     interval: 1m
     conditions:
-      - "[STATUS] == 401"
+      - "[STATUS] < 500"
     alerts: *alerts
     ui:
       hide-hostname: true
