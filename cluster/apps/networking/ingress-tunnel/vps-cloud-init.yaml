@@ -53,7 +53,8 @@ write_files:
         -e TOWONEL_EDGE_LISTEN_ADDR=0.0.0.0:443 \
         -e TOWONEL_EDGE_HUB_LINK_ADDR=towonel-hub-towonel-node.networking.svc.cluster.local:51444 \
         -e TOWONEL_EDGE_HUB_LINK_PSK=${TOWONEL_HUB_LINK_PSK} \
-        -e TOWONEL_EDGE_ADVERTISED_ADDRESSES=ingress.${SECRET_DOMAIN}:443 \
+        -e TOWONEL_EDGE_ADVERTISED_ADDRESSES=vps-direct.${SECRET_DOMAIN}:443 \
+        -e TOWONEL_EDGE_IROH_PORT=51810 \
         -e TOWONEL_EDGE_REGION=EU \
         codeberg.org/towonel/towonel-node:latest@sha256:0f2140c494cebd115ee2afa6afe57faae0248b6b08b30a9331fb74374a13f59d serve
 
