@@ -116,6 +116,14 @@ metadata:
   namespace: networking
 spec:
   name: "External-Users"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: vps-peers
+  namespace: networking
+spec:
+  name: "vps-peers"
 # ---
 # apiVersion: netbird.io/v1
 # kind: NBGroup
@@ -537,3 +545,36 @@ spec:
     - "FullVPN Users"
   destinationGroups:
     - "Firewall Peers"
+---
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: towonel-control-link
+  namespace: networking
+  annotations:
+    netbird.io/policy: "towonel-link-policy"
+spec:
+  name: "Towonel Control Link"
+  address: "towonel-hub-towonel-node.networking.svc.cluster.local"
+  networkID: ${NETBIRD_NETWORK_ID:-default}
+  tcpPorts:
+    - 51444
+  groups:
+    - routing-peers
+  policySourceGroups:
+    - "vps-peers"
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: towonel-link-policy
+spec:
+  name: "Towonel Link Policy"
+  sourceGroups:
+    - "vps-peers"
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 51444

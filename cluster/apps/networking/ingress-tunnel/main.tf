@@ -30,6 +30,16 @@ variable "smtp_password" {
   type      = string
   sensitive = true
 }
+variable "netbird_setup_key" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+variable "towonel_hub_link_psk" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
 
 
 terraform {
@@ -94,6 +104,9 @@ resource "hcloud_server" "tunnel_vps" {
 
   user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
     TUNNEL_HANDSHAKE_TOKEN = var.tunnel_handshake_token
+    NETBIRD_SETUP_KEY      = var.netbird_setup_key
+    TOWONEL_HUB_LINK_PSK   = var.towonel_hub_link_psk
+    SECRET_DOMAIN          = var.secret_domain
   })
 }
 
