@@ -120,10 +120,11 @@ export default {
     const RECORD_NAME = env.RECORD_NAME
 
     const SECRET_DOMAIN = RECORD_NAME.replace(/^ingress\./, "")
+    const PROBE_HOST = `photos.${SECRET_DOMAIN}`
     const fromEmail = `failover-monitor@${SECRET_DOMAIN}`
     const toEmail = `postmaster@${SECRET_DOMAIN}`
 
-    // 1. Probe the VPS using its direct non-proxied domain (up to 3 attempts with 1.5s pause)
+    // 1. Probe the VPS using existing external ingress route (photos.<domain>) over HTTPS (up to 3 attempts with 1.5s pause)
     const maxProbes = 3
     let isVpsUp = false
     let lastProbeError = null
@@ -132,12 +133,15 @@ export default {
 
     for (let attempt = 1; attempt <= maxProbes; attempt++) {
       console.log(
-        `Probing VPS direct host https://${VPS_DIRECT_HOST} (attempt ${attempt}/${maxProbes})...`
+        `Probing ingress route https://${PROBE_HOST} (attempt ${attempt}/${maxProbes})...`
       )
       const startTime = Date.now()
       try {
-        const res = await fetch(`https://${VPS_DIRECT_HOST}`, {
+        const res = await fetch(`https://${PROBE_HOST}`, {
           method: "HEAD",
+          headers: {
+            "User-Agent": "Cloudflare-Worker-Failover-Monitor/1.0",
+          },
           signal: AbortSignal.timeout(5000),
         })
         const duration = Date.now() - startTime

@@ -1,39 +1,6 @@
 #cloud-config
 write_files:
-  # 1. Write FRP Server Configuration (Preserved during parallel transition phase)
-  - path: /etc/frp/frps.toml
-    permissions: "0600"
-    content: |
-      bindPort = 8080
-      auth.method = "token"
-      auth.token = "${TUNNEL_HANDSHAKE_TOKEN}"
-
-      # Enable Admin dashboard
-      webServer.addr = "0.0.0.0"
-      webServer.port = 7500
-      webServer.user = "admin"
-      webServer.password = "${TUNNEL_HANDSHAKE_TOKEN}"
-      enablePrometheus = true
-
-  # 2. Write Systemd Service File for FRPS
-  - path: /etc/systemd/system/frps.service
-    permissions: "0644"
-    content: |
-      [Unit]
-      Description=FRP Server
-      After=network.target
-
-      [Service]
-      Type=simple
-      ExecStart=/usr/local/bin/frps -c /etc/frp/frps.toml
-      Restart=always
-      RestartSec=3
-      LimitNOFILE=1048576
-
-      [Install]
-      WantedBy=multi-user.target
-
-  # 3. Write Systemd Container Service File for Towonel Edge
+  # 1. Write Systemd Container Service File for Towonel Edge
   - path: /etc/systemd/system/towonel-edge.service
     permissions: "0644"
     content: |
@@ -61,7 +28,7 @@ write_files:
       [Install]
       WantedBy=multi-user.target
 
-  # 4. Write systemd-resolved configuration for upstream DNS
+  # 2. Write systemd-resolved configuration for upstream DNS
   - path: /etc/systemd/resolved.conf.d/dns.conf
     permissions: "0644"
     content: |
@@ -69,16 +36,7 @@ write_files:
       DNS=1.1.1.1 185.12.64.2
 
 runcmd:
-  - |
-    # renovate: depName=fatedier/frp datasource=github-releases
-    set -- v0.70.1
-    curl -L -H "User-Agent: Mozilla/5.0" -o /tmp/frp.tar.gz "https://github.com/fatedier/frp/releases/download/$1/frp_$${1#v}_linux_amd64.tar.gz"
-    tar -xzf /tmp/frp.tar.gz -C /tmp/
-    mv /tmp/frp_*_linux_amd64/frps /usr/local/bin/frps
-    chmod +x /usr/local/bin/frps
-    rm -rf /tmp/frp.tar.gz /tmp/frp_*_linux_amd64
-
-  # 4. Install Docker & systemd-resolved
+  # 1. Install Docker & systemd-resolved
   - |
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
@@ -87,19 +45,17 @@ runcmd:
     systemctl restart systemd-resolved
     systemctl enable docker --now
 
-  # 5. Install and connect NetBird client on VPS
+  # 2. Install and connect NetBird client on VPS
   - |
     curl -fsSL https://pkgs.netbird.io/install.sh | sh
     netbird up --setup-key "${NETBIRD_SETUP_KEY}" --enable-rosenpass --enable-ssh-root --allow-server-ssh --rosenpass-permissive --wireguard-port 51821
 
-  # 6. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
+  # 3. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
   - sysctl -w net.core.default_qdisc=fq
   - sysctl -w net.ipv4.tcp_congestion_control=bbr
   - echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 
-  # 7. Enable and start Towonel Edge (and disable FRPS on port 443)
+  # 4. Enable and start Towonel Edge
   - systemctl daemon-reload
-  - systemctl stop frps || true
-  - systemctl disable frps || true
   - systemctl enable towonel-edge --now

@@ -1,18 +1,23 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
-  name: frps-metrics
+  name: towonel-metrics
+  namespace: networking
 spec:
-  jobName: frps
+  jobName: towonel
   targetEndpoints:
     - targets:
-        - "frps-dashboard.networking.svc.cluster.local:7500"
+        - "vps-direct.${SECRET_DOMAIN}:9090"
       scheme: "http"
       path: "/metrics"
-      basicAuth:
-        username:
-          name: ingress-tunnel-secrets
-          key: admin_username
-        password:
-          name: ingress-tunnel-secrets
-          key: tunnel_handshake_token
+      interval: "30s"
+    - targets:
+        - "towonel-hub-towonel-node.networking.svc.cluster.local:9091"
+      scheme: "http"
+      path: "/metrics"
+      interval: "30s"
+    - targets:
+        - "towonel-agent.networking.svc.cluster.local:9090"
+      scheme: "http"
+      path: "/metrics"
+      interval: "30s"

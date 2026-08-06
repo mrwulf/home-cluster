@@ -133,17 +133,9 @@ resource "hcloud_firewall" "tunnel_firewall" {
   rule {
     direction   = "in"
     protocol    = "tcp"
-    port        = "8080"
+    port        = "9090"
     source_ips  = [local.home_ip_cidr]
-    description = "Allow tunnel control channel from home only"
-  }
-
-  rule {
-    direction   = "in"
-    protocol    = "tcp"
-    port        = "7500"
-    source_ips  = [local.home_ip_cidr]
-    description = "Allow dashboard and metrics scraping from home only"
+    description = "Allow Towonel Edge metrics scraping from home only"
   }
 
   rule {
@@ -264,25 +256,4 @@ resource "cloudflare_workers_cron_trigger" "failover_cron" {
 output "VPS_PUBLIC_IP" {
   value       = hcloud_server.tunnel_vps.ipv4_address
   description = "The public IPv4 address of the Ingress Tunnel VPS"
-}
-
-provider "kubernetes" {}
-
-resource "kubernetes_endpoints_v1" "frps_dashboard" {
-  metadata {
-    name      = "frps-dashboard"
-    namespace = "networking"
-  }
-
-  subset {
-    address {
-      ip = hcloud_server.tunnel_vps.ipv4_address
-    }
-
-    port {
-      name     = "http"
-      port     = 7500
-      protocol = "TCP"
-    }
-  }
 }
