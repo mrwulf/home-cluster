@@ -380,7 +380,7 @@ spec:
   name: "clusterdns"
   address: 10.96.0.10/32
   networkID: ${NETBIRD_NETWORK_ID:-default}
-  updPorts:
+  udpPorts:
     - 53
   groups:
     - "vps-peers"
