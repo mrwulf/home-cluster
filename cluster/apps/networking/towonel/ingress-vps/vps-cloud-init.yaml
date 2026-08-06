@@ -49,7 +49,31 @@ write_files:
         }
       }
 
-  # 4. Write CrowdSec IP Whitelist Parser
+  # 4. Write Systemd Service for CrowdSec Security Engine Container
+  - path: /etc/systemd/system/crowdsec.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=CrowdSec LAPI Security Engine Container
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Restart=always
+      RestartSec=5s
+      ExecStartPre=-/usr/bin/docker rm -f crowdsec
+      # renovate: depName=crowdsecurity/crowdsec datasource=docker
+      ExecStart=/usr/bin/docker run --name crowdsec --rm --net=host \
+        -e COLLECTIONS="crowdsecurity/linux crowdsecurity/base-http" \
+        -v /etc/crowdsec:/etc/crowdsec \
+        -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
+        -v /var/log:/var/log:ro \
+        docker.io/crowdsecurity/crowdsec:v1.6.4
+
+      [Install]
+      WantedBy=multi-user.target
+
+  # 5. Write CrowdSec IP Whitelist Parser
   - path: /etc/crowdsec/parsers/s02-enrich/00-whitelist.yaml
     permissions: "0644"
     content: |
@@ -68,7 +92,7 @@ write_files:
           - "172.16.0.0/12"
           - "192.168.0.0/16"
 
-  # 5. Write CrowdSec Log Acquisition for Towonel Edge and systemd
+  # 6. Write CrowdSec Log Acquisition for Towonel Edge and systemd
   - path: /etc/crowdsec/acquis.d/towonel.yaml
     permissions: "0644"
     content: |
@@ -88,7 +112,7 @@ runcmd:
   - |
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
-    apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io docker-cli systemd-resolved
+    apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io docker-cli systemd-resolved gnupg apt-transport-https
     systemctl enable systemd-resolved --now
     systemctl restart systemd-resolved
     systemctl enable docker --now
@@ -104,15 +128,29 @@ runcmd:
   - echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 
-  # 4. Enable and start Towonel Edge
+  # 4. Enable and start Towonel Edge & CrowdSec Container
   - systemctl daemon-reload
   - systemctl enable towonel-edge --now
+  - mkdir -p /etc/crowdsec/parsers/s02-enrich /etc/crowdsec/acquis.d
+  - systemctl enable crowdsec --now
 
-  # 5. Install & configure CrowdSec Engine + IPTables Firewall Bouncer
+  # 5. Install IPTables Firewall Bouncer on host & connect to containerized LAPI
   - |
-    curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | bash
+    export DEBIAN_FRONTEND=noninteractive
+    curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | bash || true
+    if [ ! -f /etc/apt/sources.list.d/crowdsec_crowdsec.list ]; then
+      mkdir -p /etc/apt/keyrings
+      curl -fsSL https://packagecloud.io/crowdsec/crowdsec/gpgkey | gpg --dearmor -o /etc/apt/keyrings/crowdsec.gpg
+      echo "deb [signed-by=/etc/apt/keyrings/crowdsec.gpg] https://packagecloud.io/crowdsec/crowdsec/debian/ bookworm main" > /etc/apt/sources.list.d/crowdsec_crowdsec.list
+    fi
     apt-get update
-    apt-get install -y crowdsec crowdsec-firewall-bouncer-iptables
-    cscli collections install crowdsecurity/linux crowdsecurity/base-http
-    systemctl restart crowdsec
+    apt-get install -y crowdsec-firewall-bouncer-iptables
+
+    # Wait for CrowdSec container LAPI to be ready
+    until docker exec crowdsec cscli bouncers list >/dev/null 2>&1; do sleep 2; done
+
+    # Register bouncer with local container LAPI
+    BOUNCER_KEY=$(docker exec crowdsec cscli bouncers add host-iptables -o raw | tail -n 1)
+    sed -i "s/^api_key:.*/api_key: $${BOUNCER_KEY}/" /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+    sed -i "s|^api_url:.*|api_url: http://127.0.0.1:8080/|" /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
     systemctl restart crowdsec-firewall-bouncer
