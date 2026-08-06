@@ -377,7 +377,7 @@ metadata:
   annotations:
     netbird.io/policy: "clusterdns-policy"
 spec:
-  name: "clusterdns"
+  name: "K8s CoreDNS"
   address: "10.96.0.10/32"
   networkID: ${NETBIRD_NETWORK_ID:-default}
   udpPorts:
