@@ -68,44 +68,10 @@ write_files:
         -v /etc/crowdsec:/etc/crowdsec \
         -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
         -v /var/log:/var/log:ro \
-        docker.io/crowdsecurity/crowdsec:v1.6.4
+        docker.io/crowdsecurity/crowdsec:v1.7.8
 
       [Install]
       WantedBy=multi-user.target
-
-  # 5. Write CrowdSec IP Whitelist Parser
-  - path: /etc/crowdsec/parsers/s02-enrich/00-whitelist.yaml
-    permissions: "0644"
-    content: |
-      name: local/whitelist
-      description: "Whitelist trusted IPs and internal networks"
-      filter: "1 == 1"
-      whitelist:
-        reason: "Whitelisted home IP and internal overlay networks"
-        ip:
-          - "${HOME_IP}"
-          - "127.0.0.1"
-          - "::1"
-        cidr:
-          - "100.64.0.0/10"
-          - "10.0.0.0/8"
-          - "172.16.0.0/12"
-          - "192.168.0.0/16"
-
-  # 6. Write CrowdSec Log Acquisition for Towonel Edge and systemd
-  - path: /etc/crowdsec/acquis.d/towonel.yaml
-    permissions: "0644"
-    content: |
-      filenames:
-        - /var/lib/docker/containers/*/*-json.log
-      labels:
-        type: docker
-      ---
-      source: journalctl
-      journalctl_filter:
-        - _SYSTEMD_UNIT=sshd.service
-      labels:
-        type: syslog
 
 runcmd:
   # 1. Install Docker & systemd-resolved
@@ -131,10 +97,47 @@ runcmd:
   # 4. Enable and start Towonel Edge & CrowdSec Container
   - systemctl daemon-reload
   - systemctl enable towonel-edge --now
-  - mkdir -p /etc/crowdsec/parsers/s02-enrich /etc/crowdsec/acquis.d
   - systemctl enable crowdsec --now
 
-  # 5. Install IPTables Firewall Bouncer on host & connect to containerized LAPI
+  # 5. Wait for CrowdSec container to populate base /etc/crowdsec/config.yaml and write custom whitelist/acquisition
+  - |
+    until docker exec crowdsec cscli config show >/dev/null 2>&1; do sleep 2; done
+
+    mkdir -p /etc/crowdsec/parsers/s02-enrich /etc/crowdsec/acquis.d
+
+    cat <<EOF > /etc/crowdsec/parsers/s02-enrich/00-whitelist.yaml
+    name: local/whitelist
+    description: "Whitelist trusted IPs and internal networks"
+    filter: "1 == 1"
+    whitelist:
+      reason: "Whitelisted home IP and internal overlay networks"
+      ip:
+        - "${HOME_IP}"
+        - "127.0.0.1"
+        - "::1"
+      cidr:
+        - "100.64.0.0/10"
+        - "10.0.0.0/8"
+        - "172.16.0.0/12"
+        - "192.168.0.0/16"
+    EOF
+
+    cat <<EOF > /etc/crowdsec/acquis.d/towonel.yaml
+    filenames:
+      - /var/lib/docker/containers/*/*-json.log
+    labels:
+      type: docker
+    ---
+    source: journalctl
+    journalctl_filter:
+      - _SYSTEMD_UNIT=sshd.service
+    labels:
+      type: syslog
+    EOF
+
+    docker exec crowdsec cscli reload || true
+
+  # 6. Install IPTables Firewall Bouncer on host & connect to containerized LAPI
   - |
     export DEBIAN_FRONTEND=noninteractive
     curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | bash || true
