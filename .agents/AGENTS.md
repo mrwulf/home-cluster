@@ -13,6 +13,7 @@
 9. **Least Privilege**: Workloads must strictly receive minimal RBAC and secret access required.
 10. **Fulfill Implementation Plans**: Verify all design components (auth, secrets, networking, observability) before completion.
 11. **Pin Container Tags**: Never use unpinned `latest` tags without immutable SHA256 digests.
+12. **End-to-End GitOps Runtime Verification**: In GitOps-managed components (Flux, OpenTofu Controller), never declare a task complete based on local file edits, git commit/push, or CR `Ready` status alone. You MUST wait for Flux/OpenTofu reconciliation to complete and perform live empirical runtime verification (e.g. SSH into host, `kubectl exec`, or inspecting active container/service status) on the target workload.
 
 ## Mandatory Tool Usage & Operation Rules
 
@@ -96,3 +97,6 @@ spec:
 - **Edge Tunnel SNI Route Parity**: Custom probe hostnames (e.g. `vps-direct.${SECRET_DOMAIN}`) used for edge health checks must be authorized in both the edge tunnel agent (`TowonelAgent` CR) and have an active `HTTPRoute`/`Ingress` on `traefik-external` so the full TLS SNI pipeline resolves to a valid HTTP status code (`< 500`).
 - **Metrics Scrape Firewalling & Relabeling**: Never expose metrics scrape ports to `0.0.0.0/0`. Restrict firewall rules (`main.tf`) to internal CIDRs (`local.home_ip_cidr`) or private overlay meshes (NetBird). Always attach consistent `relabelConfigs` (e.g., `targetLabel: cluster`) in `VMStaticScrape` manifests.
 - **Event-Sourced Log Replay**: Do not misinterpret startup event-replay `WARN` logs (e.g. Towonel Hub's `skipping unauthorized hostname claim`) as active outages. Always verify active CR statuses and live edge HTTP probes first.
+- **CrowdSec Docker Mount Initialization**: The official CrowdSec container entrypoint populates base `/etc/crowdsec/config.yaml` on first boot ONLY if `/etc/crowdsec` is empty. Pre-creating custom parser or acquisition subdirectories on the host before container start skips `config.yaml` creation and causes CrowdSec to crash on startup. Always let the container start on a clean `/etc/crowdsec` mount first, wait for `cscli config show` readiness, then dynamically inject custom parsers/whitelists and call `cscli reload`.
+- **CrowdSec Volume & Collection Invariants**: CrowdSec v1.7+ Docker containers require `-v /var/lib/crowdsec/data:/var/lib/crowdsec/data` for SQLite/hub persistence; omitting this volume causes immediate container exit. Additionally, use valid hub collection names (`crowdsecurity/http-cve`, `crowdsecurity/linux`, `crowdsecurity/sshd`) as invalid collection names (e.g. `base-http`) fail container entrypoint execution.
+- **Debian Testing (Trixie) PackageCloud Repos**: Upstream PackageCloud third-party repositories (e.g. CrowdSec bouncers) often lack release files for Debian testing (`trixie`). Explicitly configure `/etc/apt/sources.list.d/crowdsec_crowdsec.list` to pin the stable `debian bookworm` release line.
