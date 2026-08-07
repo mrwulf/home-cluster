@@ -142,12 +142,9 @@ runcmd:
   # 6. Install IPTables Firewall Bouncer on host & connect to containerized LAPI
   - |
     export DEBIAN_FRONTEND=noninteractive
-    curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | bash || true
-    if [ ! -f /etc/apt/sources.list.d/crowdsec_crowdsec.list ]; then
-      mkdir -p /etc/apt/keyrings
-      curl -fsSL https://packagecloud.io/crowdsec/crowdsec/gpgkey | gpg --dearmor -o /etc/apt/keyrings/crowdsec.gpg
-      echo "deb [signed-by=/etc/apt/keyrings/crowdsec.gpg] https://packagecloud.io/crowdsec/crowdsec/debian/ bookworm main" > /etc/apt/sources.list.d/crowdsec_crowdsec.list
-    fi
+    mkdir -p /etc/apt/keyrings /etc/apt/sources.list.d
+    curl -fsSL https://packagecloud.io/crowdsec/crowdsec/gpgkey | gpg --dearmor --yes -o /etc/apt/keyrings/crowdsec.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/crowdsec.gpg] https://packagecloud.io/crowdsec/crowdsec/debian/ bookworm main" > /etc/apt/sources.list.d/crowdsec_crowdsec.list
     apt-get update
     apt-get install -y crowdsec-firewall-bouncer-iptables
 
