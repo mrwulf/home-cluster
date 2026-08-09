@@ -47,7 +47,7 @@ tasks:
       TEMP_DIR:
         sh: mktemp -d
       ETCDCTL_IMAGE:
-        "gcr.io/etcd-development/etcd:v3.5.33"
+        "gcr.io/etcd-development/etcd:v3.7.1"
         # sh: talosctl images | grep etcd
     preconditions:
       - sh: '[[ "{{.MASTER_LIST}}" == *"{{.NODE}}"* ]]'
