@@ -19,8 +19,6 @@ spec:
             image:
               repository: ghcr.io/dmunozv04/isponsorblocktv
               tag: v2.10.0
-            env:
-              TZ: "${TZ}"
             resources:
               requests:
                 cpu: 10m

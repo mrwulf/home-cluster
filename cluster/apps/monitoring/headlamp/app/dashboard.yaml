@@ -34,12 +34,12 @@ spec:
         {
           "title": "HTTP request rate",
           "type": "timeseries",
-          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+              "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
               "expr": "sum(rate(http_server_request_count_total[5m]))",
               "legendFormat": "requests/s",
               "refId": "A"
@@ -49,11 +49,11 @@ spec:
         {
           "title": "Active requests",
           "type": "stat",
-          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+              "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
               "expr": "sum(http_server_active_requests)",
               "refId": "A"
             }
@@ -62,11 +62,11 @@ spec:
         {
           "title": "Plugin loads (total)",
           "type": "stat",
-          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+              "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
               "expr": "sum(headlamp_plugin_load_count_total)",
               "refId": "A"
             }
@@ -75,12 +75,12 @@ spec:
         {
           "title": "Cluster proxy request rate",
           "type": "timeseries",
-          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+              "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
               "expr": "sum(rate(headlamp_cluster_proxy_requests_total[5m]))",
               "legendFormat": "proxy req/s",
               "refId": "A"
@@ -90,12 +90,12 @@ spec:
         {
           "title": "Error rate",
           "type": "timeseries",
-          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
           "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+              "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
               "expr": "sum(rate(headlamp_errors_total[5m]))",
               "legendFormat": "errors/s",
               "refId": "A"

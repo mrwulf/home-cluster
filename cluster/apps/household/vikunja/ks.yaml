@@ -25,6 +25,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_SUBDOMAIN: lists
       VOLSYNC_CLAIM: vikunja-files-pvc
       VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_NFS_START_MINUTE: "48"

@@ -35,12 +35,12 @@ spec:
         {
           "title": "MariaDB Active Connections",
           "type": "timeseries",
-          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
           "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+              "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
               "expr": "mysql_global_status_threads_connected{namespace=\"mlm\"}",
               "legendFormat": "connected threads",
               "refId": "A"
@@ -50,12 +50,12 @@ spec:
         {
           "title": "MariaDB Queries Rate",
           "type": "timeseries",
-          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+          "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
           "fieldConfig": { "defaults": { "unit": "ops" }, "overrides": [] },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+              "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
               "expr": "rate(mysql_global_status_queries{namespace=\"mlm\"}[5m])",
               "legendFormat": "queries/s",
               "refId": "A"
