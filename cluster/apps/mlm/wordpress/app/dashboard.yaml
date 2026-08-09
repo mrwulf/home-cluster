@@ -35,12 +35,12 @@ spec:
         {
           "title": "Apache Requests Rate",
           "type": "timeseries",
-          "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
           "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-DS_PROMETHEUS}" },
               "expr": "rate(apache_accesses_total{namespace=\"mlm\"}[5m])",
               "legendFormat": "requests/s",
               "refId": "A"
@@ -50,12 +50,12 @@ spec:
         {
           "title": "Apache Worker Status",
           "type": "timeseries",
-          "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
+          "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-DS_PROMETHEUS}" },
           "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
           "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "\${DS_PROMETHEUS}" },
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-DS_PROMETHEUS}" },
               "expr": "apache_workers{namespace=\"mlm\"}",
               "legendFormat": "{{state}} workers",
               "refId": "A"
