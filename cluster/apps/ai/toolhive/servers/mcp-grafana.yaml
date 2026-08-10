@@ -7,7 +7,7 @@ spec:
   groupRef:
     name: toolhive-servers
   # renovate: depName=docker.io/grafana/mcp-grafana datasource=docker
-  image: docker.io/grafana/mcp-grafana:1.0.0@sha256:5efeafd01cd7e1aea9c4b0f03305951f2944db8f43e5ae290cce9578c977f241
+  image: docker.io/grafana/mcp-grafana:1.1.0@sha256:f21a19cebbfa7c3a76ef1746171e5ffc3601064e432f593e7c6cb526e5216e5f
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
