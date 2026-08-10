@@ -35,7 +35,7 @@ spec:
       ingester:
         chunk_encoding: snappy
       limits_config:
-        retention_period: 14d
+        retention_period: 7d
         reject_old_samples: true
         reject_old_samples_max_age: 48h
         ingestion_rate_mb: 8

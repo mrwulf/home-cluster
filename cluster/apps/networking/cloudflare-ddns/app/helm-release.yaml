@@ -46,6 +46,13 @@ spec:
             command:
               - "/app/cloudflare-ddns.sh"
 
+            resources:
+              requests:
+                cpu: 10m
+                memory: 50Mi
+              limits:
+                memory: 100Mi
+
             envFrom:
               - secretRef:
                   name: *app
