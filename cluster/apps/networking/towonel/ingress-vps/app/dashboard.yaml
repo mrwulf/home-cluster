@@ -15,6 +15,16 @@ spec:
       datasourceName: Prometheus
   json: |
     {
+      "__inputs": [
+        {
+          "name": "DS_PROMETHEUS",
+          "label": "Prometheus",
+          "description": "",
+          "type": "datasource",
+          "pluginId": "prometheus",
+          "pluginName": "Prometheus"
+        }
+      ],
       "annotations": {
         "list": []
       },
@@ -41,7 +51,7 @@ spec:
           },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
               "editorMode": "code",
               "expr": "sum(rate(towonel_agent_bytes_total[5m])) by (direction) * 8 / 1000000",
               "legendFormat": "{{direction}}",
@@ -62,7 +72,7 @@ spec:
           },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
               "editorMode": "code",
               "expr": "sum(increase(towonel_agent_bytes_total[24h])) by (direction)",
               "legendFormat": "{{direction}}",
@@ -86,7 +96,7 @@ spec:
           },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
               "editorMode": "code",
               "expr": "sum(rate(traefik_service_requests_total{namespace=\"networking\"}[5m])) by (service)",
               "legendFormat": "{{service}}",
@@ -107,7 +117,7 @@ spec:
           },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
               "editorMode": "code",
               "expr": "towonel_agent_edge_session_state",
               "legendFormat": "Session State",
