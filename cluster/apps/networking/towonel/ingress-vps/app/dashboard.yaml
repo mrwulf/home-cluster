@@ -1,0 +1,129 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: towonel-traffic-analytics
+  namespace: networking
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: networking
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+  json: |
+    {
+      "annotations": {
+        "list": []
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 1,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "id": 1,
+          "title": "Traffic Throughput by Service (Mbps)",
+          "type": "timeseries",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth",
+                "fillOpacity": 10
+              },
+              "unit": "Mbits"
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
+              "editorMode": "code",
+              "expr": "sum(rate(towonel_agent_bytes_total[5m])) by (service) * 8 / 1000000",
+              "legendFormat": "{{service}}",
+              "range": true
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "id": 2,
+          "title": "Total Data Transferred by Service",
+          "type": "barchart",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "unit": "decbytes"
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
+              "editorMode": "code",
+              "expr": "sum(increase(towonel_agent_bytes_total[24h])) by (service)",
+              "legendFormat": "{{service}}",
+              "range": true
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+          "id": 3,
+          "title": "Traffic Throughput by Endpoint",
+          "type": "timeseries",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth"
+              },
+              "unit": "Mbits"
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
+              "editorMode": "code",
+              "expr": "sum(rate(towonel_agent_bytes_total[5m])) by (endpoint) * 8 / 1000000",
+              "legendFormat": "{{endpoint}}",
+              "range": true
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+          "id": 4,
+          "title": "Edge Region Connections (NA vs EU)",
+          "type": "timeseries",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "line"
+              },
+              "unit": "short"
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
+              "editorMode": "code",
+              "expr": "sum(towonel_edge_active_connections) by (region)",
+              "legendFormat": "Region {{region}}",
+              "range": true
+            }
+          ]
+        }
+      ],
+      "refresh": "30s",
+      "schemaVersion": 38,
+      "style": "dark",
+      "tags": ["towonel", "networking", "traffic"],
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "title": "Towonel - Traffic Throughput & Cost Demand Analytics"
+    }

@@ -20,8 +20,8 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  # renovate: depName=17457
-  url: https://grafana.com/api/dashboards/17457/revisions/6/download
+  # renovate: depName=18428
+  url: https://grafana.com/api/dashboards/18428/revisions/2/download
   datasources:
     - inputName: DS_PROMETHEUS
       datasourceName: Prometheus

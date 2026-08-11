@@ -7,3 +7,4 @@ resources:
   - rbac.yaml
   - vm-static-scrape.yaml
   - vps-direct-route.yaml
+  - dashboard.yaml
