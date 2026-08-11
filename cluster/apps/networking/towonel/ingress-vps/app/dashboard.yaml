@@ -27,7 +27,7 @@ spec:
         {
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
           "id": 1,
-          "title": "Traffic Throughput by Service (Mbps)",
+          "title": "Towonel Network Throughput (Mbps)",
           "type": "timeseries",
           "fieldConfig": {
             "defaults": {
@@ -43,8 +43,8 @@ spec:
             {
               "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
               "editorMode": "code",
-              "expr": "sum(rate(towonel_agent_bytes_total[5m])) by (service) * 8 / 1000000",
-              "legendFormat": "{{service}}",
+              "expr": "sum(rate(towonel_agent_bytes_total[5m])) by (direction) * 8 / 1000000",
+              "legendFormat": "{{direction}}",
               "range": true
             }
           ]
@@ -52,7 +52,7 @@ spec:
         {
           "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
           "id": 2,
-          "title": "Total Data Transferred by Service",
+          "title": "Total Data Transferred (24h)",
           "type": "barchart",
           "fieldConfig": {
             "defaults": {
@@ -64,8 +64,8 @@ spec:
             {
               "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
               "editorMode": "code",
-              "expr": "sum(increase(towonel_agent_bytes_total[24h])) by (service)",
-              "legendFormat": "{{service}}",
+              "expr": "sum(increase(towonel_agent_bytes_total[24h])) by (direction)",
+              "legendFormat": "{{direction}}",
               "range": true
             }
           ]
@@ -73,7 +73,7 @@ spec:
         {
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
           "id": 3,
-          "title": "Traffic Throughput by Endpoint",
+          "title": "Traefik Ingress Request Rates per Service",
           "type": "timeseries",
           "fieldConfig": {
             "defaults": {
@@ -81,15 +81,15 @@ spec:
                 "drawStyle": "line",
                 "lineInterpolation": "smooth"
               },
-              "unit": "Mbits"
+              "unit": "reqps"
             }
           },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
               "editorMode": "code",
-              "expr": "sum(rate(towonel_agent_bytes_total[5m])) by (endpoint) * 8 / 1000000",
-              "legendFormat": "{{endpoint}}",
+              "expr": "sum(rate(traefik_service_requests_total{namespace=\"networking\"}[5m])) by (service)",
+              "legendFormat": "{{service}}",
               "range": true
             }
           ]
@@ -97,13 +97,11 @@ spec:
         {
           "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
           "id": 4,
-          "title": "Edge Region Connections (NA vs EU)",
-          "type": "timeseries",
+          "title": "Towonel Edge Session Status",
+          "type": "stat",
           "fieldConfig": {
             "defaults": {
-              "custom": {
-                "drawStyle": "line"
-              },
+              "custom": {},
               "unit": "short"
             }
           },
@@ -111,8 +109,8 @@ spec:
             {
               "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
               "editorMode": "code",
-              "expr": "sum(towonel_edge_active_connections) by (region)",
-              "legendFormat": "Region {{region}}",
+              "expr": "towonel_agent_edge_session_state",
+              "legendFormat": "Session State",
               "range": true
             }
           ]

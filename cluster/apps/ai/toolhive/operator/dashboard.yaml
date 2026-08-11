@@ -11,6 +11,9 @@ spec:
     matchLabels:
       dashboards: grafana
   folder: ai
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
   json: |
     {
       "annotations": { "list": [] },
@@ -27,8 +30,8 @@ spec:
           "type": "stat",
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "up{job=~\".*toolhive-operator.*\"}",
+              "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
+              "expr": "up{namespace=\"ai\"}",
               "refId": "A"
             }
           ]
@@ -40,8 +43,8 @@ spec:
           "type": "stat",
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "count(kube_pod_info{pod=~\"mcp-.*\"})",
+              "datasource": { "type": "prometheus", "uid": "$DS_PROMETHEUS" },
+              "expr": "count(kube_pod_info{namespace=\"ai\"})",
               "refId": "A"
             }
           ]
