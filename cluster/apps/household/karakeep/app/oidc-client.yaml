@@ -5,6 +5,7 @@ metadata:
   name: karakeep
 spec:
   name: Karakeep
+  pkceEnabled: true
   launchUrl: https://karakeep.home.${SECRET_DOMAIN}/
   callbackUrls:
     - https://karakeep.home.${SECRET_DOMAIN}/api/auth/callback/custom

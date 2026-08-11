@@ -23,4 +23,4 @@ spec:
   matchers:
     - name: alertname
       matchType: "=~"
-      value: "CephNodeNetworkPacketDrops"
+      value: "CephNodeNetworkPacketDrops|CephNodeNetworkPacketErrors"

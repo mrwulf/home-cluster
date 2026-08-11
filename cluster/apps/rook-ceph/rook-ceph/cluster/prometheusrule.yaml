@@ -1,0 +1,47 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ceph-network-custom-rules
+  namespace: rook-ceph
+spec:
+  groups:
+    - name: custom.nodes
+      rules:
+        - alert: CephNodeNetworkAPacketErrors
+          annotations:
+            description: Node {{ $labels.instance }} experiences packet errors > 1.0% or > 10 packets/s on interface {{ $labels.device }}.
+            summary: One or more NICs reports packet errors on cluster {{ $labels.cluster }}
+          expr: |
+            (
+              rate(node_network_receive_errs_total{device!="lo"}[1m]) +
+              rate(node_network_transmit_errs_total{device!="lo"}[1m])
+            ) / (
+              rate(node_network_receive_packets_total{device!="lo"}[1m]) +
+              rate(node_network_transmit_packets_total{device!="lo"}[1m])
+            ) >= 0.01 or (
+              rate(node_network_receive_errs_total{device!="lo"}[1m]) +
+              rate(node_network_transmit_errs_total{device!="lo"}[1m])
+            ) >= 10
+          labels:
+            severity: warning
+            type: ceph_default
+        - alert: CephNodeNetworkAPacketDrops
+          annotations:
+            description: Node {{ $labels.instance }} experiences packet drops > 1.0% or > 10 packets/s on interface {{ $labels.device }}.
+            summary: One or more NICs reports packet drops on cluster {{ $labels.cluster }}
+          expr: |
+            (
+              rate(node_network_receive_drop_total{device!="lo"}[1m]) +
+              rate(node_network_transmit_drop_total{device!="lo"}[1m])
+            ) / (
+              rate(node_network_receive_packets_total{device!="lo"}[1m]) +
+              rate(node_network_transmit_packets_total{device!="lo"}[1m])
+            ) >= 0.01 and (
+              rate(node_network_receive_drop_total{device!="lo"}[1m]) +
+              rate(node_network_transmit_drop_total{device!="lo"}[1m])
+            ) >= 10
+          labels:
+            severity: warning
+            type: ceph_default

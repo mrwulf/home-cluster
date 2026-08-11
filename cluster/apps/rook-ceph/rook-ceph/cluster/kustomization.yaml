@@ -5,4 +5,5 @@ resources:
   - ./helm-release.yaml
   - ./route.yaml
   - ./grafana-config-job.yaml
+  - ./prometheusrule.yaml
   # - ./primary-affinity-cronjob.yaml

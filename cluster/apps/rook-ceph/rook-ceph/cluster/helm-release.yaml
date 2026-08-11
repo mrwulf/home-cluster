@@ -77,7 +77,9 @@ spec:
         mgr:
           requests:
             cpu: "100m"
-            memory: "100Mi"
+            memory: "512Mi"
+          limits:
+            memory: "2Gi"
         mon:
           requests:
             cpu: "100m"
