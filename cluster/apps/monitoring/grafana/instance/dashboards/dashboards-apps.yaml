@@ -194,3 +194,33 @@ spec:
   datasources:
     - inputName: DS_PROMETHEUS
       datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: mariadb-central
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: mlm
+  # renovate: depName=13106
+  url: https://grafana.com/api/dashboards/13106/revisions/1/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: wordpress-central
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: mlm
+  # renovate: depName=14856
+  url: https://grafana.com/api/dashboards/14856/revisions/1/download
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus

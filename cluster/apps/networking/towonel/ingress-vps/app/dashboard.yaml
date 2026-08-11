@@ -5,6 +5,7 @@ metadata:
   name: towonel-traffic-analytics
   namespace: networking
 spec:
+  allowCrossNamespaceImport: true
   instanceSelector:
     matchLabels:
       dashboards: grafana
