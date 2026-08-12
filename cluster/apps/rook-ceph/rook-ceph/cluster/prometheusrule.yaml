@@ -11,7 +11,7 @@ spec:
       rules:
         - alert: CephNodeNetworkAPacketErrors
           annotations:
-            description: Node {{ $labels.instance }} experiences packet errors > 1.0% or > 10 packets/s on interface {{ $labels.device }}.
+            description: Node {{ $labels.instance }} experiences packet errors > 1.0% or > 100 packets/s on interface {{ $labels.device }}.
             summary: One or more NICs reports packet errors on cluster {{ $labels.cluster }}
           expr: |
             (
@@ -23,13 +23,13 @@ spec:
             ) >= 0.01 or (
               rate(node_network_receive_errs_total{device!="lo"}[1m]) +
               rate(node_network_transmit_errs_total{device!="lo"}[1m])
-            ) >= 10
+            ) >= 100
           labels:
             severity: warning
             type: ceph_default
         - alert: CephNodeNetworkAPacketDrops
           annotations:
-            description: Node {{ $labels.instance }} experiences packet drops > 1.0% or > 10 packets/s on interface {{ $labels.device }}.
+            description: Node {{ $labels.instance }} experiences packet drops > 1.0% or > 100 packets/s on interface {{ $labels.device }}.
             summary: One or more NICs reports packet drops on cluster {{ $labels.cluster }}
           expr: |
             (
@@ -41,7 +41,7 @@ spec:
             ) >= 0.01 and (
               rate(node_network_receive_drop_total{device!="lo"}[1m]) +
               rate(node_network_transmit_drop_total{device!="lo"}[1m])
-            ) >= 10
+            ) >= 100
           labels:
             severity: warning
             type: ceph_default
