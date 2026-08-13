@@ -9,6 +9,6 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    # renovate: depName=code.forgejo.org/forgejo-helm/forgejo datasource=docker
+    # renovate: depName=codeberg.org/forgejo-contrib/forgejo datasource=docker
     tag: 17.1.4
-  url: oci://code.forgejo.org/forgejo-helm/forgejo
+  url: oci://codeberg.org/forgejo-contrib/forgejo
