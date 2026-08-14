@@ -2,6 +2,37 @@ variable "hcloud_token" {
   type      = string
   sensitive = true
 }
+variable "ovh_endpoint" {
+  type      = string
+  sensitive = true
+  default   = "ovh-us"
+}
+variable "ovh_application_key" {
+  type      = string
+  sensitive = true
+}
+variable "ovh_application_secret" {
+  type      = string
+  sensitive = true
+}
+variable "ovh_consumer_key" {
+  type      = string
+  sensitive = true
+}
+variable "ovh_service_name" {
+  type      = string
+  sensitive = true
+}
+variable "ovh_region" {
+  type        = string
+  default     = "HIL1"
+  description = "OVH Public Cloud region (e.g. BHS5 - Beauharnois, VIN1 - Vint Hill, HIL1 - Hillsboro)"
+}
+variable "ovh_flavor_name" {
+  type        = string
+  default     = "d2-2"
+  description = "OVH Public Cloud instance flavor name (e.g. d2-2, b2-7, s1-2)"
+}
 variable "CLOUDFLARE_APIKEY" {
   type      = string
   sensitive = true
@@ -44,6 +75,10 @@ variable "towonel_hub_link_psk" {
 
 terraform {
   required_providers {
+    ovh = {
+      source  = "ovh/ovh"
+      version = "2.19.0"
+    }
     hcloud = {
       source  = "hetznercloud/hcloud"
       version = "~> 1.45"
@@ -61,6 +96,13 @@ terraform {
       version = "~> 3.0"
     }
   }
+}
+
+provider "ovh" {
+  endpoint           = var.ovh_endpoint
+  application_key    = var.ovh_application_key
+  application_secret = var.ovh_application_secret
+  consumer_key       = var.ovh_consumer_key
 }
 
 provider "hcloud" {
@@ -86,12 +128,68 @@ data "cloudflare_zones" "domain_zones" {
   name = var.secret_domain
 }
 
-# 2. Look up all available SSH keys in the Hetzner Cloud project
+# 2. OVH Public Cloud Primary Ingress VPS
+data "ovh_cloud_project_images" "debian" {
+  service_name = var.ovh_service_name
+  region       = var.ovh_region
+  os_type      = "linux"
+}
+
+data "ovh_cloud_project_flavors" "flavor" {
+  service_name = var.ovh_service_name
+  region       = var.ovh_region
+  name_filter  = var.ovh_flavor_name
+}
+
+data "ovh_cloud_project_ssh_keys" "all_keys" {
+  service_name = var.ovh_service_name
+}
+
+resource "ovh_cloud_project_instance" "primary_vps" {
+  service_name   = var.ovh_service_name
+  region         = var.ovh_region
+  name           = "ingress-tunnel-primary-ovh"
+  billing_period = "hourly"
+
+  flavor {
+    flavor_id = tolist(data.ovh_cloud_project_flavors.flavor.flavors)[0].id
+  }
+
+  boot_from {
+    image_id = one([for img in data.ovh_cloud_project_images.debian.images : img.id if can(regex("Debian 12|Debian 13", img.name))])
+  }
+
+  network {
+    public = true
+  }
+
+  ssh_key {
+    name = tolist(data.ovh_cloud_project_ssh_keys.all_keys.ssh_keys)[0].name
+  }
+
+  user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
+    TUNNEL_HANDSHAKE_TOKEN = var.tunnel_handshake_token
+    NETBIRD_SETUP_KEY      = var.netbird_setup_key
+    TOWONEL_HUB_LINK_PSK   = var.towonel_hub_link_psk
+    SECRET_DOMAIN          = var.secret_domain
+    HOME_IP                = local.home_ip
+    PROBE_HOSTNAME         = "vps-primary.${var.secret_domain}"
+    TOWONEL_EDGE_REGION    = "NA"
+  })
+}
+
+locals {
+  ovh_primary_ipv4 = try(
+    [for addr in ovh_cloud_project_instance.primary_vps.addresses : addr.ip if addr.version == 4][0],
+    ""
+  )
+}
+
+# 3. Hetzner Cloud Backup Ingress VPS
 data "hcloud_ssh_keys" "all_keys" {}
 
-# 3. Create the Hetzner Server (IPv4 enabled, IPv6 disabled)
-resource "hcloud_server" "tunnel_vps" {
-  name        = "ingress-tunnel-vps"
+resource "hcloud_server" "backup_vps" {
+  name = "ingress-tunnel-backup-hetzner"
   # renovate: datasource=docker depName=debian
   image       = "debian-13"
   server_type = "cx23"
@@ -109,12 +207,14 @@ resource "hcloud_server" "tunnel_vps" {
     TOWONEL_HUB_LINK_PSK   = var.towonel_hub_link_psk
     SECRET_DOMAIN          = var.secret_domain
     HOME_IP                = local.home_ip
+    PROBE_HOSTNAME         = "vps-backup.${var.secret_domain}"
+    TOWONEL_EDGE_REGION    = "EU"
   })
 }
 
-# 3. Create Declarative Firewall for the Server (Allow 22 & 8080 to home IP, 443 to all)
-resource "hcloud_firewall" "tunnel_firewall" {
-  name = "ingress-tunnel-firewall"
+# 4. Create Declarative Firewall for the Backup Server (Allow 22 & 9090 to home IP, 443 to all)
+resource "hcloud_firewall" "backup_firewall" {
+  name = "ingress-tunnel-backup-firewall"
 
   rule {
     direction   = "in"
@@ -149,17 +249,18 @@ resource "hcloud_firewall" "tunnel_firewall" {
   }
 }
 
-# 4. Attach Firewall to the VPS Server
-resource "hcloud_firewall_attachment" "firewall_attach" {
-  firewall_id = hcloud_firewall.tunnel_firewall.id
-  server_ids  = [hcloud_server.tunnel_vps.id]
+# Attach Firewall to the Backup Server
+resource "hcloud_firewall_attachment" "backup_firewall_attach" {
+  firewall_id = hcloud_firewall.backup_firewall.id
+  server_ids  = [hcloud_server.backup_vps.id]
 }
 
-# 5. Create the Primary DNS Record (CNAME pointing to direct VPS domain)
+# 5. Create Cloudflare DNS Records
+# Ingress CNAME (initially pointing to direct primary hostname)
 resource "cloudflare_dns_record" "ingress" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
   name    = "ingress.${var.secret_domain}"
-  content = "vps-direct.${var.secret_domain}"
+  content = "vps-primary.${var.secret_domain}"
   type    = "CNAME"
   proxied = false
   ttl     = 1
@@ -168,15 +269,26 @@ resource "cloudflare_dns_record" "ingress" {
     ignore_changes = [
       content,
       type,
+      proxied,
     ]
   }
 }
 
-# 5b. Create the Direct DNS Record (always pointing to VPS IP)
-resource "cloudflare_dns_record" "vps_direct" {
+# Primary VPS direct A record
+resource "cloudflare_dns_record" "vps_primary" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "vps-direct.${var.secret_domain}"
-  content = hcloud_server.tunnel_vps.ipv4_address
+  name    = "vps-primary.${var.secret_domain}"
+  content = local.ovh_primary_ipv4
+  type    = "A"
+  proxied = false
+  ttl     = 1
+}
+
+# Backup VPS direct A record
+resource "cloudflare_dns_record" "vps_backup" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "vps-backup.${var.secret_domain}"
+  content = hcloud_server.backup_vps.ipv4_address
   type    = "A"
   proxied = false
   ttl     = 1
@@ -191,14 +303,14 @@ resource "cloudflare_workers_script" "failover_monitor" {
 
   bindings = [
     {
-      name = "VPS_PUBLIC_IP"
+      name = "VPS_PRIMARY_HOST"
       type = "plain_text"
-      text = hcloud_server.tunnel_vps.ipv4_address
+      text = "vps-primary.${var.secret_domain}"
     },
     {
-      name = "VPS_DIRECT_HOST"
+      name = "VPS_BACKUP_HOST"
       type = "plain_text"
-      text = "vps-direct.${var.secret_domain}"
+      text = "vps-backup.${var.secret_domain}"
     },
     {
       name = "TUNNEL_CNAME"
@@ -254,8 +366,13 @@ resource "cloudflare_workers_cron_trigger" "failover_cron" {
   ]
 }
 
-# 8. Output VPS public IP to expose it to tf-controller
-output "VPS_PUBLIC_IP" {
-  value       = hcloud_server.tunnel_vps.ipv4_address
-  description = "The public IPv4 address of the Ingress Tunnel VPS"
+# 8. Output VPS public IPs to expose to tf-controller
+output "VPS_PRIMARY_PUBLIC_IP" {
+  value       = local.ovh_primary_ipv4
+  description = "The public IPv4 address of the Primary OVHcloud Ingress VPS"
+}
+
+output "VPS_BACKUP_PUBLIC_IP" {
+  value       = hcloud_server.backup_vps.ipv4_address
+  description = "The public IPv4 address of the Backup Hetzner Ingress VPS"
 }

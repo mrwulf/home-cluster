@@ -109,10 +109,59 @@ async function sendEmailViaSMTP(env, from, to, subject, body) {
   }
 }
 
+async function probeHost(host, maxProbes = 3) {
+  let isUp = false
+  let lastError = null
+  let lastStatus = null
+  const attempts = []
+
+  for (let attempt = 1; attempt <= maxProbes; attempt++) {
+    console.log(
+      `Probing direct endpoint https://${host} (attempt ${attempt}/${maxProbes})...`
+    )
+    const startTime = Date.now()
+    try {
+      const res = await fetch(`https://${host}`, {
+        method: "HEAD",
+        headers: {
+          "User-Agent": "Cloudflare-Worker-Failover-Monitor/1.0",
+        },
+        signal: AbortSignal.timeout(5000),
+      })
+      const duration = Date.now() - startTime
+      lastStatus = res.status
+      const attemptLog = `Probe attempt ${attempt} for ${host}: Finished in ${duration}ms with status code ${res.status}`
+      console.log(attemptLog)
+      attempts.push(attemptLog)
+
+      if (res.status < 500) {
+        isUp = true
+        break
+      } else {
+        lastError = `HTTP Status ${res.status}`
+      }
+    } catch (err) {
+      const duration = Date.now() - startTime
+      lastStatus = null
+      lastError =
+        err instanceof Error ? `${err.name}: ${err.message}` : String(err)
+      const attemptLog = `Probe attempt ${attempt} for ${host}: Failed in ${duration}ms. Error: ${lastError}`
+      console.error(attemptLog)
+      attempts.push(attemptLog)
+    }
+
+    if (attempt < maxProbes) {
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+    }
+  }
+
+  return { isUp, lastStatus, lastError, attempts }
+}
+
 export default {
   async scheduled(event, env, ctx) {
-    const VPS_IP = env.VPS_PUBLIC_IP
-    const VPS_DIRECT_HOST = env.VPS_DIRECT_HOST
+    const VPS_PRIMARY_HOST = env.VPS_PRIMARY_HOST
+    const VPS_BACKUP_HOST = env.VPS_BACKUP_HOST
     const TUNNEL_CNAME = env.TUNNEL_CNAME
     const ZONE_ID = env.CLOUDFLARE_ZONE_ID
     const RECORD_ID = env.CLOUDFLARE_RECORD_ID
@@ -123,59 +172,50 @@ export default {
     const fromEmail = `failover-monitor@${SECRET_DOMAIN}`
     const toEmail = `postmaster@${SECRET_DOMAIN}`
 
-    // 1. Probe the VPS directly using vps-direct domain (unproxied A record pointing to VPS IP) over HTTPS
-    const maxProbes = 3
-    let isVpsUp = false
-    let lastProbeError = null
-    let lastProbeStatus = null
-    const probeAttempts = []
+    const allProbeLogs = []
+    let targetContent = null
+    let targetTier = null
+    let isProxied = false
 
-    for (let attempt = 1; attempt <= maxProbes; attempt++) {
+    // 1. Probe Tier 1: Primary VPS (OVHcloud)
+    const primaryProbe = await probeHost(VPS_PRIMARY_HOST)
+    allProbeLogs.push(...primaryProbe.attempts)
+
+    if (primaryProbe.isUp) {
+      targetContent = VPS_PRIMARY_HOST
+      targetTier = "Primary (OVHcloud VPS)"
+      isProxied = false
       console.log(
-        `Probing VPS direct endpoint https://${VPS_DIRECT_HOST} (attempt ${attempt}/${maxProbes})...`
+        `Primary VPS (${VPS_PRIMARY_HOST}) is healthy. Routing to Primary.`
       )
-      const startTime = Date.now()
-      try {
-        const res = await fetch(`https://${VPS_DIRECT_HOST}`, {
-          method: "HEAD",
-          headers: {
-            "User-Agent": "Cloudflare-Worker-Failover-Monitor/1.0",
-          },
-          signal: AbortSignal.timeout(5000),
-        })
-        const duration = Date.now() - startTime
-        lastProbeStatus = res.status
-        const attemptLog = `Probe attempt ${attempt}: Finished in ${duration}ms with status code ${res.status}`
-        console.log(attemptLog)
-        probeAttempts.push(attemptLog)
+    } else {
+      console.warn(
+        `Primary VPS (${VPS_PRIMARY_HOST}) is UNHEALTHY. Probing Backup VPS (${VPS_BACKUP_HOST})...`
+      )
 
-        if (res.status < 500) {
-          isVpsUp = true
-          break
-        } else {
-          lastProbeError = `HTTP Status ${res.status}`
-        }
-      } catch (err) {
-        const duration = Date.now() - startTime
-        lastProbeStatus = null
-        lastProbeError =
-          err instanceof Error ? `${err.name}: ${err.message}` : String(err)
-        const attemptLog = `Probe attempt ${attempt}: Failed in ${duration}ms. Error: ${lastProbeError}`
-        console.error(attemptLog)
-        probeAttempts.push(attemptLog)
-      }
+      // 2. Probe Tier 2: Backup VPS (Hetzner)
+      const backupProbe = await probeHost(VPS_BACKUP_HOST)
+      allProbeLogs.push(...backupProbe.attempts)
 
-      if (attempt < maxProbes) {
-        // Wait 1.5 seconds before retrying
-        await new Promise((resolve) => setTimeout(resolve, 1500))
+      if (backupProbe.isUp) {
+        targetContent = VPS_BACKUP_HOST
+        targetTier = "Backup (Hetzner VPS)"
+        isProxied = false
+        console.log(
+          `Backup VPS (${VPS_BACKUP_HOST}) is healthy. Routing to Backup.`
+        )
+      } else {
+        // 3. Tier 3 Fallback: Cloudflare Tunnel
+        targetContent = TUNNEL_CNAME
+        targetTier = "Fallback (Cloudflare Tunnel)"
+        isProxied = true
+        console.error(
+          `Both Primary and Backup VPS are UNHEALTHY! Falling back to Cloudflare Tunnel (${TUNNEL_CNAME}).`
+        )
       }
     }
 
-    console.log(
-      `VPS probe summary: isVpsUp=${isVpsUp} (Last status: ${lastProbeStatus}, Last error: ${lastProbeError || "none"})`
-    )
-
-    // 2. Query the current DNS record value with error handling
+    // 4. Query current DNS record
     let currentContent
     const dnsUrl = `https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}`
     try {
@@ -200,17 +240,13 @@ export default {
       console.log(`Current DNS record content: ${currentContent}`)
     } catch (err) {
       console.error(`Error querying DNS record:`, err)
-      // Stop execution gracefully to prevent false updates/email spam when Cloudflare is down
       return
     }
 
-    // 3. Determine target state
-    const targetContent = isVpsUp ? VPS_DIRECT_HOST : TUNNEL_CNAME
-
-    // 4. Update if there is a mismatch
+    // 5. Update if there is a mismatch
     if (currentContent !== targetContent) {
       console.log(
-        `Mismatch detected! Current: ${currentContent}, Target: ${targetContent}. Updating DNS record...`
+        `Mismatch detected! Current: ${currentContent}, Target: ${targetContent} (${targetTier}). Updating DNS record...`
       )
       try {
         const updateRes = await fetch(dnsUrl, {
@@ -222,7 +258,7 @@ export default {
           body: JSON.stringify({
             type: "CNAME",
             content: targetContent,
-            proxied: !isVpsUp, // Proxied = true if using CNAME failover (tunnel), proxied = false if using direct VPS path
+            proxied: isProxied,
           }),
           signal: AbortSignal.timeout(5000),
         })
@@ -239,7 +275,7 @@ export default {
             )
           } else {
             console.log(
-              `DNS record successfully updated to point to ${targetContent} (proxied: ${!isVpsUp})`
+              `DNS record successfully updated to point to ${targetContent} (proxied: ${isProxied}, Tier: ${targetTier})`
             )
 
             // Format Subject line with date and hour
@@ -250,19 +286,20 @@ export default {
             const hh = String(now.getUTCHours()).padStart(2, "0")
             const dateStr = `${yyyy}-${mm}-${dd} ${hh}:00 UTC`
 
-            const subject = `[Failover] Ingress DNS Changed for ${SECRET_DOMAIN} - ${dateStr}`
+            const subject = `[Failover] Ingress DNS Switched to ${targetTier} - ${dateStr}`
             const body = [
-              `Failover monitor detected that the ingress DNS record ${RECORD_NAME} was pointing to ${currentContent}, but should be ${targetContent}.`,
+              `Failover monitor detected that the ingress DNS record ${RECORD_NAME} was pointing to ${currentContent}, but has been updated to ${targetContent} (${targetTier}).`,
               ``,
-              `Action: DNS record updated to a CNAME record pointing to ${targetContent} (proxied: ${!isVpsUp}).`,
+              `Action: DNS record updated to a CNAME pointing to ${targetContent} (proxied: ${isProxied}).`,
               ``,
               `=== Diagnostics ===`,
-              `Target Content: ${targetContent}`,
-              `Previous Content: ${currentContent}`,
+              `Active Tier: ${targetTier}`,
+              `Target Host: ${targetContent}`,
+              `Previous Host: ${currentContent}`,
               `Timestamp: ${now.toISOString()}`,
               ``,
               `=== Probe Attempts ===`,
-              ...probeAttempts,
+              ...allProbeLogs,
             ].join("\r\n")
 
             ctx.waitUntil(
@@ -275,7 +312,7 @@ export default {
       }
     } else {
       console.log(
-        `No action required. Current target is correct (${currentContent}). Hetzner IP: ${VPS_IP}`
+        `No action required. Ingress target is already aligned with active healthy node (${currentContent} - ${targetTier}).`
       )
     }
   },
