@@ -176,7 +176,7 @@ resource "ovh_cloud_project_instance" "primary_vps" {
     SECRET_DOMAIN          = var.secret_domain
     HOME_IP                = local.home_ip
     PROBE_HOSTNAME         = "vps-primary.${var.secret_domain}"
-    TOWONEL_EDGE_REGION    = "NA"
+    TOWONEL_EDGE_REGION    = "CA"
   })
 }
 

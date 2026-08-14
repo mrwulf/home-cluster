@@ -13,6 +13,8 @@ write_files:
       Restart=always
       RestartSec=5s
       ExecStartPre=-/usr/bin/docker rm -f towonel-edge
+      ExecStartPre=/bin/sh -c 'mkdir -p /etc/default && echo "TOWONEL_PUBLIC_IP=$$(curl -s4 https://api.ipify.org || hostname -I | awk \"{print \\$$1}\")" > /etc/default/towonel-edge'
+      EnvironmentFile=-/etc/default/towonel-edge
       # renovate: depName=codeberg.org/towonel/towonel-node datasource=docker
       ExecStart=/usr/bin/docker run --name towonel-edge --rm --net=host \
         --log-opt max-size=10m \
@@ -22,7 +24,7 @@ write_files:
         -e TOWONEL_EDGE_LISTEN_ADDR=0.0.0.0:443 \
         -e TOWONEL_EDGE_HUB_LINK_ADDR=towonel-hub.networking.svc.cluster.local:51444 \
         -e TOWONEL_EDGE_HUB_LINK_PSK=${TOWONEL_HUB_LINK_PSK} \
-        -e TOWONEL_EDGE_ADVERTISED_ADDRESSES=${PROBE_HOSTNAME}:443 \
+        -e TOWONEL_EDGE_ADVERTISED_ADDRESSES=$${TOWONEL_PUBLIC_IP}:443 \
         -e TOWONEL_EDGE_IROH_PORT=51810 \
         -e TOWONEL_EDGE_REGION=${TOWONEL_EDGE_REGION} \
         codeberg.org/towonel/towonel-node:latest@sha256:0f2140c494cebd115ee2afa6afe57faae0248b6b08b30a9331fb74374a13f59d serve
@@ -75,12 +77,13 @@ write_files:
       WantedBy=multi-user.target
 
 runcmd:
-  # 1. Install Docker & systemd-resolved
+  # 1. Install Docker & systemd-resolved and link stub resolver
   - |
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
     apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io docker-cli systemd-resolved gnupg apt-transport-https
     systemctl enable systemd-resolved --now
+    ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
     systemctl restart systemd-resolved
     systemctl enable docker --now
 
