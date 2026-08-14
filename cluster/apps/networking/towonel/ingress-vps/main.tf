@@ -25,8 +25,8 @@ variable "ovh_service_name" {
 }
 variable "ovh_region" {
   type        = string
-  default     = "HIL1"
-  description = "OVH Public Cloud region (e.g. BHS5 - Beauharnois, VIN1 - Vint Hill, HIL1 - Hillsboro)"
+  default     = "US-EAST-VA-1"
+  description = "OVH Public Cloud region (e.g. US-WEST-OR-1 - Hillsboro, US-EAST-VA-1 - Vint Hill)"
 }
 variable "ovh_flavor_name" {
   type        = string
@@ -141,8 +141,10 @@ data "ovh_cloud_project_flavors" "flavor" {
   name_filter  = var.ovh_flavor_name
 }
 
-data "ovh_cloud_project_ssh_keys" "all_keys" {
+resource "ovh_cloud_project_ssh_key" "primary_key" {
   service_name = var.ovh_service_name
+  name         = "ingress-tunnel-key"
+  public_key   = data.hcloud_ssh_keys.all_keys.ssh_keys[0].public_key
 }
 
 resource "ovh_cloud_project_instance" "primary_vps" {
@@ -156,7 +158,7 @@ resource "ovh_cloud_project_instance" "primary_vps" {
   }
 
   boot_from {
-    image_id = one([for img in data.ovh_cloud_project_images.debian.images : img.id if can(regex("Debian 12|Debian 13", img.name))])
+    image_id = [for img in data.ovh_cloud_project_images.debian.images : img.id if can(regex("Debian 12|Debian 13", img.name))][0]
   }
 
   network {
@@ -164,7 +166,7 @@ resource "ovh_cloud_project_instance" "primary_vps" {
   }
 
   ssh_key {
-    name = tolist(data.ovh_cloud_project_ssh_keys.all_keys.ssh_keys)[0].name
+    name = ovh_cloud_project_ssh_key.primary_key.name
   }
 
   user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
