@@ -9,7 +9,6 @@ spec:
     - targets:
         - "vps-primary.${SECRET_DOMAIN}:9090"
         - "vps-backup.${SECRET_DOMAIN}:9090"
-        - "vps-direct.${SECRET_DOMAIN}:9090"
       scheme: "http"
       path: "/metrics"
       interval: "30s"

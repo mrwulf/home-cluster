@@ -27,9 +27,6 @@ spec:
     - hostname: "photos.${SECRET_DOMAIN}"
       origin: "traefik-external.networking.svc.cluster.local:443"
       edgeTLSMode: passthrough
-    - hostname: "vps-direct.${SECRET_DOMAIN}"
-      origin: "traefik-external.networking.svc.cluster.local:443"
-      edgeTLSMode: passthrough
     - hostname: "vps-primary.${SECRET_DOMAIN}"
       origin: "traefik-external.networking.svc.cluster.local:443"
       edgeTLSMode: passthrough

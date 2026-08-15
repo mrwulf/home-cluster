@@ -121,9 +121,19 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
-  - name: VPS Tunnel Server Endpoint
+  - name: Primary VPS Endpoint (OVH)
     group: external
-    url: "https://vps-direct.${SECRET_DOMAIN}"
+    url: "https://vps-primary.${SECRET_DOMAIN}"
+    interval: 1m
+    conditions:
+      - "[STATUS] < 500"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: Backup VPS Endpoint (Hetzner)
+    group: external
+    url: "https://vps-backup.${SECRET_DOMAIN}"
     interval: 1m
     conditions:
       - "[STATUS] < 500"

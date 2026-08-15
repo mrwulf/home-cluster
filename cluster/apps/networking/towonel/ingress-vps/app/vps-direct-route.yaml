@@ -11,7 +11,6 @@ spec:
     - name: external-gateway
       namespace: networking
   hostnames:
-    - "vps-direct.${SECRET_DOMAIN}"
     - "vps-primary.${SECRET_DOMAIN}"
     - "vps-backup.${SECRET_DOMAIN}"
   rules:
