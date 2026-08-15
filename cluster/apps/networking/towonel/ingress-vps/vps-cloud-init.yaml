@@ -13,7 +13,7 @@ write_files:
       Restart=always
       RestartSec=5s
       ExecStartPre=-/usr/bin/docker rm -f towonel-edge
-      ExecStartPre=/bin/sh -c 'mkdir -p /etc/default && echo "TOWONEL_PUBLIC_IP=$$(curl -s4 https://api.ipify.org || hostname -I | awk \"{print \\$$1}\")" > /etc/default/towonel-edge'
+      ExecStartPre=/bin/sh -c 'mkdir -p /etc/default && DEFAULT_IFACE=$$(ip route show default | awk "/default/ {print \$$5}") && DEFAULT_IP=$$(ip -4 addr show dev $$DEFAULT_IFACE | awk "/inet / {print \$$2}" | cut -d/ -f1) && echo "TOWONEL_PUBLIC_IP=$${DEFAULT_IP:-$$(curl -s4 https://api.ipify.org)}" > /etc/default/towonel-edge'
       EnvironmentFile=-/etc/default/towonel-edge
       # renovate: depName=codeberg.org/towonel/towonel-node datasource=docker
       ExecStart=/usr/bin/docker run --name towonel-edge --rm --net=host \
@@ -87,10 +87,17 @@ runcmd:
     systemctl restart systemd-resolved
     systemctl enable docker --now
 
-  # 2. Install and connect NetBird client on VPS
+  # 2. Configure source-based policy routing & connect NetBird without exit-node takeover
   - |
+    DEFAULT_IFACE=$(ip route show default | awk '/default/ {print $5}')
+    DEFAULT_GW=$(ip route show default | awk '/default/ {print $3}')
+    DEFAULT_IP=$(ip -4 addr show dev $DEFAULT_IFACE | awk '/inet / {print $2}' | cut -d/ -f1)
+    ip rule add from $DEFAULT_IP lookup 100 || true
+    ip route add default via $DEFAULT_GW dev $DEFAULT_IFACE table 100 || true
+
     curl -fsSL https://pkgs.netbird.io/install.sh | sh
-    netbird up --setup-key "${NETBIRD_SETUP_KEY}" --enable-rosenpass --enable-ssh-root --allow-server-ssh --rosenpass-permissive --wireguard-port 51821
+    netbird service reconfigure --service-env NB_DISABLE_CUSTOM_ROUTING=true || true
+    NB_DISABLE_CUSTOM_ROUTING=true netbird up --setup-key "${NETBIRD_SETUP_KEY}" --enable-rosenpass --enable-ssh-root --allow-server-ssh --rosenpass-permissive --wireguard-port 51821
 
   # 3. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
   - sysctl -w net.core.default_qdisc=fq
