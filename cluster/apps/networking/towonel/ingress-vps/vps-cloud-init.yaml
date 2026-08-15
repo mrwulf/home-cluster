@@ -1,6 +1,20 @@
 #cloud-config
 write_files:
-  # 1. Write Systemd Container Service File for Towonel Edge
+  # 1. Write helper script to resolve public IP cleanly
+  - path: /usr/local/bin/get-public-ip.sh
+    permissions: "0755"
+    content: |
+      #!/bin/sh
+      set -e
+      IFACE=$(ip route show default | awk '/default/ {print $5}')
+      IP=$(ip -4 addr show dev "$IFACE" | awk '/inet / {print $2}' | cut -d/ -f1)
+      if [ -z "$IP" ]; then
+        IP=$(curl -s4 https://api.ipify.org)
+      fi
+      mkdir -p /etc/default
+      echo "TOWONEL_PUBLIC_IP=$IP" > /etc/default/towonel-edge
+
+  # 2. Write Systemd Container Service File for Towonel Edge
   - path: /etc/systemd/system/towonel-edge.service
     permissions: "0644"
     content: |
@@ -13,7 +27,7 @@ write_files:
       Restart=always
       RestartSec=5s
       ExecStartPre=-/usr/bin/docker rm -f towonel-edge
-      ExecStartPre=/bin/sh -c 'mkdir -p /etc/default && DEFAULT_IFACE=$$(ip route show default | awk "/default/ {print \$$5}") && DEFAULT_IP=$$(ip -4 addr show dev $$DEFAULT_IFACE | awk "/inet / {print \$$2}" | cut -d/ -f1) && echo "TOWONEL_PUBLIC_IP=$${DEFAULT_IP:-$$(curl -s4 https://api.ipify.org)}" > /etc/default/towonel-edge'
+      ExecStartPre=/usr/local/bin/get-public-ip.sh
       EnvironmentFile=-/etc/default/towonel-edge
       # renovate: depName=codeberg.org/towonel/towonel-node datasource=docker
       ExecStart=/usr/bin/docker run --name towonel-edge --rm --net=host \
