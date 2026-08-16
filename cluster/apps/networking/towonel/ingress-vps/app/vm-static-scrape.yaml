@@ -1,20 +1,46 @@
+---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
-  name: towonel-metrics
+  name: towonel-edge-na
   namespace: networking
 spec:
-  jobName: towonel
+  jobName: towonel-edge-na
   targetEndpoints:
     - targets:
-        - "vps-primary.${SECRET_DOMAIN}:9090"
-        - "vps-backup.${SECRET_DOMAIN}:9090"
+        - "40.160.68.232:9090"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
       relabelConfigs:
         - targetLabel: cluster
           replacement: towonel-ops
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: towonel-edge-eu
+  namespace: networking
+spec:
+  jobName: towonel-edge-eu
+  targetEndpoints:
+    - targets:
+        - "94.130.99.118:9090"
+      scheme: "http"
+      path: "/metrics"
+      interval: "30s"
+      relabelConfigs:
+        - targetLabel: cluster
+          replacement: towonel-ops
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: towonel-hub
+  namespace: networking
+spec:
+  jobName: towonel-hub
+  targetEndpoints:
     - targets:
         - "towonel-hub.networking.svc.cluster.local:9091"
       scheme: "http"
@@ -23,6 +49,15 @@ spec:
       relabelConfigs:
         - targetLabel: cluster
           replacement: towonel-ops
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: towonel-agent
+  namespace: networking
+spec:
+  jobName: towonel-agent
+  targetEndpoints:
     - targets:
         - "towonel-agent.networking.svc.cluster.local:9090"
       scheme: "http"

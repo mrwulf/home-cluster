@@ -175,13 +175,13 @@ graph TD
 ### 5.1 VictoriaMetrics Scraping
 
 Scraping is configured via `ingress-vps/app/vm-static-scrape.yaml`
-(`VMStaticScrape` CR):
+(`VMStaticScrape` CRs):
 
-- **VPS Edge Nodes**: Scraped at `vps-primary.${SECRET_DOMAIN}:9090` and
-  `vps-backup.${SECRET_DOMAIN}:9090` via `/metrics`.
-- **Towonel Hub**: Scraped at `towonel-hub.networking.svc.cluster.local:9091`.
-- **Towonel Agent**: Scraped at `towonel-agent.networking.svc.cluster.local:9090`.
-- All targets attach `targetLabel: cluster` with value `towonel-ops`.
+- **North America Primary Edge (`towonel-edge-na`)**: Scraped at Primary VPS public IP `:9090` via `/metrics`.
+- **Europe Backup Edge (`towonel-edge-eu`)**: Scraped at Backup VPS public IP `:9090` via `/metrics`.
+- **Towonel Hub (`towonel-hub`)**: Scraped at `towonel-hub.networking.svc.cluster.local:9091`.
+- **Towonel Agent (`towonel-agent`)**: Scraped at `towonel-agent.networking.svc.cluster.local:9090`.
+- All scrape jobs attach `cluster: towonel-ops` to feed the Towonel Console and Grafana analytics.
 
 ### 5.2 Grafana Dashboard
 

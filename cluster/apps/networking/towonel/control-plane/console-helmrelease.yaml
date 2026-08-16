@@ -41,8 +41,16 @@ spec:
               HOST: 0.0.0.0
               PORT: "3000"
               TOWONEL_HUB_URL: http://towonel-hub.networking.svc.cluster.local:8443
+              NUXT_HUB_URL: http://towonel-hub.networking.svc.cluster.local:8443
               TOWONEL_VM_URL: http://vmsingle-stack.monitoring.svc.cluster.local:8428
-              TOWONEL_PUBLIC_REGIONS: US,EU
+              NUXT_VM_URL: http://vmsingle-stack.monitoring.svc.cluster.local:8428
+              NITRO_VM_URL: http://vmsingle-stack.monitoring.svc.cluster.local:8428
+              NUXT_VM_CLUSTER: towonel-ops
+              NITRO_VM_CLUSTER: towonel-ops
+              TOWONEL_GATUS_URL: http://gatus.monitoring.svc.cluster.local:80
+              NUXT_GATUS_URL: http://gatus.monitoring.svc.cluster.local:80
+              TOWONEL_PUBLIC_REGIONS: EU,CA,US
+              NUXT_PUBLIC_REGIONS: EU,CA,US
             probes:
               startup:
                 enabled: true
