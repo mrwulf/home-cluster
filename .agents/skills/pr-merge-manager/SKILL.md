@@ -14,10 +14,11 @@ This skill details the standardized workflow for auditing, remediating, validati
 When asked to review outstanding pull requests, follow this workflow:
 
 1. **Comprehensive Retrieval**:
-   Retrieve all open pull requests using the `local-mcp-gateway` `list_pull_requests` tool.
-   - **Important**: Always set `per_page: 100` (or similar high count) to ensure no older PRs are omitted due to pagination limits.
+   Retrieve all open pull requests using `local-mcp-gateway` via `call_mcp_tool`:
+   - **Tool**: `list_pull_requests`
+   - **Arguments**: `{ "owner": "mrwulf", "repo": "home-cluster", "state": "open", "per_page": 100 }`
 2. **Release Notes Safety Audit & Configuration Alignment**:
-   For each retrieved PR, read the release notes, upstream issue tracker, and diffs to identify:
+   For each retrieved PR, inspect files using `get_pull_request_files` (`{ "owner": "mrwulf", "repo": "home-cluster", "pull_number": <N> }`), read release notes, upstream issue trackers, and diffs to identify:
    - **Breaking Changes**: Any breaking changes in major or minor version bumps (e.g. operators, API deprecations, resource schema changes).
    - **Deprecations & Migrations**: Dependencies requiring custom database migrations, helm values shifts, or feature flag updates.
    - **Configuration Compatibility**: Compare upstream changes/fixes against current repository configurations (e.g., Cilium BPF datapath modes, netkit vs veth, eBPF tproxy, OIDC custom claims).
@@ -49,10 +50,11 @@ Before presenting the plan or executing merges:
 1. **Wait for Approval**:
    - **DO NOT** execute merges or close PRs automatically.
    - Present the audit findings, active remediation changes made, and wait for explicit approval before proceeding.
-2. **Execution**:
-   Once approved by the user, perform the merges:
-   - Use the `local-mcp-gateway` `merge_pull_request` tool (using the `squash` merge method to preserve conventional commit headers without AI trailers).
-   - Close any duplicate or superseded PRs using the `update_issue` tool setting `state: "closed"`.
+2. **Execution via MCP**:
+   Once approved by the user, perform the merges using `local-mcp-gateway` tools:
+   - **Merge Approved PRs**: `merge_pull_request` with `{ "owner": "mrwulf", "repo": "home-cluster", "pull_number": <N>, "merge_method": "squash", "commit_title": "<conventional-header>" }`.
+   - **Close Superseded/Duplicate PRs**: `update_issue` with `{ "owner": "mrwulf", "repo": "home-cluster", "issue_number": <N>, "state": "closed" }`.
+   - If an MCP tool error or SSE stream timeout occurs, advise the user to restart the MCP server connection in the IDE (**... > MCP Servers > Restart**) rather than falling back to CLI scripts.
 3. **Local Workspace Sync**:
    After merges complete, fast-forward your local `main` branch:
    ```bash
