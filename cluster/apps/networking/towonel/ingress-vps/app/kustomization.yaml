@@ -5,6 +5,5 @@ resources:
   - external-secret.yaml
   - gitrepo.yaml
   - rbac.yaml
-  - vm-static-scrape.yaml
   - vps-direct-route.yaml
   - dashboard.yaml
