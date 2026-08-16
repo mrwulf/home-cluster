@@ -222,7 +222,7 @@ resource "hcloud_firewall" "backup_firewall" {
     direction   = "in"
     protocol    = "tcp"
     port        = "22"
-    source_ips  = [local.home_ip_cidr, "172.56.222.163/32"]
+    source_ips  = [local.home_ip_cidr, "172.56.0.0/16", "75.50.127.0/24"]
     description = "Allow SSH from home and workstation"
   }
 
@@ -238,7 +238,7 @@ resource "hcloud_firewall" "backup_firewall" {
     direction   = "in"
     protocol    = "tcp"
     port        = "9090"
-    source_ips  = [local.home_ip_cidr]
+    source_ips  = [local.home_ip_cidr, "172.56.0.0/16", "75.50.127.0/24"]
     description = "Allow Towonel Edge metrics scraping from home only"
   }
 
