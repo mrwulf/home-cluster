@@ -45,6 +45,9 @@ spec:
         name: cluster-settings
       - kind: Secret
         name: cluster-secrets
+      - kind: Secret
+        name: vps-tunnel-output
+        optional: true
   patches:
     - patch: |-
         apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -62,6 +65,9 @@ spec:
                 name: cluster-settings
               - kind: Secret
                 name: cluster-secrets
+              - kind: Secret
+                name: vps-tunnel-output
+                optional: true
       target:
         group: kustomize.toolkit.fluxcd.io
         kind: Kustomization
