@@ -8,7 +8,7 @@ spec:
   jobName: towonel-edge-na
   targetEndpoints:
     - targets:
-        - "40.160.68.232:9090"
+        - "${VPS_PRIMARY_PUBLIC_IP}:9090"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
@@ -25,7 +25,7 @@ spec:
   jobName: towonel-edge-eu
   targetEndpoints:
     - targets:
-        - "94.130.99.118:9090"
+        - "${VPS_BACKUP_PUBLIC_IP}:9090"
       scheme: "http"
       path: "/metrics"
       interval: "30s"

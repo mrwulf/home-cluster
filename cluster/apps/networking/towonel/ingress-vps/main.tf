@@ -113,6 +113,8 @@ provider "cloudflare" {
   api_token = var.CLOUDFLARE_APIKEY
 }
 
+provider "kubernetes" {}
+
 # Fetch home public IP dynamically for firewall rules
 data "http" "home_ip" {
   url = "https://api.ipify.org"
@@ -377,4 +379,17 @@ output "VPS_PRIMARY_PUBLIC_IP" {
 output "VPS_BACKUP_PUBLIC_IP" {
   value       = hcloud_server.backup_vps.ipv4_address
   description = "The public IPv4 address of the Backup Hetzner Ingress VPS"
+}
+
+# 9. Sync VPS public IPs to flux-system secret for Kustomization postBuild substitution
+resource "kubernetes_secret_v1" "vps_tunnel_output_flux" {
+  metadata {
+    name      = "vps-tunnel-output"
+    namespace = "flux-system"
+  }
+
+  data = {
+    VPS_PRIMARY_PUBLIC_IP = local.ovh_primary_ipv4
+    VPS_BACKUP_PUBLIC_IP  = hcloud_server.backup_vps.ipv4_address
+  }
 }
