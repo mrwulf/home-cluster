@@ -95,7 +95,8 @@ runcmd:
   - |
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
-    apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io docker-cli systemd-resolved gnupg apt-transport-https
+    apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io systemd-resolved gnupg apt-transport-https
+    apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker-cli || true
     systemctl enable systemd-resolved --now
     ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
     systemctl restart systemd-resolved
