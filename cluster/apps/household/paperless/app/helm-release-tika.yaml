@@ -17,7 +17,7 @@ spec:
           main:
             image:
               repository: apache/tika
-              tag: 4.0.0-SNAPSHOT-full
+              tag: 4.0.1-SNAPSHOT-full
 
     service:
       main:
