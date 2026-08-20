@@ -7,7 +7,7 @@ spec:
   interval: 1h
   url: https://github.com/kubernetes-sigs/external-dns.git
   ref:
-    tag: v0.21.0
+    tag: v0.22.0
   ignore: |
     # exclude all
     /*
