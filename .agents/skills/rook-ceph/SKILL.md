@@ -141,3 +141,31 @@ Once `safe-to-destroy` returns success:
      --osd_recovery_max_active 0 \
      --osd_recovery_max_active_ssd 10
    ```
+
+---
+
+## 6. Ceph Major Upgrades, CephX Key Rotation (aes256k), and Deadlock Recovery
+
+### 6.1 Safe Order of Operations for Upgrades & Key Rotation
+
+When upgrading Ceph versions with key rotation (e.g. CVE-2025-30156 / Ceph v20.2.4):
+
+1. **Never enable `spec.security.cephx` before the image upgrade**: Older OSDs cannot parse or authenticate with `aes256k` keys against updated MONs.
+2. **Upgrade Daemon Images First**: Set the Ceph image tag in the cluster Helm release and wait until `ceph versions` confirms 100% of MONs, MGRs, MDSs, and OSDs are running the target release.
+3. **Rotate Daemon Keys Declaratively**: Enable `security.cephx.daemon` with `keyType: aes256k`.
+4. **Keep Ceph-CSI on standard `aes`**: Do NOT set `security.cephx.csi.keyType: aes256k`. Ceph-CSI librados (v3.17) requires 128-bit `aes` keys; passing 256-bit keys results in `rados: ret=-22, Invalid argument`.
+
+### 6.2 Raw Bluestore LVM / RBD Kernel Deadlock Resolution
+
+- **Symptom**: OSD pod stuck in `Init:0/5` on `ceph-volume raw activate` with `lvs` process stuck in `D` state (`folio_wait_writeback`). Pod cannot be killed (`SIGKILL` ignored), and draining the node deadlocks.
+- **Cause**: `ceph-volume raw activate` runs `lvs` without an RBD filter, scanning host-mounted `/dev/rbd*` devices that hang because Ceph PGs are peering while the OSD is down.
+- **Resolution**:
+  1. Set `ceph osd set noout` to prevent OSD churn.
+  2. Reboot the affected node via Talos: `talosctl -n <node_ip> reboot`.
+  3. On reboot, the OSD initializes before workload RBD devices map, cleanly activating the NVMe device.
+  4. Unset `noout`: `ceph osd unset noout`.
+
+### 6.3 CSI Leader Lease Lockout
+
+- If workload pods report `AttachVolume.Attach failed` after CSI restarts, inspect `kubectl get leases -n rook-ceph`.
+- If terminated CSI pods still hold `external-attacher-leader-*` or `rook-ceph-rbd-csi-ceph-com`, delete the stale leases to allow the active replica to immediately acquire leadership.
