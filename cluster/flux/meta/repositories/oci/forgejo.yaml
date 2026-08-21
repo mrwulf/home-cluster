@@ -10,5 +10,5 @@ spec:
     operation: copy
   ref:
     # renovate: depName=codeberg.org/forgejo-contrib/forgejo datasource=docker
-    tag: 17.1.4
+    tag: 17.1.5
   url: oci://codeberg.org/forgejo-contrib/forgejo
