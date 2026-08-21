@@ -36,6 +36,17 @@ spec:
     toolbox:
       enabled: true
     cephClusterSpec:
+      security:
+        cephx:
+          daemon:
+            keyRotationPolicy: KeyGeneration
+            keyGeneration: 1
+            keyType: aes256k
+          csi:
+            keyRotationPolicy: KeyGeneration
+            keyGeneration: 1
+            keepPriorKeyCountMax: 1
+            keyType: aes256k
       cephConfig:
         global:
           bdev_enable_discard: "true"
