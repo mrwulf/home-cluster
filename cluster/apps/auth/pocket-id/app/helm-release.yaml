@@ -45,8 +45,7 @@ spec:
           ui:
             appName: "Home PocketID"
             homePageUrl: "/settings/apps"
-          # Pin to v2.13.0: Pocket-ID v2.14.0 requires SIGNUP_DEFAULT_USER_GROUP_IDS to be a JSON array which pocket-id-operator 0.14.0 does not yet serialize
-          image: ghcr.io/pocket-id/pocket-id:v2.13.0
+          image: ghcr.io/pocket-id/pocket-id:v2.14.0
           encryptionKey:
             valueFrom:
               secretKeyRef:
@@ -108,8 +107,6 @@ spec:
             allowUserSignups: "withToken"
             emailsVerified: false
             signupDefaultCustomClaims: '[{"key":"immich_role","value":"user"}]'
-            signupDefaultUserGroupIds:
-              - "d6504cb4-24d3-417b-8c57-3ed44ff1b6bc"
           versionCheckDisabled: true
           analyticsDisabled: true
           trustedProxies:

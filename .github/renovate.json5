@@ -27,7 +27,6 @@
     "ghcr.io/fluxcd/notification-controller",
     "ghcr.io/fluxcd/source-controller",
     "ghcr.io/home-operations/bazarr",
-    "ghcr.io/pocket-id/pocket-id",
   ],
   flux: {
     managerFilePatterns: ["/cluster/.+\\.ya?ml$/"],
