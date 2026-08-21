@@ -70,6 +70,7 @@ spec:
             key: cloudflare_api_token
 
     extraArgs:
+      - --annotation-prefix=external-dns.kubernetes.io/
       - --gateway-label-filter=gateway.sysinfra.pro/type=external
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
