@@ -30,6 +30,22 @@ If Ceph health reports `RECENT_CRASH` warnings:
 2. Inspect crash details: `ceph crash info <crash_id>`
 3. Archive resolved crashes: Run `task rook:ack-warnings` (executes `ceph crash archive-all`).
 
+### CephX Key Invariants & Alert Muting (Ceph v20.2+ Squid)
+
+1. **Reverting CephX Ciphers**:
+   - Do NOT remove `spec.security.cephx` from `CephCluster` (rejected by CRD OpenAPI validations).
+   - Increment `keyGeneration` and set `keyType: aes`.
+2. **Muting Insecure Service Cipher Health Errors**:
+   When daemons run with standard `aes` keys, Ceph Squid raises `AUTH_INSECURE_SERVICE_KEY_TYPE` and `AUTH_INSECURE_SERVICE_TICKETS` (`HEALTH_ERR`), which blocks automated upgrade gates (`task talos:upgrade`). Mute them via the toolbox:
+   ```bash
+   ceph health mute AUTH_INSECURE_SERVICE_KEY_TYPE
+   ceph health mute AUTH_INSECURE_SERVICE_TICKETS
+   ceph health mute AUTH_EMERGENCY_CIPHERS_SET
+   ceph health mute AUTH_INSECURE_CLIENT_KEY_TYPE
+   ceph health mute AUTH_INSECURE_KEYS_ALLOWED
+   ceph health mute AUTH_INSECURE_KEYS_CREATABLE
+   ```
+
 ---
 
 ## 2. Telemetry & Metric Monitoring (VictoriaMetrics)
