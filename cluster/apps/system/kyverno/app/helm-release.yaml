@@ -97,13 +97,12 @@ spec:
     reportsController:
       serviceMonitor:
         enabled: true
-      container:
-        resources:
-          requests:
-            cpu: 92m
-            memory: 226M
-          limits:
-            memory: 285M
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 1Gi
       extraArgs:
         allowedResults: fail,warn,error
 
