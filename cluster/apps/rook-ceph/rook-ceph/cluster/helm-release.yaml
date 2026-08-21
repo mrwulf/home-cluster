@@ -80,6 +80,15 @@ spec:
             ["10.0.1.51/32", "10.0.1.52/32", "10.0.1.53/32", "10.0.1.55/32"]
         connections:
           requireMsgr2: true
+      placement:
+        all:
+          tolerations:
+            - effect: NoSchedule
+              operator: Exists
+            - effect: NoExecute
+              operator: Exists
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
       resources:
         api:
           requests:
