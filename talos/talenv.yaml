@@ -12,4 +12,4 @@ promVersion: v0.93.1
 gatewayApiVersion: v1.6.1
 
 # renovate: datasource=github-releases depName=kubernetes-sigs/external-dns
-externalDNSVersion: v0.21.0
+externalDNSVersion: v0.22.0
