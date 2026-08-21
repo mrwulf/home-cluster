@@ -83,12 +83,7 @@ spec:
       placement:
         all:
           tolerations:
-            - effect: NoSchedule
-              operator: Exists
-            - effect: NoExecute
-              operator: Exists
-            - key: node-role.kubernetes.io/control-plane
-              operator: Exists
+            - operator: Exists
       resources:
         api:
           requests:
