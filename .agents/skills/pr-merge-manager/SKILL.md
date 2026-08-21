@@ -60,6 +60,14 @@ Before presenting the plan or executing merges:
    ```bash
    git pull origin main
    ```
-4. **Walkthrough Optimization**:
+4. **Post-Merge Live Runtime Verification**:
+   In accordance with Rule 12 in `AGENTS.md`, never declare a PR merge task complete without empirically verifying live cluster workload health:
+   - Query Kubernetes pods across all modified namespaces via `kubectl_get` (or `local-mcp-gateway`).
+   - Confirm that all updated containers transition to a healthy `Running` state without restart loops or `CrashLoopBackOff`.
+   - If a container update crashes at runtime (e.g. upstream incompatibilities):
+     1. Immediately revert the tag in git to the last known stable release.
+     2. Suppress the broken release by adding `ignoreVersions: ["<broken-version>"]` to both `.github/renovate.json5` `packageRules` and the inline `# renovate:` comment in the manifest so Renovate will not immediately regenerate PRs for the broken version.
+     3. Validate with `mise x -- task test:all`, commit, push to `main`, and confirm pod recovery.
+5. **Walkthrough Optimization**:
    - **DO NOT** generate a summary `walkthrough.md` or output a summary of the merged PRs unless there were errors, regressions, or unexpected issues during execution.
    - If everything succeeded cleanly, provide a brief direct message to the user confirming successful completion.
