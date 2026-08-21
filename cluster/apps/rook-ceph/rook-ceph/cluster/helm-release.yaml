@@ -40,8 +40,8 @@ spec:
         cephx:
           daemon:
             keyRotationPolicy: KeyGeneration
-            keyGeneration: 1
-            keyType: aes256k
+            keyGeneration: 2
+            keyType: aes
           csi:
             keyRotationPolicy: KeyGeneration
             keyGeneration: 1
