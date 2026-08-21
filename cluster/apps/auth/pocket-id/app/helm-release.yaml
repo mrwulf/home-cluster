@@ -107,6 +107,7 @@ spec:
             allowUserSignups: "withToken"
             emailsVerified: false
             signupDefaultCustomClaims: '[{"key":"immich_role","value":"user"}]'
+            signupDefaultUserGroupIds: []
           versionCheckDisabled: true
           analyticsDisabled: true
           trustedProxies:
