@@ -45,7 +45,8 @@ spec:
           ui:
             appName: "Home PocketID"
             homePageUrl: "/settings/apps"
-          image: ghcr.io/pocket-id/pocket-id:v2.14.0
+          # Pin to v2.13.0: Pocket-ID v2.14.0 requires SIGNUP_DEFAULT_USER_GROUP_IDS to be a JSON array which pocket-id-operator 0.14.0 does not yet serialize
+          image: ghcr.io/pocket-id/pocket-id:v2.13.0
           encryptionKey:
             valueFrom:
               secretKeyRef:
