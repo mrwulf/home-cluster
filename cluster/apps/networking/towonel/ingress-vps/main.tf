@@ -251,6 +251,14 @@ resource "hcloud_firewall" "backup_firewall" {
     source_ips  = ["0.0.0.0/0", "::/0"]
     description = "Allow Iroh UDP transport traffic for Towonel"
   }
+
+  rule {
+    direction   = "in"
+    protocol    = "udp"
+    port        = "51821"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+    description = "Allow NetBird WireGuard P2P UDP overlay traffic"
+  }
 }
 
 # Attach Firewall to the Backup Server

@@ -21,6 +21,7 @@ write_files:
       [Unit]
       Description=Towonel Edge Node Container
       After=docker.service netbird.service
+      Wants=netbird.service
       Requires=docker.service
 
       [Service]
@@ -33,6 +34,11 @@ write_files:
       ExecStart=/usr/bin/docker run --name towonel-edge --rm --net=host \
         --log-opt max-size=10m \
         --log-opt max-file=3 \
+        --health-cmd="curl -fsS http://127.0.0.1:9090/health || exit 1" \
+        --health-interval=15s \
+        --health-timeout=5s \
+        --health-retries=3 \
+        --health-start-period=15s \
         -e TOWONEL_HUB_ENABLED=false \
         -e TOWONEL_EDGE_ENABLED=true \
         -e TOWONEL_EDGE_LISTEN_ADDR=0.0.0.0:443 \
@@ -46,14 +52,57 @@ write_files:
       [Install]
       WantedBy=multi-user.target
 
-  # 2. Write systemd-resolved configuration for upstream DNS
+  # 3. Write Towonel Edge Health Watchdog Script & Systemd Timer
+  - path: /usr/local/bin/towonel-watchdog.sh
+    permissions: "0755"
+    content: |
+      #!/bin/sh
+      set -e
+      if ! curl -fsS -m 5 http://127.0.0.1:9090/health >/dev/null 2>&1; then
+        echo "Towonel Edge health check failed on http://127.0.0.1:9090/health. Triggering service restart..."
+        systemctl restart towonel-edge
+      fi
+
+  - path: /etc/systemd/system/towonel-watchdog.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Towonel Edge Health Watchdog Service
+      After=towonel-edge.service
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/bin/towonel-watchdog.sh
+
+  - path: /etc/systemd/system/towonel-watchdog.timer
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Towonel Edge Health Watchdog Timer
+      After=towonel-edge.service
+
+      [Timer]
+      OnBootSec=1min
+      OnUnitActiveSec=30s
+
+      [Install]
+      WantedBy=timers.target
+
+  # 4. Write NetBird systemd override for fast recovery
+  - path: /etc/systemd/system/netbird.service.d/override.conf
+    permissions: "0644"
+    content: |
+      [Service]
+      RestartSec=5s
+
+  # 5. Write systemd-resolved configuration for upstream DNS
   - path: /etc/systemd/resolved.conf.d/dns.conf
     permissions: "0644"
     content: |
       [Resolve]
       DNS=1.1.1.1 185.12.64.2
 
-  # 3. Write Docker daemon configuration for log rotation
+  # 6. Write Docker daemon configuration for log rotation
   - path: /etc/docker/daemon.json
     permissions: "0644"
     content: |
@@ -65,7 +114,7 @@ write_files:
         }
       }
 
-  # 4. Write Systemd Service for CrowdSec Security Engine Container
+  # 7. Write Systemd Service for CrowdSec Security Engine Container
   - path: /etc/systemd/system/crowdsec.service
     permissions: "0644"
     content: |
@@ -114,16 +163,25 @@ runcmd:
     netbird service reconfigure --service-env NB_DISABLE_CUSTOM_ROUTING=true || true
     NB_DISABLE_CUSTOM_ROUTING=true netbird up --setup-key "${NETBIRD_SETUP_KEY}" --enable-rosenpass --enable-ssh-root --allow-server-ssh --rosenpass-permissive --wireguard-port 51821
 
-  # 3. Tune Linux TCP stack (BBR Congestion Control) for high throughput / video streaming
+  # 3. Tune Linux TCP stack (BBR Congestion Control & Fast TCP Keepalives)
   - sysctl -w net.core.default_qdisc=fq
   - sysctl -w net.ipv4.tcp_congestion_control=bbr
+  - sysctl -w net.ipv4.tcp_keepalive_time=60
+  - sysctl -w net.ipv4.tcp_keepalive_intvl=10
+  - sysctl -w net.ipv4.tcp_keepalive_probes=3
+  - sysctl -w net.ipv4.tcp_retries2=5
   - echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+  - echo "net.ipv4.tcp_keepalive_time=60" >> /etc/sysctl.conf
+  - echo "net.ipv4.tcp_keepalive_intvl=10" >> /etc/sysctl.conf
+  - echo "net.ipv4.tcp_keepalive_probes=3" >> /etc/sysctl.conf
+  - echo "net.ipv4.tcp_retries2=5" >> /etc/sysctl.conf
 
-  # 4. Enable and start Towonel Edge & CrowdSec Container
+  # 4. Enable and start Towonel Edge, Watchdog Timer & CrowdSec Container
   - mkdir -p /var/lib/crowdsec/data
   - systemctl daemon-reload
   - systemctl enable towonel-edge --now
+  - systemctl enable towonel-watchdog.timer --now
   - systemctl enable crowdsec --now
 
   # 5. Wait for CrowdSec container to populate base /etc/crowdsec/config.yaml and write custom whitelist/acquisition
