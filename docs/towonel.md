@@ -299,3 +299,55 @@ To test failover response:
    ```bash
    ssh admin@vps-primary.${SECRET_DOMAIN} "sudo systemctl start docker"
    ```
+
+---
+
+## 8. Edge Node Resilience, Watchdogs & Invariants
+
+### 8.1 Docker Healthcheck & Watchdog Timer
+
+- **Port Mismatch Invariant**: Upstream `towonel-node` images contain Dockerfile
+  health checks on port `8443` (only open in Hub mode). In Edge mode, the health
+  endpoint is `http://127.0.0.1:9090/health`. Cloud-init must override the
+  container `--health-cmd="curl -fsS http://127.0.0.1:9090/health || exit 1"`.
+- **Systemd Watchdog**: To recover automatically from hung TCP sockets or
+  deadlocks without requiring manual SSH logins, `/usr/local/bin/towonel-watchdog.sh`
+  runs via `towonel-watchdog.timer` every 30 seconds to restart `towonel-edge` if
+  the health check fails.
+
+### 8.2 Linux TCP Keepalive Tuning
+
+- By default, Linux TCP sockets wait 7200s (2 hours) before sending keepalive
+  probes. When in-cluster Kubernetes pods (e.g. `towonel-hub`) restart without
+  sending FIN/RST packets across the NetBird mesh, edge sockets linger in
+  `ESTABLISHED`.
+- Cloud-init tunes sysctls to detect and drop dead connections within ~90 seconds:
+
+  ```ini
+  net.ipv4.tcp_keepalive_time = 60
+  net.ipv4.tcp_keepalive_intvl = 10
+  net.ipv4.tcp_keepalive_probes = 3
+  net.ipv4.tcp_retries2 = 5
+  ```
+
+### 8.3 Overlay Mesh & Firewall Configuration
+
+- **Direct WireGuard P2P**: The cloud firewall (`hcloud_firewall`) must permit
+  port `51821/udp` to allow direct peer-to-peer NetBird mesh links rather than
+  falling back to high-latency relay servers.
+- **NetBird Service Recovery**: NetBird systemd unit includes `RestartSec=5s` in
+  `/etc/systemd/system/netbird.service.d/override.conf`, and `towonel-edge.service`
+  declares `Wants=netbird.service`.
+
+### 8.4 Multi-Region Agent Ingress
+
+- The `TowonelTunnel` CR in `cluster/apps/networking/towonel/operator/agents/agent-cr.yaml`
+  must declare `failoverRegions: ["EU"]` alongside `region: CA` so in-cluster
+  agents establish active sessions with all provisioned edge regions.
+
+### 8.5 Zero Hardcoded SSH Public Keys
+
+- Never commit static SSH public keys or personal user comments in `vps-cloud-init.yaml`.
+- SSH keys are dynamically bound by OpenTofu using cloud provider key managers
+  (`data.hcloud_ssh_keys` and `ovh_cloud_project_ssh_key`) to prevent identity
+  correlation in public git repositories.

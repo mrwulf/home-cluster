@@ -31,6 +31,19 @@
    - **`mcp-home-assistant`**: Inspecting smart home entity states, listing devices/areas, evaluating HA templates, and triggering automation events.
    - **`mcp-memory`**: Storing and retrieving entity relationships, complex project context, and long-term knowledge across agent sessions.
 
+## Topic & Subsystem Documentation Index
+
+> [!IMPORTANT]
+> **Mandatory Reference Directive**: Before researching, planning, designing, modifying, or troubleshooting any subsystem or service, you MUST review its dedicated guide in [`docs/`](docs/). Detailed operational procedures, networking topologies, edge watchdogs, and configuration invariants reside in these guides:
+
+- **[docs/towonel.md](docs/towonel.md)**: Towonel edge ingress architecture, dual-VPS failover, NetBird P2P mesh, edge watchdog timers, Docker healthchecks, TCP keepalives, and cloud-init invariants.
+- **[docs/storage.md](docs/storage.md)**: Cluster storage, Rook-Ceph pools, Ceph-CSI, key rotation sequence, Bluestore activation, and Talos krbd recovery.
+- **[docs/backups.md](docs/backups.md)**: Volsync, Restic backup schedules, replication repositories, snapshot retention, and restoration runbooks.
+- **[docs/secrets_management_options.md](docs/secrets_management_options.md)**: External Secrets Operator (Bitwarden sync) and SOPS age encryption patterns.
+- **[docs/tdarr_optimization_guide.md](docs/tdarr_optimization_guide.md)**: Hardware-accelerated media transcoding (Intel QuickSync / i915 GPU parameters and HandBrake/FFmpeg presets).
+- **[docs/renovate_self_hosting.md](docs/renovate_self_hosting.md)**: Self-hosted Renovate runner setup, schedules, and regex managers.
+- **[docs/tor_ingress_egress_notes.md](docs/tor_ingress_egress_notes.md)**: Tor onion services and private ingress/egress configurations.
+
 ## Operational & Maintenance Procedures
 
 ### Weekly Cluster Workload Resource Optimization
@@ -112,3 +125,4 @@ spec:
 - **Renovate Broken Release Suppression (`ignoreVersions`)**: When rolling back or pinning an image or chart dependency due to upstream runtime incompatibilities (e.g. Python base image mismatches), never rely on code comments or pinned tags alone. Always configure `ignoreVersions: ["<version>"]` in `.github/renovate.json5` and inline `# renovate:` comments so Renovate does not immediately re-generate pull requests for the broken release.
 - **CephCluster `security.cephx` Immutability & Reversion**: The `CephCluster` CRD enforces OpenAPI schema rules (`!has(oldSelf.keyGeneration) || has(self.keyGeneration)` and `self >= oldSelf`). Never delete `spec.security.cephx` or decrease `keyGeneration` to revert a cipher change; instead, set `keyType: aes` and increment `keyGeneration` to trigger forward rotation back to standard AES.
 - **Talos Safe Storage Reboot Invariants**: When recovering nodes experiencing kernel `D`-state deadlocks (such as stuck krbd mounts), never execute `shutdown` (risks remote node lockout). Always use `talosctl reboot` with `--mode=force` or `--mode=powercycle` and set an explicit `--timeout` (e.g. `5m`) to bypass hung graceful teardown.
+- **Towonel Edge Ingress & Watchdog Invariants**: Refer to [docs/towonel.md](docs/towonel.md) for required edge container healthcheck parameters, watchdog timers, TCP keepalives, multi-region failover, and cloud-init SSH key invariants.
