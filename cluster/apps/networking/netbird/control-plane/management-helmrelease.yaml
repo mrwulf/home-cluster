@@ -58,9 +58,32 @@ spec:
             command: ["/bin/sh", "-c"]
             args:
               - |
-                if [ ! -f /etc/netbird/management.json ]; then
-                  echo '{}' > /etc/netbird/management.json
-                fi
+                cat <<'EOF' > /etc/netbird/management.json
+                {
+                  "Datadir": "/var/lib/netbird",
+                  "HttpConfig": {
+                    "Address": "0.0.0.0:80",
+                    "AuthAudience": "netbird",
+                    "AuthIssuer": "https://id.${SECRET_DOMAIN}",
+                    "OIDCConfigEndpoint": "https://id.${SECRET_DOMAIN}/.well-known/openid-configuration",
+                    "IdpSignKeyRefreshEnabled": true
+                  },
+                  "StoreConfig": {
+                    "Engine": "postgres"
+                  },
+                  "Signal": {
+                    "Proto": "https",
+                    "URI": "nb.${SECRET_DOMAIN}:443"
+                  },
+                  "ReverseProxy": {
+                    "TrustedHTTPProxies": [],
+                    "TrustedHTTPProxiesCount": 0,
+                    "TrustedPeers": [
+                      "0.0.0.0/0"
+                    ]
+                  }
+                }
+                EOF
             resources:
               requests:
                 cpu: 10m
