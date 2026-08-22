@@ -6,6 +6,8 @@ metadata:
   namespace: networking
 spec:
   region: CA
+  failoverRegions:
+    - EU
   apiKeySecretRef:
     name: towonel-hub-secrets
     key: TOWONEL_K8S_OPERATOR_API_KEY

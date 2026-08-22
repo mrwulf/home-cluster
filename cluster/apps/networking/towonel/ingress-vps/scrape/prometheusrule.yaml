@@ -1,0 +1,72 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: towonel
+  namespace: networking
+  labels:
+    app.kubernetes.io/name: towonel
+    app.kubernetes.io/instance: towonel
+spec:
+  groups:
+    - name: towonel
+      rules:
+        - alert: TowonelEdgeTargetDown
+          annotations:
+            summary: "Towonel Edge node is down"
+            description: "Towonel Edge instance {{ $labels.instance }} ({{ $labels.job }}) is unreachable or failing metrics scraping."
+          expr: |
+            up{job=~"towonel-edge-.*"} == 0
+          for: 2m
+          labels:
+            severity: critical
+
+        - alert: TowonelEdgeNoActiveSessions
+          annotations:
+            summary: "Towonel Edge has no active sessions"
+            description: "Towonel Edge {{ $labels.instance }} ({{ $labels.job }}) has 0 active agent/hub sessions."
+          expr: |
+            towonel_edge_active_sessions{job=~"towonel-edge-.*"} == 0
+          for: 3m
+          labels:
+            severity: critical
+
+        - alert: TowonelAgentDown
+          annotations:
+            summary: "Towonel Agent is down"
+            description: "Towonel Agent in cluster is unreachable or failing metrics scraping."
+          expr: |
+            up{job="towonel-agent"} == 0
+          for: 2m
+          labels:
+            severity: critical
+
+        - alert: TowonelHubDown
+          annotations:
+            summary: "Towonel Hub is down"
+            description: "Towonel Hub control plane is unreachable or failing metrics scraping."
+          expr: |
+            up{job="towonel-hub"} == 0
+          for: 2m
+          labels:
+            severity: critical
+
+        - alert: TowonelAgentEdgeDisconnected
+          annotations:
+            summary: "Towonel Agent disconnected from Edge"
+            description: "Towonel Agent has disconnected from edge node {{ $labels.edge }}."
+          expr: |
+            towonel_agent_edge_session_state == 0
+          for: 3m
+          labels:
+            severity: warning
+
+        - alert: TowonelAgentStreamErrors
+          annotations:
+            summary: "Towonel Agent stream errors detected"
+            description: "Towonel Agent reported stream forwarding errors (reason: {{ $labels.reason }})."
+          expr: |
+            increase(towonel_agent_stream_errors_total[5m]) > 5
+          for: 2m
+          labels:
+            severity: warning
