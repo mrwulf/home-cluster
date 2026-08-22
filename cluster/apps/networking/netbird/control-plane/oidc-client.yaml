@@ -1,0 +1,25 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: netbird
+  namespace: networking
+spec:
+  name: NetBird
+  launchUrl: https://nb.${SECRET_DOMAIN}/
+  pkceEnabled: true
+  callbackUrls:
+    - https://nb.${SECRET_DOMAIN}/callback
+    - https://nb.${SECRET_DOMAIN}/silent-callback
+  logoutCallbackUrls:
+    - https://nb.${SECRET_DOMAIN}/
+  secret:
+    name: netbird-oidc-credentials
+    keys:
+      clientID: NETBIRD_AUTH_OIDC_CLIENT_ID
+      clientSecret: NETBIRD_AUTH_OIDC_CLIENT_SECRET
+  allowedUserGroups:
+    - name: admin
+      namespace: auth
+    - name: users
+      namespace: auth
