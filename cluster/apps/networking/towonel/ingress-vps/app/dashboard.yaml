@@ -35,7 +35,131 @@ spec:
       "liveNow": false,
       "panels": [
         {
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "gridPos": { "h": 6, "w": 12, "x": 0, "y": 0 },
+          "id": 5,
+          "title": "Data Used in Last 30 Days (per Edge)",
+          "type": "stat",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 500000000000 },
+                  { "color": "orange", "value": 1000000000000 },
+                  { "color": "red", "value": 2000000000000 }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value_and_name"
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "editorMode": "code",
+              "expr": "sum(increase(towonel_edge_bytes_in_total{job=~\"towonel-edge-.*\"}[30d]) + increase(towonel_edge_bytes_out_total{job=~\"towonel-edge-.*\"}[30d])) by (job)",
+              "legendFormat": "{{job}} Total",
+              "range": true
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 6, "w": 12, "x": 12, "y": 0 },
+          "id": 6,
+          "title": "30-Day Edge Transfer Breakdown (Inbound / Outbound)",
+          "type": "bargauge",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {},
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "options": {
+            "displayMode": "gradient",
+            "minVizHeight": 10,
+            "minVizWidth": 0,
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "editorMode": "code",
+              "expr": "sum(increase(towonel_edge_bytes_in_total{job=~\"towonel-edge-.*\"}[30d])) by (job)",
+              "legendFormat": "{{job}} - Inbound",
+              "range": true
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "editorMode": "code",
+              "expr": "sum(increase(towonel_edge_bytes_out_total{job=~\"towonel-edge-.*\"}[30d])) by (job)",
+              "legendFormat": "{{job}} - Outbound",
+              "range": true
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+          "id": 7,
+          "title": "Edge Daily Transfer Trend (30 Days)",
+          "type": "timeseries",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "bars",
+                "lineInterpolation": "linear",
+                "barAlignment": 0,
+                "fillOpacity": 80,
+                "stacking": {
+                  "mode": "normal",
+                  "group": "A"
+                }
+              },
+              "unit": "decbytes"
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "editorMode": "code",
+              "expr": "sum(increase(towonel_edge_bytes_in_total{job=~\"towonel-edge-.*\"}[1d]) + increase(towonel_edge_bytes_out_total{job=~\"towonel-edge-.*\"}[1d])) by (job)",
+              "legendFormat": "{{job}}",
+              "range": true
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
           "id": 1,
           "title": "Towonel Network Throughput (Mbps)",
           "type": "timeseries",
@@ -60,7 +184,7 @@ spec:
           ]
         },
         {
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 14 },
           "id": 2,
           "title": "Total Data Transferred (24h)",
           "type": "barchart",
@@ -81,7 +205,7 @@ spec:
           ]
         },
         {
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+          "gridPos": { "h": 8, "w": 10, "x": 8, "y": 14 },
           "id": 3,
           "title": "Traefik Ingress Request Rates per Service",
           "type": "timeseries",
@@ -105,7 +229,7 @@ spec:
           ]
         },
         {
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+          "gridPos": { "h": 8, "w": 6, "x": 18, "y": 14 },
           "id": 4,
           "title": "Towonel Edge Session Status",
           "type": "stat",
