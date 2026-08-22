@@ -107,6 +107,8 @@ spec:
                 "run",
                 "--config",
                 "/etc/netbird/management.json",
+                "--port",
+                "8080",
                 "--log-file",
                 "console",
               ]
