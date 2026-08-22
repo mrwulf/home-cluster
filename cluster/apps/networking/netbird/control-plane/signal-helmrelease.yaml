@@ -76,5 +76,3 @@ spec:
         ports:
           grpc:
             port: 10000
-          metrics:
-            port: 10000

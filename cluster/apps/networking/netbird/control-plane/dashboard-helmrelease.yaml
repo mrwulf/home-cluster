@@ -19,13 +19,6 @@ spec:
     remediation:
       retries: 3
   values:
-    defaultPodOptions:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 101
-        runAsGroup: 101
-        fsGroup: 101
-        seccompProfile: { type: RuntimeDefault }
     controllers:
       netbird-dashboard:
         strategy: RollingUpdate

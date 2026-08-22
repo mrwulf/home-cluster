@@ -21,7 +21,7 @@ metadata:
   namespace: networking
 spec:
   endpoints:
-    - port: metrics
+    - port: grpc
       path: /metrics
       interval: 1m
       scrapeTimeout: 10s
