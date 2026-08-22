@@ -142,7 +142,6 @@
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["ghcr.io/home-operations/bazarr"],
-      ignoreVersions: ["1.6.0"],
     },
   ],
 }
