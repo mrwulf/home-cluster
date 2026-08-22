@@ -32,6 +32,8 @@ spec:
               repository: docker.io/netbirdio/dashboard
               tag: latest
             env:
+              USE_AUTH0: "false"
+              LETSENCRYPT_DOMAIN: "none"
               NETBIRD_MGMT_API_ENDPOINT: "https://nb.${SECRET_DOMAIN}"
               NETBIRD_MGMT_GRPC_API_ENDPOINT: "https://nb.${SECRET_DOMAIN}"
               AUTH_AUTHORITY: "https://id.${SECRET_DOMAIN}"
@@ -65,10 +67,6 @@ spec:
                 memory: 32Mi
               limits:
                 memory: 128Mi
-            securityContext:
-              allowPrivilegeEscalation: false
-              capabilities:
-                drop: ["ALL"]
     service:
       app:
         controller: netbird-dashboard

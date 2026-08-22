@@ -50,6 +50,27 @@ spec:
                 memory: 64Mi
               limits:
                 memory: 128Mi
+          init-config:
+            image:
+              # renovate: depName=netbirdio/management datasource=docker
+              repository: docker.io/netbirdio/management
+              tag: latest
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                if [ ! -f /etc/netbird/management.json ]; then
+                  echo '{}' > /etc/netbird/management.json
+                fi
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 64Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
         containers:
           app:
             image:
