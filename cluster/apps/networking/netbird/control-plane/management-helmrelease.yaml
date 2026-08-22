@@ -111,11 +111,13 @@ spec:
                 "console",
               ]
             env:
-              NETBIRD_STORE_CONFIG_ENGINE: postgres
-              NETBIRD_AUTH_OIDC_ISSUER_URL: "https://id.${SECRET_DOMAIN}"
-              NETBIRD_AUTH_OIDC_AUDIENCE: "netbird"
+              NETBIRD_USE_AUTH0: "false"
+              NETBIRD_AUTH_OIDC_CONFIGURATION_ENDPOINT: "https://id.${SECRET_DOMAIN}/.well-known/openid-configuration"
+              NETBIRD_AUTH_AUDIENCE: "netbird"
+              NETBIRD_AUTH_CLIENT_ID: "netbird"
               NETBIRD_AUTH_SUPPORTED_SCOPES: "openid profile email"
               NETBIRD_AUTH_HTTP_REDIRECT_URL: "https://nb.${SECRET_DOMAIN}/callback"
+              NETBIRD_STORE_CONFIG_ENGINE: postgres
               NETBIRD_NETWORK_NET: "100.110.0.0/16"
               NETBIRD_MGMT_API_PORT: "8080"
               NETBIRD_MGMT_METRICS_PORT: "9090"
