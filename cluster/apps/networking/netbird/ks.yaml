@@ -70,7 +70,7 @@ metadata:
   name: &app netbird-selfhosted-operator
   namespace: flux-system
 spec:
-  targetNamespace: networking
+  targetNamespace: netbird-selfhosted
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -93,7 +93,7 @@ metadata:
   name: &app netbird-selfhosted-resources
   namespace: flux-system
 spec:
-  targetNamespace: networking
+  targetNamespace: netbird-selfhosted
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app

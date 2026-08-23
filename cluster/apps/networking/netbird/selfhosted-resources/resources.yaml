@@ -6,7 +6,7 @@ apiVersion: netbird.io/v1
 kind: NBSetupKey
 metadata:
   name: k8s-selfhosted-setup-key
-  namespace: networking
+  namespace: netbird-selfhosted
 spec:
   secretKeyRef:
     name: netbird-selfhosted-operator-secrets
@@ -19,7 +19,7 @@ apiVersion: netbird.io/v1alpha1
 kind: NetworkRouter
 metadata:
   name: k8s-selfhosted
-  namespace: networking
+  namespace: netbird-selfhosted
 spec:
   dnsZoneRef:
     name: "k8s.${SECRET_DOMAIN}"
@@ -43,7 +43,7 @@ apiVersion: netbird.io/v1
 kind: NBGroup
 metadata:
   name: selfhosted-all
-  namespace: networking
+  namespace: netbird-selfhosted
 spec:
   name: "All"
 ---
@@ -51,7 +51,7 @@ apiVersion: netbird.io/v1
 kind: NBGroup
 metadata:
   name: selfhosted-vps-nodes
-  namespace: networking
+  namespace: netbird-selfhosted
 spec:
   name: "vps-nodes"
 ---
@@ -59,7 +59,7 @@ apiVersion: netbird.io/v1
 kind: NBGroup
 metadata:
   name: selfhosted-routing-peers
-  namespace: networking
+  namespace: netbird-selfhosted
 spec:
   name: "routing-peers"
 ---
@@ -67,7 +67,7 @@ apiVersion: netbird.io/v1
 kind: NBGroup
 metadata:
   name: selfhosted-admin-users
-  namespace: networking
+  namespace: netbird-selfhosted
 spec:
   name: "Admin Users"
 ---
@@ -75,7 +75,7 @@ apiVersion: netbird.io/v1
 kind: NBGroup
 metadata:
   name: selfhosted-users
-  namespace: networking
+  namespace: netbird-selfhosted
 spec:
   name: "Users"
 ---
@@ -86,7 +86,7 @@ apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
   name: selfhosted-external-ingress
-  namespace: networking
+  namespace: netbird-selfhosted
   annotations:
     netbird.io/policy: "selfhosted-external-ingress-policy"
 spec:
@@ -108,6 +108,7 @@ apiVersion: netbird.io/v1
 kind: NBPolicy
 metadata:
   name: selfhosted-external-ingress-policy
+  namespace: netbird-selfhosted
 spec:
   name: "SelfHosted External Ingress Policy"
   sourceGroups:
@@ -124,6 +125,7 @@ apiVersion: netbird.io/v1
 kind: NBPolicy
 metadata:
   name: selfhosted-admin-policy
+  namespace: netbird-selfhosted
 spec:
   name: "SelfHosted Admin Policy"
   sourceGroups:

@@ -4,7 +4,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
   name: netbird-selfhosted-operator
-  namespace: networking
+  namespace: netbird-selfhosted
 spec:
   interval: 1h
   layerSelector:
@@ -20,7 +20,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: netbird-selfhosted-operator
-  namespace: networking
+  namespace: netbird-selfhosted
 spec:
   interval: 1h
   chartRef:
@@ -34,16 +34,6 @@ spec:
     crds: Skip
     remediation:
       retries: 3
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: netbird-selfhosted-operator
-            patch: |
-              - op: replace
-                path: /spec/template/spec/containers/0/args/4
-                value: --runtime-namespace=flux-system
   values:
     fullnameOverride: netbird-selfhosted-operator
     replicaCount: 1
