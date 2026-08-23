@@ -61,13 +61,13 @@ spec:
           - name: netbird
             env:
               - name: NB_MANAGEMENT_URL
-                value: "https://api.netbird.io:443"
+                value: "http://netbird-management.networking.svc.cluster.local:8080"
             resources:
               requests:
                 cpu: 100m
                 memory: 256Mi
               limits:
-                memory: 256Mi
+                memory: 512Mi
 ---
 # ==============================================================================
 # Declarative Peer & User Groups (NBGroup)
@@ -614,3 +614,129 @@ spec:
     - tcp
   ports:
     - 51444
+---
+# ==============================================================================
+# Standalone Fallback NetBird Client (Connected to NetBird Cloud)
+# ==============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netbird-cloud-client
+  namespace: networking
+  labels:
+    app.kubernetes.io/name: netbird-cloud-client
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: netbird-cloud-client
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: netbird-cloud-client
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: netbird-cloud-client
+      initContainers:
+        - name: resolv-conf
+          # renovate: depName=ghcr.io/netbirdio/netbird
+          image: ghcr.io/netbirdio/netbird:0.72.4@sha256:6c6c20baffae4a3ec50f29ec9361608a420625185505e8cd6f0c44d71c5d4798
+          command:
+            - sh
+            - -c
+            - cp /etc/resolv.conf /tmp/resolv.conf && cp /etc/resolv.conf /tmp/resolv.conf.original.netbird
+          volumeMounts:
+            - name: resolv-conf
+              mountPath: /tmp
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      containers:
+        - name: netbird
+          # renovate: depName=ghcr.io/netbirdio/netbird
+          image: ghcr.io/netbirdio/netbird:0.72.4@sha256:6c6c20baffae4a3ec50f29ec9361608a420625185505e8cd6f0c44d71c5d4798
+          env:
+            - name: NB_SETUP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: netbird
+                  key: SETUP_KEY
+            - name: NB_MANAGEMENT_URL
+              value: "https://api.netbird.io:443"
+            - name: NB_LOG_LEVEL
+              value: info
+            - name: NB_LOG_FILE
+              value: console
+            - name: NB_DISABLE_PROFILES
+              value: "true"
+            - name: NB_DISABLE_UPDATE_SETTINGS
+              value: "true"
+            - name: NB_DAEMON_ADDR
+              value: unix:///var/run/netbird/netbird.sock
+            - name: NB_ENTRYPOINT_SERVICE_TIMEOUT
+              value: "0"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+          securityContext:
+            privileged: true
+            readOnlyRootFilesystem: true
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_RESOURCE
+                - SYS_ADMIN
+          volumeMounts:
+            - name: netbird-run
+              mountPath: /var/run/netbird
+            - name: netbird-lib
+              mountPath: /var/lib/netbird
+            - name: ssh-etc
+              mountPath: /etc/ssh
+            - name: resolv-conf
+              mountPath: /etc/resolv.conf
+              subPath: resolv.conf
+            - name: resolv-conf
+              mountPath: /etc/resolv.conf.original.netbird
+              subPath: resolv.conf.original.netbird
+          readinessProbe:
+            exec:
+              command:
+                - netbird
+                - status
+                - --check
+                - ready
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 1
+          startupProbe:
+            exec:
+              command:
+                - netbird
+                - status
+                - --check
+                - startup
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 1
+      volumes:
+        - name: netbird-run
+          emptyDir: {}
+        - name: netbird-lib
+          emptyDir: {}
+        - name: ssh-etc
+          emptyDir: {}
+        - name: resolv-conf
+          emptyDir: {}

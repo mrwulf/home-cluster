@@ -36,6 +36,8 @@
 > [!IMPORTANT]
 > **Mandatory Reference Directive**: Before researching, planning, designing, modifying, or troubleshooting any subsystem or service, you MUST review its dedicated guide in [`docs/`](docs/). Detailed operational procedures, networking topologies, edge watchdogs, and configuration invariants reside in these guides:
 
+- **[docs/netbird_selfhosted_implementation_plan.md](docs/netbird_selfhosted_implementation_plan.md)**: Self-hosted NetBird architecture, multi-tier failover hierarchy, dual VPS overlay mesh, STUN/Relay, and Towonel retirement plan.
+- **[docs/netbird_selfhosted_walkthrough.md](docs/netbird_selfhosted_walkthrough.md)**: Live deployment status, empirical verification logs, and Phase 1-5 progress tracking for self-hosted NetBird.
 - **[docs/towonel.md](docs/towonel.md)**: Towonel edge ingress architecture, dual-VPS failover, NetBird P2P mesh, edge watchdog timers, Docker healthchecks, TCP keepalives, and cloud-init invariants.
 - **[docs/storage.md](docs/storage.md)**: Cluster storage, Rook-Ceph pools, Ceph-CSI, key rotation sequence, Bluestore activation, and Talos krbd recovery.
 - **[docs/backups.md](docs/backups.md)**: Volsync, Restic backup schedules, replication repositories, snapshot retention, and restoration runbooks.
