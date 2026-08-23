@@ -369,8 +369,8 @@ resource "cloudflare_access_rule" "vps_backup_v6" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
   mode    = "whitelist"
   configuration = {
-    target = "ip6"
-    value  = hcloud_server.backup_vps.ipv6_address
+    target = "ip_range"
+    value  = hcloud_server.backup_vps.ipv6_network
   }
   notes = "GitOps: Automated whitelist for Hetzner Backup VPS IPv6"
 }
