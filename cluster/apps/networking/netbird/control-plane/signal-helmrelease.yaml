@@ -39,9 +39,7 @@ spec:
               repository: docker.io/netbirdio/signal
               tag: 0.77.1
             command: ["/go/bin/netbird-signal"]
-            args: ["run", "--port", "10000", "--log-file", "console"]
-            env:
-              NB_METRICS_PORT: "10000"
+            args: ["run", "--port", "10000", "--log-file", "console", "--log-level", "debug"]
             probes:
               liveness:
                 enabled: true
