@@ -134,9 +134,9 @@ write_files:
       ExecStart=/usr/bin/docker run --name netbird-relay --rm --net=host \
         --log-opt max-size=10m \
         --log-opt max-file=3 \
-        -e NB_LISTEN_ADDRESS=0.0.0.0:33073 \
+        -e NB_LISTEN_ADDRESS=:33073 \
         -e NB_EXPOSED_ADDRESS=rel://${PROBE_HOSTNAME}:33073 \
-        -e NB_AUTH_SECRET=${TOWONEL_HUB_LINK_PSK} \
+        -e NB_AUTH_SECRET=${NETBIRD_RELAY_AUTH_SECRET} \
         -e NB_ENABLE_STUN=true \
         -e NB_STUN_PORTS=3478 \
         -e NB_METRICS_PORT=9091 \

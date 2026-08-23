@@ -76,6 +76,11 @@ variable "towonel_hub_link_psk" {
   sensitive = true
   default   = ""
 }
+variable "netbird_relay_auth_secret" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
 
 
 terraform {
@@ -181,6 +186,7 @@ resource "ovh_cloud_project_instance" "primary_vps" {
     NETBIRD_SETUP_KEY            = var.netbird_setup_key
     NETBIRD_SELFHOSTED_SETUP_KEY = ""
     NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
+    NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
     TOWONEL_HUB_LINK_PSK         = var.towonel_hub_link_psk
     SECRET_DOMAIN                = var.secret_domain
     HOME_IP                      = local.home_ip
@@ -221,6 +227,7 @@ resource "hcloud_server" "backup_vps" {
     NETBIRD_SETUP_KEY            = var.netbird_setup_key
     NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
     NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
+    NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
     TOWONEL_HUB_LINK_PSK         = var.towonel_hub_link_psk
     SECRET_DOMAIN                = var.secret_domain
     HOME_IP                      = local.home_ip
