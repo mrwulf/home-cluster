@@ -1,9 +1,8 @@
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
-  name: netbird-selfhosted-operator-leader-election
-  namespace: flux-system
+  name: netbird-selfhosted-operator-leases
 rules:
   - apiGroups:
       - coordination.k8s.io
@@ -26,14 +25,13 @@ rules:
       - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
-  name: netbird-selfhosted-operator-leader-election
-  namespace: flux-system
+  name: netbird-selfhosted-operator-leases
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: netbird-selfhosted-operator-leader-election
+  kind: ClusterRole
+  name: netbird-selfhosted-operator-leases
 subjects:
   - kind: ServiceAccount
     name: netbird-selfhosted-operator
