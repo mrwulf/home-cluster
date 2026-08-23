@@ -301,7 +301,15 @@ resource "hcloud_firewall" "backup_firewall" {
     protocol    = "tcp"
     port        = "33073"
     source_ips  = ["0.0.0.0/0", "::/0"]
-    description = "Allow NetBird Relay WireGuard transport traffic"
+    description = "Allow NetBird Relay WebSocket TCP transport traffic"
+  }
+
+  rule {
+    direction   = "in"
+    protocol    = "udp"
+    port        = "33073"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+    description = "Allow NetBird Relay QUIC UDP transport traffic"
   }
 }
 

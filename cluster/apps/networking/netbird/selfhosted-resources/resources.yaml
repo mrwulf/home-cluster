@@ -132,3 +132,17 @@ spec:
     - "Admin Users"
   destinationGroups:
     - routing-peers
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: selfhosted-mesh-policy
+  namespace: netbird-selfhosted
+spec:
+  name: "SelfHosted Mesh Policy"
+  sourceGroups:
+    - "vps-nodes"
+    - "routing-peers"
+  destinationGroups:
+    - "vps-nodes"
+    - "routing-peers"
