@@ -34,6 +34,16 @@ spec:
     crds: Skip
     remediation:
       retries: 3
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: netbird-selfhosted-operator
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --leader-election-id=operator-selfhosted.netbird.io
   values:
     fullnameOverride: netbird-selfhosted-operator
     replicaCount: 1
