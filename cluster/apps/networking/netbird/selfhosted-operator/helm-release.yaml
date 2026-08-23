@@ -41,9 +41,9 @@ spec:
               kind: Deployment
               name: netbird-selfhosted-operator
             patch: |
-              - op: add
-                path: /spec/template/spec/containers/0/args/-
-                value: --leader-election-id=operator-selfhosted.netbird.io
+              - op: replace
+                path: /spec/template/spec/containers/0/args/4
+                value: --runtime-namespace=flux-system
   values:
     fullnameOverride: netbird-selfhosted-operator
     replicaCount: 1
