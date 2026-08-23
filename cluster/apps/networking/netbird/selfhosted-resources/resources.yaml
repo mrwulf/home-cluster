@@ -1,0 +1,132 @@
+---
+# ==============================================================================
+# NetBird Declarative Resources (Self-Hosted Instance)
+# ==============================================================================
+apiVersion: netbird.io/v1
+kind: NBSetupKey
+metadata:
+  name: k8s-selfhosted-setup-key
+  namespace: networking
+spec:
+  secretKeyRef:
+    name: netbird-selfhosted-operator-secrets
+    key: SETUP_KEY
+---
+# ==============================================================================
+# Network Routers (NetworkRouter)
+# ==============================================================================
+apiVersion: netbird.io/v1alpha1
+kind: NetworkRouter
+metadata:
+  name: k8s-selfhosted
+  namespace: networking
+spec:
+  dnsZoneRef:
+    name: "k8s.${SECRET_DOMAIN}"
+  workloadOverride:
+    replicas: 2
+    podTemplate:
+      spec:
+        containers:
+          - name: netbird
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+---
+# ==============================================================================
+# Declarative Peer & User Groups (NBGroup)
+# ==============================================================================
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: selfhosted-all
+  namespace: networking
+spec:
+  name: "All"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: selfhosted-vps-nodes
+  namespace: networking
+spec:
+  name: "vps-nodes"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: selfhosted-routing-peers
+  namespace: networking
+spec:
+  name: "routing-peers"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: selfhosted-admin-users
+  namespace: networking
+spec:
+  name: "Admin Users"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: selfhosted-users
+  namespace: networking
+spec:
+  name: "Users"
+---
+# ==============================================================================
+# Declarative Network Resources (NBResource)
+# ==============================================================================
+apiVersion: netbird.io/v1
+kind: NBResource
+metadata:
+  name: selfhosted-external-ingress
+  namespace: networking
+  annotations:
+    netbird.io/policy: "selfhosted-external-ingress-policy"
+spec:
+  name: "External Ingress Gateway"
+  address: "10.0.10.20/32"
+  networkID: default
+  tcpPorts:
+    - 443
+  groups:
+    - routing-peers
+  policySourceGroups:
+    - "vps-nodes"
+    - "Users"
+---
+# ==============================================================================
+# Declarative Access Policies (NBPolicy)
+# ==============================================================================
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: selfhosted-external-ingress-policy
+spec:
+  name: "SelfHosted External Ingress Policy"
+  sourceGroups:
+    - "vps-nodes"
+    - "Users"
+  destinationGroups:
+    - routing-peers
+  protocols:
+    - tcp
+  ports:
+    - 443
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: selfhosted-admin-policy
+spec:
+  name: "SelfHosted Admin Policy"
+  sourceGroups:
+    - "Admin Users"
+  destinationGroups:
+    - routing-peers

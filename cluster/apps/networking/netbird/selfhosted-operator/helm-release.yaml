@@ -1,0 +1,44 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: netbird-selfhosted-operator
+  namespace: networking
+spec:
+  interval: 1h
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    # renovate: depName=netbird-operator
+    tag: 0.8.0
+  url: oci://ghcr.io/netbirdio/helm-charts/netbird-operator
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: netbird-selfhosted-operator
+  namespace: networking
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: netbird-selfhosted-operator
+  install:
+    crds: Skip
+    remediation:
+      retries: 3
+  upgrade:
+    crds: Skip
+    remediation:
+      retries: 3
+  values:
+    fullnameOverride: netbird-selfhosted-operator
+    replicaCount: 1
+    managementURL: "http://netbird-management.networking.svc.cluster.local:8080"
+    netbirdAPI:
+      keyFromSecret:
+        name: netbird-selfhosted-operator-secrets
+        key: NB_API_KEY
