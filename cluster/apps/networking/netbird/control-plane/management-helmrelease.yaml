@@ -54,7 +54,7 @@ spec:
             image:
               # renovate: depName=netbirdio/management datasource=docker
               repository: docker.io/netbirdio/management
-              tag: latest
+              tag: 0.77.1
             command: ["/bin/sh", "-c"]
             args:
               - |
@@ -105,6 +105,21 @@ spec:
                     "Proto": "https",
                     "URI": "nb.${SECRET_DOMAIN}:443"
                   },
+                  "Stuns": [
+                    {
+                      "Proto": "udp",
+                      "URI": "stun:vps-backup.${SECRET_DOMAIN}:3478"
+                    }
+                  ],
+                  "Relay": {
+                    "Addresses": [
+                      "rels://vps-backup.${SECRET_DOMAIN}:33073"
+                    ]
+                  },
+                  "TURNConfig": {
+                    "Turns": [],
+                    "Secret": ""
+                  },
                   "ReverseProxy": {
                     "TrustedHTTPProxies": [],
                     "TrustedHTTPProxiesCount": 0,
@@ -134,7 +149,7 @@ spec:
             image:
               # renovate: depName=netbirdio/management datasource=docker
               repository: docker.io/netbirdio/management
-              tag: latest
+              tag: 0.77.1
             command: ["/go/bin/netbird-mgmt"]
             args:
               [

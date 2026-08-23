@@ -30,7 +30,7 @@ spec:
             image:
               # renovate: depName=netbirdio/dashboard datasource=docker
               repository: docker.io/netbirdio/dashboard
-              tag: latest
+              tag: 2.91.0
             env:
               USE_AUTH0: "false"
               LETSENCRYPT_DOMAIN: "none"
