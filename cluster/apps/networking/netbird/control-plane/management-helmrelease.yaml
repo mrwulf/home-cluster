@@ -112,9 +112,7 @@ spec:
                     }
                   ],
                   "Relay": {
-                    "Addresses": [
-                      "rel://vps-backup.${SECRET_DOMAIN}:33073"
-                    ],
+                    "Addresses": [],
                     "CredentialsTTL": "24h",
                     "Secret": "$NETBIRD_RELAY_AUTH_SECRET"
                   },
