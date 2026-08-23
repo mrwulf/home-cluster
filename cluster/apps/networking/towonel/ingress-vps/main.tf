@@ -353,28 +353,6 @@ resource "cloudflare_dns_record" "vps_backup_v6" {
   ttl     = 1
 }
 
-# Automated GitOps Whitelist for Backup VPS (IPv4)
-resource "cloudflare_access_rule" "vps_backup_v4" {
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  mode    = "whitelist"
-  configuration = {
-    target = "ip"
-    value  = hcloud_server.backup_vps.ipv4_address
-  }
-  notes = "GitOps: Automated whitelist for Hetzner Backup VPS IPv4"
-}
-
-# Automated GitOps Whitelist for Backup VPS (IPv6)
-resource "cloudflare_access_rule" "vps_backup_v6" {
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  mode    = "whitelist"
-  configuration = {
-    target = "ip_range"
-    value  = hcloud_server.backup_vps.ipv6_network
-  }
-  notes = "GitOps: Automated whitelist for Hetzner Backup VPS IPv6"
-}
-
 
 # 6. Deploy the Cloudflare Worker Script & Bindings Declaratively
 resource "cloudflare_workers_script" "failover_monitor" {
