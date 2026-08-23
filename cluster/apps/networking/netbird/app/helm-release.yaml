@@ -35,8 +35,19 @@ spec:
     remediation:
       retries: 3
   values:
+    fullnameOverride: netbird-operator
     replicaCount: 1
     managementURL: "https://api.netbird.io"
+    cluster:
+      name: kubernetes
+    webhook:
+      enableCertManager: true
+      failurePolicy: Ignore
+      namespaceSelectors:
+        - key: kubernetes.io/metadata.name
+          operator: In
+          values:
+            - networking
     ## This doesn't work yet in the operator:
     # ingress:
     #   allowAutomaticPolicyCreation: true

@@ -38,6 +38,16 @@ spec:
     fullnameOverride: netbird-selfhosted-operator
     replicaCount: 1
     managementURL: "http://netbird-management.networking.svc.cluster.local:8080"
+    cluster:
+      name: selfhosted
+    webhook:
+      enableCertManager: true
+      failurePolicy: Ignore
+      namespaceSelectors:
+        - key: kubernetes.io/metadata.name
+          operator: In
+          values:
+            - netbird-selfhosted
     netbirdAPI:
       keyFromSecret:
         name: netbird-selfhosted-operator-secrets

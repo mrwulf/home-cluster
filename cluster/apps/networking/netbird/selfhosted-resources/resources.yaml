@@ -90,7 +90,7 @@ metadata:
   annotations:
     netbird.io/policy: "selfhosted-external-ingress-policy"
 spec:
-  name: "External Ingress Gateway"
+  name: "SelfHosted External Ingress Gateway"
   address: "10.0.10.20/32"
   networkID: da5k3hckbijs73boi8k0
   tcpPorts:
