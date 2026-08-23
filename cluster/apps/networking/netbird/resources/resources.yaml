@@ -15,7 +15,7 @@
 #    - ${SECRET_DOMAIN}: Global cluster root domain
 #    - ${CORE_NFS_SERVER}: Primary NFS storage host IP
 #    - ${GATEWAY_ADDR}: Default network gateway IP
-#    - ${NETBIRD_NETWORK_ID:-default}: NetBird Cloud Network UUID
+#    - ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}: NetBird Cloud Network UUID
 # ==============================================================================
 
 # ==============================================================================
@@ -176,7 +176,7 @@ spec:
   name: "Public Services"
   # enabled: false
   address: "*.${SECRET_DOMAIN}"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   tcpPorts:
     - 443
   groups:
@@ -194,7 +194,7 @@ metadata:
 spec:
   name: "Private Services"
   address: "*.home.${SECRET_DOMAIN}"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   tcpPorts:
     - 443
   groups:
@@ -212,7 +212,7 @@ metadata:
 spec:
   name: "k8s.home"
   address: "10.0.10.201/32"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   tcpPorts:
     - 6443
   groups:
@@ -230,7 +230,7 @@ metadata:
 spec:
   name: "K8s Nodes Talos Subnet"
   address: 10.0.1.51/29
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   groups:
     - routing-peers
   policySourceGroups:
@@ -246,7 +246,7 @@ metadata:
 spec:
   name: "NAS Storage"
   address: "${CORE_NFS_SERVER}/32"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   tcpPorts:
     - 443
     - 7090
@@ -266,7 +266,7 @@ metadata:
 spec:
   name: "firewall02"
   address: "10.0.0.2/32"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   groups:
     - "Firewall Peers"
   policySourceGroups:
@@ -282,7 +282,7 @@ metadata:
 spec:
   name: "firewall03"
   address: "10.0.0.3/32"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   groups:
     - "Firewall Peers"
   policySourceGroups:
@@ -298,7 +298,7 @@ metadata:
 spec:
   name: "firewall-active"
   address: "${GATEWAY_ADDR}/32"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   groups:
     - "Firewall Peers"
   policySourceGroups:
@@ -314,7 +314,7 @@ metadata:
 spec:
   name: "firewall-backup"
   address: "10.0.1.1/32"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   groups:
     - "Firewall Peers"
   policySourceGroups:
@@ -330,7 +330,7 @@ metadata:
 spec:
   name: "External Ingress Gateway"
   address: "10.0.10.20/32"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   tcpPorts:
     - 443
   groups:
@@ -348,7 +348,7 @@ metadata:
 spec:
   name: "Internal Ingress Gateway"
   address: "10.0.10.30/32"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   tcpPorts:
     - 443
   groups:
@@ -366,7 +366,7 @@ metadata:
 spec:
   name: "Full VPN Internet Egress"
   address: 0.0.0.0/0
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   groups:
     - "Firewall Peers"
   policySourceGroups:
@@ -382,7 +382,7 @@ metadata:
 spec:
   name: "K8s CoreDNS"
   address: "10.96.0.10/32"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   udpPorts:
     - 53
   groups:
@@ -577,7 +577,7 @@ metadata:
 spec:
   name: "Towonel Control Link"
   address: "towonel-hub.networking.svc.cluster.local"
-  networkID: ${NETBIRD_NETWORK_ID:-default}
+  networkID: ${NETBIRD_NETWORK_ID:-da5o45inqh5s73arjong}
   tcpPorts:
     - 51444
   groups:
