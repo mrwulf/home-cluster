@@ -76,4 +76,3 @@ spec:
         ports:
           grpc:
             port: 10000
-            appProtocol: kubernetes.io/h2c

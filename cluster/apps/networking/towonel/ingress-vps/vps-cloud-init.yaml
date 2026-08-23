@@ -134,11 +134,14 @@ write_files:
       ExecStart=/usr/bin/docker run --name netbird-relay --rm --net=host \
         --log-opt max-size=10m \
         --log-opt max-file=3 \
+        -v /var/lib/netbird-relay:/var/lib/netbird-relay \
         -e NB_LISTEN_ADDRESS=0.0.0.0:33073 \
-        -e NB_EXPOSED_ADDRESS=rel://${PROBE_HOSTNAME}:33073 \
+        -e NB_EXPOSED_ADDRESS=rels://${PROBE_HOSTNAME}:33073 \
         -e NB_AUTH_SECRET=${TOWONEL_HUB_LINK_PSK} \
         -e NB_ENABLE_STUN=true \
         -e NB_STUN_PORTS=3478 \
+        -e NB_LETSENCRYPT_DOMAINS=${PROBE_HOSTNAME} \
+        -e NB_LETSENCRYPT_DATA_DIR=/var/lib/netbird-relay/letsencrypt \
         -e NB_METRICS_PORT=9091 \
         -e NB_LOG_LEVEL=info \
         docker.io/netbirdio/relay:0.77.1
