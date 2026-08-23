@@ -59,6 +59,9 @@ spec:
       spec:
         containers:
           - name: netbird
+            env:
+              - name: NB_MANAGEMENT_URL
+                value: "https://api.netbird.io:443"
             resources:
               requests:
                 cpu: 100m

@@ -29,6 +29,9 @@ spec:
       spec:
         containers:
           - name: netbird
+            env:
+              - name: NB_MANAGEMENT_URL
+                value: "http://netbird-management.networking.svc.cluster.local:8080"
             resources:
               requests:
                 cpu: 100m
