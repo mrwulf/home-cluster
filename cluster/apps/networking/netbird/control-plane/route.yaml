@@ -28,14 +28,28 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /management.ManagementService/
+            value: /management.ManagementService
       backendRefs:
         - name: netbird-management
           port: 8080
     - matches:
         - path:
             type: PathPrefix
-            value: /signalexchange.SignalExchange/
+            value: /proxy.ProxyService
+      backendRefs:
+        - name: netbird-management
+          port: 8080
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /signalexchange.SignalExchange
+      backendRefs:
+        - name: netbird-signal
+          port: 10000
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /signal.SignalExchange
       backendRefs:
         - name: netbird-signal
           port: 10000
