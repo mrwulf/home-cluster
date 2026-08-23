@@ -7,10 +7,12 @@ metadata:
 spec:
   name: NetBird
   launchUrl: https://nb.${SECRET_DOMAIN}/
+  isPublic: true
   pkceEnabled: true
   callbackUrls:
-    - https://nb.${SECRET_DOMAIN}/callback
-    - https://nb.${SECRET_DOMAIN}/silent-callback
+    - http://localhost:53000
+    - https://nb.${SECRET_DOMAIN}/auth
+    - https://nb.${SECRET_DOMAIN}/silent-auth
   logoutCallbackUrls:
     - https://nb.${SECRET_DOMAIN}/
   secret:

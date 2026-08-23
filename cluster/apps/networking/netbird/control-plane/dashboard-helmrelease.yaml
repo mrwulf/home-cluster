@@ -48,8 +48,8 @@ spec:
                     name: netbird-oidc-credentials
                     key: NETBIRD_AUTH_OIDC_CLIENT_ID
               AUTH_SUPPORTED_SCOPES: "openid profile email groups"
-              AUTH_REDIRECT_URI: "/callback"
-              AUTH_SILENT_REDIRECT_URI: "/silent-callback"
+              AUTH_REDIRECT_URI: "/auth"
+              AUTH_SILENT_REDIRECT_URI: "/silent-auth"
             probes:
               liveness:
                 enabled: true

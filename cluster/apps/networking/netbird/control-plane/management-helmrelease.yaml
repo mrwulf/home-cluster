@@ -77,19 +77,25 @@ spec:
                       "Issuer": "https://id.${SECRET_DOMAIN}",
                       "Scope": "openid profile email groups",
                       "RedirectURLs": [
-                        "https://nb.${SECRET_DOMAIN}/callback",
-                        "https://nb.${SECRET_DOMAIN}/silent-callback"
+                        "http://localhost:53000",
+                        "https://nb.${SECRET_DOMAIN}/auth",
+                        "https://nb.${SECRET_DOMAIN}/silent-auth"
                       ],
                       "UseIDToken": true
                     }
                   },
                   "DeviceAuthorizationFlow": {
-                    "ProviderConfig": {
-                      "Audience": "$NETBIRD_AUTH_OIDC_CLIENT_ID",
-                      "ClientID": "$NETBIRD_AUTH_OIDC_CLIENT_ID",
-                      "Issuer": "https://id.${SECRET_DOMAIN}",
-                      "Scope": "openid profile email",
-                      "UseIDToken": true
+                    "Provider": "none"
+                  },
+                  "IdpManagerConfig": {
+                    "ManagerType": "pocketid",
+                    "ClientConfig": {
+                      "ClientID": "netbird",
+                      "ClientSecret": "",
+                      "Extra": {
+                        "ManagementEndpoint": "https://id.${SECRET_DOMAIN}",
+                        "ApiToken": "$NETBIRD_IDP_MGMT_EXTRA_API_TOKEN"
+                      }
                     }
                   },
                   "StoreConfig": {
@@ -109,6 +115,8 @@ spec:
                 }
                 EOF
             envFrom:
+              - secretRef:
+                  name: netbird-control-plane-secrets
               - secretRef:
                   name: netbird-oidc-credentials
             resources:
@@ -152,8 +160,26 @@ spec:
                   secretKeyRef:
                     name: netbird-oidc-credentials
                     key: NETBIRD_AUTH_OIDC_CLIENT_ID
-              NETBIRD_AUTH_SUPPORTED_SCOPES: "openid profile email"
-              NETBIRD_AUTH_HTTP_REDIRECT_URL: "https://nb.${SECRET_DOMAIN}/callback"
+              NETBIRD_AUTH_SUPPORTED_SCOPES: "openid profile email groups"
+              NETBIRD_AUTH_REDIRECT_URI: "/auth"
+              NETBIRD_AUTH_SILENT_REDIRECT_URI: "/silent-auth"
+              NETBIRD_TOKEN_SOURCE: "idToken"
+              NETBIRD_AUTH_DEVICE_AUTH_PROVIDER: "none"
+              NETBIRD_AUTH_DEVICE_AUTH_CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: netbird-oidc-credentials
+                    key: NETBIRD_AUTH_OIDC_CLIENT_ID
+              NETBIRD_AUTH_DEVICE_AUTH_AUDIENCE:
+                valueFrom:
+                  secretKeyRef:
+                    name: netbird-oidc-credentials
+                    key: NETBIRD_AUTH_OIDC_CLIENT_ID
+              NETBIRD_AUTH_DEVICE_AUTH_SCOPE: "openid profile email groups"
+              NETBIRD_AUTH_DEVICE_AUTH_USE_ID_TOKEN: "true"
+              NETBIRD_MGMT_IDP: "pocketid"
+              NETBIRD_IDP_MGMT_CLIENT_ID: "netbird"
+              NETBIRD_IDP_MGMT_EXTRA_MANAGEMENT_ENDPOINT: "https://id.${SECRET_DOMAIN}"
               NETBIRD_STORE_CONFIG_ENGINE: postgres
               NETBIRD_NETWORK_NET: "100.110.0.0/16"
               NETBIRD_MGMT_API_PORT: "8080"
