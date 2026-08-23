@@ -66,6 +66,11 @@ variable "netbird_setup_key" {
   sensitive = true
   default   = ""
 }
+variable "netbird_selfhosted_setup_key" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
 variable "towonel_hub_link_psk" {
   type      = string
   sensitive = true
@@ -172,19 +177,25 @@ resource "ovh_cloud_project_instance" "primary_vps" {
   }
 
   user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
-    TUNNEL_HANDSHAKE_TOKEN = var.tunnel_handshake_token
-    NETBIRD_SETUP_KEY      = var.netbird_setup_key
-    TOWONEL_HUB_LINK_PSK   = var.towonel_hub_link_psk
-    SECRET_DOMAIN          = var.secret_domain
-    HOME_IP                = local.home_ip
-    PROBE_HOSTNAME         = "vps-primary.${var.secret_domain}"
-    TOWONEL_EDGE_REGION    = "CA"
+    TUNNEL_HANDSHAKE_TOKEN       = var.tunnel_handshake_token
+    NETBIRD_SETUP_KEY            = var.netbird_setup_key
+    NETBIRD_SELFHOSTED_SETUP_KEY = ""
+    NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
+    TOWONEL_HUB_LINK_PSK         = var.towonel_hub_link_psk
+    SECRET_DOMAIN                = var.secret_domain
+    HOME_IP                      = local.home_ip
+    PROBE_HOSTNAME               = "vps-primary.${var.secret_domain}"
+    TOWONEL_EDGE_REGION          = "CA"
   })
 }
 
 locals {
   ovh_primary_ipv4 = try(
     [for addr in ovh_cloud_project_instance.primary_vps.addresses : addr.ip if addr.version == 4][0],
+    ""
+  )
+  ovh_primary_ipv6 = try(
+    [for addr in ovh_cloud_project_instance.primary_vps.addresses : addr.ip if addr.version == 6][0],
     ""
   )
 }
@@ -202,17 +213,19 @@ resource "hcloud_server" "backup_vps" {
 
   public_net {
     ipv4_enabled = true
-    ipv6_enabled = false
+    ipv6_enabled = true
   }
 
   user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
-    TUNNEL_HANDSHAKE_TOKEN = var.tunnel_handshake_token
-    NETBIRD_SETUP_KEY      = var.netbird_setup_key
-    TOWONEL_HUB_LINK_PSK   = var.towonel_hub_link_psk
-    SECRET_DOMAIN          = var.secret_domain
-    HOME_IP                = local.home_ip
-    PROBE_HOSTNAME         = "vps-backup.${var.secret_domain}"
-    TOWONEL_EDGE_REGION    = "EU"
+    TUNNEL_HANDSHAKE_TOKEN       = var.tunnel_handshake_token
+    NETBIRD_SETUP_KEY            = var.netbird_setup_key
+    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
+    NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
+    TOWONEL_HUB_LINK_PSK         = var.towonel_hub_link_psk
+    SECRET_DOMAIN                = var.secret_domain
+    HOME_IP                      = local.home_ip
+    PROBE_HOSTNAME               = "vps-backup.${var.secret_domain}"
+    TOWONEL_EDGE_REGION          = "EU"
   })
 }
 
@@ -257,7 +270,31 @@ resource "hcloud_firewall" "backup_firewall" {
     protocol    = "udp"
     port        = "51821"
     source_ips  = ["0.0.0.0/0", "::/0"]
-    description = "Allow NetBird WireGuard P2P UDP overlay traffic"
+    description = "Allow NetBird Cloud WireGuard P2P UDP overlay traffic"
+  }
+
+  rule {
+    direction   = "in"
+    protocol    = "udp"
+    port        = "51822"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+    description = "Allow NetBird Self-Hosted WireGuard P2P UDP overlay traffic"
+  }
+
+  rule {
+    direction   = "in"
+    protocol    = "udp"
+    port        = "3478"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+    description = "Allow NetBird STUN NAT discovery traffic"
+  }
+
+  rule {
+    direction   = "in"
+    protocol    = "tcp"
+    port        = "33073"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+    description = "Allow NetBird Relay WireGuard transport traffic"
   }
 }
 
@@ -296,6 +333,17 @@ resource "cloudflare_dns_record" "vps_primary" {
   ttl     = 1
 }
 
+# Primary VPS direct AAAA record
+resource "cloudflare_dns_record" "vps_primary_v6" {
+  count   = local.ovh_primary_ipv6 != "" ? 1 : 0
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "vps-primary.${var.secret_domain}"
+  content = local.ovh_primary_ipv6
+  type    = "AAAA"
+  proxied = false
+  ttl     = 1
+}
+
 # Backup VPS direct A record
 resource "cloudflare_dns_record" "vps_backup" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
@@ -305,6 +353,17 @@ resource "cloudflare_dns_record" "vps_backup" {
   proxied = false
   ttl     = 1
 }
+
+# Backup VPS direct AAAA record
+resource "cloudflare_dns_record" "vps_backup_v6" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "vps-backup.${var.secret_domain}"
+  content = hcloud_server.backup_vps.ipv6_address
+  type    = "AAAA"
+  proxied = false
+  ttl     = 1
+}
+
 
 # 6. Deploy the Cloudflare Worker Script & Bindings Declaratively
 resource "cloudflare_workers_script" "failover_monitor" {

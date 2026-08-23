@@ -88,21 +88,71 @@ write_files:
       [Install]
       WantedBy=timers.target
 
-  # 4. Write NetBird systemd override for fast recovery
+  # 4. Write NetBird Cloud systemd override for fast recovery
   - path: /etc/systemd/system/netbird.service.d/override.conf
     permissions: "0644"
     content: |
       [Service]
       RestartSec=5s
 
-  # 5. Write systemd-resolved configuration for upstream DNS
+  # 5. Write NetBird Self-Hosted systemd service unit
+  - path: /etc/systemd/system/netbird-selfhosted.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=NetBird Self-Hosted Client Daemon
+      After=network.target
+      Wants=network.target
+
+      [Service]
+      Type=simple
+      Restart=always
+      RestartSec=5s
+      Environment=NB_DISABLE_CUSTOM_ROUTING=true
+      ExecStart=/usr/bin/netbird service run \
+        --config /etc/netbird-selfhosted/config.json \
+        --daemon-addr unix:///var/run/netbird-selfhosted.sock \
+        --interface-name wt1 \
+        --log-file /var/log/netbird-selfhosted.log
+
+      [Install]
+      WantedBy=multi-user.target
+
+  # 6. Write NetBird Relay & Embedded STUN Systemd Container Service
+  - path: /etc/systemd/system/netbird-relay.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=NetBird Relay and Embedded STUN Server
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Restart=always
+      RestartSec=5s
+      ExecStartPre=-/usr/bin/docker rm -f netbird-relay
+      # renovate: depName=netbirdio/relay datasource=docker
+      ExecStart=/usr/bin/docker run --name netbird-relay --rm --net=host \
+        --log-opt max-size=10m \
+        --log-opt max-file=3 \
+        -e NB_LISTEN_ADDRESS=0.0.0.0:33073 \
+        -e NB_ENABLE_STUN=true \
+        -e NB_STUN_PORTS=3478 \
+        -e NB_METRICS_PORT=9091 \
+        -e NB_LOG_LEVEL=info \
+        docker.io/netbirdio/relay:0.77.1
+
+      [Install]
+      WantedBy=multi-user.target
+
+  # 7. Write systemd-resolved configuration for upstream DNS
   - path: /etc/systemd/resolved.conf.d/dns.conf
     permissions: "0644"
     content: |
       [Resolve]
       DNS=1.1.1.1 185.12.64.2
 
-  # 6. Write Docker daemon configuration for log rotation
+  # 8. Write Docker daemon configuration for log rotation
   - path: /etc/docker/daemon.json
     permissions: "0644"
     content: |
@@ -114,7 +164,7 @@ write_files:
         }
       }
 
-  # 7. Write Systemd Service for CrowdSec Security Engine Container
+  # 9. Write Systemd Service for CrowdSec Security Engine Container
   - path: /etc/systemd/system/crowdsec.service
     permissions: "0644"
     content: |
@@ -151,7 +201,7 @@ runcmd:
     systemctl restart systemd-resolved
     systemctl enable docker --now
 
-  # 2. Configure source-based policy routing & connect NetBird without exit-node takeover
+  # 2. Configure source-based policy routing & connect NetBird Cloud without exit-node takeover
   - |
     DEFAULT_IFACE=$(ip route show default | awk '/default/ {print $5}')
     DEFAULT_GW=$(ip route show default | awk '/default/ {print $3}')
@@ -162,6 +212,9 @@ runcmd:
     curl -fsSL https://pkgs.netbird.io/install.sh | sh
     netbird service reconfigure --service-env NB_DISABLE_CUSTOM_ROUTING=true || true
     NB_DISABLE_CUSTOM_ROUTING=true netbird up --setup-key "${NETBIRD_SETUP_KEY}" --enable-rosenpass --enable-ssh-root --allow-server-ssh --rosenpass-permissive --wireguard-port 51821
+
+    # Prepare directory and register self-hosted NetBird daemon
+    mkdir -p /etc/netbird-selfhosted
 
   # 3. Tune Linux TCP stack (BBR Congestion Control & Fast TCP Keepalives)
   - sysctl -w net.core.default_qdisc=fq
@@ -177,12 +230,26 @@ runcmd:
   - echo "net.ipv4.tcp_keepalive_probes=3" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_retries2=5" >> /etc/sysctl.conf
 
-  # 4. Enable and start Towonel Edge, Watchdog Timer & CrowdSec Container
+  # 4. Enable and start Towonel Edge, NetBird Self-Hosted, NetBird Relay & CrowdSec Container
   - mkdir -p /var/lib/crowdsec/data
   - systemctl daemon-reload
   - systemctl enable towonel-edge --now
   - systemctl enable towonel-watchdog.timer --now
   - systemctl enable crowdsec --now
+  - |
+    if [ -n "${NETBIRD_SELFHOSTED_SETUP_KEY}" ]; then
+      systemctl enable netbird-selfhosted --now
+      systemctl enable netbird-relay --now
+      until [ -S /var/run/netbird-selfhosted.sock ]; do sleep 1; done
+      NB_DISABLE_CUSTOM_ROUTING=true netbird --daemon-addr unix:///var/run/netbird-selfhosted.sock --config /etc/netbird-selfhosted/config.json up \
+        --management-url "${NETBIRD_SELFHOSTED_MGMT_URL}" \
+        --setup-key "${NETBIRD_SELFHOSTED_SETUP_KEY}" \
+        --enable-rosenpass \
+        --enable-ssh-root \
+        --allow-server-ssh \
+        --rosenpass-permissive \
+        --wireguard-port 51822 || true
+    fi
 
   # 5. Wait for CrowdSec container to populate base /etc/crowdsec/config.yaml and write custom whitelist/acquisition
   - |
@@ -222,21 +289,21 @@ runcmd:
 
     docker exec crowdsec cscli reload || true
 
-  # 6. Install IPTables Firewall Bouncer on host & connect to containerized LAPI
+  # 6. Install NFTables Firewall Bouncer on host & connect to containerized LAPI
   - |
     export DEBIAN_FRONTEND=noninteractive
     mkdir -p /etc/apt/keyrings /etc/apt/sources.list.d
     curl -fsSL https://packagecloud.io/crowdsec/crowdsec/gpgkey | gpg --dearmor --yes -o /etc/apt/keyrings/crowdsec.gpg
     echo "deb [signed-by=/etc/apt/keyrings/crowdsec.gpg] https://packagecloud.io/crowdsec/crowdsec/debian/ bookworm main" > /etc/apt/sources.list.d/crowdsec_crowdsec.list
     apt-get update
-    apt-get install -y crowdsec-firewall-bouncer-iptables
+    apt-get install -y crowdsec-firewall-bouncer-nftables
 
     # Wait for CrowdSec container LAPI to be ready
     until docker exec crowdsec cscli bouncers list >/dev/null 2>&1; do sleep 2; done
 
     # Register bouncer with local container LAPI
-    docker exec crowdsec cscli bouncers delete host-iptables || true
-    BOUNCER_KEY=$(docker exec crowdsec cscli bouncers add host-iptables -o raw | tail -n 1)
+    docker exec crowdsec cscli bouncers delete host-nftables || true
+    BOUNCER_KEY=$(docker exec crowdsec cscli bouncers add host-nftables -o raw | tail -n 1)
     sed -i "s/^api_key:.*/api_key: $${BOUNCER_KEY}/" /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
     sed -i "s|^api_url:.*|api_url: http://127.0.0.1:8080/|" /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
     systemctl restart crowdsec-firewall-bouncer
