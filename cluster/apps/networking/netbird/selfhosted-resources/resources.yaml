@@ -141,8 +141,6 @@ metadata:
 spec:
   name: "SelfHosted Mesh Policy"
   sourceGroups:
-    - "vps-nodes"
-    - "routing-peers"
+    - "All"
   destinationGroups:
-    - "vps-nodes"
-    - "routing-peers"
+    - "All"
