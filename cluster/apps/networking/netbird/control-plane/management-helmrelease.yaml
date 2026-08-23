@@ -238,6 +238,7 @@ spec:
         ports:
           http:
             port: 8080
+            appProtocol: kubernetes.io/h2c
           metrics:
             port: 9090
     persistence:
