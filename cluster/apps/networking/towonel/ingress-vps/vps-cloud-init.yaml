@@ -1,101 +1,52 @@
 #cloud-config
 write_files:
-  # 1. Write helper script to resolve public IP cleanly
-  - path: /usr/local/bin/get-public-ip.sh
-    permissions: "0755"
+  # 1. Write HAProxy Layer 4 SNI Stream Proxy Configuration
+  - path: /etc/haproxy/haproxy.cfg
+    permissions: "0644"
     content: |
-      #!/bin/sh
-      set -e
-      IFACE=$(ip route show default | awk '/default/ {print $5}')
-      IP=$(ip -4 addr show dev "$IFACE" | awk '/inet / {print $2}' | cut -d/ -f1)
-      if [ -z "$IP" ]; then
-        IP=$(curl -s4 https://api.ipify.org)
-      fi
-      mkdir -p /etc/default
-      echo "TOWONEL_PUBLIC_IP=$IP" > /etc/default/towonel-edge
+      global
+          log stdout format raw local0
+          maxconn 4096
+      defaults
+          log global
+          mode tcp
+          option tcplog
+          timeout connect 5s
+          timeout client 1h
+          timeout server 1h
+      frontend https_in
+          bind :443
+          mode tcp
+          default_backend k8s_traefik
+      backend k8s_traefik
+          mode tcp
+          server traefik 10.0.10.20:443 check inter 5s send-proxy-v2
 
-  # 2. Write Systemd Container Service File for Towonel Edge
-  - path: /etc/systemd/system/towonel-edge.service
+  # 2. Write Systemd Container Service File for Edge SNI Stream Proxy
+  - path: /etc/systemd/system/edge-proxy.service
     permissions: "0644"
     content: |
       [Unit]
-      Description=Towonel Edge Node Container
-      After=docker.service netbird.service
-      Wants=netbird.service
+      Description=Edge SNI Stream Proxy Container
+      After=docker.service netbird-selfhosted.service
+      Wants=netbird-selfhosted.service
       Requires=docker.service
 
       [Service]
       Restart=always
       RestartSec=5s
-      ExecStartPre=-/usr/bin/docker rm -f towonel-edge
-      ExecStartPre=/usr/local/bin/get-public-ip.sh
-      EnvironmentFile=-/etc/default/towonel-edge
-      # renovate: depName=codeberg.org/towonel/towonel-node datasource=docker
-      ExecStart=/usr/bin/docker run --name towonel-edge --rm --net=host \
+      ExecStartPre=-/usr/bin/docker rm -f edge-proxy
+      # renovate: depName=haproxy datasource=docker
+      ExecStart=/usr/bin/docker run --name edge-proxy --rm --net=host \
         --log-opt max-size=10m \
         --log-opt max-file=3 \
-        --health-cmd="curl -fsS http://127.0.0.1:9090/health || exit 1" \
-        --health-interval=15s \
-        --health-timeout=5s \
-        --health-retries=3 \
-        --health-start-period=15s \
-        -e TOWONEL_HUB_ENABLED=false \
-        -e TOWONEL_EDGE_ENABLED=true \
-        -e TOWONEL_EDGE_LISTEN_ADDR=0.0.0.0:443 \
-        -e TOWONEL_EDGE_HUB_LINK_ADDR=towonel-hub.networking.svc.cluster.local:51444 \
-        -e TOWONEL_EDGE_HUB_LINK_PSK=${TOWONEL_HUB_LINK_PSK} \
-        -e TOWONEL_EDGE_ADVERTISED_ADDRESSES=$${TOWONEL_PUBLIC_IP}:443 \
-        -e TOWONEL_EDGE_IROH_PORT=51810 \
-        -e TOWONEL_EDGE_REGION=${TOWONEL_EDGE_REGION} \
-        codeberg.org/towonel/towonel-node:latest@sha256:0f2140c494cebd115ee2afa6afe57faae0248b6b08b30a9331fb74374a13f59d serve
+        -v /etc/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro \
+        docker.io/haproxy:2.9-alpine
 
       [Install]
       WantedBy=multi-user.target
 
-  # 3. Write Towonel Edge Health Watchdog Script & Systemd Timer
-  - path: /usr/local/bin/towonel-watchdog.sh
-    permissions: "0755"
-    content: |
-      #!/bin/sh
-      set -e
-      if ! curl -fsS -m 5 http://127.0.0.1:9090/health >/dev/null 2>&1; then
-        echo "Towonel Edge health check failed on http://127.0.0.1:9090/health. Triggering service restart..."
-        systemctl restart towonel-edge
-      fi
-
-  - path: /etc/systemd/system/towonel-watchdog.service
-    permissions: "0644"
-    content: |
-      [Unit]
-      Description=Towonel Edge Health Watchdog Service
-      After=towonel-edge.service
-
-      [Service]
-      Type=oneshot
-      ExecStart=/usr/local/bin/towonel-watchdog.sh
-
-  - path: /etc/systemd/system/towonel-watchdog.timer
-    permissions: "0644"
-    content: |
-      [Unit]
-      Description=Towonel Edge Health Watchdog Timer
-      After=towonel-edge.service
-
-      [Timer]
-      OnBootSec=1min
-      OnUnitActiveSec=30s
-
-      [Install]
-      WantedBy=timers.target
-
-  # 4. Write NetBird Cloud systemd override for fast recovery
-  - path: /etc/systemd/system/netbird.service.d/override.conf
-    permissions: "0644"
-    content: |
-      [Service]
-      RestartSec=5s
-
-  # 5. Write NetBird Self-Hosted systemd service unit
+  # 3. Write NetBird Self-Hosted systemd service unit
   - path: /etc/systemd/system/netbird-selfhosted.service
     permissions: "0644"
     content: |
@@ -117,7 +68,7 @@ write_files:
       [Install]
       WantedBy=multi-user.target
 
-  # 6. Write NetBird Relay & Embedded STUN Systemd Container Service
+  # 4. Write NetBird Relay & Embedded STUN Systemd Container Service
   - path: /etc/systemd/system/netbird-relay.service
     permissions: "0644"
     content: |
@@ -202,7 +153,7 @@ runcmd:
     systemctl restart systemd-resolved
     systemctl enable docker --now
 
-  # 2. Configure source-based policy routing & connect NetBird Cloud without exit-node takeover
+  # 2. Configure source-based policy routing & install NetBird
   - |
     DEFAULT_IFACE=$(ip route show default | awk '/default/ {print $5}')
     DEFAULT_GW=$(ip route show default | awk '/default/ {print $3}')
@@ -211,8 +162,7 @@ runcmd:
     ip route add default via $DEFAULT_GW dev $DEFAULT_IFACE table 100 || true
 
     curl -fsSL https://pkgs.netbird.io/install.sh | sh
-    netbird service reconfigure --service-env NB_DISABLE_CUSTOM_ROUTING=true || true
-    NB_DISABLE_CUSTOM_ROUTING=true netbird up --setup-key "${NETBIRD_SETUP_KEY}" --enable-rosenpass --enable-ssh-root --allow-server-ssh --rosenpass-permissive --wireguard-port 51821
+    systemctl disable netbird --now || true
 
     # Prepare directory and register self-hosted NetBird daemon
     mkdir -p /etc/netbird-selfhosted
@@ -231,16 +181,15 @@ runcmd:
   - echo "net.ipv4.tcp_keepalive_probes=3" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_retries2=5" >> /etc/sysctl.conf
 
-  # 4. Enable and start Towonel Edge, NetBird Self-Hosted, NetBird Relay & CrowdSec Container
+  # 4. Enable and start NetBird Self-Hosted, NetBird Relay, Edge Proxy & CrowdSec Container
   - mkdir -p /var/lib/crowdsec/data
   - systemctl daemon-reload
-  - systemctl enable towonel-edge --now
-  - systemctl enable towonel-watchdog.timer --now
   - systemctl enable crowdsec --now
   - |
     if [ -n "${NETBIRD_SELFHOSTED_SETUP_KEY}" ]; then
       systemctl enable netbird-selfhosted --now
       systemctl enable netbird-relay --now
+      systemctl enable edge-proxy --now
       until [ -S /var/run/netbird-selfhosted.sock ]; do sleep 1; done
       NB_DISABLE_CUSTOM_ROUTING=true netbird --daemon-addr unix:///var/run/netbird-selfhosted.sock --config /etc/netbird-selfhosted/config.json up \
         --management-url "${NETBIRD_SELFHOSTED_MGMT_URL}" \
@@ -276,7 +225,7 @@ runcmd:
         - "192.168.0.0/16"
     EOF
 
-    cat <<EOF > /etc/crowdsec/acquis.d/towonel.yaml
+    cat <<EOF > /etc/crowdsec/acquis.d/edge-proxy.yaml
     filenames:
       - /var/lib/docker/containers/*/*-json.log
     labels:

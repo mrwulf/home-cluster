@@ -261,23 +261,7 @@ resource "hcloud_firewall" "backup_firewall" {
     protocol    = "tcp"
     port        = "9090"
     source_ips  = [local.home_ip_cidr, "172.56.0.0/16", "75.50.127.0/24"]
-    description = "Allow Towonel Edge metrics scraping from home only"
-  }
-
-  rule {
-    direction   = "in"
-    protocol    = "udp"
-    port        = "51810"
-    source_ips  = ["0.0.0.0/0", "::/0"]
-    description = "Allow Iroh UDP transport traffic for Towonel"
-  }
-
-  rule {
-    direction   = "in"
-    protocol    = "udp"
-    port        = "51821"
-    source_ips  = ["0.0.0.0/0", "::/0"]
-    description = "Allow NetBird Cloud WireGuard P2P UDP overlay traffic"
+    description = "Allow metrics scraping from home only"
   }
 
   rule {
@@ -336,6 +320,16 @@ resource "cloudflare_dns_record" "ingress" {
       proxied,
     ]
   }
+}
+
+# NetBird Self-Hosted direct unproxied DNS
+resource "cloudflare_dns_record" "netbird_direct" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "nb.${var.secret_domain}"
+  content = "ingress.${var.secret_domain}"
+  type    = "CNAME"
+  proxied = false
+  ttl     = 1
 }
 
 # Primary VPS direct A record
