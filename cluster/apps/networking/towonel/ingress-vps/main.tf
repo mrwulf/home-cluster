@@ -154,6 +154,18 @@ resource "ovh_cloud_project_ssh_key" "primary_key" {
   public_key   = data.hcloud_ssh_keys.all_keys.ssh_keys[0].public_key
 }
 
+resource "terraform_data" "cloud_init_primary" {
+  input = templatefile("${path.module}/vps-cloud-init.yaml", {
+    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
+    NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
+    NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
+    NETBIRD_PROXY_TOKEN          = var.netbird_proxy_token
+    SECRET_DOMAIN                = var.secret_domain
+    HOME_IP                      = local.home_ip
+    PROBE_HOSTNAME               = "vps-primary.${var.secret_domain}"
+  })
+}
+
 resource "ovh_cloud_project_instance" "primary_vps" {
   service_name   = var.ovh_service_name
   region         = var.ovh_region
@@ -176,15 +188,13 @@ resource "ovh_cloud_project_instance" "primary_vps" {
     name = ovh_cloud_project_ssh_key.primary_key.name
   }
 
-  user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
-    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
-    NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
-    NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
-    NETBIRD_PROXY_TOKEN          = var.netbird_proxy_token
-    SECRET_DOMAIN                = var.secret_domain
-    HOME_IP                      = local.home_ip
-    PROBE_HOSTNAME               = "vps-primary.${var.secret_domain}"
-  })
+  user_data = terraform_data.cloud_init_primary.output
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.cloud_init_primary
+    ]
+  }
 }
 
 locals {
@@ -201,6 +211,18 @@ locals {
 # 3. Hetzner Cloud Backup Ingress VPS
 data "hcloud_ssh_keys" "all_keys" {}
 
+resource "terraform_data" "cloud_init_backup" {
+  input = templatefile("${path.module}/vps-cloud-init.yaml", {
+    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
+    NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
+    NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
+    NETBIRD_PROXY_TOKEN          = var.netbird_proxy_token
+    SECRET_DOMAIN                = var.secret_domain
+    HOME_IP                      = local.home_ip
+    PROBE_HOSTNAME               = "vps-backup.${var.secret_domain}"
+  })
+}
+
 resource "hcloud_server" "backup_vps" {
   name = "ingress-tunnel-backup-hetzner"
   # renovate: datasource=docker depName=debian
@@ -214,15 +236,13 @@ resource "hcloud_server" "backup_vps" {
     ipv6_enabled = true
   }
 
-  user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
-    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
-    NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
-    NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
-    NETBIRD_PROXY_TOKEN          = var.netbird_proxy_token
-    SECRET_DOMAIN                = var.secret_domain
-    HOME_IP                      = local.home_ip
-    PROBE_HOSTNAME               = "vps-backup.${var.secret_domain}"
-  })
+  user_data = terraform_data.cloud_init_backup.output
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.cloud_init_backup
+    ]
+  }
 }
 
 # 4. Create Declarative Firewall for the Backup Server (Allow 22 & 9090 to home IP, 443 to all)
