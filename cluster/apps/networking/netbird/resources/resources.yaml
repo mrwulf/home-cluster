@@ -190,6 +190,7 @@ spec:
     - routing-peers
   policySourceGroups:
     - "Users"
+    - "vps-peers"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -344,6 +345,7 @@ spec:
     - routing-peers
   policySourceGroups:
     - "Users"
+    - "vps-peers"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -496,6 +498,7 @@ spec:
   name: "External Ingress Policy"
   sourceGroups:
     - "Users"
+    - "vps-peers"
   destinationGroups:
     - routing-peers
   protocols:
@@ -541,6 +544,7 @@ spec:
   name: "Public Sites Policy"
   sourceGroups:
     - "Users"
+    - "vps-peers"
   destinationGroups:
     - routing-peers
   protocols:

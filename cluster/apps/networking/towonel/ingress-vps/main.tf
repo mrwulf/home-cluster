@@ -61,22 +61,17 @@ variable "smtp_password" {
   type      = string
   sensitive = true
 }
-variable "netbird_setup_key" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
 variable "netbird_selfhosted_setup_key" {
   type      = string
   sensitive = true
   default   = ""
 }
-variable "towonel_hub_link_psk" {
+variable "netbird_relay_auth_secret" {
   type      = string
   sensitive = true
   default   = ""
 }
-variable "netbird_relay_auth_secret" {
+variable "netbird_proxy_token" {
   type      = string
   sensitive = true
   default   = ""
@@ -182,16 +177,13 @@ resource "ovh_cloud_project_instance" "primary_vps" {
   }
 
   user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
-    TUNNEL_HANDSHAKE_TOKEN       = var.tunnel_handshake_token
-    NETBIRD_SETUP_KEY            = var.netbird_setup_key
-    NETBIRD_SELFHOSTED_SETUP_KEY = ""
+    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
     NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
     NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
-    TOWONEL_HUB_LINK_PSK         = var.towonel_hub_link_psk
+    NETBIRD_PROXY_TOKEN          = var.netbird_proxy_token
     SECRET_DOMAIN                = var.secret_domain
     HOME_IP                      = local.home_ip
     PROBE_HOSTNAME               = "vps-primary.${var.secret_domain}"
-    TOWONEL_EDGE_REGION          = "CA"
   })
 }
 
@@ -223,16 +215,13 @@ resource "hcloud_server" "backup_vps" {
   }
 
   user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
-    TUNNEL_HANDSHAKE_TOKEN       = var.tunnel_handshake_token
-    NETBIRD_SETUP_KEY            = var.netbird_setup_key
     NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
     NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
     NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
-    TOWONEL_HUB_LINK_PSK         = var.towonel_hub_link_psk
+    NETBIRD_PROXY_TOKEN          = var.netbird_proxy_token
     SECRET_DOMAIN                = var.secret_domain
     HOME_IP                      = local.home_ip
     PROBE_HOSTNAME               = "vps-backup.${var.secret_domain}"
-    TOWONEL_EDGE_REGION          = "EU"
   })
 }
 
@@ -246,6 +235,14 @@ resource "hcloud_firewall" "backup_firewall" {
     port        = "22"
     source_ips  = [local.home_ip_cidr, "172.56.0.0/16", "75.50.127.0/24"]
     description = "Allow SSH from home and workstation"
+  }
+
+  rule {
+    direction   = "in"
+    protocol    = "tcp"
+    port        = "80"
+    source_ips  = ["0.0.0.0/0", "::/0"]
+    description = "Allow HTTP public proxy / ACME challenge traffic"
   }
 
   rule {
@@ -342,6 +339,17 @@ resource "cloudflare_dns_record" "vps_primary" {
   ttl     = 1
 }
 
+# Primary VPS direct AAAA record
+resource "cloudflare_dns_record" "vps_primary_v6" {
+  count   = local.ovh_primary_ipv6 != "" ? 1 : 0
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "vps-primary.${var.secret_domain}"
+  content = local.ovh_primary_ipv6
+  type    = "AAAA"
+  proxied = false
+  ttl     = 1
+}
+
 # Backup VPS direct A record
 resource "cloudflare_dns_record" "vps_backup" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
@@ -358,6 +366,55 @@ resource "cloudflare_dns_record" "vps_backup_v6" {
   name    = "vps-backup.${var.secret_domain}"
   content = hcloud_server.backup_vps.ipv6_address
   type    = "AAAA"
+  proxied = false
+  ttl     = 1
+}
+
+# Proxy Cluster direct IPv4 A records
+resource "cloudflare_dns_record" "proxy_primary_v4" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "proxy.${var.secret_domain}"
+  content = local.ovh_primary_ipv4
+  type    = "A"
+  proxied = false
+  ttl     = 1
+}
+
+resource "cloudflare_dns_record" "proxy_backup_v4" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "proxy.${var.secret_domain}"
+  content = hcloud_server.backup_vps.ipv4_address
+  type    = "A"
+  proxied = false
+  ttl     = 1
+}
+
+# Proxy Cluster direct IPv6 AAAA records
+resource "cloudflare_dns_record" "proxy_primary_v6" {
+  count   = local.ovh_primary_ipv6 != "" ? 1 : 0
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "proxy.${var.secret_domain}"
+  content = local.ovh_primary_ipv6
+  type    = "AAAA"
+  proxied = false
+  ttl     = 1
+}
+
+resource "cloudflare_dns_record" "proxy_backup_v6" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "proxy.${var.secret_domain}"
+  content = hcloud_server.backup_vps.ipv6_address
+  type    = "AAAA"
+  proxied = false
+  ttl     = 1
+}
+
+# Wildcard CNAME for *.proxy.${SECRET_DOMAIN} -> proxy.${SECRET_DOMAIN}
+resource "cloudflare_dns_record" "proxy_wildcard" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "*.proxy.${var.secret_domain}"
+  content = "proxy.${var.secret_domain}"
+  type    = "CNAME"
   proxied = false
   ttl     = 1
 }

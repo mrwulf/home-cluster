@@ -281,14 +281,48 @@ graph TD
 4. **Validation**:
    - Verified active WireGuard tunnels on both `netbird-cloud-client` (`100.100.x.x`) and `networkrouter-k8s` (`100.111.x.x`).
 
-### Phase 4: Edge Reverse Proxy Proof-of-Concept
+### Phase 4: NetBird BYOP Reverse Proxy Deployment (`proxy.${SECRET_DOMAIN}`)
 
-1. Configure NetBird Reverse Proxy (TLS Passthrough) on VPS nodes over `wt1` targeting `10.0.10.20:443`.
-2. Deploy a test hostname `test-ingress.${SECRET_DOMAIN}` pointing to the primary VPS.
-3. Verify:
-   - SNI preservation and TLS termination at Traefik.
-   - Real client IP header forwarding and PROXY protocol support.
-   - CrowdSec IP reputation blocking on the VPS host before traffic enters the proxy.
+1. **Edge Reverse Proxy Container (`netbird-proxy.service`)**:
+   - Deploy `docker.io/netbirdio/reverse-proxy:0.77.1` on both VPS nodes (OVH Primary and Hetzner Backup) binding to `:80` and `:443` with `--net=host` and `NB_PROXY_PRIVATE=true`.
+   - Stripped legacy Towonel and Cloud NetBird (`wt0`) from both VPS instances, running exclusively on `wt1` connected to `https://nb.${SECRET_DOMAIN}`.
+   - Dual geo-distributed STUN (`:3478`) and Relay (`:33073`) endpoints active on North America (OVH) and Europe (Hetzner).
+
+2. **DNS Architecture on Cloudflare**:
+   - Direct round-robin IPv4 `A` and IPv6 `AAAA` records for `proxy.${SECRET_DOMAIN}` targeting OVH and Hetzner VPS IPs.
+   - Wildcard unproxied CNAME `*.proxy.${SECRET_DOMAIN}` pointing to `proxy.${SECRET_DOMAIN}`.
+
+3. **NetBird Reverse Proxy Operational Runbook (BYOP & Services)**:
+   - **Why No CRDs in Operator**: Upstream `netbird-operator` (v0.8.0) does not currently provide CRDs for reverse proxy services. Management is performed via Web Console and REST API.
+   - **Cluster Token Creation**:
+     - Synced via ExternalSecrets as `NB_PROXY_API_KEY` from Bitwarden item `Netbird Service Credentials`.
+     - API: `POST /api/reverse-proxies/proxy-tokens` with `{"name": "vps-edge-byop", "expires_in": 0}`.
+   - **Dynamic Cluster Lifecycle**:
+     - The cluster appears **Online** in the NetBird dashboard under `Reverse Proxy > Clusters` when `netbird-proxy.service` starts and dials `https://nb.${SECRET_DOMAIN}`.
+   - **Service Creation (Public & Private / NetBird-Only)**:
+     - **Web UI**: Navigate to `Reverse Proxy > Services > Add Service`.
+       - Base Domain: `proxy.${SECRET_DOMAIN}`.
+       - Target: Select `Peer` ➔ `networkrouter-k8s` port `443` (or `Resource` ➔ `External Ingress Gateway` `10.0.10.20:443`).
+       - Auth: `None` (public HTTPS via ACME), `SSO/PIN`, or `NetBird-Only Access` (private zero-trust).
+     - **REST API**:
+
+       ```bash
+       curl -X POST https://nb.${SECRET_DOMAIN}/api/reverse-proxies/services \
+         -H "Authorization: Token <PAT>" \
+         -H "Content-Type: application/json" \
+         -d '{
+           "domain": "test-service",
+           "cluster_id": "<CLUSTER_ID>",
+           "target": {
+             "type": "peer",
+             "peer_id": "<PEER_ID>",
+             "port": 443
+           },
+           "auth": {
+             "mode": "none"
+           }
+         }'
+       ```
 
 ### Phase 5: Production Failover Reconfiguration & Towonel Retirement
 

@@ -29,11 +29,13 @@ results, and operational details for the self-hosted NetBird overlay stack
     control plane (`http://netbird-management.networking.svc.cluster.local:8080`),
     deployed standalone `netbird-cloud-client` for Cloud NetBird fallback
     (`100.100.0.0/16`), and verified dual in-cluster routing peers.
-- **Phase 4: Edge Reverse Proxy Proof-of-Concept**
-  - **Status**: 📋 Planned
-  - **Deliverables**: NetBird Reverse Proxy (TLS passthrough) on `wt1` targeting
-    `10.0.10.20:443`, `test-ingress` validation, and CrowdSec reputation
-    filtering.
+- **Phase 4: NetBird BYOP Reverse Proxy Deployment (`proxy.${SECRET_DOMAIN}`)**
+  - **Status**: ⏳ In Progress (Deployed & Reconciling)
+  - **Deliverables**: Parameterized `netbirdio/reverse-proxy:0.77.1` systemd container
+    service on dual VPS nodes, stripped Towonel and Cloud NetBird (`wt0`), enabled
+    dual-STUN and dual-Relay geo-redundancy, configured Cloudflare DNS for
+    `proxy.${SECRET_DOMAIN}` and `*.proxy.${SECRET_DOMAIN}`, and mapped
+    `NB_PROXY_API_KEY` token.
 - **Phase 5: Production Failover & Towonel Retirement**
   - **Status**: 📋 Planned
   - **Deliverables**: Direct public services migration (Plex, Immich, Restic),
@@ -191,9 +193,15 @@ Peers count: 4/4 Connected
 
 ### 3. Split-Horizon DNS & Relay Resolution Invariant
 
-- **Discovery**: In environments with split-horizon wildcard DNS (`*.${SECRET_DOMAIN}` -> internal Traefik VIP `10.0.10.20`), in-cluster pods and LAN clients resolve public VPS hostnames (e.g. `vps-backup.${SECRET_DOMAIN}`) to the local ingress VIP instead of the public VPS IP. This prevented `networkrouter-k8s` from reaching the containerized NetBird Relay on port `33073` and STUN on port `3478`.
-- **Remediation**: Configured declarative `hostAliases` in `NetworkRouter/k8s` (`workloadOverride.podTemplate.spec`) mapping `vps-backup.${SECRET_DOMAIN}` and `vps-primary.${SECRET_DOMAIN}` directly to their respective public VPS IPs (`${VPS_BACKUP_PUBLIC_IP}` and `${VPS_PRIMARY_PUBLIC_IP}`).
-- **VPS Enrollment Retry**: Updated `vps-cloud-init.yaml` to include an idempotent retry loop for `netbird up` to guard against initial boot DNS/network startup latency.
+- **Discovery**: In environments with split-horizon wildcard DNS (`*.${SECRET_DOMAIN}` -> internal Traefik VIP `10.0.10.20`),
+  in-cluster pods and LAN clients resolve public VPS hostnames (e.g. `vps-backup.${SECRET_DOMAIN}`) to the local
+  ingress VIP instead of the public VPS IP. This prevented `networkrouter-k8s` from reaching the containerized
+  NetBird Relay on port `33073` and STUN on port `3478`.
+- **Remediation**: Configured declarative `hostAliases` in `NetworkRouter/k8s` (`workloadOverride.podTemplate.spec`)
+  mapping `vps-backup.${SECRET_DOMAIN}` and `vps-primary.${SECRET_DOMAIN}` directly to their respective public
+  VPS IPs (`${VPS_BACKUP_PUBLIC_IP}` and `${VPS_PRIMARY_PUBLIC_IP}`).
+- **VPS Enrollment Retry**: Updated `vps-cloud-init.yaml` to include an idempotent retry loop for `netbird up`
+  to guard against initial boot DNS/network startup latency.
 
 ### 4. PocketID Group Synchronization & Access Control Policies
 
@@ -205,10 +213,20 @@ Peers count: 4/4 Connected
 
 ---
 
-## Phase 4 Preparation: VPS Direct Edge Ingress & Towonel Retirement
+## Phase 4: NetBird BYOP Reverse Proxy Deployment (`proxy.${SECRET_DOMAIN}`)
 
-### Target Ingress Flow on Hetzner VPS (`vps-backup`)
+### 1. Architectural Strategy & Complete VPS Modernization
 
-1. **Decommission Towonel Edge**: Remove `towonel-edge.service` and `towonel-watchdog` from `vps-cloud-init.yaml`.
-2. **Direct Layer 4 SNI Proxy**: Deploy lightweight TLS passthrough reverse proxy listening on port `443` forwarding directly across WireGuard mesh `wt1` to Traefik External Gateway (`10.0.10.20:443`).
-3. **Unproxied Direct DNS**: Update `main.tf` to configure unproxied direct DNS records for `nb.${SECRET_DOMAIN}` pointing to the VPS, bypassing Cloudflare proxy buffering for native gRPC and WebSocket throughput.
+- **Complete Legacy Stripping**: Stripped Cloud NetBird (`wt0`) and Towonel from both Primary (OVH) and Backup (Hetzner) VPS instances. Both nodes now operate exclusively on self-hosted WireGuard mesh `wt1`.
+- **Integrated Reverse Proxy**: Deployed `docker.io/netbirdio/reverse-proxy:0.77.1` as `netbird-proxy.service` listening on ports `80` and `443` with `--net=host` and `NB_PROXY_PRIVATE=true`.
+- **Geo-Distributed Redundancy**: Configured dual STUN (`:3478`) and dual Relay (`:33073`) on OVH (North America) and Hetzner (Europe).
+- **DNS Topology**: Configured multi-origin round-robin `A` and `AAAA` records for `proxy.${SECRET_DOMAIN}` and wildcard CNAME `*.proxy.${SECRET_DOMAIN}` on Cloudflare.
+
+### 2. Operational Procedures & Runbook
+
+1. **Proxy Token Management**:
+   - Token `NB_PROXY_API_KEY` stored in Bitwarden under `Netbird Service Credentials` and synced via ExternalSecrets to `ingress-tunnel-secrets`.
+   - Token is injected into `netbird-proxy.service` as `NB_PROXY_TOKEN`.
+2. **Cluster & Service Creation**:
+   - The cluster `proxy.${SECRET_DOMAIN}` dynamically registers with management as **Online** upon container startup.
+   - Services are created in the NetBird Web Console (`Reverse Proxy > Services > Add Service`) or via `POST /api/reverse-proxies/services` targeting `networkrouter-k8s:443` (peer) or `10.0.10.20:443` (resource).
