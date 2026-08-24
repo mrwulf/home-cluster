@@ -127,30 +127,30 @@ metadata:
   namespace: networking
 spec:
   name: "vps-peers"
-# ---
-# apiVersion: netbird.io/v1
-# kind: NBGroup
-# metadata:
-#   name: routing-peers
-#   namespace: networking
-# spec:
-#   name: "Routing Peers"
-# ---
-# apiVersion: netbird.io/v1
-# kind: NBGroup
-# metadata:
-#   name: firewall-peers
-#   namespace: networking
-# spec:
-#   name: "Firewall Peers"
-# ---
-# apiVersion: netbird.io/v1
-# kind: NBGroup
-# metadata:
-#   name: fullvpn
-#   namespace: networking
-# spec:
-#   name: "FullVPN"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: routing-peers
+  namespace: networking
+spec:
+  name: "routing-peers"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: firewall-peers
+  namespace: networking
+spec:
+  name: "Firewall Peers"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: fullvpn
+  namespace: networking
+spec:
+  name: "fullvpn"
 ---
 apiVersion: netbird.io/v1
 kind: NBGroup
