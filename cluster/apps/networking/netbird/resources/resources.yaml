@@ -666,8 +666,8 @@ spec:
             - name: NB_SETUP_KEY
               valueFrom:
                 secretKeyRef:
-                  name: netbird
-                  key: SETUP_KEY
+                  name: netbird-control-plane-secrets
+                  key: NB_CLOUD_SETUP_KEY
             - name: NB_MANAGEMENT_URL
               value: "https://api.netbird.io:443"
             - name: NB_LOG_LEVEL
