@@ -9,7 +9,6 @@ metadata:
     gatus.io/enabled: "true"
     gatus.io/endpoint: |
       group: networking
-      path: /api/health
 spec:
   parentRefs:
     - name: external-gateway
