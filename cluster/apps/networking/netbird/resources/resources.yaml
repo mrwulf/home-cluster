@@ -674,10 +674,6 @@ spec:
               value: info
             - name: NB_LOG_FILE
               value: console
-            - name: NB_DISABLE_PROFILES
-              value: "true"
-            - name: NB_DISABLE_UPDATE_SETTINGS
-              value: "true"
             - name: NB_DAEMON_ADDR
               value: unix:///var/run/netbird/netbird.sock
             - name: NB_ENTRYPOINT_SERVICE_TIMEOUT
