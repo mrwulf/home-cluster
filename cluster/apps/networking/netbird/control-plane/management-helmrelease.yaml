@@ -109,10 +109,16 @@ spec:
                     {
                       "Proto": "udp",
                       "URI": "stun:vps-backup.${SECRET_DOMAIN}:3478"
+                    },
+                    {
+                      "Proto": "udp",
+                      "URI": "stun:stun.netbird.io:5555"
                     }
                   ],
                   "Relay": {
-                    "Addresses": [],
+                    "Addresses": [
+                      "rel://vps-backup.${SECRET_DOMAIN}:33073"
+                    ],
                     "CredentialsTTL": "24h",
                     "Secret": "$NETBIRD_RELAY_AUTH_SECRET"
                   },
@@ -161,6 +167,7 @@ spec:
                 "8080",
                 "--log-file",
                 "console",
+                "--disable-anonymous-metrics",
               ]
             env:
               NETBIRD_USE_AUTH0: "false"

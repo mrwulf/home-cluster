@@ -47,7 +47,7 @@ spec:
                 "--log-file",
                 "console",
                 "--log-level",
-                "debug",
+                "info",
               ]
             probes:
               liveness:
