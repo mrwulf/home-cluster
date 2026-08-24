@@ -4,7 +4,7 @@ metadata:
   name: ingress-tunnel-infra
   namespace: networking
 spec:
-  interval: 1h
+  interval: 15m
   approvePlan: auto
   destroyResourcesOnDeletion: true
   path: ./cluster/apps/networking/towonel/ingress-vps
