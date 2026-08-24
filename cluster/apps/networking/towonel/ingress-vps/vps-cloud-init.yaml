@@ -35,7 +35,7 @@ write_files:
       tcp:
         routers:
           sni-passthrough:
-            rule: "HostSNIRegexp(`{subdomain:[a-z0-9-]+}.${SECRET_DOMAIN}`)"
+            rule: "HostSNI(`*`)"
             entryPoints:
               - websecure
             service: k8s-traefik
