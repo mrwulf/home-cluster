@@ -339,13 +339,13 @@ resource "cloudflare_dns_record" "ingress" {
   }
 }
 
-# NetBird Self-Hosted direct unproxied DNS
+# NetBird Self-Hosted proxied DNS via Cloudflare Tunnel
 resource "cloudflare_dns_record" "netbird_direct" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
   name    = "nb.${var.secret_domain}"
-  content = "ingress.${var.secret_domain}"
+  content = "external.${var.secret_domain}"
   type    = "CNAME"
-  proxied = false
+  proxied = true
   ttl     = 1
 }
 
