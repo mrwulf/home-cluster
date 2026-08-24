@@ -55,8 +55,8 @@ write_files:
     content: |
       [Unit]
       Description=Traefik Edge Reverse Proxy Container
-      After=docker.service netbird-selfhosted.service
-      Wants=netbird-selfhosted.service
+      After=docker.service netbird.service netbird-selfhosted.service
+      Wants=docker.service
       Requires=docker.service
 
       [Service]
@@ -189,7 +189,9 @@ runcmd:
     ip route add default via $DEFAULT_GW dev $DEFAULT_IFACE table 100 || true
 
     curl -fsSL https://pkgs.netbird.io/install.sh | sh
-    systemctl disable netbird --now || true
+    if [ -z "${NETBIRD_SETUP_KEY}" ]; then
+      systemctl disable netbird --now || true
+    fi
 
     # Prepare directory and register self-hosted NetBird daemon
     mkdir -p /etc/netbird-selfhosted
@@ -208,15 +210,27 @@ runcmd:
   - echo "net.ipv4.tcp_keepalive_probes=3" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_retries2=5" >> /etc/sysctl.conf
 
-  # 4. Enable and start NetBird Self-Hosted, NetBird Relay, Traefik Edge & CrowdSec Container
+  # 4. Enable and start NetBird Cloud, NetBird Self-Hosted, NetBird Relay, Traefik Edge & CrowdSec Container
   - mkdir -p /var/lib/crowdsec/data
   - systemctl daemon-reload
   - systemctl enable crowdsec --now
+  - systemctl enable traefik --now
+  - |
+    if [ -n "${NETBIRD_SETUP_KEY}" ]; then
+      systemctl enable netbird --now || true
+      netbird service reconfigure --service-env NB_DISABLE_CUSTOM_ROUTING=true || true
+      NB_DISABLE_CUSTOM_ROUTING=true netbird up \
+        --setup-key "${NETBIRD_SETUP_KEY}" \
+        --enable-rosenpass \
+        --enable-ssh-root \
+        --allow-server-ssh \
+        --rosenpass-permissive \
+        --wireguard-port 51821 || true
+    fi
   - |
     if [ -n "${NETBIRD_SELFHOSTED_SETUP_KEY}" ]; then
       systemctl enable netbird-selfhosted --now
       systemctl enable netbird-relay --now
-      systemctl enable traefik --now
       until [ -S /var/run/netbird-selfhosted.sock ]; do sleep 1; done
       NB_DISABLE_CUSTOM_ROUTING=true netbird --daemon-addr unix:///var/run/netbird-selfhosted.sock --config /etc/netbird-selfhosted/config.json up \
         --management-url "${NETBIRD_SELFHOSTED_MGMT_URL}" \

@@ -118,17 +118,21 @@ graph TD
   `100.64.0.0`–`100.127.255.255`) and guarantees zero IP collisions across all
   networks.
 
-### 2.4 Declarative Policy Management in Self-Hosted NetBird
+### 2.4 Declarative Policy & Dual-Mesh Operator Architecture
 
-- **Cloud Limitations Eliminated**: NetBird Cloud enforced strict API rate
-  limits (429s) and had partial operator coverage for standalone `NBPolicy` CRs.
-- **Self-Hosted Operator Parity**:
-  - `netbird-operator` connects directly to in-cluster `https://nb.${SECRET_DOMAIN}`
-    with zero rate limiting.
-  - `NBResource` CRs automatically generate declarative resource access policies
-    via `policySourceGroups` and `groups`.
-  - In self-hosted NetBird, policy management is fully declarative and reconciles
-    cleanly with GitOps.
+- **Upstream Operator Single-Instance Invariant**: Upstream `netbird-operator` hardcodes
+  cluster-wide watchers across all namespaces for all NetBird CRDs. Attempting to run dual
+  operators simultaneously causes cache panics and reconciliation collisions.
+- **Self-Hosted Operator Target**:
+  - `netbird-operator` connects directly to the in-cluster self-hosted management server
+    (`http://netbird-management.networking.svc.cluster.local:8080`) using `NB_SELFHOSTED_API_KEY`.
+  - Reconciles declarative `NetworkRouter`, `NBResource`, `NBGroup`, and `NBPolicy` CRs
+    against the self-hosted PostgreSQL database with zero API rate limiting.
+- **Cloud Fallback Mesh**:
+  - Maintained via a standalone declarative `Deployment` (`netbird-cloud-client`) running
+    in `networking` namespace connected to `https://api.netbird.io:443`.
+  - Connects using `SETUP_KEY` from `Secret/netbird`, advertising all internal subnets
+    and cluster domains without requiring a second operator.
 
 ### 2.5 CrowdSec nftables Bouncer Integration
 
@@ -264,13 +268,18 @@ graph TD
    - Configure `VMStaticScrape` to collect interface counters for both `wt0` and `wt1`, plus relay metrics on OVH and Hetzner.
    - Deploy Gatus external monitors probing VPS health and WireGuard interface reachability.
 
-### Phase 3: In-Cluster Routing Peer & Mesh Access Policies
+### Phase 3: In-Cluster Routing Peer, Dual-Mesh Architecture & Operator Switch
 
-1. Deploy in-cluster NetBird routing peer in `networking` namespace connected to `https://nb.${SECRET_DOMAIN}`.
-2. Configure declarative NetBird access policies:
-   - Allow `vps-nodes` group to reach `traefik-external` (`10.0.10.20:443`) over `wt1`.
-   - Restrict administrative ports to authorized PocketID user groups.
-3. Validate P2P WireGuard handshakes and perform iperf3 bandwidth benchmarks across `wt1`.
+1. **Operator Target Switch**:
+   - Switched `netbird-operator` to target `http://netbird-management.networking.svc.cluster.local:8080` with `NB_SELFHOSTED_API_KEY`.
+   - Reconciles `NetworkRouter/k8s` in `networking` namespace connected to the self-hosted mesh (`100.111.0.0/16`).
+2. **Cloud Fallback Mesh Client**:
+   - Deployed standalone `Deployment/netbird-cloud-client` in `networking` namespace connected to `https://api.netbird.io:443`.
+   - Maintains full route advertisement for `100.100.0.0/16` fallback.
+3. **Declarative Policy & Group Syncing**:
+   - Configured `NBGroup` (`all`, `vps-nodes`, `routing-peers`, `users`, `admin-users`) and `NBPolicy` rules on the self-hosted control plane.
+4. **Validation**:
+   - Verified active WireGuard tunnels on both `netbird-cloud-client` (`100.100.x.x`) and `networkrouter-k8s` (`100.111.x.x`).
 
 ### Phase 4: Edge Reverse Proxy Proof-of-Concept
 

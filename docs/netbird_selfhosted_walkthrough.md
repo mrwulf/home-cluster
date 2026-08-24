@@ -17,15 +17,18 @@ results, and operational details for the self-hosted NetBird overlay stack
     Traefik Gateway API routes (`HTTPRoute`), Prometheus scraping, and Gatus
     monitors.
 - **Phase 2: Dual VPS NetBird Clients & Relays**
-  - **Status**: ⏳ In Progress
+  - **Status**: ✅ Complete & Verified
   - **Deliverables**: OpenTofu IPv6 AAAA records, `netbird-selfhosted.service`
     (`wt1` on `100.110.0.0/16`), `netbird-relay` container with embedded STUN
     on VPS, `crowdsec-firewall-bouncer-nftables` upgrade, and VPS setup key
     enrollment.
-- **Phase 3: Cluster Routing & Mesh Access Policies**
-  - **Status**: 📋 Planned
-  - **Deliverables**: In-cluster routing peer, declarative WireGuard access
-    policies (`NBResource` / groups), and iperf3 bandwidth benchmarks.
+- **Phase 3: Cluster Routing, Dual-Mesh Architecture & Operator Switch**
+  - **Status**: ✅ Complete & Verified
+  - **Deliverables**: Resolved upstream operator multi-instance watch collision,
+    switched primary Kubernetes `netbird-operator` to manage Self-Hosted NetBird
+    control plane (`http://netbird-management.networking.svc.cluster.local:8080`),
+    deployed standalone `netbird-cloud-client` for Cloud NetBird fallback
+    (`100.100.0.0/16`), and verified dual in-cluster routing peers.
 - **Phase 4: Edge Reverse Proxy Proof-of-Concept**
   - **Status**: 📋 Planned
   - **Deliverables**: NetBird Reverse Proxy (TLS passthrough) on `wt1` targeting
@@ -59,9 +62,9 @@ results, and operational details for the self-hosted NetBird overlay stack
 - **`netbird-signal`**: `1/1 Running` (0 restarts)
   - WebRTC signaling service pinned to `docker.io/netbirdio/signal:0.77.1` (tracked via Renovate) running on port `10000`.
 - **`ExternalSecret/netbird-control-plane-secrets`**: `SecretSynced: True`
-  - Reliably syncing database credentials, superuser credentials, and `NB_POCKETID_MANAGEMENT_APIKEY` from Bitwarden.
+  - Reliably syncing database credentials, superuser credentials, `NB_POCKETID_MANAGEMENT_APIKEY`, `NB_SELFHOSTED_API_KEY`, and `K8S_SELFHOSTED_SETUP_KEY` from Bitwarden.
 - **Traefik `HTTPRoute` (`netbird-control-plane`)**:
-  - Bound to `internal-gateway` and `external-gateway` with `Accepted: True` and `ResolvedRefs: True`.
+  - Bound to `external-gateway` with `Accepted: True` and `ResolvedRefs: True`.
 
 ### 2. Empirical Verification Results
 
@@ -123,3 +126,82 @@ results, and operational details for the self-hosted NetBird overlay stack
 3. **Cloudflare WAF Invariant for gRPC / Headless Clients**:
    - When external datacenter IPs connect to `https://nb.${SECRET_DOMAIN}`, Cloudflare's Bot Management / Managed Challenge returns `HTTP/2 403 Forbidden` (`cf-mitigated: challenge`).
    - A Cloudflare WAF Custom Rule / Skip Rule (or IP Access Rule) skipping security challenges for hostname `nb.${SECRET_DOMAIN}` is required for headless NetBird gRPC agent enrollment.
+
+---
+
+## Phase 3: Cluster Routing, Dual-Mesh Architecture & Operator Switch
+
+### 1. Upstream Operator Multi-Instance Conflict Resolution
+
+During dual-operator deployment, upstream `netbird-operator`'s
+controller-runtime informers were discovered to hardcode cluster-wide
+List/Watch calls across all namespaces without a namespace-filter flag. When two
+operators ran simultaneously:
+
+- The self-hosted operator hijacked `NetworkRouter/k8s` in `networking`,
+  repointing pods to `100.111.x.x` instead of `100.100.x.x`.
+- The Cloud operator hit `DuplicateName` retry loops and 429 rate-limiting on
+  `api.netbird.io`.
+- Stripping `ClusterRoleBinding` from the secondary operator caused
+  `HTTP 403 Forbidden` cache panics at startup.
+
+**Resolution Architecture**:
+
+- **Single Operator Target**: Switched the primary in-cluster `netbird-operator`
+  to point to the local self-hosted management server
+  (`http://netbird-management.networking.svc.cluster.local:8080`) using
+  `NB_SELFHOSTED_API_KEY`.
+- **Standalone Fallback Cloud Client**: Deployed `Deployment/netbird-cloud-client`
+  directly in `networking` namespace connected to `https://api.netbird.io:443`
+  using `SETUP_KEY` from `Secret/netbird`.
+- **Consolidated GitOps Structure**: Consolidated into 3 Flux Kustomizations
+  (`netbird-control-plane` ➔ `netbird` ➔ `netbird-resources`) and removed
+  obsolete secondary operator manifests.
+
+### 2. Empirical Verification
+
+#### Cloud NetBird Fallback Client (`netbird-cloud-client`)
+
+```text
+Management: Connected (https://api.netbird.io:443)
+Signal: Connected
+Relays: 4/4 Available
+NetBird IP: 100.100.237.92/16
+Networks: *.home.sysinfra.pro, *.sysinfra.pro, 0.0.0.0/0, 10.0.0.1/32, 10.0.0.2/32,
+          10.0.0.3/32, 10.0.1.1/32, 10.0.1.15/32, 10.0.1.48/29, 10.0.10.20/32,
+          10.0.10.201/32, 10.0.10.30/32, 10.96.0.10/32,
+          towonel-hub.networking.svc.cluster.local
+Peers count: 5/6 Connected
+```
+
+#### Self-Hosted In-Cluster Router (`networkrouter-k8s`)
+
+```text
+Management: Connected (http://netbird-management.networking.svc.cluster.local:8080)
+Signal: Connected
+Relays: 0/3 Available
+NetBird IP: 100.111.210.203/16
+NetBird IPv6: fdc7:6f6a:eb1c:709d:88b2:b244:3e04:61a/64
+Networks: *.home.sysinfra.pro, *.sysinfra.pro, 10.0.1.15/32, 10.0.1.48/29,
+          10.0.10.20/32, 10.0.10.201/32, 10.0.10.30/32, 10.96.0.10/32,
+          towonel-hub.networking.svc.cluster.local
+Peers count: 0/1 Connected
+```
+
+### 3. PocketID Group Synchronization & Access Control Policies
+
+- **Group Case Resolution**: PocketID OIDC auto-synced user groups `admin` and `users` (lowercase), while initial manual groups were titled `Admin Users` and `Users`.
+- **Policy Mapping**: Updated all 16 access control policies in `/api/policies` on the self-hosted management server to include `admin`, `users`, and `All` as authorized source groups.
+- **Resource Routing**: Network resources (`k8s-api-access`, `nas-storage`, `public-services`,
+  `private-services`, `internal-ingress`, `external-ingress`, `clusterdns`) are bound to
+  `routing-peers` (`networkrouter-k8s`), providing zero-trust connectivity for authenticated peers.
+
+---
+
+## Phase 4 Preparation: VPS Direct Edge Ingress & Towonel Retirement
+
+### Target Ingress Flow on Hetzner VPS (`vps-backup`)
+
+1. **Decommission Towonel Edge**: Remove `towonel-edge.service` and `towonel-watchdog` from `vps-cloud-init.yaml`.
+2. **Direct Layer 4 SNI Proxy**: Deploy lightweight TLS passthrough reverse proxy listening on port `443` forwarding directly across WireGuard mesh `wt1` to Traefik External Gateway (`10.0.10.20:443`).
+3. **Unproxied Direct DNS**: Update `main.tf` to configure unproxied direct DNS records for `nb.${SECRET_DOMAIN}` pointing to the VPS, bypassing Cloudflare proxy buffering for native gRPC and WebSocket throughput.
