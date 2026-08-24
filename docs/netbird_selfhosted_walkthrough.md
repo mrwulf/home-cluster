@@ -167,7 +167,7 @@ Management: Connected (https://api.netbird.io:443)
 Signal: Connected
 Relays: 4/4 Available
 NetBird IP: 100.100.237.92/16
-Networks: *.home.sysinfra.pro, *.sysinfra.pro, 0.0.0.0/0, 10.0.0.1/32, 10.0.0.2/32,
+Networks: *.home.${SECRET_DOMAIN}, *.${SECRET_DOMAIN}, 0.0.0.0/0, 10.0.0.1/32, 10.0.0.2/32,
           10.0.0.3/32, 10.0.1.1/32, 10.0.1.15/32, 10.0.1.48/29, 10.0.10.20/32,
           10.0.10.201/32, 10.0.10.30/32, 10.96.0.10/32,
           towonel-hub.networking.svc.cluster.local
@@ -178,17 +178,24 @@ Peers count: 5/6 Connected
 
 ```text
 Management: Connected (http://netbird-management.networking.svc.cluster.local:8080)
-Signal: Connected
-Relays: 0/3 Available
+Signal: Connected (https://nb.${SECRET_DOMAIN}:443)
+Relays: 1/2 Available (rel://vps-backup.${SECRET_DOMAIN}:33073)
 NetBird IP: 100.111.210.203/16
 NetBird IPv6: fdc7:6f6a:eb1c:709d:88b2:b244:3e04:61a/64
-Networks: *.home.sysinfra.pro, *.sysinfra.pro, 10.0.1.15/32, 10.0.1.48/29,
-          10.0.10.20/32, 10.0.10.201/32, 10.0.10.30/32, 10.96.0.10/32,
+Networks: *.home.${SECRET_DOMAIN}, *.${SECRET_DOMAIN}, 0.0.0.0/0, 10.0.0.1/32, 10.0.0.2/32,
+          10.0.0.3/32, 10.0.1.1/32, 10.0.1.15/32, 10.0.1.48/29, 10.0.10.20/32,
+          10.0.10.201/32, 10.0.10.30/32, 10.96.0.10/32, ::/0,
           towonel-hub.networking.svc.cluster.local
-Peers count: 0/1 Connected
+Peers count: 4/4 Connected
 ```
 
-### 3. PocketID Group Synchronization & Access Control Policies
+### 3. Split-Horizon DNS & Relay Resolution Invariant
+
+- **Discovery**: In environments with split-horizon wildcard DNS (`*.${SECRET_DOMAIN}` -> internal Traefik VIP `10.0.10.20`), in-cluster pods and LAN clients resolve public VPS hostnames (e.g. `vps-backup.${SECRET_DOMAIN}`) to the local ingress VIP instead of the public VPS IP. This prevented `networkrouter-k8s` from reaching the containerized NetBird Relay on port `33073` and STUN on port `3478`.
+- **Remediation**: Configured declarative `hostAliases` in `NetworkRouter/k8s` (`workloadOverride.podTemplate.spec`) mapping `vps-backup.${SECRET_DOMAIN}` and `vps-primary.${SECRET_DOMAIN}` directly to their respective public VPS IPs (`${VPS_BACKUP_PUBLIC_IP}` and `${VPS_PRIMARY_PUBLIC_IP}`).
+- **VPS Enrollment Retry**: Updated `vps-cloud-init.yaml` to include an idempotent retry loop for `netbird up` to guard against initial boot DNS/network startup latency.
+
+### 4. PocketID Group Synchronization & Access Control Policies
 
 - **Group Case Resolution**: PocketID OIDC auto-synced user groups `admin` and `users` (lowercase), while initial manual groups were titled `Admin Users` and `Users`.
 - **Policy Mapping**: Updated all 16 access control policies in `/api/policies` on the self-hosted management server to include `admin`, `users`, and `All` as authorized source groups.

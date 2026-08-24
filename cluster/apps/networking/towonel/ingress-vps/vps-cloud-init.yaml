@@ -232,7 +232,7 @@ runcmd:
       systemctl enable netbird-selfhosted --now
       systemctl enable netbird-relay --now
       until [ -S /var/run/netbird-selfhosted.sock ]; do sleep 1; done
-      NB_DISABLE_CUSTOM_ROUTING=true netbird --daemon-addr unix:///var/run/netbird-selfhosted.sock --config /etc/netbird-selfhosted/config.json up \
+      until NB_DISABLE_CUSTOM_ROUTING=true netbird --daemon-addr unix:///var/run/netbird-selfhosted.sock up \
         --management-url "${NETBIRD_SELFHOSTED_MGMT_URL}" \
         --setup-key "${NETBIRD_SELFHOSTED_SETUP_KEY}" \
         --interface-name wt1 \
@@ -240,7 +240,10 @@ runcmd:
         --enable-ssh-root \
         --allow-server-ssh \
         --rosenpass-permissive \
-        --wireguard-port 51822 || true
+        --wireguard-port 51822; do
+        echo "Retrying netbird-selfhosted up in 5s..."
+        sleep 5
+      done
     fi
 
   # 5. Wait for CrowdSec container to populate base /etc/crowdsec/config.yaml and write custom whitelist/acquisition
