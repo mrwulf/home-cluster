@@ -1,33 +1,60 @@
 #cloud-config
 write_files:
-  # 1. Write HAProxy Layer 4 SNI Stream Proxy Configuration
-  - path: /etc/haproxy/haproxy.cfg
+  # 1. Write Traefik Edge Static Configuration
+  - path: /etc/traefik/traefik.yaml
     permissions: "0644"
     content: |
-      global
-          log stdout format raw local0
-          maxconn 4096
-      defaults
-          log global
-          mode tcp
-          option tcplog
-          timeout connect 5s
-          timeout client 1h
-          timeout server 1h
-      frontend https_in
-          bind :443
-          mode tcp
-          default_backend k8s_traefik
-      backend k8s_traefik
-          mode tcp
-          server traefik 10.0.10.20:443 check inter 5s send-proxy-v2
+      global:
+        checkNewVersion: false
+        sendAnonymousUsage: false
+      log:
+        level: INFO
+        format: json
+      accessLog:
+        format: json
+      entryPoints:
+        web:
+          address: ":80"
+          http:
+            redirections:
+              entryPoint:
+                to: websecure
+                scheme: https
+                permanent: true
+        websecure:
+          address: ":443"
+      providers:
+        file:
+          filename: /etc/traefik/dynamic.yaml
+          watch: true
 
-  # 2. Write Systemd Container Service File for Edge SNI Stream Proxy
-  - path: /etc/systemd/system/edge-proxy.service
+  # 2. Write Traefik Edge Dynamic Configuration (SNI TLS Passthrough with Proxy Protocol v2)
+  - path: /etc/traefik/dynamic.yaml
+    permissions: "0644"
+    content: |
+      tcp:
+        routers:
+          sni-passthrough:
+            rule: "HostSNIRegexp(`{subdomain:[a-z0-9-]+}.${SECRET_DOMAIN}`)"
+            entryPoints:
+              - websecure
+            service: k8s-traefik
+            tls:
+              passthrough: true
+        services:
+          k8s-traefik:
+            loadBalancer:
+              proxyProtocol:
+                version: 2
+              servers:
+                - address: "10.0.10.20:443"
+
+  # 3. Write Systemd Container Service File for Traefik Edge Proxy
+  - path: /etc/systemd/system/traefik.service
     permissions: "0644"
     content: |
       [Unit]
-      Description=Edge SNI Stream Proxy Container
+      Description=Traefik Edge Reverse Proxy Container
       After=docker.service netbird-selfhosted.service
       Wants=netbird-selfhosted.service
       Requires=docker.service
@@ -35,13 +62,13 @@ write_files:
       [Service]
       Restart=always
       RestartSec=5s
-      ExecStartPre=-/usr/bin/docker rm -f edge-proxy
-      # renovate: depName=haproxy datasource=docker
-      ExecStart=/usr/bin/docker run --name edge-proxy --rm --net=host \
+      ExecStartPre=-/usr/bin/docker rm -f traefik
+      # renovate: depName=traefik datasource=docker
+      ExecStart=/usr/bin/docker run --name traefik --rm --net=host \
         --log-opt max-size=10m \
         --log-opt max-file=3 \
-        -v /etc/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro \
-        docker.io/haproxy:2.9-alpine
+        -v /etc/traefik:/etc/traefik:ro \
+        docker.io/traefik:v3.3.4
 
       [Install]
       WantedBy=multi-user.target
@@ -181,7 +208,7 @@ runcmd:
   - echo "net.ipv4.tcp_keepalive_probes=3" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_retries2=5" >> /etc/sysctl.conf
 
-  # 4. Enable and start NetBird Self-Hosted, NetBird Relay, Edge Proxy & CrowdSec Container
+  # 4. Enable and start NetBird Self-Hosted, NetBird Relay, Traefik Edge & CrowdSec Container
   - mkdir -p /var/lib/crowdsec/data
   - systemctl daemon-reload
   - systemctl enable crowdsec --now
@@ -189,7 +216,7 @@ runcmd:
     if [ -n "${NETBIRD_SELFHOSTED_SETUP_KEY}" ]; then
       systemctl enable netbird-selfhosted --now
       systemctl enable netbird-relay --now
-      systemctl enable edge-proxy --now
+      systemctl enable traefik --now
       until [ -S /var/run/netbird-selfhosted.sock ]; do sleep 1; done
       NB_DISABLE_CUSTOM_ROUTING=true netbird --daemon-addr unix:///var/run/netbird-selfhosted.sock --config /etc/netbird-selfhosted/config.json up \
         --management-url "${NETBIRD_SELFHOSTED_MGMT_URL}" \
@@ -225,7 +252,7 @@ runcmd:
         - "192.168.0.0/16"
     EOF
 
-    cat <<EOF > /etc/crowdsec/acquis.d/edge-proxy.yaml
+    cat <<EOF > /etc/crowdsec/acquis.d/traefik.yaml
     filenames:
       - /var/lib/docker/containers/*/*-json.log
     labels:
