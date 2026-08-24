@@ -359,17 +359,6 @@ resource "cloudflare_dns_record" "vps_primary" {
   ttl     = 1
 }
 
-# Primary VPS direct AAAA record
-resource "cloudflare_dns_record" "vps_primary_v6" {
-  count   = local.ovh_primary_ipv6 != "" ? 1 : 0
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "vps-primary.${var.secret_domain}"
-  content = local.ovh_primary_ipv6
-  type    = "AAAA"
-  proxied = false
-  ttl     = 1
-}
-
 # Backup VPS direct A record
 resource "cloudflare_dns_record" "vps_backup" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
@@ -409,17 +398,7 @@ resource "cloudflare_dns_record" "proxy_backup_v4" {
   ttl     = 1
 }
 
-# Proxy Cluster direct IPv6 AAAA records
-resource "cloudflare_dns_record" "proxy_primary_v6" {
-  count   = local.ovh_primary_ipv6 != "" ? 1 : 0
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "proxy.${var.secret_domain}"
-  content = local.ovh_primary_ipv6
-  type    = "AAAA"
-  proxied = false
-  ttl     = 1
-}
-
+# Proxy Cluster direct IPv6 AAAA record (Backup Hetzner VPS)
 resource "cloudflare_dns_record" "proxy_backup_v6" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
   name    = "proxy.${var.secret_domain}"
