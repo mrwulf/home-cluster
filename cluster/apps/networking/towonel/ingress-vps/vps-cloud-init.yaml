@@ -14,7 +14,9 @@ write_files:
       RestartSec=5s
       ExecStartPre=-/usr/bin/docker rm -f netbird-proxy
       # renovate: depName=netbirdio/reverse-proxy datasource=docker
-      ExecStart=/usr/bin/docker run --name netbird-proxy --rm --net=host \
+      ExecStart=/usr/bin/docker run --name netbird-proxy --rm \
+        -p 80:80 \
+        -p 443:443 \
         --log-opt max-size=10m \
         --log-opt max-file=3 \
         -v proxy_certs:/certs \
