@@ -645,7 +645,7 @@ spec:
       initContainers:
         - name: resolv-conf
           # renovate: depName=ghcr.io/netbirdio/netbird
-          image: ghcr.io/netbirdio/netbird:0.72.4@sha256:6c6c20baffae4a3ec50f29ec9361608a420625185505e8cd6f0c44d71c5d4798
+          image: ghcr.io/netbirdio/netbird:0.77.1@sha256:66f408b0c423e9c3376deea7bc0da78024d32494dd0f957344993015b74c4451
           command:
             - sh
             - -c
@@ -661,7 +661,7 @@ spec:
       containers:
         - name: netbird
           # renovate: depName=ghcr.io/netbirdio/netbird
-          image: ghcr.io/netbirdio/netbird:0.72.4@sha256:6c6c20baffae4a3ec50f29ec9361608a420625185505e8cd6f0c44d71c5d4798
+          image: ghcr.io/netbirdio/netbird:0.77.1@sha256:66f408b0c423e9c3376deea7bc0da78024d32494dd0f957344993015b74c4451
           env:
             - name: NB_SETUP_KEY
               valueFrom:
