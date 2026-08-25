@@ -7,7 +7,7 @@ metadata:
   labels:
     gateway.sysinfra.pro/type: external
   annotations:
-    external-dns.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"
+    external-dns.kubernetes.io/target: "ingress.proxy.${SECRET_DOMAIN}"
     # Probe attached routes via public DNS (egress -> 1.1.1.1) so Gatus tests the
     # real external path. Inherited by all routes; per-route config wins on conflicts.
     gatus.io/endpoint: |
