@@ -5,7 +5,6 @@ metadata:
   name: toolhive
 spec:
   name: ToolHive
-  launchUrl: https://toolhive.home.${SECRET_DOMAIN}/
   callbackUrls:
     - https://toolhive.home.${SECRET_DOMAIN}/callback
   logoutCallbackUrls:
