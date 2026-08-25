@@ -504,7 +504,10 @@ spec:
   protocols:
     - tcp
   ports:
+    - 80
     - 443
+    - 8000
+    - 8443
 ---
 apiVersion: netbird.io/v1
 kind: NBPolicy
