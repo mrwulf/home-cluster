@@ -77,7 +77,7 @@ write_files:
         --log-opt max-size=10m \
         --log-opt max-file=3 \
         -v /etc/traefik:/etc/traefik:ro \
-        docker.io/traefik:v3.3.4 \
+        docker.io/traefik:v3.3.7 \
         --configfile=/etc/traefik/traefik.yaml
 
       [Install]
