@@ -162,7 +162,10 @@ export default {
   async scheduled(event, env, ctx) {
     const VPS_PRIMARY_HOST = env.VPS_PRIMARY_HOST
     const VPS_BACKUP_HOST = env.VPS_BACKUP_HOST
-    const TUNNEL_CNAME = env.TUNNEL_CNAME
+    const PROXY_CNAME =
+      env.PROXY_CNAME || `proxy.${RECORD_NAME.replace(/^ingress\./, "")}`
+    const TUNNEL_CNAME =
+      env.TUNNEL_CNAME || `external.${RECORD_NAME.replace(/^ingress\./, "")}`
     const ZONE_ID = env.CLOUDFLARE_ZONE_ID
     const RECORD_ID = env.CLOUDFLARE_RECORD_ID
     const API_TOKEN = env.CLOUDFLARE_API_TOKEN
@@ -182,11 +185,11 @@ export default {
     allProbeLogs.push(...primaryProbe.attempts)
 
     if (primaryProbe.isUp) {
-      targetContent = VPS_PRIMARY_HOST
-      targetTier = "Primary (OVHcloud VPS)"
+      targetContent = PROXY_CNAME
+      targetTier = "Primary (OVHcloud VPS / Proxy)"
       isProxied = false
       console.log(
-        `Primary VPS (${VPS_PRIMARY_HOST}) is healthy. Routing to Primary.`
+        `Primary VPS (${VPS_PRIMARY_HOST}) is healthy. Routing to ${PROXY_CNAME}.`
       )
     } else {
       console.warn(
@@ -198,14 +201,14 @@ export default {
       allProbeLogs.push(...backupProbe.attempts)
 
       if (backupProbe.isUp) {
-        targetContent = VPS_BACKUP_HOST
-        targetTier = "Backup (Hetzner VPS)"
+        targetContent = PROXY_CNAME
+        targetTier = "Backup (Hetzner VPS / Proxy)"
         isProxied = false
         console.log(
-          `Backup VPS (${VPS_BACKUP_HOST}) is healthy. Routing to Backup.`
+          `Backup VPS (${VPS_BACKUP_HOST}) is healthy. Routing to ${PROXY_CNAME}.`
         )
       } else {
-        // 3. Tier 3 Fallback: Cloudflare Tunnel
+        // 3. Tier 3 Fallback: Cloudflare Tunnel (external.sysinfra.pro)
         targetContent = TUNNEL_CNAME
         targetTier = "Fallback (Cloudflare Tunnel)"
         isProxied = true
