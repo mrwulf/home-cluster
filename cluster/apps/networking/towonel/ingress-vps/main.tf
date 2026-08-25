@@ -428,16 +428,6 @@ resource "cloudflare_dns_record" "vps_backup" {
   ttl     = 1
 }
 
-# Backup VPS direct AAAA record
-resource "cloudflare_dns_record" "vps_backup_v6" {
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "vps-backup.${var.secret_domain}"
-  content = hcloud_server.backup_vps.ipv6_address
-  type    = "AAAA"
-  proxied = false
-  ttl     = 1
-}
-
 # Proxy IPv4 A record for Primary VPS
 resource "cloudflare_dns_record" "proxy_primary" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
