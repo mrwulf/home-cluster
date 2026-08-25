@@ -41,6 +41,7 @@ spec:
     spec:
       containers:
         - name: mcp
+          # renovate: depName=docker.io/node datasource=docker
           image: docker.io/node:24-alpine
           command:
             - npx

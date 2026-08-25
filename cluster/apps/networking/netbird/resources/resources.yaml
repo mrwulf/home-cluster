@@ -625,7 +625,7 @@ spec:
               app.kubernetes.io/name: netbird-cloud-client
       initContainers:
         - name: resolv-conf
-          # renovate: depName=ghcr.io/netbirdio/netbird
+          # renovate: depName=ghcr.io/netbirdio/netbird datasource=docker
           image: ghcr.io/netbirdio/netbird:0.77.1@sha256:66f408b0c423e9c3376deea7bc0da78024d32494dd0f957344993015b74c4451
           command:
             - sh
@@ -641,7 +641,7 @@ spec:
                 - ALL
       containers:
         - name: netbird
-          # renovate: depName=ghcr.io/netbirdio/netbird
+          # renovate: depName=ghcr.io/netbirdio/netbird datasource=docker
           image: ghcr.io/netbirdio/netbird:0.77.1@sha256:66f408b0c423e9c3376deea7bc0da78024d32494dd0f957344993015b74c4451
           env:
             - name: NB_SETUP_KEY

@@ -15,7 +15,8 @@ spec:
           dnsPolicy: ClusterFirstWithHostNet
           containers:
             - name: talos-backup
-              image: ghcr.io/siderolabs/talosctl:latest
+              # renovate: depName=ghcr.io/siderolabs/talosctl datasource=docker
+              image: ghcr.io/siderolabs/talosctl:v1.13.9
               workingDir: /tmp
               imagePullPolicy: IfNotPresent
               resources:

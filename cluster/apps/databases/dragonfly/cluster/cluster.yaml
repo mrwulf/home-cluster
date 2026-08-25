@@ -5,6 +5,7 @@ kind: Dragonfly
 metadata:
   name: dragonfly
 spec:
+  # renovate: depName=ghcr.io/dragonflydb/dragonfly datasource=docker
   image: ghcr.io/dragonflydb/dragonfly:v1.40.1
   replicas: 3
   networkPolicyEnabled: false

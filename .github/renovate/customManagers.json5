@@ -9,5 +9,25 @@
         '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s*\\n\\s*image\\s*=\\s*"\\S+-(?<currentValue>[^"]+)"',
       ],
     },
+    {
+      customType: "regex",
+      description: ["Process Docker images in cloud-init and systemd configs"],
+      fileMatch: ["(^|/)cluster/.+/vps-cloud-init\\.ya?ml$"],
+      matchStrings: [
+        "# renovate: depName=(?<depName>[^\\s]+)(?: datasource=(?<datasource>[^\\s]+))?\\s*\\n(?:\\s+.*\\n)*?\\s+(?:docker\\.io\\/|ghcr\\.io\\/|quay\\.io\\/)?(?:[a-zA-Z0-9_.\\-\\/]+):(?<currentValue>[a-zA-Z0-9_.\\-]+(?:@sha256:[a-f0-9]+)?)",
+      ],
+      datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}docker{{/if}}",
+    },
+    {
+      customType: "regex",
+      description: [
+        "Process Docker images annotated in Kubernetes and ToolHive custom manifests",
+      ],
+      fileMatch: ["(^|/)(cluster|talos)/.+\\.ya?ml$"],
+      matchStrings: [
+        "# renovate: depName=(?<depName>[^\\s]+)(?: datasource=(?<datasource>[^\\s]+))?\\s*\\n\\s*(?:-\\s+)?image:\\s*[\"']?(?:[^\\s:\"']+:)?(?<currentValue>[a-zA-Z0-9_.\\-]+(?:@sha256:[a-f0-9]+)?)[\"']?",
+      ],
+      datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}docker{{/if}}",
+    },
   ],
 }
