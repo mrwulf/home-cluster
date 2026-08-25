@@ -1,0 +1,31 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: netbird-gateway
+  namespace: networking
+  labels:
+    gateway.sysinfra.pro/type: external
+spec:
+  gatewayClassName: traefik-external
+  addresses:
+    - type: IPAddress
+      value: "${NB_ADDR}"
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 8000
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: "wildcard-${SECRET_DOMAIN/./-}-tls"
+          - name: mlm-domains-tls

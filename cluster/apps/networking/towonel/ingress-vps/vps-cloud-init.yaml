@@ -40,7 +40,7 @@ write_files:
           k8s-http:
             loadBalancer:
               servers:
-                - url: "http://10.0.10.20:8000"
+                - url: "http://10.0.10.20:80"
 
       tcp:
         routers:
@@ -57,7 +57,7 @@ write_files:
               proxyProtocol:
                 version: 2
               servers:
-                - address: "10.0.10.20:8443"
+                - address: "10.0.10.20:443"
 
   # 3. Write Traefik Systemd Container Service
   - path: /etc/systemd/system/traefik.service
@@ -177,28 +177,66 @@ write_files:
       # renovate: depName=crowdsecurity/crowdsec datasource=docker
       ExecStart=/usr/bin/docker run --name crowdsec --rm --net=host \
         -e COLLECTIONS="crowdsecurity/linux crowdsecurity/http-cve" \
-        -v /etc/crowdsec:/etc/crowdsec \
-        -v /var/lib/crowdsec/data:/var/lib/crowdsec/data \
-        -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
-        -v /var/log:/var/log:ro \
-        docker.io/crowdsecurity/crowdsec:v1.7.8
+  # 10. Write WireGuard Client Configuration for NetBird Control Plane Uplink
+  - path: /etc/wireguard/wg0.conf
+    permissions: "0600"
+    content: |
+      [Interface]
+      PrivateKey = ${WG_PRIVATE_KEY}
+      Address = ${WG_ADDRESS}
+      MTU = 1280
+
+      [Peer]
+      PublicKey = ${WG_PEER_PUBLIC_KEY}
+      Endpoint = dynamic.${SECRET_DOMAIN}:51821
+      AllowedIPs = ${NB_ADDR}/32
+      PersistentKeepalive = 25
+
+  # 11. Write Systemd Drop-in Override for NetBird to depend on WireGuard
+  - path: /etc/systemd/system/netbird.service.d/override.conf
+    permissions: "0644"
+    content: |
+      [Unit]
+      After=wg-quick@wg0.service
+      Wants=wg-quick@wg0.service
+      Requires=wg-quick@wg0.service
+
+  # 12. Write Systemd Drop-in Override for Traefik to depend on WireGuard
+  - path: /etc/systemd/system/traefik.service.d/override.conf
+    permissions: "0644"
+    content: |
+      [Unit]
+      After=wg-quick@wg0.service
+      Wants=wg-quick@wg0.service
 
       [Install]
       WantedBy=multi-user.target
 
 runcmd:
-  # 1. Install Docker & systemd-resolved and link stub resolver
+  # 1. Install Docker, WireGuard & systemd-resolved and link stub resolver
   - |
     export DEBIAN_FRONTEND=noninteractive
     apt-get update
-    apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io systemd-resolved gnupg apt-transport-https
+    apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io systemd-resolved gnupg apt-transport-https wireguard-tools
     apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker-cli || true
     systemctl enable systemd-resolved --now
     ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
     systemctl restart systemd-resolved
     systemctl enable docker --now
 
-  # 2. Configure source-based policy routing & install NetBird
+  # 2. Add host entry for NetBird Control Plane to point to dedicated Gateway IP over WireGuard
+  - |
+    if ! grep -q "nb.${SECRET_DOMAIN}" /etc/hosts; then
+      echo "${NB_ADDR} nb.${SECRET_DOMAIN}" >> /etc/hosts
+    fi
+
+  # 3. Start WireGuard Control Plane Uplink tunnel
+  - |
+    systemctl daemon-reload
+    systemctl enable wg-quick@wg0 --now
+    until ip link show wg0 >/dev/null 2>&1; do sleep 1; done
+
+  # 4. Configure source-based policy routing & install NetBird
   - |
     DEFAULT_IFACE=$(ip route show default | awk '/default/ {print $5}')
     DEFAULT_GW=$(ip route show default | awk '/default/ {print $3}')
@@ -209,7 +247,7 @@ runcmd:
     curl -fsSL https://pkgs.netbird.io/install.sh | sh
     netbird service reconfigure --service-env NB_DISABLE_CUSTOM_ROUTING=true || true
 
-  # 3. Tune Linux TCP stack (BBR Congestion Control & Fast TCP Keepalives)
+  # 5. Tune Linux TCP stack (BBR Congestion Control & Fast TCP Keepalives)
   - sysctl -w net.core.default_qdisc=fq
   - sysctl -w net.ipv4.tcp_congestion_control=bbr
   - sysctl -w net.ipv4.tcp_keepalive_time=60
@@ -223,7 +261,7 @@ runcmd:
   - echo "net.ipv4.tcp_keepalive_probes=3" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_retries2=5" >> /etc/sysctl.conf
 
-  # 4. Enable and start NetBird, NetBird Relay, Traefik, Node Exporter & CrowdSec Container
+  # 6. Enable and start NetBird, NetBird Relay, Traefik, Node Exporter & CrowdSec Container
   - mkdir -p /var/lib/crowdsec/data
   - systemctl daemon-reload
   - systemctl enable crowdsec --now

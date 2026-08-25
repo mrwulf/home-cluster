@@ -76,6 +76,26 @@ variable "netbird_api_token" {
   sensitive = true
   default   = ""
 }
+variable "peer1_private_key" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+variable "peer1_public_key" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+variable "peer2_private_key" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+variable "peer2_public_key" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
 
 
 terraform {
@@ -185,6 +205,10 @@ resource "terraform_data" "cloud_init_primary" {
     SECRET_DOMAIN                = var.secret_domain
     HOME_IP                      = local.home_ip
     PROBE_HOSTNAME               = "vps-primary.${var.secret_domain}"
+    WG_PRIVATE_KEY               = var.peer1_private_key
+    WG_PEER_PUBLIC_KEY           = var.peer1_public_key
+    WG_ADDRESS                   = "10.13.13.10/32"
+    NB_ADDR                      = "10.0.10.11"
   })
 }
 
@@ -241,6 +265,10 @@ resource "terraform_data" "cloud_init_backup" {
     SECRET_DOMAIN                = var.secret_domain
     HOME_IP                      = local.home_ip
     PROBE_HOSTNAME               = "vps-backup.${var.secret_domain}"
+    WG_PRIVATE_KEY               = var.peer2_private_key
+    WG_PEER_PUBLIC_KEY           = var.peer2_public_key
+    WG_ADDRESS                   = "10.13.13.11/32"
+    NB_ADDR                      = "10.0.10.11"
   })
 }
 
