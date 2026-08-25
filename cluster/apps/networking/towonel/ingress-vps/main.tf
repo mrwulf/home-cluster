@@ -71,6 +71,11 @@ variable "netbird_relay_auth_secret" {
   sensitive = true
   default   = ""
 }
+variable "netbird_api_token" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
 
 
 terraform {
@@ -95,6 +100,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 3.0"
     }
+    netbird = {
+      source  = "netbirdio/netbird"
+      version = "0.0.10"
+    }
   }
 }
 
@@ -114,6 +123,25 @@ provider "cloudflare" {
 }
 
 provider "kubernetes" {}
+
+provider "netbird" {
+  token          = var.netbird_api_token
+  management_url = "https://nb.${var.secret_domain}"
+}
+
+# Declaratively manage the VPS peer group and setup key with auto-groups
+resource "netbird_group" "vps_peers" {
+  count = var.netbird_api_token != "" ? 1 : 0
+  name  = "vps-peers"
+}
+
+resource "netbird_setup_key" "vps_key" {
+  count          = var.netbird_api_token != "" ? 1 : 0
+  name           = "ingress-vps-key"
+  type           = "reusable"
+  expiry_seconds = 315360000
+  auto_groups    = [netbird_group.vps_peers[0].id]
+}
 
 # Fetch home public IP dynamically for firewall rules
 data "http" "home_ip" {
@@ -151,7 +179,7 @@ resource "ovh_cloud_project_ssh_key" "primary_key" {
 
 resource "terraform_data" "cloud_init_primary" {
   input = templatefile("${path.module}/vps-cloud-init.yaml", {
-    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
+    NETBIRD_SELFHOSTED_SETUP_KEY = try(netbird_setup_key.vps_key[0].key, var.netbird_selfhosted_setup_key)
     NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
     NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
     SECRET_DOMAIN                = var.secret_domain
@@ -207,7 +235,7 @@ data "hcloud_ssh_keys" "all_keys" {}
 
 resource "terraform_data" "cloud_init_backup" {
   input = templatefile("${path.module}/vps-cloud-init.yaml", {
-    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
+    NETBIRD_SELFHOSTED_SETUP_KEY = try(netbird_setup_key.vps_key[0].key, var.netbird_selfhosted_setup_key)
     NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
     NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
     SECRET_DOMAIN                = var.secret_domain
