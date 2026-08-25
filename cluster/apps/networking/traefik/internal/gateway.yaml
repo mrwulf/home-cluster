@@ -5,7 +5,7 @@ metadata:
   name: internal-gateway
   namespace: networking
   labels:
-    gateway.sysinfra.pro/type: internal
+    gateway.home-operations.io/type: internal
 spec:
   gatewayClassName: traefik-internal
   addresses:

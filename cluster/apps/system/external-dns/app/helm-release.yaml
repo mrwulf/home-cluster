@@ -71,6 +71,6 @@ spec:
 
     extraArgs:
       - --annotation-prefix=external-dns.kubernetes.io/
-      - --gateway-label-filter=gateway.sysinfra.pro/type=external
+      - --gateway-label-filter=gateway.home-operations.io/type=external
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint

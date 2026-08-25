@@ -68,7 +68,7 @@ spec:
     additionalArguments:
       - "--api.insecure=true"
       - "--serversTransport.insecureSkipVerify=true"
-      - "--providers.kubernetesgateway.labelselector=gateway.sysinfra.pro/type=internal"
+      - "--providers.kubernetesgateway.labelselector=gateway.home-operations.io/type=internal"
       - "--providers.kubernetesingress.ingressclass=traefik-internal"
     ingressRoute:
       dashboard:

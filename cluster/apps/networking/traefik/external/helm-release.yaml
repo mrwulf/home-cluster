@@ -72,7 +72,7 @@ spec:
     additionalArguments:
       - "--api.insecure=true"
       - "--serversTransport.insecureSkipVerify=true"
-      - "--providers.kubernetesgateway.labelselector=gateway.sysinfra.pro/type=external"
+      - "--providers.kubernetesgateway.labelselector=gateway.home-operations.io/type=external"
       - "--providers.kubernetesingress.ingressclass=traefik-external"
     ingressRoute:
       dashboard:

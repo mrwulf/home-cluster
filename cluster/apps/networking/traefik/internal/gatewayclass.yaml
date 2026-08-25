@@ -4,6 +4,6 @@ kind: GatewayClass
 metadata:
   name: traefik-internal
   labels:
-    gateway.sysinfra.pro/type: internal
+    gateway.home-operations.io/type: internal
 spec:
   controllerName: traefik.io/gateway-controller

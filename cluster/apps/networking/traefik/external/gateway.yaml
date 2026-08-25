@@ -5,7 +5,7 @@ metadata:
   name: external-gateway
   namespace: networking
   labels:
-    gateway.sysinfra.pro/type: external
+    gateway.home-operations.io/type: external
   annotations:
     external-dns.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"
     # Probe attached routes via public DNS (egress -> 1.1.1.1) so Gatus tests the

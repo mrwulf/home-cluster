@@ -6,4 +6,3 @@ resources:
   - route.yaml
   - gatewayclass.yaml
   - gateway.yaml
-  - gateway-direct.yaml
