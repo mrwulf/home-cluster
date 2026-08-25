@@ -326,8 +326,6 @@ resource "cloudflare_dns_record" "ingress" {
   lifecycle {
     ignore_changes = [
       content,
-      type,
-      proxied,
     ]
   }
 }
