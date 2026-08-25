@@ -150,18 +150,18 @@ provider "netbird" {
 }
 
 # Declaratively manage the VPS peer group and setup key with auto-groups
-resource "netbird_group" "vps_peers" {
-  count = var.netbird_api_token != "" ? 1 : 0
-  name  = "vps-peers"
-}
-
-resource "netbird_setup_key" "vps_key" {
-  count          = var.netbird_api_token != "" ? 1 : 0
-  name           = "ingress-vps-key"
-  type           = "reusable"
-  expiry_seconds = 315360000
-  auto_groups    = [netbird_group.vps_peers[0].id]
-}
+# resource "netbird_group" "vps_peers" {
+#   count = var.netbird_api_token != "" ? 1 : 0
+#   name  = "vps-peers"
+# }
+#
+# resource "netbird_setup_key" "vps_key" {
+#   count          = var.netbird_api_token != "" ? 1 : 0
+#   name           = "ingress-vps-key"
+#   type           = "reusable"
+#   expiry_seconds = 315360000
+#   auto_groups    = [netbird_group.vps_peers[0].id]
+# }
 
 # Fetch home public IP dynamically for firewall rules
 data "http" "home_ip" {
@@ -199,7 +199,7 @@ resource "ovh_cloud_project_ssh_key" "primary_key" {
 
 resource "terraform_data" "cloud_init_primary" {
   input = templatefile("${path.module}/vps-cloud-init.yaml", {
-    NETBIRD_SELFHOSTED_SETUP_KEY = try(netbird_setup_key.vps_key[0].key, var.netbird_selfhosted_setup_key)
+    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
     NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
     NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
     SECRET_DOMAIN                = var.secret_domain
@@ -259,7 +259,7 @@ data "hcloud_ssh_keys" "all_keys" {}
 
 resource "terraform_data" "cloud_init_backup" {
   input = templatefile("${path.module}/vps-cloud-init.yaml", {
-    NETBIRD_SELFHOSTED_SETUP_KEY = try(netbird_setup_key.vps_key[0].key, var.netbird_selfhosted_setup_key)
+    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
     NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
     NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
     SECRET_DOMAIN                = var.secret_domain
@@ -443,14 +443,14 @@ resource "cloudflare_dns_record" "vps_backup_v6" {
 }
 
 # Wildcard CNAME for *.${SECRET_DOMAIN} -> proxy.${SECRET_DOMAIN}
-resource "cloudflare_dns_record" "wildcard_ingress" {
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "*.${var.secret_domain}"
-  content = "proxy.${var.secret_domain}"
-  type    = "CNAME"
-  proxied = false
-  ttl     = 1
-}
+# resource "cloudflare_dns_record" "wildcard_ingress" {
+#   zone_id = data.cloudflare_zones.domain_zones.result[0].id
+#   name    = "*.${var.secret_domain}"
+#   content = "proxy.${var.secret_domain}"
+#   type    = "CNAME"
+#   proxied = false
+#   ttl     = 1
+# }
 
 
 # 6. Deploy the Cloudflare Worker Script & Bindings Declaratively
