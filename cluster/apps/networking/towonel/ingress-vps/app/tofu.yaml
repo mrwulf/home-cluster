@@ -6,7 +6,9 @@ metadata:
 spec:
   interval: 15m
   approvePlan: auto
-  forceUnlock: 7f257256-2fe8-bdcd-7242-d8009c59ba9c
+  tfstate:
+    forceUnlock: "yes"
+    lockIdentifier: "7f257256-2fe8-bdcd-7242-d8009c59ba9c"
   destroyResourcesOnDeletion: true
   path: ./cluster/apps/networking/towonel/ingress-vps
   serviceAccountName: tf-runner
