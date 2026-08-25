@@ -480,15 +480,22 @@ resource "cloudflare_dns_record" "proxy_wildcard" {
 #   ]
 # }
 
-# 7. Create the Cron Trigger for the Worker (runs every minute)
-resource "cloudflare_workers_cron_trigger" "failover_cron" {
-  account_id  = data.cloudflare_zones.domain_zones.result[0].account.id
-  script_name = cloudflare_workers_script.failover_monitor.script_name
-  schedules = [
-    {
-      cron = "* * * * *"
-    }
-  ]
+# # 7. Create the Cron Trigger for the Worker (runs every minute)
+# resource "cloudflare_workers_cron_trigger" "failover_cron" {
+#   account_id  = data.cloudflare_zones.domain_zones.result[0].account.id
+#   script_name = cloudflare_workers_script.failover_monitor.script_name
+#   schedules = [
+#     {
+#       cron = "* * * * *"
+#     }
+#   ]
+# }
+
+# 7. Enable gRPC proxying on the Cloudflare Zone for NetBird Signal Exchange streams
+resource "cloudflare_zone_setting" "grpc" {
+  zone_id    = data.cloudflare_zones.domain_zones.result[0].id
+  setting_id = "grpc"
+  value      = "on"
 }
 
 # 8. Output VPS public IPs to expose to tf-controller
