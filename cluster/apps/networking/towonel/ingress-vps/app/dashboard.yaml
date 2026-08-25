@@ -2,7 +2,7 @@
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: towonel-traffic-analytics
+  name: ingress-vps-traffic-analytics
   namespace: networking
 spec:
   allowCrossNamespaceImport: true
@@ -35,217 +35,160 @@ spec:
       "liveNow": false,
       "panels": [
         {
-          "gridPos": { "h": 6, "w": 12, "x": 0, "y": 0 },
-          "id": 5,
-          "title": "Data Used in Last 30 Days (per Edge)",
-          "type": "stat",
+          "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 },
+          "id": 1,
+          "title": "Edge Node CPU Usage",
+          "type": "gauge",
           "fieldConfig": {
             "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
+              "color": { "mode": "thresholds" },
+              "max": 100,
+              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   { "color": "green", "value": null },
-                  { "color": "yellow", "value": 500000000000 },
-                  { "color": "orange", "value": 1000000000000 },
-                  { "color": "red", "value": 2000000000000 }
+                  { "color": "yellow", "value": 70 },
+                  { "color": "red", "value": 85 }
                 ]
               },
-              "unit": "decbytes"
-            },
-            "overrides": []
-          },
-          "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "value_and_name"
-          },
-          "targets": [
-            {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "editorMode": "code",
-              "expr": "sum(increase(towonel_edge_bytes_in_total{job=~\"towonel-edge-.*\"}[30d]) + increase(towonel_edge_bytes_out_total{job=~\"towonel-edge-.*\"}[30d])) by (job)",
-              "legendFormat": "{{job}} Total",
-              "range": true
-            }
-          ]
-        },
-        {
-          "gridPos": { "h": 6, "w": 12, "x": 12, "y": 0 },
-          "id": 6,
-          "title": "30-Day Edge Transfer Breakdown (Inbound / Outbound)",
-          "type": "bargauge",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {},
-              "unit": "decbytes"
-            },
-            "overrides": []
-          },
-          "options": {
-            "displayMode": "gradient",
-            "minVizHeight": 10,
-            "minVizWidth": 0,
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showUnfilled": true
-          },
-          "targets": [
-            {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "editorMode": "code",
-              "expr": "sum(increase(towonel_edge_bytes_in_total{job=~\"towonel-edge-.*\"}[30d])) by (job)",
-              "legendFormat": "{{job}} - Inbound",
-              "range": true
-            },
-            {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "editorMode": "code",
-              "expr": "sum(increase(towonel_edge_bytes_out_total{job=~\"towonel-edge-.*\"}[30d])) by (job)",
-              "legendFormat": "{{job}} - Outbound",
-              "range": true
-            }
-          ]
-        },
-        {
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
-          "id": 7,
-          "title": "Edge Daily Transfer Trend (30 Days)",
-          "type": "timeseries",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "drawStyle": "bars",
-                "lineInterpolation": "linear",
-                "barAlignment": 0,
-                "fillOpacity": 80,
-                "stacking": {
-                  "mode": "normal",
-                  "group": "A"
-                }
-              },
-              "unit": "decbytes"
+              "unit": "percent"
             }
           },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "editorMode": "code",
-              "expr": "sum(increase(towonel_edge_bytes_in_total{job=~\"towonel-edge-.*\"}[1d]) + increase(towonel_edge_bytes_out_total{job=~\"towonel-edge-.*\"}[1d])) by (job)",
-              "legendFormat": "{{job}}",
-              "range": true
+              "expr": "100 - (avg by (job) (rate(node_cpu_seconds_total{job=~\"ingress-vps-.*\", mode=\"idle\"}[5m])) * 100)",
+              "legendFormat": "{{job}}"
             }
           ]
         },
         {
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
-          "id": 1,
-          "title": "Towonel Network Throughput (Mbps)",
-          "type": "timeseries",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "drawStyle": "line",
-                "lineInterpolation": "smooth",
-                "fillOpacity": 10
-              },
-              "unit": "Mbits"
-            }
-          },
-          "targets": [
-            {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "editorMode": "code",
-              "expr": "sum(rate(towonel_agent_bytes_total[5m])) by (direction) * 8 / 1000000",
-              "legendFormat": "{{direction}}",
-              "range": true
-            }
-          ]
-        },
-        {
-          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 14 },
+          "gridPos": { "h": 5, "w": 6, "x": 6, "y": 0 },
           "id": 2,
-          "title": "Total Data Transferred (24h)",
-          "type": "barchart",
+          "title": "Edge Node Memory Usage",
+          "type": "gauge",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
-              "unit": "decbytes"
+              "color": { "mode": "thresholds" },
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 75 },
+                  { "color": "red", "value": 90 }
+                ]
+              },
+              "unit": "percent"
             }
           },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "editorMode": "code",
-              "expr": "sum(increase(towonel_agent_bytes_total[24h])) by (direction)",
-              "legendFormat": "{{direction}}",
-              "range": true
+              "expr": "(1 - (node_memory_MemAvailable_bytes{job=~\"ingress-vps-.*\"} / node_memory_MemTotal_bytes{job=~\"ingress-vps-.*\"})) * 100",
+              "legendFormat": "{{job}}"
             }
           ]
         },
         {
-          "gridPos": { "h": 8, "w": 10, "x": 8, "y": 14 },
+          "gridPos": { "h": 5, "w": 6, "x": 12, "y": 0 },
           "id": 3,
-          "title": "Traefik Ingress Request Rates per Service",
+          "title": "Edge Root Disk Free",
+          "type": "gauge",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": null },
+                  { "color": "yellow", "value": 20 },
+                  { "color": "green", "value": 35 }
+                ]
+              },
+              "unit": "percent"
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "(node_filesystem_avail_bytes{job=~\"ingress-vps-.*\", mountpoint=\"/\"} / node_filesystem_size_bytes{job=~\"ingress-vps-.*\", mountpoint=\"/\"}) * 100",
+              "legendFormat": "{{job}}"
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 5, "w": 6, "x": 18, "y": 0 },
+          "id": 4,
+          "title": "Edge Traefik Status",
+          "type": "stat",
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "mappings": [
+                { "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "HEALTHY" } }, "type": "value" }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": null },
+                  { "color": "green", "value": 1 }
+                ]
+              }
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "up{job=~\"ingress-vps-.*\", service=\"traefik\"}",
+              "legendFormat": "{{job}}"
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 5 },
+          "id": 5,
+          "title": "Edge Ingress Bandwidth (Mbps)",
           "type": "timeseries",
           "fieldConfig": {
             "defaults": {
-              "custom": {
-                "drawStyle": "line",
-                "lineInterpolation": "smooth"
-              },
+              "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 },
+              "unit": "bps"
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "sum by (job) (rate(node_network_receive_bytes_total{job=~\"ingress-vps-.*\", device!~\"lo|veth.*|docker.*\"}[5m])) * 8",
+              "legendFormat": "{{job}} Inbound (RX)"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "sum by (job) (rate(node_network_transmit_bytes_total{job=~\"ingress-vps-.*\", device!~\"lo|veth.*|docker.*\"}[5m])) * 8",
+              "legendFormat": "{{job}} Outbound (TX)"
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 5 },
+          "id": 6,
+          "title": "Edge Traefik Request Rates (req/s)",
+          "type": "timeseries",
+          "fieldConfig": {
+            "defaults": {
+              "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 15 },
               "unit": "reqps"
             }
           },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "editorMode": "code",
-              "expr": "sum(rate(traefik_service_requests_total{namespace=\"networking\"}[5m])) by (service)",
-              "legendFormat": "{{service}}",
-              "range": true
-            }
-          ]
-        },
-        {
-          "gridPos": { "h": 8, "w": 6, "x": 18, "y": 14 },
-          "id": 4,
-          "title": "Towonel Edge Session Status",
-          "type": "stat",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "unit": "short"
-            }
-          },
-          "targets": [
-            {
-              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "editorMode": "code",
-              "expr": "towonel_agent_edge_session_state",
-              "legendFormat": "Session State",
-              "range": true
+              "expr": "sum by (entrypoint) (rate(traefik_entrypoint_requests_total{job=~\"ingress-vps-.*\"}[5m]))",
+              "legendFormat": "Entrypoint: {{entrypoint}}"
             }
           ]
         }
@@ -253,10 +196,7 @@ spec:
       "refresh": "30s",
       "schemaVersion": 38,
       "style": "dark",
-      "tags": ["towonel", "networking", "traffic"],
-      "time": {
-        "from": "now-6h",
-        "to": "now"
-      },
-      "title": "Towonel - Traffic Throughput & Cost Demand Analytics"
+      "tags": ["ingress", "networking", "traefik", "vps"],
+      "time": { "from": "now-6h", "to": "now" },
+      "title": "Edge Ingress - VPS Fleet & Traefik Analytics"
     }

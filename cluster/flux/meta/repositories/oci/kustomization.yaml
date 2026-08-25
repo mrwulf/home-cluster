@@ -11,4 +11,3 @@ resources:
   - ./ceph-csi-drivers.yaml
   - ./toolhive-operator-crds.yaml
   - ./toolhive-operator.yaml
-  - ./towonel-operator.yaml

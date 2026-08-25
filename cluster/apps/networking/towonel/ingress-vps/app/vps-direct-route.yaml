@@ -15,5 +15,5 @@ spec:
     - "vps-backup.${SECRET_DOMAIN}"
   rules:
     - backendRefs:
-        - name: towonel-console
-          port: 3000
+        - name: netbird-dashboard
+          port: 80

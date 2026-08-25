@@ -582,24 +582,6 @@ spec:
     - "Firewall Peers"
 ---
 apiVersion: netbird.io/v1
-kind: NBResource
-metadata:
-  name: towonel-control-link
-  namespace: networking
-  annotations:
-    netbird.io/policy: "towonel-link-policy"
-spec:
-  name: "Towonel Control Link"
-  address: "towonel-hub.networking.svc.cluster.local"
-  networkID: ${NETBIRD_SELFHOSTED_NETWORK_ID:-da5o45inqh5s73arjong}
-  tcpPorts:
-    - 51444
-  groups:
-    - routing-peers
-  policySourceGroups:
-    - "vps-peers"
----
-apiVersion: netbird.io/v1
 kind: NBPolicy
 metadata:
   name: clusterdns-policy
@@ -613,21 +595,6 @@ spec:
     - udp
   ports:
     - 53
----
-apiVersion: netbird.io/v1
-kind: NBPolicy
-metadata:
-  name: towonel-link-policy
-spec:
-  name: "Towonel Link Policy"
-  sourceGroups:
-    - "vps-peers"
-  destinationGroups:
-    - routing-peers
-  protocols:
-    - tcp
-  ports:
-    - 51444
 ---
 # ==============================================================================
 # Standalone Fallback NetBird Client (Connected to NetBird Cloud)

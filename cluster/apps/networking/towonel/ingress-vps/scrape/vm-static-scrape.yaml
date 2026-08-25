@@ -2,67 +2,77 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
-  name: towonel-edge-na
+  name: ingress-vps-primary
   namespace: networking
 spec:
-  jobName: towonel-edge-na
+  jobName: ingress-vps-primary
   targetEndpoints:
     - targets:
-        - "${VPS_PRIMARY_PUBLIC_IP}:9090"
+        - "${VPS_PRIMARY_PUBLIC_IP}:8082"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
       relabelConfigs:
         - targetLabel: cluster
-          replacement: towonel-ops
+          replacement: ingress-vps
+        - targetLabel: service
+          replacement: traefik
+    - targets:
+        - "${VPS_PRIMARY_PUBLIC_IP}:9091"
+      scheme: "http"
+      path: "/metrics"
+      interval: "30s"
+      relabelConfigs:
+        - targetLabel: cluster
+          replacement: ingress-vps
+        - targetLabel: service
+          replacement: netbird-relay
+    - targets:
+        - "${VPS_PRIMARY_PUBLIC_IP}:9100"
+      scheme: "http"
+      path: "/metrics"
+      interval: "30s"
+      relabelConfigs:
+        - targetLabel: cluster
+          replacement: ingress-vps
+        - targetLabel: service
+          replacement: node-exporter
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
-  name: towonel-edge-eu
+  name: ingress-vps-backup
   namespace: networking
 spec:
-  jobName: towonel-edge-eu
+  jobName: ingress-vps-backup
   targetEndpoints:
     - targets:
-        - "${VPS_BACKUP_PUBLIC_IP}:9090"
+        - "${VPS_BACKUP_PUBLIC_IP}:8082"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
       relabelConfigs:
         - targetLabel: cluster
-          replacement: towonel-ops
----
-apiVersion: operator.victoriametrics.com/v1beta1
-kind: VMStaticScrape
-metadata:
-  name: towonel-hub
-  namespace: networking
-spec:
-  jobName: towonel-hub
-  targetEndpoints:
+          replacement: ingress-vps
+        - targetLabel: service
+          replacement: traefik
     - targets:
-        - "towonel-hub.networking.svc.cluster.local:9091"
+        - "${VPS_BACKUP_PUBLIC_IP}:9091"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
       relabelConfigs:
         - targetLabel: cluster
-          replacement: towonel-ops
----
-apiVersion: operator.victoriametrics.com/v1beta1
-kind: VMStaticScrape
-metadata:
-  name: towonel-agent
-  namespace: networking
-spec:
-  jobName: towonel-agent
-  targetEndpoints:
+          replacement: ingress-vps
+        - targetLabel: service
+          replacement: netbird-relay
     - targets:
-        - "towonel-agent.networking.svc.cluster.local:9090"
+        - "${VPS_BACKUP_PUBLIC_IP}:9100"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
       relabelConfigs:
         - targetLabel: cluster
-          replacement: towonel-ops
+          replacement: ingress-vps
+        - targetLabel: service
+          replacement: node-exporter

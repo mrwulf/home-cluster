@@ -297,9 +297,25 @@ resource "hcloud_firewall" "backup_firewall" {
   rule {
     direction   = "in"
     protocol    = "tcp"
-    port        = "9090"
-    source_ips  = [local.home_ip_cidr, "172.56.0.0/16", "75.50.127.0/24"]
-    description = "Allow metrics scraping from home only"
+    port        = "8082"
+    source_ips  = [local.home_ip_cidr, "172.56.0.0/16", "75.50.127.0/24", "100.64.0.0/10"]
+    description = "Allow Traefik metrics scraping from home and cluster"
+  }
+
+  rule {
+    direction   = "in"
+    protocol    = "tcp"
+    port        = "9091"
+    source_ips  = [local.home_ip_cidr, "172.56.0.0/16", "75.50.127.0/24", "100.64.0.0/10"]
+    description = "Allow NetBird Relay metrics scraping from home and cluster"
+  }
+
+  rule {
+    direction   = "in"
+    protocol    = "tcp"
+    port        = "9100"
+    source_ips  = [local.home_ip_cidr, "172.56.0.0/16", "75.50.127.0/24", "100.64.0.0/10"]
+    description = "Allow Node Exporter metrics scraping from home and cluster"
   }
 
   rule {
@@ -402,16 +418,6 @@ resource "cloudflare_dns_record" "vps_backup_v6" {
 resource "cloudflare_dns_record" "wildcard_ingress" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
   name    = "*.${var.secret_domain}"
-  content = "ingress.${var.secret_domain}"
-  type    = "CNAME"
-  proxied = false
-  ttl     = 1
-}
-
-# Wildcard CNAME for *.home.${SECRET_DOMAIN} -> ingress.${SECRET_DOMAIN}
-resource "cloudflare_dns_record" "wildcard_home_ingress" {
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "*.home.${var.secret_domain}"
   content = "ingress.${var.secret_domain}"
   type    = "CNAME"
   proxied = false

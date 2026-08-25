@@ -112,6 +112,36 @@ write_files:
       [Install]
       WantedBy=multi-user.target
 
+  # 5. Write Prometheus Node Exporter Systemd Container Service
+  - path: /etc/systemd/system/node-exporter.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Prometheus Node Exporter Container
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Restart=always
+      RestartSec=5s
+      ExecStartPre=-/usr/bin/docker rm -f node-exporter
+      # renovate: depName=prom/node-exporter datasource=docker
+      ExecStart=/usr/bin/docker run --name node-exporter --rm --net=host \
+        --log-opt max-size=10m \
+        --log-opt max-file=3 \
+        --pid=host \
+        -v /proc:/host/proc:ro \
+        -v /sys:/host/sys:ro \
+        -v /:/rootfs:ro \
+        docker.io/prom/node-exporter:v1.9.0 \
+        --path.procfs=/host/proc \
+        --path.sysfs=/host/sys \
+        --path.rootfs=/rootfs \
+        --web.listen-address=:9100
+
+      [Install]
+      WantedBy=multi-user.target
+
   # 7. Write systemd-resolved configuration for upstream DNS
   - path: /etc/systemd/resolved.conf.d/dns.conf
     permissions: "0644"
@@ -193,11 +223,12 @@ runcmd:
   - echo "net.ipv4.tcp_keepalive_probes=3" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_retries2=5" >> /etc/sysctl.conf
 
-  # 4. Enable and start NetBird, NetBird Relay, Traefik & CrowdSec Container
+  # 4. Enable and start NetBird, NetBird Relay, Traefik, Node Exporter & CrowdSec Container
   - mkdir -p /var/lib/crowdsec/data
   - systemctl daemon-reload
   - systemctl enable crowdsec --now
   - systemctl enable traefik --now
+  - systemctl enable node-exporter --now
   - |
     if [ -n "${NETBIRD_SELFHOSTED_SETUP_KEY}" ]; then
       systemctl enable netbird --now
