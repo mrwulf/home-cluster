@@ -414,11 +414,11 @@ resource "cloudflare_dns_record" "vps_backup_v6" {
   ttl     = 1
 }
 
-# Wildcard CNAME for *.${SECRET_DOMAIN} -> ingress.${SECRET_DOMAIN}
+# Wildcard CNAME for *.${SECRET_DOMAIN} -> proxy.${SECRET_DOMAIN}
 resource "cloudflare_dns_record" "wildcard_ingress" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
   name    = "*.${var.secret_domain}"
-  content = "ingress.${var.secret_domain}"
+  content = "proxy.${var.secret_domain}"
   type    = "CNAME"
   proxied = false
   ttl     = 1
