@@ -12,8 +12,6 @@ spec:
   parentRefs:
     - name: external-gateway
       namespace: networking
-    - name: netbird-gateway
-      namespace: networking
   hostnames:
     - "nb.${SECRET_DOMAIN}"
   rules:

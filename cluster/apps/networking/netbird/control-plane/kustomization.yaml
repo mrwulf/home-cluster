@@ -7,6 +7,5 @@ resources:
   - ./management-helmrelease.yaml
   - ./signal-helmrelease.yaml
   - ./dashboard-helmrelease.yaml
-  - ./gateway.yaml
   - ./route.yaml
   - ./servicemonitor.yaml
