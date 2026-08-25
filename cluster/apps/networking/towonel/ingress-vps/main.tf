@@ -447,6 +447,26 @@ resource "cloudflare_dns_record" "vps_backup_v6" {
   ttl     = 1
 }
 
+# Proxy IPv4 A record for Primary VPS
+resource "cloudflare_dns_record" "proxy_primary" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "proxy.${var.secret_domain}"
+  content = local.ovh_primary_ipv4
+  type    = "A"
+  proxied = false
+  ttl     = 1
+}
+
+# Proxy IPv4 A record for Backup VPS
+resource "cloudflare_dns_record" "proxy_backup" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "proxy.${var.secret_domain}"
+  content = hcloud_server.backup_vps.ipv4_address
+  type    = "A"
+  proxied = false
+  ttl     = 1
+}
+
 # Wildcard CNAME for *.${SECRET_DOMAIN} -> proxy.${SECRET_DOMAIN}
 # resource "cloudflare_dns_record" "wildcard_ingress" {
 #   zone_id = data.cloudflare_zones.domain_zones.result[0].id
