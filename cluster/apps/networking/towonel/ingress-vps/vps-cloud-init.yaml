@@ -272,16 +272,20 @@ runcmd:
       systemctl enable netbird --now
       systemctl enable netbird-relay --now
       until [ -S /var/run/netbird.sock ]; do sleep 1; done
-      until NB_DISABLE_CUSTOM_ROUTING=true netbird up \
-        --management-url "${NETBIRD_SELFHOSTED_MGMT_URL}" \
-        --setup-key "${NETBIRD_SELFHOSTED_SETUP_KEY}" \
-        --interface-name wt0 \
-        --enable-rosenpass \
-        --enable-ssh-root \
-        --allow-server-ssh \
-        --rosenpass-permissive \
-        --wireguard-port 51822; do
-        echo "Retrying netbird up in 5s..."
+      for i in $(seq 1 10); do
+        if NB_DISABLE_CUSTOM_ROUTING=true netbird up \
+          --management-url "${NETBIRD_SELFHOSTED_MGMT_URL}" \
+          --setup-key "${NETBIRD_SELFHOSTED_SETUP_KEY}" \
+          --interface-name wt0 \
+          --enable-rosenpass \
+          --enable-ssh-root \
+          --allow-server-ssh \
+          --rosenpass-permissive \
+          --wireguard-port 51822; then
+          echo "NetBird connected successfully"
+          break
+        fi
+        echo "Retrying netbird up in 5s ($i/10)..."
         sleep 5
       done
     fi
