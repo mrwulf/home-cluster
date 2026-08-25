@@ -526,11 +526,11 @@ resource "cloudflare_dns_record" "wildcard_ingress" {
 # }
 
 # 7. Enable gRPC proxying on the Cloudflare Zone for NetBird Signal Exchange streams
-resource "cloudflare_zone_setting" "grpc" {
-  zone_id    = data.cloudflare_zones.domain_zones.result[0].id
-  setting_id = "grpc"
-  value      = "on"
-}
+# resource "cloudflare_zone_setting" "grpc" {
+#   zone_id    = data.cloudflare_zones.domain_zones.result[0].id
+#   setting_id = "grpc"
+#   value      = "on"
+# }
 
 # 8. Output VPS public IPs to expose to tf-controller
 output "VPS_PRIMARY_PUBLIC_IP" {
