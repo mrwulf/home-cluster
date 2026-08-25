@@ -5,7 +5,6 @@ metadata:
   name: netbird-control-plane
   namespace: networking
   annotations:
-    external-dns.kubernetes.io/exclude: "true"
     gatus.io/enabled: "true"
     gatus.io/endpoint: |
       group: networking
