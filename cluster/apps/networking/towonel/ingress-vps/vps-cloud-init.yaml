@@ -177,6 +177,12 @@ write_files:
       # renovate: depName=crowdsecurity/crowdsec datasource=docker
       ExecStart=/usr/bin/docker run --name crowdsec --rm --net=host \
         -e COLLECTIONS="crowdsecurity/linux crowdsecurity/http-cve" \
+        -v /etc/crowdsec:/etc/crowdsec \
+        -v /var/lib/crowdsec/data:/var/lib/crowdsec/data \
+        -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
+        -v /var/log:/var/log:ro \
+        docker.io/crowdsecurity/crowdsec:v1.7.8
+
   # 10. Write WireGuard Client Configuration for NetBird Control Plane Uplink
   - path: /etc/wireguard/wg0.conf
     permissions: "0600"
