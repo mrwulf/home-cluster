@@ -1,35 +1,84 @@
 #cloud-config
 write_files:
-  # 1. Write NetBird Reverse Proxy Systemd Container Service
-  - path: /etc/systemd/system/netbird-proxy.service
+  # 1. Write Traefik Edge Ingress Proxy Static Configuration
+  - path: /etc/traefik/traefik.yaml
+    permissions: "0644"
+    content: |
+      entryPoints:
+        web:
+          address: ":80"
+        websecure:
+          address: ":443"
+        metrics:
+          address: ":8082"
+
+      providers:
+        file:
+          filename: "/etc/traefik/dynamic.yaml"
+
+      metrics:
+        prometheus:
+          entryPoint: metrics
+
+      log:
+        level: "INFO"
+
+      accessLog: {}
+
+  # 2. Write Traefik Edge Ingress Proxy Dynamic Configuration (SNI TLS Passthrough to K8s)
+  - path: /etc/traefik/dynamic.yaml
+    permissions: "0644"
+    content: |
+      http:
+        routers:
+          web-catchall:
+            entryPoints:
+              - web
+            rule: "HostRegexp(`{host:.+}`)"
+            service: k8s-http
+        services:
+          k8s-http:
+            loadBalancer:
+              servers:
+                - address: "http://10.0.10.20:8000"
+
+      tcp:
+        routers:
+          sni-passthrough:
+            entryPoints:
+              - websecure
+            rule: "HostSNI(`*`)"
+            service: k8s-traefik
+            tls:
+              passthrough: true
+        services:
+          k8s-traefik:
+            loadBalancer:
+              proxyProtocol:
+                version: 2
+              servers:
+                - address: "10.0.10.20:8443"
+
+  # 3. Write Traefik Systemd Container Service
+  - path: /etc/systemd/system/traefik.service
     permissions: "0644"
     content: |
       [Unit]
-      Description=NetBird Reverse Proxy Container
+      Description=Traefik Edge Ingress Proxy Container
       After=docker.service netbird.service
       Requires=docker.service
 
       [Service]
       Restart=always
       RestartSec=5s
-      ExecStartPre=-/usr/bin/docker rm -f netbird-proxy
-      # renovate: depName=netbirdio/reverse-proxy datasource=docker
-      ExecStart=/usr/bin/docker run --name netbird-proxy --rm \
-        -p 80:80 \
-        -p 443:443 \
+      ExecStartPre=-/usr/bin/docker rm -f traefik
+      # renovate: depName=traefik datasource=docker
+      ExecStart=/usr/bin/docker run --name traefik --rm --net=host \
         --log-opt max-size=10m \
         --log-opt max-file=3 \
-        -v proxy_certs:/certs \
-        -e NB_PROXY_CERTIFICATE_DIRECTORY=/certs \
-        -e NB_PROXY_ALLOW_INSECURE=true \
-        -e NB_PROXY_MANAGEMENT_ADDRESS=https://nb.${SECRET_DOMAIN} \
-        -e NB_PROXY_ACME_CERTIFICATES=true \
-        -e NB_PROXY_DOMAIN=proxy.${SECRET_DOMAIN} \
-        -e NB_PROXY_LOG_LEVEL=info \
-        -e NB_PROXY_TOKEN=${NETBIRD_PROXY_TOKEN} \
-        -e NB_PROXY_PRIVATE=true \
-        -e NB_PROXY_ADDRESS=:443 \
-        docker.io/netbirdio/reverse-proxy:0.77.1
+        -v /etc/traefik:/etc/traefik:ro \
+        docker.io/traefik:v3.3.4 \
+        --configfile=/etc/traefik/traefik.yaml
 
       [Install]
       WantedBy=multi-user.target
@@ -144,11 +193,11 @@ runcmd:
   - echo "net.ipv4.tcp_keepalive_probes=3" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_retries2=5" >> /etc/sysctl.conf
 
-  # 4. Enable and start NetBird, NetBird Relay, NetBird Proxy & CrowdSec Container
+  # 4. Enable and start NetBird, NetBird Relay, Traefik & CrowdSec Container
   - mkdir -p /var/lib/crowdsec/data
   - systemctl daemon-reload
   - systemctl enable crowdsec --now
-  - systemctl enable netbird-proxy --now
+  - systemctl enable traefik --now
   - |
     if [ -n "${NETBIRD_SELFHOSTED_SETUP_KEY}" ]; then
       systemctl enable netbird --now
@@ -191,7 +240,7 @@ runcmd:
         - "192.168.0.0/16"
     EOF
 
-    cat <<EOF > /etc/crowdsec/acquis.d/netbird-proxy.yaml
+    cat <<EOF > /etc/crowdsec/acquis.d/traefik.yaml
     filenames:
       - /var/lib/docker/containers/*/*-json.log
     labels:

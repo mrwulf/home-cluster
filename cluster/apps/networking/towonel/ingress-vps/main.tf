@@ -71,11 +71,6 @@ variable "netbird_relay_auth_secret" {
   sensitive = true
   default   = ""
 }
-variable "netbird_proxy_token" {
-  type      = string
-  sensitive = true
-  default   = ""
-}
 
 
 terraform {
@@ -159,7 +154,6 @@ resource "terraform_data" "cloud_init_primary" {
     NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
     NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
     NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
-    NETBIRD_PROXY_TOKEN          = var.netbird_proxy_token
     SECRET_DOMAIN                = var.secret_domain
     HOME_IP                      = local.home_ip
     PROBE_HOSTNAME               = "vps-primary.${var.secret_domain}"
@@ -216,7 +210,6 @@ resource "terraform_data" "cloud_init_backup" {
     NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
     NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
     NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
-    NETBIRD_PROXY_TOKEN          = var.netbird_proxy_token
     SECRET_DOMAIN                = var.secret_domain
     HOME_IP                      = local.home_ip
     PROBE_HOSTNAME               = "vps-backup.${var.secret_domain}"
@@ -379,40 +372,21 @@ resource "cloudflare_dns_record" "vps_backup_v6" {
   ttl     = 1
 }
 
-# Proxy Cluster direct IPv4 A records
-resource "cloudflare_dns_record" "proxy_primary_v4" {
+# Wildcard CNAME for *.${SECRET_DOMAIN} -> ingress.${SECRET_DOMAIN}
+resource "cloudflare_dns_record" "wildcard_ingress" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "proxy.${var.secret_domain}"
-  content = local.ovh_primary_ipv4
-  type    = "A"
+  name    = "*.${var.secret_domain}"
+  content = "ingress.${var.secret_domain}"
+  type    = "CNAME"
   proxied = false
   ttl     = 1
 }
 
-resource "cloudflare_dns_record" "proxy_backup_v4" {
+# Wildcard CNAME for *.home.${SECRET_DOMAIN} -> ingress.${SECRET_DOMAIN}
+resource "cloudflare_dns_record" "wildcard_home_ingress" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "proxy.${var.secret_domain}"
-  content = hcloud_server.backup_vps.ipv4_address
-  type    = "A"
-  proxied = false
-  ttl     = 1
-}
-
-# Proxy Cluster direct IPv6 AAAA record (Backup Hetzner VPS)
-resource "cloudflare_dns_record" "proxy_backup_v6" {
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "proxy.${var.secret_domain}"
-  content = hcloud_server.backup_vps.ipv6_address
-  type    = "AAAA"
-  proxied = false
-  ttl     = 1
-}
-
-# Wildcard CNAME for *.proxy.${SECRET_DOMAIN} -> proxy.${SECRET_DOMAIN}
-resource "cloudflare_dns_record" "proxy_wildcard" {
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "*.proxy.${var.secret_domain}"
-  content = "proxy.${var.secret_domain}"
+  name    = "*.home.${var.secret_domain}"
+  content = "ingress.${var.secret_domain}"
   type    = "CNAME"
   proxied = false
   ttl     = 1
