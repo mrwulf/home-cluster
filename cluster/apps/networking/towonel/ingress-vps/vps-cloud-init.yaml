@@ -216,8 +216,13 @@ runcmd:
   # 1. Install Docker, WireGuard & systemd-resolved and link stub resolver
   - |
     export DEBIAN_FRONTEND=noninteractive
-    apt-get update
-    apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io systemd-resolved gnupg apt-transport-https wireguard-tools
+    while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 2; done
+    for i in $(seq 1 5); do
+      if apt-get update && apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io systemd-resolved gnupg apt-transport-https wireguard-tools curl; then
+        break
+      fi
+      sleep 3
+    done
     apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker-cli || true
     systemctl enable systemd-resolved --now
     ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
@@ -244,7 +249,13 @@ runcmd:
     ip rule add from $DEFAULT_IP lookup 100 || true
     ip route add default via $DEFAULT_GW dev $DEFAULT_IFACE table 100 || true
 
-    curl -fsSL https://pkgs.netbird.io/install.sh | sh
+    while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 2; done
+    for i in $(seq 1 5); do
+      if curl -fsSL https://pkgs.netbird.io/install.sh | sh; then
+        break
+      fi
+      sleep 3
+    done
     netbird service reconfigure --service-env NB_DISABLE_CUSTOM_ROUTING=true || true
 
   # 5. Tune Linux TCP stack (BBR Congestion Control & Fast TCP Keepalives)
