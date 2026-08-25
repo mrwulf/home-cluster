@@ -21,6 +21,16 @@ spec:
           labels:
             severity: critical
 
+        - alert: IngressVPSRelayDown
+          annotations:
+            summary: "Edge Ingress VPS NetBird Relay is down"
+            description: "Edge Ingress VPS NetBird Relay instance {{ $labels.instance }} ({{ $labels.job }}) is unreachable or failing metrics scraping."
+          expr: |
+            up{job=~"ingress-vps-.*", service="netbird-relay"} == 0
+          for: 2m
+          labels:
+            severity: critical
+
         - alert: IngressVPSNodeExporterDown
           annotations:
             summary: "Edge Ingress VPS Node Exporter is down"
