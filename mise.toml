@@ -2,7 +2,7 @@
 minimum_release_age = "0s"
 
 [tools]
-kubectl = "1.36.4"
+kubectl = "1.37.0"
 task = "3.53.1"
 yq = "4.53.6"
 jq = "1.8.2"
