@@ -245,6 +245,10 @@ resource "ovh_cloud_project_instance" "primary_vps" {
     replace_triggered_by = [
       terraform_data.cloud_init_primary
     ]
+    postcondition {
+      condition     = self.status == "ACTIVE"
+      error_message = "OVH primary VPS is not in ACTIVE state (current status: ${self.status})."
+    }
   }
 }
 
@@ -296,6 +300,10 @@ resource "hcloud_server" "backup_vps" {
     replace_triggered_by = [
       terraform_data.cloud_init_backup
     ]
+    postcondition {
+      condition     = self.status == "running"
+      error_message = "Hetzner backup VPS is not in running state (current status: ${self.status})."
+    }
   }
 }
 

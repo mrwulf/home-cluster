@@ -5,6 +5,7 @@ metadata:
   namespace: networking
 spec:
   interval: 15m
+  retryInterval: 1m
   approvePlan: auto
   tfstate:
     forceUnlock: "yes"
