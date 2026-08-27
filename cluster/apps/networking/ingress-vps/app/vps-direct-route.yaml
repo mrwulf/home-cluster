@@ -5,7 +5,8 @@ metadata:
   name: vps-direct-health
   namespace: networking
   annotations:
-    external-dns.kubernetes.io/exclude: "true"
+    external-dns.kubernetes.io/controller: "none"
+    external-dns.alpha.kubernetes.io/controller: "none"
 spec:
   parentRefs:
     - name: external-gateway
