@@ -8,6 +8,7 @@ metadata:
     gatus.io/enabled: "true"
     gatus.io/endpoint: |
       group: networking
+      path: /
 spec:
   parentRefs:
     - name: external-gateway

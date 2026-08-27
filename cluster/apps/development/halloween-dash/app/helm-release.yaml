@@ -83,13 +83,7 @@ spec:
         hostnames:
           - "${APP}.${SECRET_DOMAIN}"
         rules:
-          - filters:
-              - type: ExtensionRef
-                extensionRef:
-                  group: traefik.io
-                  kind: Middleware
-                  name: rfc1918-ips
-            backendRefs:
+          - backendRefs:
               - identifier: app
                 port: http
 
