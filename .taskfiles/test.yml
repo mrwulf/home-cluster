@@ -66,13 +66,12 @@ tasks:
 
   lint:tofu:
     desc: Statically validate OpenTofu manifests
-    dir: "{{.PROJECT_DIR}}/cluster/apps/networking/ingress-vps"
     cmds:
-      - rm -rf .terraform
-      - tofu init -backend=false
-      - tofu validate
-    defer:
-      - rm -rf .terraform
+      - |
+        for dir in cluster/apps/networking/ingress-vps/us cluster/apps/networking/ingress-vps/eu cluster/apps/networking/ingress-vps/failover; do
+          echo "Validating OpenTofu module in $dir..."
+          (cd "{{.PROJECT_DIR}}/$dir" && rm -rf .terraform && tofu init -backend=false && tofu validate && rm -rf .terraform) || exit 1
+        done
 
   lint:format:
     desc: Check code formatting with prettier

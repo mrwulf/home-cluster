@@ -68,8 +68,8 @@ Deployed declaratively via OpenTofu (`cloudflare_workers_script.failover_monitor
 and triggered every minute (`cloudflare_workers_cron_trigger.failover_cron`):
 
 1. **Active Probing**:
-   - Probes `https://vps-primary.${SECRET_DOMAIN}` (OVH).
-   - Probes `https://vps-backup.${SECRET_DOMAIN}` (Hetzner).
+   - Probes `https://vps-us.${SECRET_DOMAIN}` (OVH US).
+   - Probes `https://vps-eu.${SECRET_DOMAIN}` (Hetzner EU).
    - _Why direct hostnames are probed_: Probing `proxy.${SECRET_DOMAIN}` directly
      would round-robin across both VPS nodes and mask single-node outages.
      Probing direct unproxied hostnames isolates individual node health.
@@ -202,7 +202,7 @@ Edge VPS Node
   `10.0.10.20` internally. In-cluster pods and LAN services cannot resolve
   public VPS IPs via internal DNS.
 - **Remediation**: `NetworkRouter/k8s` configures declarative `hostAliases`
-  mapping `vps-backup.${SECRET_DOMAIN}` and `vps-primary.${SECRET_DOMAIN}`
+  mapping `vps-eu.${SECRET_DOMAIN}` and `vps-us.${SECRET_DOMAIN}`
   directly to their public IPs.
 - **Relay Invariant**: NetBird Relay containers require
   `NB_EXPOSED_ADDRESS=rel://${PROBE_HOSTNAME}:33073` and `NB_AUTH_SECRET` matching

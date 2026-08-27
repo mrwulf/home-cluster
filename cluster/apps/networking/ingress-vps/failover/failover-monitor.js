@@ -160,18 +160,16 @@ async function probeHost(host, maxProbes = 3) {
 
 export default {
   async scheduled(event, env, ctx) {
-    const VPS_PRIMARY_HOST = env.VPS_PRIMARY_HOST
-    const VPS_BACKUP_HOST = env.VPS_BACKUP_HOST
-    const PROXY_CNAME =
-      env.PROXY_CNAME || `proxy.${RECORD_NAME.replace(/^ingress\./, "")}`
-    const TUNNEL_CNAME =
-      env.TUNNEL_CNAME || `external.${RECORD_NAME.replace(/^ingress\./, "")}`
+    const VPS_US_HOST = env.VPS_US_HOST
+    const VPS_EU_HOST = env.VPS_EU_HOST
+    const RECORD_NAME = env.RECORD_NAME
+    const SECRET_DOMAIN = RECORD_NAME.replace(/^ingress\./, "")
+    const PROXY_CNAME = env.PROXY_CNAME || `proxy.${SECRET_DOMAIN}`
+    const TUNNEL_CNAME = env.TUNNEL_CNAME || `external.${SECRET_DOMAIN}`
     const ZONE_ID = env.CLOUDFLARE_ZONE_ID
     const RECORD_ID = env.CLOUDFLARE_RECORD_ID
     const API_TOKEN = env.CLOUDFLARE_API_TOKEN
-    const RECORD_NAME = env.RECORD_NAME
 
-    const SECRET_DOMAIN = RECORD_NAME.replace(/^ingress\./, "")
     const fromEmail = `failover-monitor@${SECRET_DOMAIN}`
     const toEmail = `postmaster@${SECRET_DOMAIN}`
 
@@ -180,40 +178,40 @@ export default {
     let targetTier = null
     let isProxied = false
 
-    // 1. Probe Tier 1: Primary VPS (OVHcloud)
-    const primaryProbe = await probeHost(VPS_PRIMARY_HOST)
-    allProbeLogs.push(...primaryProbe.attempts)
+    // 1. Probe Tier 1: US VPS (OVHcloud)
+    const usProbe = await probeHost(VPS_US_HOST)
+    allProbeLogs.push(...usProbe.attempts)
 
-    if (primaryProbe.isUp) {
+    if (usProbe.isUp) {
       targetContent = PROXY_CNAME
-      targetTier = "Primary (OVHcloud VPS / Proxy)"
+      targetTier = "US Region (OVHcloud VPS / Proxy)"
       isProxied = false
       console.log(
-        `Primary VPS (${VPS_PRIMARY_HOST}) is healthy. Routing to ${PROXY_CNAME}.`
+        `US VPS (${VPS_US_HOST}) is healthy. Routing to ${PROXY_CNAME}.`
       )
     } else {
       console.warn(
-        `Primary VPS (${VPS_PRIMARY_HOST}) is UNHEALTHY. Probing Backup VPS (${VPS_BACKUP_HOST})...`
+        `US VPS (${VPS_US_HOST}) is UNHEALTHY. Probing EU VPS (${VPS_EU_HOST})...`
       )
 
-      // 2. Probe Tier 2: Backup VPS (Hetzner)
-      const backupProbe = await probeHost(VPS_BACKUP_HOST)
-      allProbeLogs.push(...backupProbe.attempts)
+      // 2. Probe Tier 2: EU VPS (Hetzner)
+      const euProbe = await probeHost(VPS_EU_HOST)
+      allProbeLogs.push(...euProbe.attempts)
 
-      if (backupProbe.isUp) {
+      if (euProbe.isUp) {
         targetContent = PROXY_CNAME
-        targetTier = "Backup (Hetzner VPS / Proxy)"
+        targetTier = "EU Region (Hetzner VPS / Proxy)"
         isProxied = false
         console.log(
-          `Backup VPS (${VPS_BACKUP_HOST}) is healthy. Routing to ${PROXY_CNAME}.`
+          `EU VPS (${VPS_EU_HOST}) is healthy. Routing to ${PROXY_CNAME}.`
         )
       } else {
-        // 3. Tier 3 Fallback: Cloudflare Tunnel (external.sysinfra.pro)
+        // 3. Tier 3 Fallback: Cloudflare Tunnel
         targetContent = TUNNEL_CNAME
         targetTier = "Fallback (Cloudflare Tunnel)"
         isProxied = true
         console.error(
-          `Both Primary and Backup VPS are UNHEALTHY! Falling back to Cloudflare Tunnel (${TUNNEL_CNAME}).`
+          `Both US and EU VPS are UNHEALTHY! Falling back to Cloudflare Tunnel (${TUNNEL_CNAME}).`
         )
       }
     }

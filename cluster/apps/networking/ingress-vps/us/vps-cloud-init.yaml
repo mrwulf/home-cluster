@@ -1,0 +1,365 @@
+#cloud-config
+write_files:
+  # 1. Write Traefik Edge Ingress Proxy Static Configuration
+  - path: /etc/traefik/traefik.yaml
+    permissions: "0644"
+    content: |
+      entryPoints:
+        web:
+          address: ":80"
+        websecure:
+          address: ":443"
+        metrics:
+          address: ":8082"
+
+      providers:
+        file:
+          filename: "/etc/traefik/dynamic.yaml"
+
+      metrics:
+        prometheus:
+          entryPoint: metrics
+
+      log:
+        level: "INFO"
+
+      accessLog: {}
+
+  # 2. Write Traefik Edge Ingress Proxy Dynamic Configuration (SNI TLS Passthrough to K8s)
+  - path: /etc/traefik/dynamic.yaml
+    permissions: "0644"
+    content: |
+      http:
+        routers:
+          web-catchall:
+            entryPoints:
+              - web
+            rule: "HostRegexp(`{host:.+}`)"
+            service: k8s-http
+        services:
+          k8s-http:
+            loadBalancer:
+              servers:
+                - url: "http://10.0.10.20:80"
+
+      tcp:
+        routers:
+          sni-passthrough:
+            entryPoints:
+              - websecure
+            rule: "HostSNI(`*`)"
+            service: k8s-traefik
+            tls:
+              passthrough: true
+        services:
+          k8s-traefik:
+            loadBalancer:
+              proxyProtocol:
+                version: 2
+              servers:
+                - address: "10.0.10.20:443"
+
+  # 3. Write Traefik Systemd Container Service
+  - path: /etc/systemd/system/traefik.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Traefik Edge Ingress Proxy Container
+      After=docker.service netbird.service
+      Requires=docker.service
+
+      [Service]
+      Restart=always
+      RestartSec=5s
+      ExecStartPre=-/usr/bin/docker rm -f traefik
+      # renovate: depName=traefik datasource=docker
+      ExecStart=/usr/bin/docker run --name traefik --rm --net=host \
+        --log-opt max-size=10m \
+        --log-opt max-file=3 \
+        -v /etc/traefik:/etc/traefik:ro \
+        docker.io/traefik:v3.3.7 \
+        --configfile=/etc/traefik/traefik.yaml
+
+      [Install]
+      WantedBy=multi-user.target
+
+  # 4. Write NetBird Relay & Embedded STUN Systemd Container Service
+  - path: /etc/systemd/system/netbird-relay.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=NetBird Relay and Embedded STUN Server
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Restart=always
+      RestartSec=5s
+      ExecStartPre=-/usr/bin/docker rm -f netbird-relay
+      # renovate: depName=netbirdio/relay datasource=docker
+      ExecStart=/usr/bin/docker run --name netbird-relay --rm --net=host \
+        --log-opt max-size=10m \
+        --log-opt max-file=3 \
+        -e NB_LISTEN_ADDRESS=:33073 \
+        -e NB_EXPOSED_ADDRESS=rel://${PROBE_HOSTNAME}:33073 \
+        -e NB_AUTH_SECRET=${NETBIRD_RELAY_AUTH_SECRET} \
+        -e NB_ENABLE_STUN=true \
+        -e NB_STUN_PORTS=3478 \
+        -e NB_METRICS_PORT=9091 \
+        -e NB_LOG_LEVEL=info \
+        docker.io/netbirdio/relay:0.77.1
+
+      [Install]
+      WantedBy=multi-user.target
+
+  # 5. Write Prometheus Node Exporter Systemd Container Service
+  - path: /etc/systemd/system/node-exporter.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Prometheus Node Exporter Container
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Restart=always
+      RestartSec=5s
+      ExecStartPre=-/usr/bin/docker rm -f node-exporter
+      # renovate: depName=prom/node-exporter datasource=docker
+      ExecStart=/usr/bin/docker run --name node-exporter --rm --net=host \
+        --log-opt max-size=10m \
+        --log-opt max-file=3 \
+        --pid=host \
+        -v /proc:/host/proc:ro \
+        -v /sys:/host/sys:ro \
+        -v /:/rootfs:ro \
+        docker.io/prom/node-exporter:v1.12.1 \
+        --path.procfs=/host/proc \
+        --path.sysfs=/host/sys \
+        --path.rootfs=/rootfs \
+        --web.listen-address=:9100
+
+      [Install]
+      WantedBy=multi-user.target
+
+  # 7. Write systemd-resolved configuration for upstream DNS
+  - path: /etc/systemd/resolved.conf.d/dns.conf
+    permissions: "0644"
+    content: |
+      [Resolve]
+      DNS=1.1.1.1 185.12.64.2
+
+  # 8. Write Docker daemon configuration for log rotation
+  - path: /etc/docker/daemon.json
+    permissions: "0644"
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+
+  # 9. Write Systemd Service for CrowdSec Security Engine Container
+  - path: /etc/systemd/system/crowdsec.service
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=CrowdSec LAPI Security Engine Container
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Restart=always
+      RestartSec=5s
+      ExecStartPre=-/usr/bin/docker rm -f crowdsec
+      # renovate: depName=crowdsecurity/crowdsec datasource=docker
+      ExecStart=/usr/bin/docker run --name crowdsec --rm --net=host \
+        -e COLLECTIONS="crowdsecurity/linux crowdsecurity/http-cve" \
+        -v /etc/crowdsec:/etc/crowdsec \
+        -v /var/lib/crowdsec/data:/var/lib/crowdsec/data \
+        -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
+        -v /var/log:/var/log:ro \
+        docker.io/crowdsecurity/crowdsec:v1.7.8
+
+  # 10. Write WireGuard Client Configuration for NetBird Control Plane Uplink
+  - path: /etc/wireguard/wg0.conf
+    permissions: "0600"
+    content: |
+      [Interface]
+      PrivateKey = ${WG_PRIVATE_KEY}
+      Address = ${WG_ADDRESS}
+      MTU = 1280
+
+      [Peer]
+      PublicKey = ${WG_PEER_PUBLIC_KEY}
+      Endpoint = dynamic.${SECRET_DOMAIN}:51821
+      AllowedIPs = ${NB_ADDR}/32
+      PersistentKeepalive = 25
+
+  # 11. Write Systemd Drop-in Override for NetBird to depend on WireGuard
+  - path: /etc/systemd/system/netbird.service.d/override.conf
+    permissions: "0644"
+    content: |
+      [Unit]
+      After=wg-quick@wg0.service
+      Wants=wg-quick@wg0.service
+      Requires=wg-quick@wg0.service
+
+  # 12. Write Systemd Drop-in Override for Traefik to depend on WireGuard
+  - path: /etc/systemd/system/traefik.service.d/override.conf
+    permissions: "0644"
+    content: |
+      [Unit]
+      After=wg-quick@wg0.service
+      Wants=wg-quick@wg0.service
+
+      [Install]
+      WantedBy=multi-user.target
+
+runcmd:
+  # 1. Install Docker, WireGuard & systemd-resolved and link stub resolver
+  - |
+    export DEBIAN_FRONTEND=noninteractive
+    while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 2; done
+    for i in $(seq 1 5); do
+      if apt-get update && apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io systemd-resolved gnupg apt-transport-https wireguard-tools curl; then
+        break
+      fi
+      sleep 3
+    done
+    apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker-cli || true
+    systemctl enable systemd-resolved --now
+    ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+    systemctl restart systemd-resolved
+    systemctl enable docker --now
+
+  # 2. Add host entry for NetBird Control Plane to point to dedicated Gateway IP over WireGuard
+  - |
+    if ! grep -q "nb.${SECRET_DOMAIN}" /etc/hosts; then
+      echo "${NB_ADDR} nb.${SECRET_DOMAIN}" >> /etc/hosts
+    fi
+
+  # 3. Start WireGuard Control Plane Uplink tunnel
+  - |
+    systemctl daemon-reload
+    systemctl enable wg-quick@wg0 --now
+    until ip link show wg0 >/dev/null 2>&1; do sleep 1; done
+
+  # 4. Configure source-based policy routing & install NetBird
+  - |
+    DEFAULT_IFACE=$(ip route show default | awk '/default/ {print $5}')
+    DEFAULT_GW=$(ip route show default | awk '/default/ {print $3}')
+    DEFAULT_IP=$(ip -4 addr show dev $DEFAULT_IFACE | awk '/inet / {print $2}' | cut -d/ -f1)
+    ip rule add from $DEFAULT_IP lookup 100 || true
+    ip route add default via $DEFAULT_GW dev $DEFAULT_IFACE table 100 || true
+
+    while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 2; done
+    for i in $(seq 1 5); do
+      if curl -fsSL https://pkgs.netbird.io/install.sh | sh; then
+        break
+      fi
+      sleep 3
+    done
+    netbird service reconfigure --service-env NB_DISABLE_CUSTOM_ROUTING=true || true
+
+  # 5. Tune Linux TCP stack (BBR Congestion Control & Fast TCP Keepalives)
+  - sysctl -w net.core.default_qdisc=fq
+  - sysctl -w net.ipv4.tcp_congestion_control=bbr
+  - sysctl -w net.ipv4.tcp_keepalive_time=60
+  - sysctl -w net.ipv4.tcp_keepalive_intvl=10
+  - sysctl -w net.ipv4.tcp_keepalive_probes=3
+  - sysctl -w net.ipv4.tcp_retries2=5
+  - echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+  - echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+  - echo "net.ipv4.tcp_keepalive_time=60" >> /etc/sysctl.conf
+  - echo "net.ipv4.tcp_keepalive_intvl=10" >> /etc/sysctl.conf
+  - echo "net.ipv4.tcp_keepalive_probes=3" >> /etc/sysctl.conf
+  - echo "net.ipv4.tcp_retries2=5" >> /etc/sysctl.conf
+
+  # 6. Enable and start NetBird, NetBird Relay, Traefik, Node Exporter & CrowdSec Container
+  - mkdir -p /var/lib/crowdsec/data
+  - systemctl daemon-reload
+  - systemctl enable crowdsec --now
+  - systemctl enable traefik --now
+  - systemctl enable node-exporter --now
+  - |
+    if [ -n "${NETBIRD_SELFHOSTED_SETUP_KEY}" ]; then
+      systemctl enable netbird --now
+      systemctl enable netbird-relay --now
+      until [ -S /var/run/netbird.sock ]; do sleep 1; done
+      for i in $(seq 1 10); do
+        if NB_DISABLE_CUSTOM_ROUTING=true netbird up \
+          --management-url "${NETBIRD_SELFHOSTED_MGMT_URL}" \
+          --setup-key "${NETBIRD_SELFHOSTED_SETUP_KEY}" \
+          --interface-name wt0 \
+          --enable-rosenpass \
+          --enable-ssh-root \
+          --allow-server-ssh \
+          --rosenpass-permissive \
+          --wireguard-port 51822; then
+          echo "NetBird connected successfully"
+          break
+        fi
+        echo "Retrying netbird up in 5s ($i/10)..."
+        sleep 5
+      done
+    fi
+
+  # 5. Wait for CrowdSec container to populate base /etc/crowdsec/config.yaml and write custom whitelist/acquisition
+  - |
+    until docker exec crowdsec cscli config show >/dev/null 2>&1; do sleep 2; done
+
+    mkdir -p /etc/crowdsec/parsers/s02-enrich /etc/crowdsec/acquis.d
+
+    cat <<EOF > /etc/crowdsec/parsers/s02-enrich/00-whitelist.yaml
+    name: local/whitelist
+    description: "Whitelist trusted IPs and internal networks"
+    filter: "1 == 1"
+    whitelist:
+      reason: "Whitelisted home IP and internal overlay networks"
+      ip:
+        - "${HOME_IP}"
+        - "127.0.0.1"
+        - "::1"
+      cidr:
+        - "100.64.0.0/10"
+        - "10.0.0.0/8"
+        - "172.16.0.0/12"
+        - "192.168.0.0/16"
+    EOF
+
+    cat <<EOF > /etc/crowdsec/acquis.d/traefik.yaml
+    filenames:
+      - /var/lib/docker/containers/*/*-json.log
+    labels:
+      type: docker
+    ---
+    source: journalctl
+    journalctl_filter:
+      - _SYSTEMD_UNIT=sshd.service
+    labels:
+      type: syslog
+    EOF
+
+    docker exec crowdsec cscli reload || true
+
+  # 6. Install NFTables Firewall Bouncer on host & connect to containerized LAPI
+  - |
+    export DEBIAN_FRONTEND=noninteractive
+    mkdir -p /etc/apt/keyrings /etc/apt/sources.list.d
+    curl -fsSL https://packagecloud.io/crowdsec/crowdsec/gpgkey | gpg --dearmor --yes -o /etc/apt/keyrings/crowdsec.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/crowdsec.gpg] https://packagecloud.io/crowdsec/crowdsec/debian/ bookworm main" > /etc/apt/sources.list.d/crowdsec_crowdsec.list
+    apt-get update
+    apt-get install -y crowdsec-firewall-bouncer-nftables
+
+    # Wait for CrowdSec container LAPI to be ready
+    until docker exec crowdsec cscli bouncers list >/dev/null 2>&1; do sleep 2; done
+
+    # Register bouncer with local container LAPI
+    docker exec crowdsec cscli bouncers delete host-nftables || true
+    BOUNCER_KEY=$(docker exec crowdsec cscli bouncers add host-nftables -o raw | tail -n 1)
+    sed -i "s/^api_key:.*/api_key: $${BOUNCER_KEY}/" /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+    sed -i "s|^api_url:.*|api_url: http://127.0.0.1:8080/|" /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+    systemctl restart crowdsec-firewall-bouncer

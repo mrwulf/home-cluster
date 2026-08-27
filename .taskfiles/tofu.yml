@@ -46,14 +46,14 @@ tasks:
   unlock:
     desc: Force unlock a Terraform state directly in the cluster
     vars:
-      NAME: '{{.NAME | default "ingress-tunnel-infra"}}'
+      NAME: '{{.NAME | default "ingress-vps-us"}}'
       NS: '{{.NS | default "networking"}}'
       LOCK_ID: "{{.LOCK_ID}}"
     cmds:
       - |
         if [ -z "{{.LOCK_ID}}" ]; then
           echo "Error: LOCK_ID is required."
-          echo "Usage: task tofu:unlock LOCK_ID=<lock-id> [NAME=ingress-tunnel-infra] [NS=networking]"
+          echo "Usage: task tofu:unlock LOCK_ID=<lock-id> [NAME=ingress-vps-us] [NS=networking]"
           exit 1
         fi
         echo "Applying force-unlock patch to Terraform CR {{.NS}}/{{.NAME}}..."

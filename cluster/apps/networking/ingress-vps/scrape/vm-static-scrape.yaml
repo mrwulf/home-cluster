@@ -2,13 +2,13 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
-  name: ingress-vps-primary
+  name: ingress-vps-us
   namespace: networking
 spec:
-  jobName: ingress-vps-primary
+  jobName: ingress-vps-us
   targetEndpoints:
     - targets:
-        - "${VPS_PRIMARY_PUBLIC_IP}:8082"
+        - "${VPS_US_PUBLIC_IP}:8082"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
@@ -18,7 +18,7 @@ spec:
         - targetLabel: service
           replacement: traefik
     - targets:
-        - "${VPS_PRIMARY_PUBLIC_IP}:9091"
+        - "${VPS_US_PUBLIC_IP}:9091"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
@@ -28,7 +28,7 @@ spec:
         - targetLabel: service
           replacement: netbird-relay
     - targets:
-        - "${VPS_PRIMARY_PUBLIC_IP}:9100"
+        - "${VPS_US_PUBLIC_IP}:9100"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
@@ -41,13 +41,13 @@ spec:
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
-  name: ingress-vps-backup
+  name: ingress-vps-eu
   namespace: networking
 spec:
-  jobName: ingress-vps-backup
+  jobName: ingress-vps-eu
   targetEndpoints:
     - targets:
-        - "${VPS_BACKUP_PUBLIC_IP}:8082"
+        - "${VPS_EU_PUBLIC_IP}:8082"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
@@ -57,7 +57,7 @@ spec:
         - targetLabel: service
           replacement: traefik
     - targets:
-        - "${VPS_BACKUP_PUBLIC_IP}:9091"
+        - "${VPS_EU_PUBLIC_IP}:9091"
       scheme: "http"
       path: "/metrics"
       interval: "30s"
@@ -67,7 +67,7 @@ spec:
         - targetLabel: service
           replacement: netbird-relay
     - targets:
-        - "${VPS_BACKUP_PUBLIC_IP}:9100"
+        - "${VPS_EU_PUBLIC_IP}:9100"
       scheme: "http"
       path: "/metrics"
       interval: "30s"

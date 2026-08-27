@@ -108,11 +108,11 @@ spec:
                   "Stuns": [
                     {
                       "Proto": "udp",
-                      "URI": "stun:vps-primary.${SECRET_DOMAIN}:3478"
+                      "URI": "stun:vps-us.${SECRET_DOMAIN}:3478"
                     },
                     {
                       "Proto": "udp",
-                      "URI": "stun:vps-backup.${SECRET_DOMAIN}:3478"
+                      "URI": "stun:vps-eu.${SECRET_DOMAIN}:3478"
                     },
                     {
                       "Proto": "udp",
@@ -121,8 +121,8 @@ spec:
                   ],
                   "Relay": {
                     "Addresses": [
-                      "rel://vps-primary.${SECRET_DOMAIN}:33073",
-                      "rel://vps-backup.${SECRET_DOMAIN}:33073"
+                      "rel://vps-us.${SECRET_DOMAIN}:33073",
+                      "rel://vps-eu.${SECRET_DOMAIN}:33073"
                     ],
                     "CredentialsTTL": "24h",
                     "Secret": "$NETBIRD_RELAY_AUTH_SECRET"

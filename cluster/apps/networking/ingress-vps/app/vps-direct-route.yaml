@@ -11,8 +11,8 @@ spec:
     - name: external-gateway
       namespace: networking
   hostnames:
-    - "vps-primary.${SECRET_DOMAIN}"
-    - "vps-backup.${SECRET_DOMAIN}"
+    - "vps-us.${SECRET_DOMAIN}"
+    - "vps-eu.${SECRET_DOMAIN}"
   rules:
     - backendRefs:
         - name: netbird-dashboard

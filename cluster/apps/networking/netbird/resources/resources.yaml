@@ -58,12 +58,12 @@ spec:
     podTemplate:
       spec:
         hostAliases:
-          - ip: "${VPS_BACKUP_PUBLIC_IP}"
+          - ip: "${VPS_US_PUBLIC_IP}"
             hostnames:
-              - "vps-backup.${SECRET_DOMAIN}"
-          - ip: "${VPS_PRIMARY_PUBLIC_IP}"
+              - "vps-us.${SECRET_DOMAIN}"
+          - ip: "${VPS_EU_PUBLIC_IP}"
             hostnames:
-              - "vps-primary.${SECRET_DOMAIN}"
+              - "vps-eu.${SECRET_DOMAIN}"
         containers:
           - name: netbird
             env:

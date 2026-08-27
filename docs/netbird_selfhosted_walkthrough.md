@@ -59,7 +59,7 @@ results, and operational details for the self-hosted NetBird overlay stack
   - Dynamically loaded OIDC configuration from `https://id.${SECRET_DOMAIN}/.well-known/openid-configuration`.
   - PocketID IdP Management synchronization configured via `IdpManagerConfig.ExtraConfig` (`ManagementEndpoint` + `ApiToken` from Bitwarden item `Netbird Service Credentials`).
   - Configured with `PKCEAuthorizationFlow` (`http://localhost:53000`, `/auth`, `/silent-auth`) and `DeviceAuthorizationFlow: { "Provider": "none" }` for seamless PocketID SSO authentication.
-  - Configured STUN (`stun:vps-backup.${SECRET_DOMAIN}:3478`) and Relay (`rels://vps-backup.${SECRET_DOMAIN}:33073`) endpoints in `management.json`.
+  - Configured STUN (`stun:vps-eu.${SECRET_DOMAIN}:3478`) and Relay (`rels://vps-eu.${SECRET_DOMAIN}:33073`) endpoints in `management.json`.
   - Listening on port `8080` for API/gRPC traffic, port `33073` for backward compatibility, and port `9090` for metrics.
 - **`netbird-signal`**: `1/1 Running` (0 restarts)
   - WebRTC signaling service pinned to `docker.io/netbirdio/signal:0.77.1` (tracked via Renovate) running on port `10000`.
@@ -108,9 +108,12 @@ results, and operational details for the self-hosted NetBird overlay stack
 
 ### 1. Architectural Strategy
 
-- **Isolation Principle**: To ensure 0 downtime on the production ingress pipeline, Phase 2 deployment is strictly isolated to **`vps-backup` (Hetzner EU)**.
-- **Primary Node Preservation**: `primary_vps` (OVH NA) receives `NETBIRD_SELFHOSTED_SETUP_KEY = ""` in `main.tf`, keeping it running existing Towonel and Cloud NetBird daemons without any changes.
-- **Dual-Daemon Mesh on Backup VPS**:
+- **Isolation Principle**: To ensure 0 downtime on the production ingress pipeline, Phase 2 deployment is strictly isolated to **`vps-eu` (Hetzner EU)**.
+- **Components Tested**:
+  - `tofu.yaml` (`ingress-vps-eu`) provisioned `hcloud_server.eu_vps` without affecting `ovh_cloud_project_instance.us_vps`.
+  - Cloud-init script provisioned Docker, WireGuard (`wg0`), NetBird (`wt0`), NetBird Relay (`:33073` / `:3478`), Prometheus Node Exporter (`:9100`), Traefik proxy (`:80`/`:443`), and CrowdSec container.
+- **Empirical Host Verification (Hetzner EU)**:
+  - `hcloud_server.eu_vps` provisioned at `94.130.99.118` with direct `AAAA` DNS record `vps-eu.${SECRET_DOMAIN}`.
   - `netbird.service`: Cloud NetBird mesh on interface `wt0` (`100.100.0.0/16`, UDP 51821) - **Active & Connected (2/2 peers)**.
   - `netbird-selfhosted.service`: Self-Hosted NetBird mesh on interface `wt1` (`100.110.0.0/16`, UDP 51822) connected to `https://nb.${SECRET_DOMAIN}` via setup key `VPS_SELFHOSTED_SETUP_KEY` (group `vps-nodes`).
   - `netbird-relay.service`: Containerized NetBird Relay & embedded STUN (`docker.io/netbirdio/relay:0.77.1`, ports 3478/udp and 33073/tcp).
@@ -120,7 +123,7 @@ results, and operational details for the self-hosted NetBird overlay stack
 
 1. **OpenTofu Reconciliation**:
    - `Terraform/ingress-tunnel-infra`: Reconciled cleanly (`Ready: True`, `No drift`).
-   - `hcloud_server.backup_vps` provisioned at `94.130.99.118` with direct `AAAA` DNS record `vps-backup.${SECRET_DOMAIN}`.
+   - `hcloud_server.eu_vps` provisioned at `94.130.99.118` with direct `AAAA` DNS record `vps-eu.${SECRET_DOMAIN}`.
    - Hetzner Cloud firewall rules active for STUN `3478/udp`, Relay `33073/tcp`, and WireGuard `51822/udp`.
 2. **Systemd Service Invariants**:
    - `netbird service run` does not accept `--interface-name` (flag belongs strictly to `netbird up --interface-name wt1`).
@@ -181,7 +184,7 @@ Peers count: 5/6 Connected
 ```text
 Management: Connected (http://netbird-management.networking.svc.cluster.local:8080)
 Signal: Connected (https://nb.${SECRET_DOMAIN}:443)
-Relays: 1/2 Available (rel://vps-backup.${SECRET_DOMAIN}:33073)
+Relays: 1/2 Available (rel://vps-eu.${SECRET_DOMAIN}:33073)
 NetBird IP: 100.111.210.203/16
 NetBird IPv6: fdc7:6f6a:eb1c:709d:88b2:b244:3e04:61a/64
 Networks: *.home.${SECRET_DOMAIN}, *.${SECRET_DOMAIN}, 0.0.0.0/0, 10.0.0.1/32, 10.0.0.2/32,
@@ -194,12 +197,12 @@ Peers count: 4/4 Connected
 ### 3. Split-Horizon DNS & Relay Resolution Invariant
 
 - **Discovery**: In environments with split-horizon wildcard DNS (`*.${SECRET_DOMAIN}` -> internal Traefik VIP `10.0.10.20`),
-  in-cluster pods and LAN clients resolve public VPS hostnames (e.g. `vps-backup.${SECRET_DOMAIN}`) to the local
+  in-cluster pods and LAN clients resolve public VPS hostnames (e.g. `vps-eu.${SECRET_DOMAIN}`) to the local
   ingress VIP instead of the public VPS IP. This prevented `networkrouter-k8s` from reaching the containerized
   NetBird Relay on port `33073` and STUN on port `3478`.
 - **Remediation**: Configured declarative `hostAliases` in `NetworkRouter/k8s` (`workloadOverride.podTemplate.spec`)
-  mapping `vps-backup.${SECRET_DOMAIN}` and `vps-primary.${SECRET_DOMAIN}` directly to their respective public
-  VPS IPs (`${VPS_BACKUP_PUBLIC_IP}` and `${VPS_PRIMARY_PUBLIC_IP}`).
+  mapping `vps-eu.${SECRET_DOMAIN}` and `vps-us.${SECRET_DOMAIN}` directly to their respective public
+  VPS IPs (`${VPS_EU_PUBLIC_IP}` and `${VPS_US_PUBLIC_IP}`).
 - **VPS Enrollment Retry**: Updated `vps-cloud-init.yaml` to include an idempotent retry loop for `netbird up`
   to guard against initial boot DNS/network startup latency.
 

@@ -41,5 +41,8 @@ spec:
         name: cluster-secrets
         optional: true
       - kind: Secret
-        name: vps-tunnel-output
+        name: vps-us-output
+        optional: true
+      - kind: Secret
+        name: vps-eu-output
         optional: true
