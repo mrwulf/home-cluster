@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   targetNamespace: networking
-  path: ./cluster/apps/networking/towonel/ingress-vps/app
+  path: ./cluster/apps/networking/ingress-vps/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -24,7 +24,7 @@ spec:
   dependsOn:
     - name: ingress-vps
   targetNamespace: networking
-  path: ./cluster/apps/networking/towonel/ingress-vps/scrape
+  path: ./cluster/apps/networking/ingress-vps/scrape
   prune: true
   sourceRef:
     kind: GitRepository

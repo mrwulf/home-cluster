@@ -6,6 +6,6 @@ resources:
   - cloudflare-tunnel/ks.yaml
   - netbird/ks.yaml
   - pod-gateway/ks.yaml
-  - towonel/ks.yaml
+  - ingress-vps/ks.yaml
   - traefik/ks.yaml
   - unifi/ks.yaml

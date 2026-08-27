@@ -4,7 +4,7 @@ version: "3"
 tasks:
   plan:
     desc: Run a local OpenTofu plan using dynamically fetched secrets and state
-    dir: "{{.PROJECT_DIR}}/cluster/apps/networking/towonel/ingress-vps"
+    dir: "{{.PROJECT_DIR}}/cluster/apps/networking/ingress-vps"
     cmds:
       # 1. Download and decompress active state file from Kubernetes secret
       - kubectl get secret -n networking tfstate-default-ingress-tunnel-infra -o jsonpath='{.data.tfstate}' | base64 -d | gunzip > terraform.tfstate

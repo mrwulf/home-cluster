@@ -172,7 +172,7 @@ The NetBird control plane runs natively inside the cluster backed by CloudNative
 ## 5. Edge VPS Infrastructure & Services
 
 Edge VPS nodes are provisioned with Debian 12 (Bookworm) via OpenTofu
-(`cluster/apps/networking/towonel/ingress-vps/main.tf`) and initialized via
+(`cluster/apps/networking/ingress-vps/main.tf`) and initialized via
 `vps-cloud-init.yaml`.
 
 ```text

@@ -10,7 +10,7 @@ spec:
     forceUnlock: "yes"
     lockIdentifier: "7f257256-2fe8-bdcd-7242-d8009c59ba9c"
   destroyResourcesOnDeletion: true
-  path: ./cluster/apps/networking/towonel/ingress-vps
+  path: ./cluster/apps/networking/ingress-vps
   serviceAccountName: tf-runner
   sourceRef:
     kind: GitRepository
