@@ -54,6 +54,7 @@ spec:
             image:
               # renovate: depName=netbirdio/management datasource=docker
               repository: docker.io/netbirdio/management
+              tag: 0.77.1
             command: ["/bin/sh", "-c"]
             args:
               - |
