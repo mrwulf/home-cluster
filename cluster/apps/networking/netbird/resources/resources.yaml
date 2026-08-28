@@ -558,3 +558,14 @@ spec:
     - tcp
   ports:
     - 443
+---
+apiVersion: netbird.io/v1
+kind: NBPolicy
+metadata:
+  name: vps-vpn-policy
+spec:
+  name: "VPS VPN Policy"
+  sourceGroups:
+    - "admin"
+  destinationGroups:
+    - vps-peers
