@@ -16,3 +16,6 @@ spec:
   resources:
     - kind: GitRepository
       name: flux-system
+    - kind: GitRepository
+      name: tofu-infra-git
+      namespace: networking

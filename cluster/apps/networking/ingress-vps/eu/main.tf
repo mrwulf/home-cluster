@@ -247,6 +247,30 @@ output "VPS_EU_PUBLIC_IP" {
   description = "The public IPv4 address of the EU Hetzner Ingress VPS"
 }
 
+# Wait for cloud-init and Traefik service readiness on EU VPS before concluding apply
+data "http" "vps_eu_healthcheck" {
+  url      = "https://${hcloud_server.eu_vps.ipv4_address}"
+  insecure = true
+  request_headers = {
+    Host = "vps-eu.${var.secret_domain}"
+  }
+  retry {
+    attempts     = 36
+    min_delay_ms = 5000
+    max_delay_ms = 10000
+  }
+  lifecycle {
+    postcondition {
+      condition     = self.status_code < 500
+      error_message = "EU Ingress VPS failed health check after cloud-init (HTTP status: ${self.status_code})."
+    }
+  }
+  depends_on = [
+    hcloud_server.eu_vps,
+    cloudflare_dns_record.vps_eu
+  ]
+}
+
 # Sync EU VPS public IP to flux-system secret for Kustomization postBuild substitution
 resource "kubernetes_secret_v1" "vps_eu_output_flux" {
   metadata {
@@ -257,4 +281,8 @@ resource "kubernetes_secret_v1" "vps_eu_output_flux" {
   data = {
     VPS_EU_PUBLIC_IP = hcloud_server.eu_vps.ipv4_address
   }
+
+  depends_on = [
+    data.http.vps_eu_healthcheck
+  ]
 }

@@ -223,6 +223,30 @@ output "VPS_US_PUBLIC_IP" {
   description = "The public IPv4 address of the US OVHcloud Ingress VPS"
 }
 
+# Wait for cloud-init and Traefik service readiness on US VPS before concluding apply
+data "http" "vps_us_healthcheck" {
+  url      = "https://${local.ovh_us_ipv4}"
+  insecure = true
+  request_headers = {
+    Host = "vps-us.${var.secret_domain}"
+  }
+  retry {
+    attempts     = 36
+    min_delay_ms = 5000
+    max_delay_ms = 10000
+  }
+  lifecycle {
+    postcondition {
+      condition     = self.status_code < 500
+      error_message = "US Ingress VPS failed health check after cloud-init (HTTP status: ${self.status_code})."
+    }
+  }
+  depends_on = [
+    ovh_cloud_project_instance.us_vps,
+    cloudflare_dns_record.vps_us
+  ]
+}
+
 # Sync US VPS public IP to flux-system secret for Kustomization postBuild substitution
 resource "kubernetes_secret_v1" "vps_us_output_flux" {
   metadata {
@@ -233,4 +257,8 @@ resource "kubernetes_secret_v1" "vps_us_output_flux" {
   data = {
     VPS_US_PUBLIC_IP = local.ovh_us_ipv4
   }
+
+  depends_on = [
+    data.http.vps_us_healthcheck
+  ]
 }
