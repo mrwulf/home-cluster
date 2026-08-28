@@ -54,7 +54,6 @@ spec:
             image:
               # renovate: depName=netbirdio/management datasource=docker
               repository: docker.io/netbirdio/management
-              tag: 0.77.1
             command: ["/bin/sh", "-c"]
             args:
               - |
@@ -212,11 +211,6 @@ spec:
               NETBIRD_NETWORK_NET: "100.110.0.0/16"
               NETBIRD_MGMT_API_PORT: "8080"
               NETBIRD_MGMT_METRICS_PORT: "9090"
-              NETBIRD_DATASTORE_ENC_KEY:
-                valueFrom:
-                  secretKeyRef:
-                    name: netbird-control-plane-secrets
-                    key: NETBIRD_DATASTORE_ENC_KEY
             envFrom:
               - secretRef:
                   name: netbird-control-plane-secrets
