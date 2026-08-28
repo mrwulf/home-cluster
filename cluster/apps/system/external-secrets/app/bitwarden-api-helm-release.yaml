@@ -39,7 +39,7 @@ spec:
                 bw status | jq .environmentUrl
                 bw login --apikey "$BW_CLIENTID" "$BW_CLIENTSECRET"
                 export BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw)
-                (while true; do sleep 300; curl -s -X POST http://127.0.0.1:8088/sync >/dev/null 2>&1; done) &
+                (while true; do sleep 300; echo "[BACKGROUND SYNC] Triggering periodic sync..." && curl -s http://127.0.0.1:8087/sync; done) &
                 exec bw serve --hostname 127.0.0.1 --port 8088
             envFrom:
               - secretRef:
