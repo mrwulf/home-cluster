@@ -249,11 +249,8 @@ output "VPS_EU_PUBLIC_IP" {
 
 # Wait for cloud-init and Traefik service readiness on EU VPS before concluding apply
 data "http" "vps_eu_healthcheck" {
-  url      = "https://${hcloud_server.eu_vps.ipv4_address}"
+  url      = "https://vps-eu.${var.secret_domain}"
   insecure = true
-  request_headers = {
-    Host = "vps-eu.${var.secret_domain}"
-  }
   retry {
     attempts     = 36
     min_delay_ms = 5000

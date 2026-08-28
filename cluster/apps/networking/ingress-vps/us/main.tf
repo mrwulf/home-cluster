@@ -225,11 +225,8 @@ output "VPS_US_PUBLIC_IP" {
 
 # Wait for cloud-init and Traefik service readiness on US VPS before concluding apply
 data "http" "vps_us_healthcheck" {
-  url      = "https://${local.ovh_us_ipv4}"
+  url      = "https://vps-us.${var.secret_domain}"
   insecure = true
-  request_headers = {
-    Host = "vps-us.${var.secret_domain}"
-  }
   retry {
     attempts     = 36
     min_delay_ms = 5000
