@@ -61,6 +61,7 @@ spec:
                 cat <<EOF > /etc/netbird/management.json
                 {
                   "Datadir": "/var/lib/netbird",
+                  "DataStoreEncryptionKey": "$NETBIRD_DATASTORE_ENC_KEY",
                   "HttpConfig": {
                     "Address": "0.0.0.0:8080",
                     "AuthAudience": "$NETBIRD_AUTH_OIDC_CLIENT_ID",
@@ -211,6 +212,11 @@ spec:
               NETBIRD_NETWORK_NET: "100.110.0.0/16"
               NETBIRD_MGMT_API_PORT: "8080"
               NETBIRD_MGMT_METRICS_PORT: "9090"
+              NETBIRD_DATASTORE_ENC_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: netbird-control-plane-secrets
+                    key: NETBIRD_DATASTORE_ENC_KEY
             envFrom:
               - secretRef:
                   name: netbird-control-plane-secrets

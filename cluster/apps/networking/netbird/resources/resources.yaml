@@ -90,14 +90,6 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBGroup
 metadata:
-  name: users
-  namespace: networking
-spec:
-  name: "Users"
----
-apiVersion: netbird.io/v1
-kind: NBGroup
-metadata:
   name: work
   namespace: networking
 spec:
@@ -110,14 +102,6 @@ metadata:
   namespace: networking
 spec:
   name: "Non-Work"
----
-apiVersion: netbird.io/v1
-kind: NBGroup
-metadata:
-  name: admin-users
-  namespace: networking
-spec:
-  name: "Admin Users"
 ---
 apiVersion: netbird.io/v1
 kind: NBGroup
@@ -189,7 +173,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - "Users"
+    - "users"
     - "vps-peers"
 ---
 apiVersion: netbird.io/v1
@@ -208,7 +192,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - "Users"
+    - "users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -226,7 +210,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - "Admin Users"
+    - "admin"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -242,7 +226,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - "Admin Users"
+    - "admin"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -262,7 +246,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - "Admin Users"
+    - "admin"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -278,7 +262,7 @@ spec:
   groups:
     - "Firewall Peers"
   policySourceGroups:
-    - "Admin Users"
+    - "admin"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -294,7 +278,7 @@ spec:
   groups:
     - "Firewall Peers"
   policySourceGroups:
-    - "Admin Users"
+    - "admin"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -310,7 +294,7 @@ spec:
   groups:
     - "Firewall Peers"
   policySourceGroups:
-    - "Users"
+    - "users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -326,7 +310,7 @@ spec:
   groups:
     - "Firewall Peers"
   policySourceGroups:
-    - "Users"
+    - "users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -344,7 +328,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - "Users"
+    - "users"
     - "vps-peers"
 ---
 apiVersion: netbird.io/v1
@@ -363,7 +347,7 @@ spec:
   groups:
     - routing-peers
   policySourceGroups:
-    - "Users"
+    - "users"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
@@ -409,7 +393,7 @@ metadata:
 spec:
   name: "K8s API Policy"
   sourceGroups:
-    - "Admin Users"
+    - "admin"
   destinationGroups:
     - routing-peers
   protocols:
@@ -424,7 +408,7 @@ metadata:
 spec:
   name: "k8s nodes Policy"
   sourceGroups:
-    - "Admin Users"
+    - "admin"
   destinationGroups:
     - routing-peers
 ---
@@ -435,7 +419,7 @@ metadata:
 spec:
   name: "NAS Policy"
   sourceGroups:
-    - "Admin Users"
+    - "admin"
   destinationGroups:
     - routing-peers
   protocols:
@@ -452,7 +436,7 @@ metadata:
 spec:
   name: "firewall02 Policy"
   sourceGroups:
-    - "Admin Users"
+    - "admin"
   destinationGroups:
     - "Firewall Peers"
 ---
@@ -463,7 +447,7 @@ metadata:
 spec:
   name: "firewall03 Policy"
   sourceGroups:
-    - "Admin Users"
+    - "admin"
   destinationGroups:
     - "Firewall Peers"
 ---
@@ -474,8 +458,8 @@ metadata:
 spec:
   name: "firewall-active Policy"
   sourceGroups:
-    - "Admin Users"
-    - "Users"
+    - "admin"
+    - "users"
   destinationGroups:
     - "Firewall Peers"
 ---
@@ -486,7 +470,7 @@ metadata:
 spec:
   name: "firewall-backup Policy"
   sourceGroups:
-    - "Users"
+    - "users"
   destinationGroups:
     - "Firewall Peers"
 ---
@@ -497,7 +481,7 @@ metadata:
 spec:
   name: "External Ingress Policy"
   sourceGroups:
-    - "Users"
+    - "users"
     - "vps-peers"
   destinationGroups:
     - routing-peers
@@ -516,7 +500,7 @@ metadata:
 spec:
   name: "Internal Ingress Policy"
   sourceGroups:
-    - "Users"
+    - "users"
   destinationGroups:
     - routing-peers
   protocols:
@@ -531,7 +515,7 @@ metadata:
 spec:
   name: "Git Access"
   sourceGroups:
-    - "Admin Users"
+    - "admin"
   destinationGroups:
     - routing-peers
   protocols:
@@ -546,7 +530,7 @@ metadata:
 spec:
   name: "Public Sites Policy"
   sourceGroups:
-    - "Users"
+    - "users"
     - "vps-peers"
   destinationGroups:
     - routing-peers
@@ -562,7 +546,7 @@ metadata:
 spec:
   name: "Private Sites Policy"
   sourceGroups:
-    - "Users"
+    - "users"
   destinationGroups:
     - routing-peers
   protocols:

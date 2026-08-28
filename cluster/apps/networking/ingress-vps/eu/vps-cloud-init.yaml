@@ -190,7 +190,7 @@ write_files:
       [Interface]
       PrivateKey = ${WG_PRIVATE_KEY}
       Address = ${WG_ADDRESS}
-      MTU = 1200
+      MTU = 1280
       PostUp = iptables -t mangle -A POSTROUTING -o wg0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
       PostDown = iptables -t mangle -D POSTROUTING -o wg0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
 
