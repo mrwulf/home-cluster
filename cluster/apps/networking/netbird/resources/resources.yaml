@@ -53,6 +53,7 @@ metadata:
 spec:
   dnsZoneRef:
     name: "k8s.${SECRET_DOMAIN}"
+  image: ghcr.io/netbirdio/netbird:0.77.1
   workloadOverride:
     replicas: 2
     podTemplate:
