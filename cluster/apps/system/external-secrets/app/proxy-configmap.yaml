@@ -10,11 +10,40 @@ data:
     import urllib.request
     import urllib.parse
     import urllib.error
+    import time
+
+    last_sync_time = 0.0
+
+    def trigger_sync():
+        global last_sync_time
+        now = time.time()
+        if now - last_sync_time < 5.0:
+            print("[PROXY SYNC] Debouncing sync (last sync was < 5s ago)", flush=True)
+            return True
+        print("[PROXY SYNC] Triggering POST http://127.0.0.1:8088/sync ...", flush=True)
+        try:
+            sync_req = urllib.request.Request("http://127.0.0.1:8088/sync", data=b"", method="POST")
+            with urllib.request.urlopen(sync_req, timeout=15) as resp:
+                last_sync_time = time.time()
+                print(f"[PROXY SYNC] Completed with status {resp.status}", flush=True)
+                return True
+        except Exception as e:
+            print(f"[PROXY SYNC ERR] Failed to sync: {e}", flush=True)
+            return False
 
     class ProxyHandler(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
             raw_path = urllib.parse.unquote_plus(self.path).replace("+", " ")
             target_path = urllib.parse.quote(raw_path, safe="/:?=&#")
+
+            if target_path == "/sync" or target_path.startswith("/sync?"):
+                success = trigger_sync()
+                self.send_response(200 if success else 500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"success":true}\n' if success else b'{"success":false}\n')
+                return
+
             url = f"http://127.0.0.1:8088{target_path}"
             print(f"[PROXY REQ] {self.path} -> {url}", flush=True)
             try:
@@ -27,12 +56,68 @@ data:
                 print(f"[PROXY RES {req.status}] length={len(res_data)}", flush=True)
                 self.wfile.write(res_data)
             except urllib.error.HTTPError as e:
+                # If item not found (404), trigger sync and retry once in case secret was newly added
+                if e.code == 404:
+                    print(f"[PROXY 404] Item not found, triggering on-demand sync and retrying {url}...", flush=True)
+                    if trigger_sync():
+                        try:
+                            retry_req = urllib.request.urlopen(url)
+                            self.send_response(retry_req.status)
+                            for k, v in retry_req.headers.items():
+                                self.send_header(k, v)
+                            self.end_headers()
+                            res_data = retry_req.read()
+                            print(f"[PROXY RETRY RES {retry_req.status}] length={len(res_data)}", flush=True)
+                            self.wfile.write(res_data)
+                            return
+                        except Exception as retry_err:
+                            print(f"[PROXY RETRY ERR] {retry_err}", flush=True)
                 print(f"[PROXY ERR {e.code}] {e}", flush=True)
                 self.send_response(e.code)
                 self.end_headers()
                 self.wfile.write(e.read())
             except Exception as e:
                 print(f"[PROXY EXC] {e}", flush=True)
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(str(e).encode())
+
+        def do_POST(self):
+            raw_path = urllib.parse.unquote_plus(self.path).replace("+", " ")
+            target_path = urllib.parse.quote(raw_path, safe="/:?=&#")
+
+            if target_path == "/sync" or target_path.startswith("/sync?"):
+                success = trigger_sync()
+                self.send_response(200 if success else 500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(b'{"success":true}\n' if success else b'{"success":false}\n')
+                return
+
+            content_len = int(self.headers.get('Content-Length', 0))
+            post_body = self.rfile.read(content_len) if content_len > 0 else None
+            url = f"http://127.0.0.1:8088{target_path}"
+            print(f"[PROXY POST REQ] {self.path} -> {url}", flush=True)
+            try:
+                req_obj = urllib.request.Request(url, data=post_body, method="POST")
+                for k, v in self.headers.items():
+                    if k.lower() not in ['host', 'content-length']:
+                        req_obj.add_header(k, v)
+                with urllib.request.urlopen(req_obj) as resp:
+                    self.send_response(resp.status)
+                    for k, v in resp.headers.items():
+                        self.send_header(k, v)
+                    self.end_headers()
+                    res_data = resp.read()
+                    print(f"[PROXY POST RES {resp.status}] length={len(res_data)}", flush=True)
+                    self.wfile.write(res_data)
+            except urllib.error.HTTPError as e:
+                print(f"[PROXY POST ERR {e.code}] {e}", flush=True)
+                self.send_response(e.code)
+                self.end_headers()
+                self.wfile.write(e.read())
+            except Exception as e:
+                print(f"[PROXY POST EXC] {e}", flush=True)
                 self.send_response(500)
                 self.end_headers()
                 self.wfile.write(str(e).encode())
