@@ -46,7 +46,7 @@ def get_api_key() -> str:
     key = os.getenv("NB_API_KEY")
     if key:
         return key.strip()
-    for secret_name in ["netbird-control-plane-secrets", "netbird"]:
+    for secret_name in ["netbird-control-plane-secrets"]:
         try:
             cmd = f"~/.local/bin/mise x -- kubectl get secret {secret_name} -n networking -o jsonpath='{{.data.NB_API_KEY}}'"
             raw = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()

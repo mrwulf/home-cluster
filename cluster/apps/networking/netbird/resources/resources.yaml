@@ -362,7 +362,7 @@ metadata:
   name: home-vpn-exit
   namespace: networking
   annotations:
-    netbird.io/policy: "internet-access-policy"
+    netbird.io/policy: "home-internet-access-policy"
 spec:
   name: "Home VPN Internet Egress"
   address: 0.0.0.0/0
@@ -378,7 +378,7 @@ metadata:
   name: vps-vpn-exit
   namespace: networking
   annotations:
-    netbird.io/policy: "internet-access-policy"
+    netbird.io/policy: "vps-internet-access-policy"
 spec:
   name: "VPS VPN Internet Egress"
   address: 0.0.0.0/0
