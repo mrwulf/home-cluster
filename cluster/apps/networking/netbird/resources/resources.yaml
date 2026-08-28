@@ -82,10 +82,18 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBGroup
 metadata:
-  name: all
+  name: admin
   namespace: networking
 spec:
-  name: "All"
+  name: "admin"
+---
+apiVersion: netbird.io/v1
+kind: NBGroup
+metadata:
+  name: users
+  namespace: networking
+spec:
+  name: "users"
 ---
 apiVersion: netbird.io/v1
 kind: NBGroup
@@ -165,7 +173,6 @@ metadata:
     netbird.io/policy: "public-sites-policy"
 spec:
   name: "Public Services"
-  # enabled: false
   address: "*.${SECRET_DOMAIN}"
   networkID: ${NETBIRD_SELFHOSTED_NETWORK_ID:-da8gl8fbkucc73a14du0}
   tcpPorts:
