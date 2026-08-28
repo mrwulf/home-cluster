@@ -55,10 +55,23 @@ spec:
               "unit": "percent"
             }
           },
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true
+          },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
               "expr": "100 - (avg by (job) (rate(node_cpu_seconds_total{job=~\"ingress-vps-.*\", mode=\"idle\"}[5m])) * 100)",
+              "instant": true,
               "legendFormat": "{{job}}"
             }
           ]
@@ -84,10 +97,23 @@ spec:
               "unit": "percent"
             }
           },
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true
+          },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "expr": "(1 - (node_memory_MemAvailable_bytes{job=~\"ingress-vps-.*\"} / node_memory_MemTotal_bytes{job=~\"ingress-vps-.*\"})) * 100",
+              "expr": "(1 - (sum by (job) (node_memory_MemAvailable_bytes{job=~\"ingress-vps-.*\"}) / sum by (job) (node_memory_MemTotal_bytes{job=~\"ingress-vps-.*\"}))) * 100",
+              "instant": true,
               "legendFormat": "{{job}}"
             }
           ]
@@ -113,10 +139,23 @@ spec:
               "unit": "percent"
             }
           },
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true
+          },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "expr": "(node_filesystem_avail_bytes{job=~\"ingress-vps-.*\", mountpoint=\"/\"} / node_filesystem_size_bytes{job=~\"ingress-vps-.*\", mountpoint=\"/\"}) * 100",
+              "expr": "(sum by (job) (node_filesystem_avail_bytes{job=~\"ingress-vps-.*\", mountpoint=\"/\"}) / sum by (job) (node_filesystem_size_bytes{job=~\"ingress-vps-.*\", mountpoint=\"/\"})) * 100",
+              "instant": true,
               "legendFormat": "{{job}}"
             }
           ]
@@ -141,10 +180,25 @@ spec:
               }
             }
           },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
-              "expr": "up{job=~\"ingress-vps-.*\", service=\"traefik\"}",
+              "expr": "max by (job) (up{job=~\"ingress-vps-.*\", service=\"traefik\"})",
+              "instant": true,
               "legendFormat": "{{job}}"
             }
           ]
@@ -152,7 +206,7 @@ spec:
         {
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 5 },
           "id": 5,
-          "title": "Edge Ingress Bandwidth (Mbps)",
+          "title": "Edge Ingress Bandwidth - Aggregate (Mbps)",
           "type": "timeseries",
           "fieldConfig": {
             "defaults": {
@@ -189,6 +243,30 @@ spec:
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
               "expr": "sum by (entrypoint) (rate(traefik_entrypoint_requests_total{job=~\"ingress-vps-.*\"}[5m]))",
               "legendFormat": "Entrypoint: {{entrypoint}}"
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 13 },
+          "id": 7,
+          "title": "Edge Interface Bandwidth Breakdown (Mbps)",
+          "type": "timeseries",
+          "fieldConfig": {
+            "defaults": {
+              "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 },
+              "unit": "bps"
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "sum by (job, device) (rate(node_network_receive_bytes_total{job=~\"ingress-vps-.*\", device=~\"eth.*|ens.*|enp.*|wg0|wt0\"}[5m])) * 8",
+              "legendFormat": "{{job}} - {{device}} (RX)"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "sum by (job, device) (rate(node_network_transmit_bytes_total{job=~\"ingress-vps-.*\", device=~\"eth.*|ens.*|enp.*|wg0|wt0\"}[5m])) * 8",
+              "legendFormat": "{{job}} - {{device}} (TX)"
             }
           ]
         }
