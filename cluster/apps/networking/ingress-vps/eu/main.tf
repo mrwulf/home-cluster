@@ -75,6 +75,8 @@ data "http" "home_ip" {
 locals {
   home_ip      = chomp(data.http.home_ip.response_body)
   home_ip_cidr = "${local.home_ip}/32"
+  # renovate: datasource=docker depName=debian
+  debian_version = "13"
 }
 
 # Look up Cloudflare Zone details dynamically using domain name
@@ -101,9 +103,8 @@ resource "terraform_data" "cloud_init_eu" {
 }
 
 resource "hcloud_server" "eu_vps" {
-  name = "ingress-vps-eu-hetzner"
-  # renovate: datasource=docker depName=debian
-  image       = "debian-13"
+  name        = "ingress-vps-eu-hetzner"
+  image       = "debian-${split(".", local.debian_version)[0]}"
   server_type = "cx23"
   location    = "nbg1" # Nuremberg, Germany (Includes 20TB traffic limit)
   ssh_keys    = data.hcloud_ssh_keys.all_keys.ssh_keys[*].id

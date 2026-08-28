@@ -6,8 +6,9 @@
       description: ["Process OS image versions in Terraform/OpenTofu files"],
       fileMatch: ["(^|/)cluster/.+\\.tf$"],
       matchStrings: [
-        '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s*\\n\\s*image\\s*=\\s*"\\S+-(?<currentValue>[^"]+)"',
+        '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s*\\n\\s*(?:image\\s*=\\s*"\\S+-|debian_version\\s*=\\s*")(?<currentValue>[^"]+)"',
       ],
+      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}loose{{/if}}",
     },
     {
       customType: "regex",

@@ -109,6 +109,8 @@ data "http" "home_ip" {
 
 locals {
   home_ip = chomp(data.http.home_ip.response_body)
+  # renovate: datasource=docker depName=debian
+  debian_version = "13"
 }
 
 # Look up Cloudflare Zone details dynamically using domain name
@@ -161,7 +163,7 @@ resource "ovh_cloud_project_instance" "us_vps" {
   }
 
   boot_from {
-    image_id = [for img in data.ovh_cloud_project_images.debian.images : img.id if can(regex("Debian 12|Debian 13", img.name))][0]
+    image_id = [for img in data.ovh_cloud_project_images.debian.images : img.id if can(regex("^Debian ${split(".", local.debian_version)[0]}", img.name))][0]
   }
 
   network {
