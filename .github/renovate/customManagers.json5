@@ -30,5 +30,16 @@
       ],
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}docker{{/if}}",
     },
+    {
+      customType: "regex",
+      description: [
+        "Process npm packages installed in shell scripts in Kubernetes manifests",
+      ],
+      fileMatch: ["(^|/)(cluster|talos)/.+\\.ya?ml$"],
+      matchStrings: [
+        "# renovate: datasource=npm depName=(?<depName>\\S+)\\s*\\n\\s*npm install -g (?:\\S+@)?(?<currentValue>[0-9a-zA-Z._-]+)",
+      ],
+      datasourceTemplate: "npm",
+    },
   ],
 }

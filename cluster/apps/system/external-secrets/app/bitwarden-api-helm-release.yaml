@@ -21,14 +21,16 @@ spec:
         containers:
           main:
             image:
+              # renovate: datasource=docker depName=docker.io/library/node
               repository: node
-              tag: 24-alpine
+              tag: 22-alpine
             command:
               - /bin/sh
               - -c
               - |
                 apk add --no-cache curl jq
-                npm install -g @bitwarden/cli@2026.7.0
+                # renovate: datasource=npm depName=@bitwarden/cli
+                npm install -g @bitwarden/cli@2026.8.0
                 export BITWARDENCLI_APPDATA_DIR=/.config
                 mkdir -p "$BITWARDENCLI_APPDATA_DIR"
                 echo '{"global_applicationId_appId":"b4a2d8e0-6f91-4c3e-8a5b-9d7e1f3a5c2b"}' > "$BITWARDENCLI_APPDATA_DIR/data.json"
