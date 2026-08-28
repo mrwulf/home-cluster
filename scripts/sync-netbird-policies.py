@@ -2,33 +2,65 @@
 """
 sync-netbird-policies.py
 
-Reads NBPolicy Custom Resources directly from Kubernetes API ('kubectl get nbpolicy -n networking -o json'),
-resolves group IDs dynamically from NetBird Cloud API, and idempotently synchronizes access control policies.
-Includes rate limit handling with backoff.
+Reads NBPolicy Custom Resources directly from Kubernetes API ('kubectl get nbpolicy -A -o json'),
+resolves group IDs dynamically from NetBird Management API, and idempotently synchronizes
+granular access control policies while removing the default all-to-all policy.
 """
 
+import base64
 import json
 import os
+import ssl
+import subprocess
 import sys
 import time
-import subprocess
-import urllib.request
 import urllib.error
+import urllib.request
+
+
+def get_management_url() -> str:
+    url = os.getenv("NB_MANAGEMENT_URL")
+    if url:
+        return url.rstrip("/")
+    if os.getenv("SECRET_DOMAIN"):
+        return f"https://nb.{os.getenv('SECRET_DOMAIN')}"
+    try:
+        cmd = "~/.local/bin/mise x -- kubectl get secret netbird-control-plane-secrets -n networking -o jsonpath='{.data.MANAGEMENT_URL}'"
+        raw = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
+        if raw:
+            return base64.b64decode(raw).decode("utf-8").strip().rstrip("/")
+    except Exception:
+        pass
+    try:
+        cmd = "~/.local/bin/mise x -- kubectl get configmap cluster-settings -n flux-system -o jsonpath='{.data.SECRET_DOMAIN}'"
+        domain = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
+        if domain:
+            return f"https://nb.{domain}"
+    except Exception:
+        pass
+    print("Unable to resolve NetBird management URL. Set NB_MANAGEMENT_URL or SECRET_DOMAIN.", file=sys.stderr)
+    sys.exit(1)
 
 
 def get_api_key() -> str:
     key = os.getenv("NB_API_KEY")
     if key:
         return key.strip()
-    try:
-        cmd = "kubectl get secret netbird -n networking -o jsonpath='{.data.NB_API_KEY}' | base64 -d"
-        out = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
-        if out:
-            return out
-    except Exception as err:
-        print(f"Error fetching NB_API_KEY from secret: {err}", file=sys.stderr)
+    for secret_name in ["netbird-control-plane-secrets", "netbird"]:
+        try:
+            cmd = f"~/.local/bin/mise x -- kubectl get secret {secret_name} -n networking -o jsonpath='{{.data.NB_API_KEY}}'"
+            raw = subprocess.check_output(cmd, shell=True).decode("utf-8").strip()
+            if raw:
+                return base64.b64decode(raw).decode("utf-8").strip()
+        except Exception:
+            continue
     print("NB_API_KEY not found in environment or secret.", file=sys.stderr)
     sys.exit(1)
+
+
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
 
 
 def api_request(url: str, key: str, method: str = "GET", payload: dict = None, retries: int = 6):
@@ -41,7 +73,7 @@ def api_request(url: str, key: str, method: str = "GET", payload: dict = None, r
     for attempt in range(retries):
         req = urllib.request.Request(url, data=data, headers=headers, method=method)
         try:
-            with urllib.request.urlopen(req) as resp:
+            with urllib.request.urlopen(req, context=ctx) as resp:
                 body = resp.read().decode("utf-8")
                 return json.loads(body) if body else {}
         except urllib.error.HTTPError as err:
@@ -55,17 +87,18 @@ def api_request(url: str, key: str, method: str = "GET", payload: dict = None, r
             raise
 
 
-def get_group_map(key: str) -> dict:
-    groups = api_request("https://api.netbird.io/api/groups", key)
+def get_group_map(mgmt_url: str, key: str) -> dict:
+    groups = api_request(f"{mgmt_url}/api/groups", key)
     group_map = {}
     for g in groups:
         group_map[g["name"]] = g["id"]
-    return group_map
+        group_map[g["name"].lower()] = g["id"]
+    return group_map, groups
 
 
 def get_k8s_nbpolicies() -> list:
     try:
-        cmd = "kubectl get nbpolicy -n networking -o json"
+        cmd = "~/.local/bin/mise x -- kubectl get nbpolicy -A -o json"
         out = subprocess.check_output(cmd, shell=True).decode("utf-8")
         data = json.loads(out)
         return data.get("items", [])
@@ -75,24 +108,38 @@ def get_k8s_nbpolicies() -> list:
 
 
 def main():
+    mgmt_url = get_management_url()
     key = get_api_key()
 
+    print(f"Connecting to NetBird Management at {mgmt_url}...")
     print("Fetching NBPolicies from Kubernetes cluster...")
     k8s_policies = get_k8s_nbpolicies()
     if not k8s_policies:
-        print("No NBPolicy resources found in namespace 'networking'.")
+        print("No NBPolicy resources found in Kubernetes cluster.")
         return
 
     print(f"Found {len(k8s_policies)} NBPolicy CRs in Kubernetes.")
 
-    print("Fetching group mappings from NetBird Cloud API...")
-    group_map = get_group_map(key)
-    time.sleep(1)
+    print("Fetching group mappings from NetBird Management API...")
+    group_map, _ = get_group_map(mgmt_url, key)
 
-    existing_policies = api_request("https://api.netbird.io/api/policies", key)
+    existing_policies = api_request(f"{mgmt_url}/api/policies", key)
     existing_by_name = {p["name"]: p for p in existing_policies}
-    time.sleep(1)
 
+    # 1. Remove or disable default all-to-all policy to enforce Zero-Trust
+    for pol in existing_policies:
+        if pol.get("name", "").lower() == "default":
+            pol_id = pol["id"]
+            print(f"Deleting default all-to-all policy '{pol['name']}' ({pol_id}) to enforce Least Privilege...")
+            try:
+                api_request(f"{mgmt_url}/api/policies/{pol_id}", key, method="DELETE")
+                print("Default all-to-all policy successfully deleted.")
+            except Exception as err:
+                print(f"Failed to delete Default policy: {err}, attempting to disable it...")
+                pol["enabled"] = False
+                api_request(f"{mgmt_url}/api/policies/{pol_id}", key, method="PUT", payload=pol)
+
+    # 2. Sync declarative policies
     for item in k8s_policies:
         spec = item.get("spec", {})
         policy_name = spec.get("name") or item["metadata"]["name"]
@@ -104,15 +151,19 @@ def main():
         for name in source_names:
             if name in group_map:
                 source_ids.append(group_map[name])
+            elif name.lower() in group_map:
+                source_ids.append(group_map[name.lower()])
             else:
-                print(f"Warning: Source group '{name}' for policy '{policy_name}' not found in NetBird Cloud API.")
+                print(f"Warning: Source group '{name}' for policy '{policy_name}' not found in NetBird API.")
 
         dest_ids = []
         for name in dest_names:
             if name in group_map:
                 dest_ids.append(group_map[name])
+            elif name.lower() in group_map:
+                dest_ids.append(group_map[name.lower()])
             else:
-                print(f"Warning: Destination group '{name}' for policy '{policy_name}' not found in NetBird Cloud API.")
+                print(f"Warning: Destination group '{name}' for policy '{policy_name}' not found in NetBird API.")
 
         protocols = spec.get("protocols", [])
         protocol = protocols[0] if protocols else "all"
@@ -140,17 +191,17 @@ def main():
 
         if policy_name in existing_by_name:
             policy_id = existing_by_name[policy_name]["id"]
-            url = f"https://api.netbird.io/api/policies/{policy_id}"
+            url = f"{mgmt_url}/api/policies/{policy_id}"
             print(f"Updating policy '{policy_name}' ({policy_id})...")
             api_request(url, key, method="PUT", payload=payload)
         else:
-            url = "https://api.netbird.io/api/policies"
+            url = f"{mgmt_url}/api/policies"
             print(f"Creating policy '{policy_name}'...")
             api_request(url, key, method="POST", payload=payload)
 
-        time.sleep(1)
+        time.sleep(0.5)
 
-    print("Policy synchronization complete.")
+    print("\nPolicy synchronization complete! All granular policies applied and Zero-Trust enforced.")
 
 
 if __name__ == "__main__":
