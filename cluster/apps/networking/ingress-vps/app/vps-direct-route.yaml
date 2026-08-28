@@ -6,7 +6,6 @@ metadata:
   namespace: networking
   annotations:
     external-dns.kubernetes.io/controller: "none"
-    external-dns.alpha.kubernetes.io/controller: "none"
 spec:
   parentRefs:
     - name: external-gateway
@@ -14,7 +13,10 @@ spec:
   hostnames:
     - "vps-us.${SECRET_DOMAIN}"
     - "vps-eu.${SECRET_DOMAIN}"
+    - "proxy.${SECRET_DOMAIN}"
+    - "ingress.${SECRET_DOMAIN}"
+    - "external.${SECRET_DOMAIN}"
   rules:
     - backendRefs:
-        - name: netbird-dashboard
-          port: 80
+        - name: vps-health-responder
+          port: 8080

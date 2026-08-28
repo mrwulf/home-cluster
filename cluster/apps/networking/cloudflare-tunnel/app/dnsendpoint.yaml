@@ -3,8 +3,13 @@ apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint
 metadata:
   name: cloudflared
+  annotations:
+    external-dns.kubernetes.io/cloudflare-proxied: "true"
 spec:
   endpoints:
     - dnsName: "external.${SECRET_DOMAIN}"
       recordType: CNAME
       targets: ["${SECRET_CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"]
+      providerSpecific:
+        - name: external-dns.kubernetes.io/cloudflare-proxied
+          value: "true"

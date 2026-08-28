@@ -6,4 +6,5 @@ resources:
   - gitrepo.yaml
   - rbac.yaml
   - vps-direct-route.yaml
+  - health-responder.yaml
   - dashboard.yaml

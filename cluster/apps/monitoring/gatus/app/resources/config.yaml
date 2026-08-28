@@ -126,7 +126,7 @@ endpoints:
     url: "https://vps-us.${SECRET_DOMAIN}"
     interval: 1m
     conditions:
-      - "[STATUS] < 500"
+      - "[STATUS] == 418"
     alerts: *alerts
     ui:
       hide-hostname: true
@@ -136,7 +136,7 @@ endpoints:
     url: "https://vps-eu.${SECRET_DOMAIN}"
     interval: 1m
     conditions:
-      - "[STATUS] < 500"
+      - "[STATUS] == 418"
     alerts: *alerts
     ui:
       hide-hostname: true
@@ -146,7 +146,17 @@ endpoints:
     url: "https://proxy.${SECRET_DOMAIN}"
     interval: 2m
     conditions:
-      - "[STATUS] < 500"
+      - "[STATUS] == 418"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: External Backup Ingress via Cloudflare Tunnel
+    group: external
+    url: "https://external.${SECRET_DOMAIN}"
+    interval: 2m
+    conditions:
+      - "[STATUS] == 418"
     alerts: *alerts
     ui:
       hide-hostname: true

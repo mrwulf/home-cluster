@@ -134,7 +134,7 @@ async function probeHost(host, maxProbes = 3) {
       console.log(attemptLog)
       attempts.push(attemptLog)
 
-      if (res.status < 500) {
+      if (res.status === 418) {
         isUp = true
         break
       } else {

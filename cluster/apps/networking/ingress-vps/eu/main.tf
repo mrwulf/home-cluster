@@ -258,7 +258,7 @@ data "http" "vps_eu_healthcheck" {
   }
   lifecycle {
     postcondition {
-      condition     = self.status_code < 500
+      condition     = self.status_code == 418
       error_message = "EU Ingress VPS failed health check after cloud-init (HTTP status: ${self.status_code})."
     }
   }

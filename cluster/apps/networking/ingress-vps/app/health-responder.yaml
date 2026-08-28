@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vps-health-responder
+  namespace: networking
+  labels:
+    app.kubernetes.io/name: vps-health-responder
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vps-health-responder
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vps-health-responder
+    spec:
+      containers:
+        - name: responder
+          image: docker.io/library/caddy:2.11.4-alpine
+          command:
+            - caddy
+            - respond
+            - --listen
+            - :8080
+            - --status
+            - "418"
+            - "I'm a teapot\n"
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vps-health-responder
+  namespace: networking
+  labels:
+    app.kubernetes.io/name: vps-health-responder
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: vps-health-responder
