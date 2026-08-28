@@ -30,6 +30,14 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+          env:
+            - name: XDG_DATA_HOME
+              value: /tmp/data
+            - name: XDG_CONFIG_HOME
+              value: /tmp/config
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
           resources:
             requests:
               cpu: 5m
@@ -42,9 +50,9 @@ spec:
             runAsNonRoot: true
             runAsUser: 65534
             runAsGroup: 65534
-            capabilities:
-              drop:
-                - ALL
+      volumes:
+        - name: tmp
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
