@@ -88,18 +88,21 @@ data "cloudflare_zones" "domain_zones" {
 data "hcloud_ssh_keys" "all_keys" {}
 
 resource "terraform_data" "cloud_init_eu" {
-  input = templatefile("${path.module}/vps-cloud-init.yaml", {
-    NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
-    NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
-    NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
-    SECRET_DOMAIN                = var.secret_domain
-    HOME_IP                      = local.home_ip
-    PROBE_HOSTNAME               = "vps-eu.${var.secret_domain}"
-    WG_PRIVATE_KEY               = var.peer_eu_private_key
-    WG_PEER_PUBLIC_KEY           = var.wg_public_key
-    WG_ADDRESS                   = "10.13.13.11/32"
-    NB_ADDR                      = "10.0.10.11"
-  })
+  input = {
+    debian_version = local.debian_version
+    user_data = templatefile("${path.module}/vps-cloud-init.yaml", {
+      NETBIRD_SELFHOSTED_SETUP_KEY = var.netbird_selfhosted_setup_key
+      NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
+      NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
+      SECRET_DOMAIN                = var.secret_domain
+      HOME_IP                      = local.home_ip
+      PROBE_HOSTNAME               = "vps-eu.${var.secret_domain}"
+      WG_PRIVATE_KEY               = var.peer_eu_private_key
+      WG_PEER_PUBLIC_KEY           = var.wg_public_key
+      WG_ADDRESS                   = "10.13.13.11/32"
+      NB_ADDR                      = "10.0.10.11"
+    })
+  }
 }
 
 resource "hcloud_server" "eu_vps" {
@@ -114,7 +117,7 @@ resource "hcloud_server" "eu_vps" {
     ipv6_enabled = true
   }
 
-  user_data = terraform_data.cloud_init_eu.output
+  user_data = terraform_data.cloud_init_eu.output.user_data
 
   lifecycle {
     replace_triggered_by = [

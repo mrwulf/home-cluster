@@ -5,7 +5,7 @@ metadata:
   name: ingress-vps-us
   namespace: networking
 spec:
-  interval: 15m
+  interval: 5m
   retryInterval: 1m
   approvePlan: auto
   destroyResourcesOnDeletion: true
@@ -35,7 +35,7 @@ spec:
   dependsOn:
     - name: ingress-vps-us
       namespace: networking
-  interval: 15m
+  interval: 5m
   retryInterval: 1m
   approvePlan: auto
   destroyResourcesOnDeletion: true
@@ -65,7 +65,7 @@ spec:
   dependsOn:
     - name: ingress-vps-eu
       namespace: networking
-  interval: 15m
+  interval: 5m
   retryInterval: 1m
   approvePlan: auto
   destroyResourcesOnDeletion: true
