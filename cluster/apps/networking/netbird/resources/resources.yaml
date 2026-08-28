@@ -359,36 +359,34 @@ spec:
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
-  name: full-vpn-exit
+  name: home-vpn-exit
   namespace: networking
   annotations:
     netbird.io/policy: "internet-access-policy"
 spec:
-  name: "Full VPN Internet Egress"
+  name: "Home VPN Internet Egress"
   address: 0.0.0.0/0
   networkID: ${NETBIRD_SELFHOSTED_NETWORK_ID:-da8gl8fbkucc73a14du0}
   groups:
     - "Firewall Peers"
   policySourceGroups:
-    - "FullVPN Users"
+    - "admin"
 ---
 apiVersion: netbird.io/v1
 kind: NBResource
 metadata:
-  name: clusterdns
+  name: vps-vpn-exit
   namespace: networking
   annotations:
-    netbird.io/policy: "clusterdns-policy"
+    netbird.io/policy: "internet-access-policy"
 spec:
-  name: "K8s CoreDNS"
-  address: "10.96.0.10/32"
+  name: "VPS VPN Internet Egress"
+  address: 0.0.0.0/0
   networkID: ${NETBIRD_SELFHOSTED_NETWORK_ID:-da8gl8fbkucc73a14du0}
-  udpPorts:
-    - 53
   groups:
-    - routing-peers
-  policySourceGroups:
     - "vps-peers"
+  policySourceGroups:
+    - "admin"
 ---
 # ==============================================================================
 # Declarative Access Policies (NBPolicy)
@@ -560,29 +558,3 @@ spec:
     - tcp
   ports:
     - 443
----
-apiVersion: netbird.io/v1
-kind: NBPolicy
-metadata:
-  name: internet-access-policy
-spec:
-  name: "Internet Access"
-  sourceGroups:
-    - "FullVPN Users"
-  destinationGroups:
-    - "Firewall Peers"
----
-apiVersion: netbird.io/v1
-kind: NBPolicy
-metadata:
-  name: clusterdns-policy
-spec:
-  name: "clusterdns-policy"
-  sourceGroups:
-    - "vps-peers"
-  destinationGroups:
-    - routing-peers
-  protocols:
-    - udp
-  ports:
-    - 53
