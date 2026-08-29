@@ -50,6 +50,30 @@ spec:
                 memory: 64Mi
               limits:
                 memory: 128Mi
+          init-stale-peers:
+            image:
+              # renovate: depName=ghcr.io/home-operations/postgres-init datasource=docker
+              repository: ghcr.io/home-operations/postgres-init
+              tag: "18.6"
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                export PGPASSWORD="$POSTGRES_PASS"
+                psql -h postgres17-rw.databases.svc.cluster.local -U "$POSTGRES_USER" -d netbird -c "
+                UPDATE peers SET peer_status_connected = false WHERE ephemeral = true AND peer_status_connected = true AND peer_status_last_seen < NOW() - INTERVAL '5 minutes';
+                " || true
+            securityContext:
+              runAsUser: 65534
+              runAsGroup: 65534
+            envFrom:
+              - secretRef:
+                  name: netbird-control-plane-secrets
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 64Mi
           init-config:
             image:
               # renovate: depName=netbirdio/management datasource=docker
