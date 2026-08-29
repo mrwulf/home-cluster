@@ -239,6 +239,13 @@ flowchart TD
    - `netbird-operator` automatically manages its own internal setup keys for
      `NetworkRouter`; manual `NBSetupKey` manifests for `networkrouter` are
      obsolete.
+3. **Post-Quantum Security (Rosenpass)**:
+   - `NetworkRouter/k8s` enables Rosenpass (`NB_ENABLE_ROSENPASS=true`,
+     `NB_ROSENPASS_PERMISSIVE=true`).
+   - Rosenpass provides post-quantum defense against "harvest now, decrypt later"
+     attacks by rotating WireGuard pre-shared keys (PSKs) every 2 minutes for
+     supporting peers, while permissive mode ensures uninterrupted connectivity
+     for mobile/standard clients.
 
 ---
 
