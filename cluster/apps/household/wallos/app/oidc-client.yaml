@@ -16,7 +16,7 @@ spec:
     keys:
       clientID: OIDC_CLIENT_ID
       clientSecret: OIDC_CLIENT_SECRET
-      authorization_url: OIDC_AUTH_URL
-      issuer_url: OIDC_ISSUER_URL
-      token_url: OIDC_TOKEN_URL
-      userinfo_url: OIDC_USERINFO_URL
+      authorizationUrl: OIDC_AUTH_URL
+      issuerUrl: OIDC_ISSUER_URL
+      tokenUrl: OIDC_TOKEN_URL
+      userinfoUrl: OIDC_USERINFO_URL
