@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: mauriceboe/trek
-              tag: 4.0.0
+              tag: 4.1.1
             env:
               NODE_ENV: production
               PORT: 3000
