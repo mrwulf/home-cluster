@@ -113,7 +113,7 @@ results, and operational details for the self-hosted NetBird overlay stack
   - `tofu.yaml` (`ingress-vps-eu`) provisioned `hcloud_server.eu_vps` without affecting `ovh_cloud_project_instance.us_vps`.
   - Cloud-init script provisioned Docker, WireGuard (`wg0`), NetBird (`wt0`), NetBird Relay (`:33073` / `:3478`), Prometheus Node Exporter (`:9100`), Traefik proxy (`:80`/`:443`), and CrowdSec container.
 - **Empirical Host Verification (Hetzner EU)**:
-  - `hcloud_server.eu_vps` provisioned at `94.130.99.118` with direct `AAAA` DNS record `vps-eu.${SECRET_DOMAIN}`.
+  - `hcloud_server.eu_vps` provisioned at `${VPS_EU_PUBLIC_IP}` with direct `AAAA` DNS record `vps-eu.${SECRET_DOMAIN}`.
   - `netbird.service`: Cloud NetBird mesh on interface `wt0` (`100.100.0.0/16`, UDP 51821) - **Active & Connected (2/2 peers)**.
   - `netbird-selfhosted.service`: Self-Hosted NetBird mesh on interface `wt1` (`100.110.0.0/16`, UDP 51822) connected to `https://nb.${SECRET_DOMAIN}` via setup key `VPS_SELFHOSTED_SETUP_KEY` (group `vps-nodes`).
   - `netbird-relay.service`: Containerized NetBird Relay & embedded STUN (`docker.io/netbirdio/relay:0.77.1`, ports 3478/udp and 33073/tcp).
@@ -123,7 +123,7 @@ results, and operational details for the self-hosted NetBird overlay stack
 
 1. **OpenTofu Reconciliation**:
    - `Terraform/ingress-tunnel-infra`: Reconciled cleanly (`Ready: True`, `No drift`).
-   - `hcloud_server.eu_vps` provisioned at `94.130.99.118` with direct `AAAA` DNS record `vps-eu.${SECRET_DOMAIN}`.
+   - `hcloud_server.eu_vps` provisioned at `${VPS_EU_PUBLIC_IP}` with direct `AAAA` DNS record `vps-eu.${SECRET_DOMAIN}`.
    - Hetzner Cloud firewall rules active for STUN `3478/udp`, Relay `33073/tcp`, and WireGuard `51822/udp`.
 2. **Systemd Service Invariants**:
    - `netbird service run` does not accept `--interface-name` (flag belongs strictly to `netbird up --interface-name wt1`).
@@ -212,7 +212,25 @@ Peers count: 4/4 Connected
 - **Policy Mapping**: Updated all 16 access control policies in `/api/policies` on the self-hosted management server to include `admin`, `users`, and `All` as authorized source groups.
 - **Resource Routing**: Network resources (`k8s-api-access`, `nas-storage`, `public-services`,
   `private-services`, `internal-ingress`, `external-ingress`, `clusterdns`) are bound to
-  `routing-peers` (`networkrouter-k8s`), providing zero-trust connectivity for authenticated peers.
+  `routing-peers` as a NetBird Resource Group, providing zero-trust connectivity for authenticated peers.
+
+### 5. NetworkRouter Ephemeral Peer Lifecycle & Teardown Invariant
+
+- **Discovery**: In-cluster `networkrouter-k8s` pods are ephemeral routing peers
+  (`ephemeral: true`). When pods were rotated or replaced during Kubernetes
+  rollouts, the pod network interface was detached before the `netbird` daemon
+  could send an explicit gRPC termination message. NetBird Management retained
+  `peer_status_connected = true` in PostgreSQL, preventing the 10-minute
+  ephemeral cleaner from purging terminated pods and leaving zombie router
+  peers in the console.
+- **Remediation**: Added declarative `lifecycle.preStop: exec: command: ["netbird", "down"]`
+  to `NetworkRouter/k8s` (`workloadOverride.podTemplate.spec.containers[name: netbird]`).
+  Before container termination, kubelet executes `netbird down`, gracefully
+  closing the gRPC session so NetBird marks the peer as offline and
+  immediately purges it.
+- **Setup Key Consolidation**: Removed obsolete manual `NBSetupKey/k8s-setup-key`
+  since `netbird-operator` dynamically creates and rotates its own dedicated
+  `SetupKey` for `NetworkRouter`.
 
 ---
 

@@ -145,27 +145,100 @@ The NetBird control plane runs natively inside the cluster backed by CloudNative
 - **Cloud NetBird Subnet (Fallback)**: `100.100.0.0/16`.
 - **LAN / Services**: `10.0.0.0/16`.
 
-### 4.2 Control Plane Workloads
+### 4.2 End-to-End Traffic Routing & Group Model
 
-1. **`netbird-management`**:
-   - Version: `docker.io/netbirdio/management:0.77.1` (tracked via Renovate).
-   - Database: PostgreSQL (`postgres17-rw`).
-   - IdP & Auth: Authenticates against Pocket ID (`https://id.${SECRET_DOMAIN}`)
-     via PKCE and OIDC discovery. Auto-syncs users and groups.
-   - Ports: `8080` (HTTP/gRPC API), `9090` (Prometheus metrics).
-2. **`netbird-signal`**:
-   - Version: `docker.io/netbirdio/signal:0.77.1` (port `10000`).
-   - Provides WebRTC signaling for P2P connection negotiation.
-3. **`netbird-dashboard`**:
-   - Version: `docker.io/netbirdio/dashboard:v2.91.1`.
-   - Web UI accessible at `https://nb.${SECRET_DOMAIN}`.
-4. **`netbird-operator` & In-Cluster Routing**:
-   - Operates in the `networking` namespace connected to
-     `http://netbird-management.networking.svc.cluster.local:8080`.
-   - Reconciles `NetworkRouter/k8s` (`networkrouter-k8s-*` pods in group
-     `routing-peers`).
-   - Advertises internal routes (`10.0.0.0/16`, `10.0.10.20/32`, `10.0.10.11/32`,
-     `*.${SECRET_DOMAIN}`) to authorized peers.
+```mermaid
+flowchart TD
+    subgraph SOURCETYPES["1. Traffic Sources & Client Peer Groups"]
+        ADMIN["Admin Devices (Group: admin)"]
+        USERS["Standard Users (Group: users)"]
+        PUBLIC["Public Internet Traffic"]
+        VPS["VPS Reverse Proxies (Group: vps-peers)"]
+    end
+
+    PUBLIC -->|HTTPS / WAF| VPS
+
+    subgraph NETBIRD_MESH["2. Self-Hosted NetBird WireGuard Overlay Mesh (100.110.0.0/16)"]
+        MGMT["NetBird Management & Signal (nb.<domain>)"]
+
+        subgraph ROUTERS["Routing Gateways (NetworkRouters)"]
+            K8S_ROUTER["networkrouter-k8s<br/>(Pods in k8s cluster)"]
+            FW_ROUTER["Firewall Peers<br/>(OPNsense FW02 / FW03)"]
+        end
+    end
+
+    ADMIN -.->|Control / Map Sync| MGMT
+    USERS -.->|Control / Map Sync| MGMT
+    VPS -.->|Control / Map Sync| MGMT
+
+    ADMIN ==>|Zero-Trust WireGuard Tunnel| K8S_ROUTER
+    ADMIN ==>|Zero-Trust WireGuard Tunnel| FW_ROUTER
+    USERS ==>|Zero-Trust WireGuard Tunnel| K8S_ROUTER
+    USERS ==>|Zero-Trust WireGuard Tunnel| FW_ROUTER
+    VPS ==>|Direct P2P / Relay Tunnel| K8S_ROUTER
+
+    subgraph DESTINATIONS["3. Destination Network Resources & Services"]
+        subgraph K8S_DESTS["Kubernetes Services (Routed via networkrouter-k8s)"]
+            INGRESS_PUB["Public Services (*.<domain>)<br/>VIP: 10.0.10.20:443"]
+            INGRESS_PRIV["Private Services (*.home.<domain>)<br/>VIP: 10.0.10.30:443"]
+            K8S_API["K8s API Server (k8s.home)<br/>10.0.10.201:6443"]
+            TALOS_NODES["Talos Node Subnet<br/>10.0.1.48/29"]
+            NAS_STORE["NAS Storage & Management<br/>Core NFS: 443, 7090, 22"]
+        end
+
+        subgraph LAN_DESTS["Home LAN & Egress (Routed via Firewall Peers)"]
+            FW_MGMT["Firewall Admin Management<br/>10.0.0.2 / 10.0.0.3 / 10.0.0.1"]
+            LAN_DEVS["Home LAN Devices<br/>10.0.1.15, IoT VLANs"]
+            INET_EXIT["Home Internet Egress / Full VPN<br/>0.0.0.0/0, ::/0"]
+        end
+    end
+
+    K8S_ROUTER --> INGRESS_PUB
+    K8S_ROUTER --> INGRESS_PRIV
+    K8S_ROUTER --> K8S_API
+    K8S_ROUTER --> TALOS_NODES
+    K8S_ROUTER --> NAS_STORE
+
+    FW_ROUTER --> FW_MGMT
+    FW_ROUTER --> LAN_DEVS
+    FW_ROUTER --> INET_EXIT
+```
+
+### 4.3 Access Control & Routing Policy Matrix
+
+| Source          | Target / Destination                    | Ports                 | Gateway                       | Policy                               | Description                                                     |
+| :-------------- | :-------------------------------------- | :-------------------- | :---------------------------- | :----------------------------------- | :-------------------------------------------------------------- |
+| **`vps-peers`** | `*.${SECRET_DOMAIN}`, `10.0.10.20`      | `80, 443, 8000, 8443` | `networkrouter-k8s`           | `Public Sites`, `External Ingress`   | Reverse-proxying public web apps without exposing ports on LAN. |
+| **`users`**     | `*.${SECRET_DOMAIN}`, `10.0.10.20`      | `443`                 | `networkrouter-k8s`           | `Public Sites Policy`                | Authenticated access to public apps.                            |
+| **`users`**     | `*.home.${SECRET_DOMAIN}`, `10.0.10.30` | `443`                 | `networkrouter-k8s`           | `Private Sites`, `Internal Ingress`  | Internal home apps (Home Assistant, Grafana, Plex, etc.).       |
+| **`users`**     | Gateway `10.0.0.1`, Backup `10.0.1.1`   | Any                   | `firewall02/03`               | `firewall-active`, `firewall-backup` | Core DNS and gateway routing.                                   |
+| **`admin`**     | `k8s.home` (`10.0.10.201`)              | `6443`                | `networkrouter-k8s`           | `K8s API Policy`                     | Direct kubectl / k8s cluster administration.                    |
+| **`admin`**     | Talos Subnet (`10.0.1.48/29`)           | Any                   | `networkrouter-k8s`           | `k8s nodes Policy`                   | `talosctl` node management and diagnostics.                     |
+| **`admin`**     | NAS Storage (`${CORE_NFS_SERVER}`)      | `22, 443, 7090`       | `networkrouter-k8s`           | `NAS Policy`, `Git Access`           | Storage admin, NFS shares, and Git SSH repositories.            |
+| **`admin`**     | Firewalls (`10.0.0.2`, `10.0.0.3`)      | Any                   | `firewall02/03`               | `firewall02`, `firewall03`           | OPNsense firewall administrative web GUIs and SSH.              |
+| **`admin`**     | Internet Egress (`0.0.0.0/0`)           | Any                   | `firewall02/03` / `vps-peers` | `home-internet-access`, `VPS VPN`    | Full tunnel egress through home or VPS exit nodes.              |
+
+### 4.4 Declarative NetworkRouter & Ephemeral Lifecycle Invariants
+
+1. **Ephemeral Peer Lifecycle (`preStop` Hook)**:
+   - `networkrouter-k8s` pods are deployed as ephemeral routing peers
+     (`ephemeral: true`).
+   - Pods define a `lifecycle.preStop: exec: command: ["netbird", "down"]` hook.
+   - When Kubernetes drains a node or rolls pods during updates, kubelet runs
+     `netbird down` _before_ the pod network namespace is torn down.
+   - This explicitly notifies the NetBird Management server of the disconnect,
+     marking the peer as offline (`peer_status_connected = false`) so NetBird's
+     background ephemeral cleaner immediately purges it.
+2. **Resource Groups vs Routing Routers**:
+   - `NBResource` (e.g. `public-services`, `internal-ingress`) binds cluster
+     addresses/domains to target **Resource Groups** (`routing-peers`).
+   - `NetworkRouter/k8s` acts as the router for the entire `networkID`. NetBird
+     automatically routes any traffic destined for `NBResource`s in that network
+     through the active router pods without requiring the router pods themselves
+     to be in `routing-peers`.
+   - `netbird-operator` automatically manages its own internal setup keys for
+     `NetworkRouter`; manual `NBSetupKey` manifests for `networkrouter` are
+     obsolete.
 
 ---
 
@@ -203,7 +276,7 @@ Edge VPS Node
   public VPS IPs via internal DNS.
 - **Remediation**: `NetworkRouter/k8s` configures declarative `hostAliases`
   mapping `vps-eu.${SECRET_DOMAIN}` and `vps-us.${SECRET_DOMAIN}`
-  directly to their public IPs.
+  directly to their public IPs (`${VPS_EU_PUBLIC_IP}` and `${VPS_US_PUBLIC_IP}`).
 - **Relay Invariant**: NetBird Relay containers require
   `NB_EXPOSED_ADDRESS=rel://${PROBE_HOSTNAME}:33073` and `NB_AUTH_SECRET` matching
   `Relay.Secret` in `management.json`.
@@ -215,24 +288,24 @@ Edge VPS Node
 ### 6.1 Testing Public Ingress Endpoints
 
 Because split-horizon DNS resolves `*.${SECRET_DOMAIN}` to `10.0.10.20` locally,
-always test public VPS ingress using `--resolve`:
+always test public VPS ingress using `--resolve` with the target VPS IP:
 
 ```bash
-# Test primary OVH VPS ingress
-curl -Iv https://plex.${SECRET_DOMAIN} --resolve plex.${SECRET_DOMAIN}:443:40.160.4.4
+# Test primary US VPS ingress
+curl -Iv https://plex.${SECRET_DOMAIN} --resolve plex.${SECRET_DOMAIN}:443:${VPS_US_PUBLIC_IP}
 
-# Test backup Hetzner VPS ingress
-curl -Iv https://photos.${SECRET_DOMAIN} --resolve photos.${SECRET_DOMAIN}:443:94.130.99.118
+# Test backup EU VPS ingress
+curl -Iv https://photos.${SECRET_DOMAIN} --resolve photos.${SECRET_DOMAIN}:443:${VPS_EU_PUBLIC_IP}
 
 # Test NetBird Control Plane through VPS
-curl -Iv https://nb.${SECRET_DOMAIN} --resolve nb.${SECRET_DOMAIN}:443:40.160.4.4
+curl -Iv https://nb.${SECRET_DOMAIN} --resolve nb.${SECRET_DOMAIN}:443:${VPS_US_PUBLIC_IP}
 ```
 
 ### 6.2 Inspecting Edge VPS Services (SSH)
 
 ```bash
-# Connect to Hetzner Backup VPS
-ssh -i ~/.ssh/id_ed25519.personal debian@94.130.99.118
+# Connect to EU Backup VPS
+ssh -i ~/.ssh/id_ed25519.personal debian@${VPS_EU_PUBLIC_IP}
 
 # Check services
 systemctl status traefik netbird netbird-relay crowdsec
