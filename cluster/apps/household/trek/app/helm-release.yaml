@@ -24,6 +24,7 @@ spec:
               PORT: 3000
               APP_URL: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
               ALLOWED_ORIGINS: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
+              ALLOW_INTERNAL_NETWORK: "true"
               FORCE_HTTPS: "true"
               TRUST_PROXY: "1"
               OIDC_DISPLAY_NAME: "Home PocketID"
