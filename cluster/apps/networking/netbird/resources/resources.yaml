@@ -1,15 +1,13 @@
 ---
 # ==============================================================================
-# NetBird Declarative Resources & Operational Manual Assumptions
+# NetBird Declarative Resources & Operational Model
 # ==============================================================================
-# MANUAL DASHBOARD ASSUMPTIONS (NetBird Web Console Requirements):
-# 1. SETUP KEY AUTO-GROUPS:
-#    - In the NetBird Web Console (Setup Keys -> k8s-setup-key), the key MUST
-#      have 'Auto-Groups' set to include 'Routing Peers'.
-#    - Rationale: NetworkRouter peer pods (networkrouter-k8s-...) join via this
-#      setup key. Auto-assigning 'Routing Peers' ensures that access policies
-#      targeting 'destinationGroups: [routing-peers]' automatically match the
-#      cluster routing peers upon registration without traffic drop.
+# 1. NETWORKROUTER ARCHITECTURE:
+#    - NetworkRouter 'k8s' dynamically provisions an internal setup key and
+#      routing group (networkrouter-<networkID>-<hash>).
+#    - Ephemeral routing peer pods cleanly terminate and unregister via the
+#      'preStop' hook running 'netbird down', enabling automatic ephemeral
+#      peer cleanup.
 #
 # 2. ENVIRONMENT & SECRET SUBSTITUTIONS:
 #    - ${SECRET_DOMAIN}: Global cluster root domain
@@ -21,17 +19,6 @@
 # ==============================================================================
 # Setup Keys (NBSetupKey)
 # ==============================================================================
-# NOTE: Ensure 'Auto-Groups' on this key in NetBird Console includes 'Routing Peers'.
-apiVersion: netbird.io/v1
-kind: NBSetupKey
-metadata:
-  name: k8s-setup-key
-  namespace: networking
-spec:
-  secretKeyRef:
-    name: netbird-control-plane-secrets
-    key: SETUP_KEY
----
 apiVersion: netbird.io/v1
 kind: NBSetupKey
 metadata:
@@ -66,6 +53,10 @@ spec:
               - "vps-eu.${SECRET_DOMAIN}"
         containers:
           - name: netbird
+            lifecycle:
+              preStop:
+                exec:
+                  command: ["netbird", "down"]
             env:
               - name: NB_MANAGEMENT_URL
                 value: "http://netbird-management.networking.svc.cluster.local:8080"
