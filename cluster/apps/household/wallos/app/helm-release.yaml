@@ -97,3 +97,9 @@ spec:
                 subPath: db
               - path: /var/www/html/images/uploads/logos
                 subPath: logos
+      log:
+        type: emptyDir
+        advancedMounts:
+          trek:
+            app:
+              - path: /var/log
