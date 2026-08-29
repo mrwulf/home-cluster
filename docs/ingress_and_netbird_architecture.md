@@ -29,7 +29,8 @@ graph TD
 
     subgraph OverlayMesh["Encrypted Private Transport"]
         OVH <-->|WireGuard wg0| K8sGW11["Traefik GW VIP 10.0.10.11:443"]
-        OVH <-->|NetBird wt0| Router["NetworkRouter / k8s Peer"]
+        OVH <-->|NetBird wt0| Router["Netbird Peer"]
+        Hetzner <-->|WireGuard wg0| K8sGW11
         Hetzner <-->|NetBird wt0| Router
         Router --> K8sGW20["Traefik GW VIP 10.0.10.20:443"]
     end
@@ -142,7 +143,6 @@ The NetBird control plane runs natively inside the cluster backed by CloudNative
 
 - **Self-Hosted NetBird Subnet**: **`100.110.0.0/16`** (resides in RFC 6598
   Carrier-Grade NAT block `100.64.0.0/10`).
-- **Cloud NetBird Subnet (Fallback)**: `100.100.0.0/16`.
 - **LAN / Services**: `10.0.0.0/16`.
 
 ### 4.2 End-to-End Traffic Routing & Group Model
