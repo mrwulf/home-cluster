@@ -26,6 +26,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      APP_UID: "1000"
+      APP_GID: "1000"
       GATUS_SUBDOMAIN: trip
       VOLSYNC_CLAIM: trek-data
       VOLSYNC_CAPACITY: 10Gi
