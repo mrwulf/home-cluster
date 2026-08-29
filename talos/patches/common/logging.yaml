@@ -1,0 +1,5 @@
+machine:
+  logging:
+    destinations:
+      - endpoint: udp://vector-aggregator.monitoring.svc.cluster.local:6051/
+        format: json_lines

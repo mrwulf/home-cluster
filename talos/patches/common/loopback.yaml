@@ -1,0 +1,5 @@
+apiVersion: v1alpha1
+kind: LinkConfig
+name: lo
+addresses:
+  - address: 10.0.10.99/32

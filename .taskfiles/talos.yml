@@ -7,19 +7,31 @@ vars:
     sh: "uname -s | tr '[:upper:]' '[:lower:]'"
   head: '{{if eq .OS "darwin"}}g{{end}}head'
   CLUSTER_NAME:
-    sh: yq '.clusterName' talos/talconfig.yaml
+    sh: yq '.clusterName' talos/talenv.yaml 2>/dev/null || yq '.clusterName' talos/talconfig.yaml 2>/dev/null || echo "k8s"
   NODE_LIST:
-    sh: yq '.nodes[].hostname' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
+    sh: (cd talos/patches/nodes 2>/dev/null && ls *.yaml 2>/dev/null | sed 's/\.yaml$//' | tr '\n' ',' | sed 's/,$//') || yq '.nodes[].hostname' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
   ONE_NODE:
     sh: echo '{{.NODE_LIST}}' | tr ',' '\n' | shuf | head -n1
   MASTER_LIST:
-    sh: yq '.nodes[] | select(.controlPlane==true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
+    sh: |
+      for f in talos/patches/nodes/*.yaml; do
+        [ -f "$f" ] || continue
+        if [ "$(yq 'select(document_index == 0) | .machine.type // "controlplane"' "$f")" = "controlplane" ]; then
+          basename "$f" .yaml
+        fi
+      done 2>/dev/null | tr '\n' ',' | sed 's/,$//'
   WORKER_LIST:
-    sh: yq '.nodes[] | select(.controlPlane!=true) | .hostname ' talos/talconfig.yaml | tr '\n' ',' | {{ .head }} -c -1
+    sh: |
+      for f in talos/patches/nodes/*.yaml; do
+        [ -f "$f" ] || continue
+        if [ "$(yq 'select(document_index == 0) | .machine.type // "controlplane"' "$f")" = "worker" ]; then
+          basename "$f" .yaml
+        fi
+      done 2>/dev/null | tr '\n' ',' | sed 's/,$//'
   NODE_LIST_MASTERSFIRST:
-    sh: echo "{{.MASTER_LIST}},{{.WORKER_LIST}}" | sed 's/,$//'
+    sh: echo "{{if .WORKER_LIST}}{{.MASTER_LIST}},{{.WORKER_LIST}}{{else}}{{.MASTER_LIST}}{{end}}" | sed 's/^,//;s/,$//'
   NODE_LIST_MASTERSLAST:
-    sh: echo '{{.NODE_LIST_MASTERSFIRST}}' | tr ',' '\n' | tac | tr '\n' ',' | sed 's/,$//' | sed 's/^,//'
+    sh: echo "{{if .WORKER_LIST}}{{.WORKER_LIST}},{{.MASTER_LIST}}{{else}}{{.MASTER_LIST}}{{end}}" | sed 's/^,//;s/,$//'
   ONE_MASTER:
     sh: echo '{{.MASTER_LIST}}' | tr ',' '\n' | shuf | head -n1
   # renovate: depName=brytonsalisbury/meshcmd datasource=docker
@@ -128,7 +140,7 @@ tasks:
     vars:
       FILENAME: "{{.PROJECT_DIR}}/talos/talsecret.sops.yaml"
     cmds:
-      - talhelper gensecret > {{.FILENAME}}
+      - talosctl gen secrets -o - > {{.FILENAME}}
       - sops -e -i {{.FILENAME}}
     preconditions:
       - sh: "[ ! -f {{.FILENAME}} ]"
@@ -136,19 +148,30 @@ tasks:
       - sh: "[ -n $SOPS_AGE_KEY_FILE ]"
         msg: "Sops not configured yet!"
 
-  generate-configs:
-    desc: Use talhelper to regenerate individual node configs
+  schematic:
+    desc: Derive factory schematic ID from talos/schematic.yaml
     silent: true
-    dir: "{{.PROJECT_DIR}}/talos/"
+    cmds:
+      - ./scripts/get-talos-schematic.sh info
+
+  generate-configs:
+    desc: Regenerate individual node configs using native talosctl and modular patches
+    silent: true
+    dir: "{{.PROJECT_DIR}}"
     sources:
-      - "{{.PROJECT_DIR}}/talos/talconfig.yaml"
+      - "{{.PROJECT_DIR}}/talos/schematic.yaml"
+      - "{{.PROJECT_DIR}}/talos/talenv.yaml"
+      - "{{.PROJECT_DIR}}/talos/talenv.sops.yaml"
       - "{{.PROJECT_DIR}}/talos/talsecret.sops.yaml"
+      - "{{.PROJECT_DIR}}/talos/patches/**/*.yaml"
+      - "{{.PROJECT_DIR}}/scripts/get-talos-schematic.sh"
+      - "{{.PROJECT_DIR}}/scripts/generate-talos-configs.sh"
     generates:
       - "{{.PROJECT_DIR}}/talos/clusterconfig/*"
       - "{{.PROJECT_DIR}}/talos/clusterconfig/talosconfig"
       - "{{.PROJECT_DIR}}/talos/clusterconfig/.gitignore"
     cmds:
-      - talhelper genconfig
+      - ./scripts/generate-talos-configs.sh
 
   diff-config:
     desc: Diff config against running node config
@@ -196,7 +219,7 @@ tasks:
           MODE: "{{.MODE}}"
 
   upgrade:
-    desc: Upgrade Talos on a single node to the version in talconfig.yaml
+    desc: Upgrade Talos on a single node to the version in talenv.yaml
     silent: true
     vars:
       NODE_NAME:
@@ -204,9 +227,9 @@ tasks:
       CURRENT_VERSION:
         sh: kubectl get node "{{.NODE_NAME}}" --output jsonpath='{.status.nodeInfo.osImage}' | grep -oP 'v[0-9]+.[0-9]+.[0-9]+'
       TARGET_VERSION:
-        sh: yq '.talosVersion' talos/talconfig.yaml
+        sh: yq '.talosVersion' talos/talenv.yaml
       TARGET_VERSION_IMAGE:
-        sh: "(cd talos; talhelper genurl installer -n {{.NODE}} -v {{.TARGET_VERSION}})"
+        sh: ./scripts/get-talos-schematic.sh image {{.TARGET_VERSION}}
     requires:
       vars: ["NODE"]
     deps:
@@ -243,7 +266,7 @@ tasks:
         done
 
   upgrade-all:
-    desc: Upgrade Talos on all the nodes to the version in talconfig.yaml
+    desc: Upgrade Talos on all the nodes to the version in talenv.yaml
     silent: true
     deps:
       - task: generate-configs
@@ -269,7 +292,7 @@ tasks:
   upgrade-k8s:
     vars:
       TARGET_VERSION:
-        sh: yq '.kubernetesVersion' talos/talconfig.yaml
+        sh: yq '.kubernetesVersion' talos/talenv.yaml
     deps:
       - task: upgrade-k8s-precheck
         vars:

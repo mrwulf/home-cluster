@@ -49,7 +49,6 @@ helmfile apply -f talos/flux-helmfile.yaml
 ## Tools
 
 - [talos](https://talos.dev)
-- [talhelper](https://github.com/budimanjojo/talhelper)
 - [flux](https://toolkit.fluxcd.io/)
 - [sops](https://toolkit.fluxcd.io/guides/mozilla-sops/)
 - [age](https://github.com/FiloSottile/age)

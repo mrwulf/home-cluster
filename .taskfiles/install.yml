@@ -23,7 +23,6 @@ tasks:
     desc: Install all of the dependencies & tools
     cmds:
       # - task: talosctl
-      # - task: talhelper
       # - task: go-task
       # - task: yq
       # - task: jq
@@ -108,30 +107,6 @@ tasks:
         echo "{{.APP_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}"
         wget -qnv --progress=bar -O ~/bin/sops https://github.com/getsops/sops/releases/download/v{{.RELEASE_VERSION}}/sops-v{{.RELEASE_VERSION}}.{{.OS}}.amd64
         chmod +x ~/bin/sops
-    status:
-      - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
-    silent: true
-    ignore_errors: true
-
-  talhelper:
-    desc: Install talhelper
-    vars:
-      TASK_NAME:
-        sh: "echo {{.TASK}} | {{.awk}} -F: '{print $(NF)}'"
-      OWNER: budimanjojo
-      RELEASE_VERSION:
-        sh: "wget -qO - \"https://api.github.com/repos/{{.OWNER}}/{{.TASK_NAME}}/releases/latest\" | {{.grep}} -Po '\"tag_name\":\\s*\"v\\K.*?(?=\")'"
-      CURRENT_VERSION:
-        sh: "{{.TASK_NAME}} --version | {{.grep}} -oP '[0-9]+.[0-9]+.[0-9]+' || echo 0.0.0"
-      DESIRED_VERSION: "{{.DESIRED_VERSION | default .RELEASE_VERSION}}"
-    cmds:
-      - |
-        echo "{{.TASK_NAME}} released: {{.RELEASE_VERSION}}, current: {{.CURRENT_VERSION}}, desired: v{{.DESIRED_VERSION}}"
-        TEMP_DIR=$(mktemp -d)
-        wget -qnv --progress=bar -O $TEMP_DIR/{{.TASK_NAME}}.tar.gz https://github.com/{{.OWNER}}/{{.TASK_NAME}}/releases/download/v{{.DESIRED_VERSION}}/talhelper_linux_amd64.tar.gz
-        tar -xzf ${TEMP_DIR}/{{.TASK_NAME}}.tar.gz --strip-components=0 -C ~/bin/ {{.TASK_NAME}}
-        # chmod +x ~/bin/{{.TASK_NAME}}
-        rm -rf $TEMP_DIR
     status:
       - '[ "{{.RELEASE_VERSION}}" = {{.CURRENT_VERSION}} ]'
     silent: true

@@ -1,0 +1,11 @@
+apiVersion: v1alpha1
+kind: ExtensionServiceConfig
+name: lldpd
+configFiles:
+  - content: |
+      configure lldp portidsubtype ifname
+      configure system description "Talos Node"
+      configure system bond-slave-src-mac-type real
+      configure system ip management pattern bond0,en*,eth*
+      configure system interface pattern bond*,en*,eth*
+    mountPath: /usr/local/etc/lldpd/lldpd.conf

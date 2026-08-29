@@ -5,20 +5,21 @@
 ```bash
 brew install helm
 brew install kubectl
-brew install talhelper
 brew install talosctl
+brew install sops
 ```
 
-1. install from ISO without CNI or Kube-Proxy
-2. Following commands
+1. Install from ISO/Factory image without CNI or Kube-Proxy
+2. Generate and apply configs:
 
 ```bash
-talhelper gensecret > talsecrets.sops.yaml
-sops -e -i talsecrets.sop.yaml
+# Generate node manifests and talosconfig
+task talos:generate-configs
+
 # Apply config to node
 talosctl apply-config --insecure -n <node ip> \
-  -e <endpoint from talconfig.yaml> \
-  --file ./clusterconfig/<node>.yaml
+  -e <endpoint> \
+  --file ./clusterconfig/<cluster>-<node>.yaml
 ```
 
 1. At this point, if it's the first control plane it'll try and start. ETCD will

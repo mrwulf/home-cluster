@@ -1,0 +1,16 @@
+machine:
+  type: controlplane
+  install:
+    diskSelector:
+      model: SAMSUNG MZVLV256HCHP-000L2
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+auto: "off"
+hostname: node3.home
+---
+apiVersion: v1alpha1
+kind: BondConfig
+name: bond0
+addresses:
+  - address: 10.0.1.53/23

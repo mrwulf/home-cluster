@@ -1,0 +1,21 @@
+machine:
+  kubelet:
+    extraArgs:
+      rotate-server-certificates: true
+      max-pods: 150
+    extraConfig:
+      imageGCLowThresholdPercent: 60
+      imageGCHighThresholdPercent: 70
+      maxParallelImagePulls: 10
+      serializeImagePulls: false
+      shutdownGracePeriod: 60s
+      shutdownGracePeriodCriticalPods: 30s
+    extraMounts:
+      # Mount openebs-hostpath in kubelet
+      - destination: /var/mnt/extra
+        type: bind
+        source: /var/mnt/extra
+        options:
+          - rbind
+          - rshared
+          - rw

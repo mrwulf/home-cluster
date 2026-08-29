@@ -5,7 +5,7 @@ Guidance for working in this repository. Read this before adding or changing any
 ## What this repo is
 
 A GitOps-managed home Kubernetes cluster. The cluster runs on **Talos Linux**; everything in the cluster is reconciled from this Git repo by **Flux**.
-There is no `kubectl apply` workflow — you change YAML, it gets committed, and Flux applies it. Talos node/control-plane config is declared in [talos/talconfig.yaml](talos/talconfig.yaml) and rendered with `talhelper`.
+There is no `kubectl apply` workflow — you change YAML, it gets committed, and Flux applies it. Talos node/control-plane config is declared in [talos/patches/](talos/patches/) and rendered with native `talosctl` via `task talos:generate-configs`.
 
 ## Non-negotiable rules
 
@@ -53,7 +53,7 @@ These apply to **every** change. Do not check anything in that violates them.
 
 | Concern           | Choice                                                                                                                         |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| OS / node config  | Talos Linux (`talhelper`, [talos/talconfig.yaml](talos/talconfig.yaml))                                                        |
+| OS / node config  | Talos Linux (`talosctl`, [talos/patches/](talos/patches/))                                                                     |
 | GitOps engine     | Flux                                                                                                                           |
 | CNI / LB          | Cilium (BPF, no kube-proxy; L2/BGP LB)                                                                                         |
 | Ingress           | Traefik via **Gateway API** (`internal-gateway` / `external-gateway` in `networking`)                                          |

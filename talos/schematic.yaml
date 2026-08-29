@@ -1,0 +1,19 @@
+---
+customization:
+  extraKernelArgs:
+    - talos.logging.kernel=udp://vector-aggregator.monitoring.svc.cluster.local:6050/
+    - talos.auditd.disabled=1
+    - mitigations=off
+    - apparmor=0
+    - security=none
+    - init_on_alloc=0
+    - init_on_free=0
+    - intel_iommu=on
+    - iommu=pt
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/intel-ucode
+      - siderolabs/i915
+      - siderolabs/lldpd
+      - siderolabs/mei
+      - siderolabs/nfsrahead

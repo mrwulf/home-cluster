@@ -1,0 +1,33 @@
+machine:
+  type: controlplane
+  install:
+    diskSelector:
+      type: ssd
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+auto: "off"
+hostname: replacement.home
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: eth-native
+selector:
+  match: link.driver == "e1000e"
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: eth-usb
+selector:
+  match: link.driver == "r8152"
+---
+apiVersion: v1alpha1
+kind: BondConfig
+name: bond0
+links:
+  - eth-native
+  - eth-usb
+bondMode: 802.3ad
+miimon: 1000
+addresses:
+  - address: 10.0.1.55/23

@@ -1,0 +1,16 @@
+machine:
+  type: controlplane
+  install:
+    diskSelector:
+      model: Samsung SSD 970 EVO 250GB
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+auto: "off"
+hostname: node1.home
+---
+apiVersion: v1alpha1
+kind: BondConfig
+name: bond0
+addresses:
+  - address: 10.0.1.51/23

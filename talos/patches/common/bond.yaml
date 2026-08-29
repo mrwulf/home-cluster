@@ -1,0 +1,15 @@
+apiVersion: v1alpha1
+kind: BondConfig
+name: bond0
+bondMode: 802.3ad
+downdelay: 200
+lacpRate: fast
+links:
+  - enp2s0f0np0
+  - enp2s0f1np1
+miimon: 100
+mtu: 9000
+routes:
+  - gateway: 10.0.0.1
+updelay: 200
+xmitHashPolicy: layer3+4
