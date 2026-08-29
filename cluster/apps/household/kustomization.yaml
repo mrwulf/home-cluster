@@ -15,4 +15,5 @@ resources:
   - plainspace/ks.yaml
   - stirling-pdf/ks.yaml
   - super-productivity/ks.yaml
+  - trek/ks.yaml
   - vikunja/ks.yaml
