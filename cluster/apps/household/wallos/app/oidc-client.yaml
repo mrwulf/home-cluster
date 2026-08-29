@@ -5,9 +5,9 @@ metadata:
   name: wallos
 spec:
   name: Wallos
-  launchUrl: https://subscriptions.home.${SECRET_DOMAIN}/
+  launchUrl: https://${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}
   callbackUrls:
-    - https://subscriptions.home.${SECRET_DOMAIN}/index.php
+    - https://${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}
   allowedUserGroups:
     - name: users
       namespace: auth
@@ -16,3 +16,7 @@ spec:
     keys:
       clientID: OIDC_CLIENT_ID
       clientSecret: OIDC_CLIENT_SECRET
+      authorization_url: OIDC_AUTH_URL
+      issuer_url: OIDC_ISSUER_URL
+      token_url: OIDC_TOKEN_URL
+      userinfo_url: OIDC_USERINFO_URL

@@ -24,8 +24,9 @@ spec:
               OIDC_ENABLED: "true"
               OIDC_PROVIDER_NAME: "Home PocketID"
               OIDC_ISSUER: "https://id.${SECRET_DOMAIN}"
-              OIDC_REDIRECT_URL: "https://subscriptions.home.${SECRET_DOMAIN}/index.php"
               OIDC_SCOPES: "openid email profile groups"
+              OIDC_REDIRECT_URL: "https://${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
+              OIDC_LOGOUT_URL: "https://${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
               OIDC_USER_IDENTIFIER: "sub"
               OIDC_AUTO_CREATE_USER: "true"
               OIDC_DISABLE_PASSWORD_LOGIN: "true"
@@ -33,19 +34,19 @@ spec:
             envFrom:
               - secretRef:
                   name: wallos-oidc-credentials
-            probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /login.php
-                    port: &port 80
-                  initialDelaySeconds: 0
-                  periodSeconds: 10
-                  timeoutSeconds: 3
-                  failureThreshold: 3
-              readiness: *probes
+            # probes:
+            #   liveness: &probes
+            #     enabled: true
+            #     custom: true
+            #     spec:
+            #       httpGet:
+            #         path: /login.php
+            #         port: &port 80
+            #       initialDelaySeconds: 0
+            #       periodSeconds: 10
+            #       timeoutSeconds: 3
+            #       failureThreshold: 3
+            #   readiness: *probes
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
@@ -67,7 +68,7 @@ spec:
         controller: main
         ports:
           http:
-            port: *port
+            port: 80
 
     route:
       main:
@@ -100,9 +101,3 @@ spec:
                 subPath: db
               - path: /var/www/html/images/uploads/logos
                 subPath: logos
-      log:
-        type: emptyDir
-        advancedMounts:
-          main:
-            main:
-              - path: /var/log
