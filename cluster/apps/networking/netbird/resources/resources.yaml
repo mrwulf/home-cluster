@@ -60,6 +60,10 @@ spec:
             env:
               - name: NB_MANAGEMENT_URL
                 value: "http://netbird-management.networking.svc.cluster.local:8080"
+              - name: NB_ENABLE_ROSENPASS
+                value: "true"
+              - name: NB_ROSENPASS_PERMISSIVE
+                value: "true"
             resources:
               requests:
                 cpu: 100m
