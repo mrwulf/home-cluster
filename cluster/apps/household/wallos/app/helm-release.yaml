@@ -100,6 +100,6 @@ spec:
       log:
         type: emptyDir
         advancedMounts:
-          trek:
-            app:
+          main:
+            main:
               - path: /var/log
