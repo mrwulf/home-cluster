@@ -43,7 +43,7 @@ spec:
           main:
             image:
               repository: ghcr.io/warreth/super-sync-server
-              tag: v18.19.0
+              tag: v18.21.0
             env:
               - name: NODE_ENV
                 value: production
