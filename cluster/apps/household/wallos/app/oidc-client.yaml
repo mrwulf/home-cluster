@@ -1,0 +1,18 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: wallos
+spec:
+  name: Wallos
+  launchUrl: https://subscriptions.home.${SECRET_DOMAIN}/
+  callbackUrls:
+    - https://subscriptions.home.${SECRET_DOMAIN}/index.php
+  allowedUserGroups:
+    - name: users
+      namespace: auth
+  secret:
+    name: wallos-oidc-credentials
+    keys:
+      clientID: OIDC_CLIENT_ID
+      clientSecret: OIDC_CLIENT_SECRET

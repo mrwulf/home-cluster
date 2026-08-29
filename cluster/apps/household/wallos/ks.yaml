@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app wallos
+  namespace: flux-system
+spec:
+  targetNamespace: household
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: volsync
+  path: ./cluster/apps/household/wallos/app
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      APP_UID: "568"
+      APP_GID: "568"
+      GATUS_SUBDOMAIN: subscriptions
+      VOLSYNC_CLAIM: *app
+      VOLSYNC_CAPACITY: 2Gi
+      VOLSYNC_NFS_START_MINUTE: "15"
+      VOLSYNC_B2_START_MINUTE: "40"

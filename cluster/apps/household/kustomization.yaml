@@ -17,3 +17,4 @@ resources:
   - super-productivity/ks.yaml
   - trek/ks.yaml
   - vikunja/ks.yaml
+  - wallos/ks.yaml
