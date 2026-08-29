@@ -15,6 +15,7 @@ spec:
       namespace: auth
     - name: admin
       namespace: auth
+  pkceEnabled: true
   secret:
     name: trek-oidc-credentials
     keys:
