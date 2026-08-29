@@ -30,7 +30,7 @@ the two user volumes. The Talos volume provisioner lays them out in this order:
 | `EPHEMERAL`  | 100–250 GiB | `/var` — kubelet, container data |
 | `r-rook-vol` | 600 GiB     | Raw Ceph OSD partition           |
 
-**Important**: The `EPHEMERAL` volume in `talos/talconfig.yaml` is configured
+**Important**: The `EPHEMERAL` volume in the Talos machine configuration is configured
 with `grow: true` **and** `maxSize: 250GiB`. The `maxSize` is mandatory — without
 it, `EPHEMERAL` would greedily consume all remaining disk space before
 `r-rook-vol` can be allocated, causing the 600 GiB partition to never be

@@ -17,7 +17,7 @@ task pre-commit:init
 
 # Configure your cluster
 task talos:generate-secrets
-## Edit ./talos/talconfig.yaml
+## Edit ./talos/talenv.yaml and ./talos/patches/
 task talos:generate-configs
 
 # Boot nodes to talos
@@ -127,7 +127,7 @@ Cluster state lives under `cluster/`:
   and the cluster-wide SOPS secrets / `postBuild` substitution values.
 - **templates/** — reusable kustomize components (e.g. volsync).
 
-Talos node configuration lives under `talos/` ([talconfig.yaml](talos/talconfig.yaml)).
+Talos node configuration lives under `talos/` ([patches/](talos/patches/)).
 
 ## My Cluster
 

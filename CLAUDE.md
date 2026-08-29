@@ -85,7 +85,7 @@ cluster/
           httproute.yaml     # Gateway API route, if exposed
           *.sops.yaml        # SOPS secrets, if any
           externalsecret.yaml # ESO/Bitwarden, if used
-talos/                       # talconfig.yaml, talsecret.sops.yaml
+talos/                       # patches/, schematic.yaml, talenv.yaml, talsecret.sops.yaml
 .taskfiles/                  # task definitions
 .github/renovate*            # Renovate config + custom managers
 ```
