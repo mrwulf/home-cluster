@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dawarich-configmap
+data:
+  APPLICATION_HOSTS: "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN},localhost,127.0.0.1,::1"
+  APPLICATION_PROTOCOL: "https"
+  DOMAIN: "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+  DISTANCE_UNIT: "mi"
+  STORE_GEODATA: "true"
+  RAILS_ENV: "production"
+  SELF_HOSTED: "true"
+  RAILS_LOG_TO_STDOUT: "true"
+  REDIS_URL: "redis://dragonfly.databases.svc.cluster.local:6379/5"
+  RAILS_CACHE_DB: "5"
+  RAILS_JOB_QUEUE_DB: "5"
+  RAILS_WS_DB: "5"
+  DATABASE_HOST: "postgres17-postgis-rw.databases.svc.cluster.local"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "dawarich"
+  OIDC_PROVIDER_NAME: "Home PocketID"
+  OIDC_AUTO_REGISTER: "true"
+  OIDC_PKCE_ENABLED: "true"
+  ALLOW_EMAIL_PASSWORD_REGISTRATION: "false"
+  SMTP_SERVER: "smtp-relay.system.svc.cluster.local."
+  SMTP_PORT: "2525"
+  SMTP_DOMAIN: "${SECRET_DOMAIN}"
+  SMTP_FROM: "${GATUS_SUBDOMAIN}@${SECRET_DOMAIN}"
+  SMTP_STARTTLS: "false"
+  SMTP_AUTHENTICATION: "plain"

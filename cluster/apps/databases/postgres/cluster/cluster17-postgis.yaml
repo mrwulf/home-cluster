@@ -1,0 +1,57 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres17-postgis
+  annotations:
+    kyverno.io/ignore: "true"
+spec:
+  # renovate: depName=ghcr.io/cloudnative-pg/postgis datasource=docker
+  imageName: ghcr.io/cloudnative-pg/postgis:17-3.5
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 20Gi
+    storageClass: ceph-block
+  superuserSecret:
+    name: postgres-superuser
+  enableSuperuserAccess: true
+  monitoring:
+    enablePodMonitor: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 1Gi
+    limits:
+      memory: 2Gi
+  postgresql:
+    parameters:
+      shared_buffers: 256MB
+      max_connections: "100"
+      max_wal_size: "1GB"
+      min_wal_size: "128MB"
+      checkpoint_completion_target: "0.9"
+  bootstrap:
+    initdb:
+      postInitTemplateSQL:
+        - CREATE EXTENSION IF NOT EXISTS postgis;
+        - CREATE EXTENSION IF NOT EXISTS postgis_raster;
+        - CREATE EXTENSION IF NOT EXISTS postgis_topology;
+  stopDelay: 300
+  smartShutdownTimeout: 30
+  backup:
+    retentionPolicy: 30d
+    barmanObjectStore:
+      wal:
+        compression: bzip2
+        maxParallel: 4
+      destinationPath: s3://postgresql/
+      endpointURL: https://cdn.${SECRET_DOMAIN}
+      serverName: postgres17-postgis
+      s3Credentials:
+        accessKeyId:
+          name: postgres-minio
+          key: MINIO_ACCESS_KEY
+        secretAccessKey:
+          name: postgres-minio
+          key: MINIO_SECRET_KEY

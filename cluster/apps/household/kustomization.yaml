@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   # - adventurelog/ks.yaml
   - box/ks.yaml
+  - dawarich/ks.yaml
   - karakeep/ks.yaml
   - home-assistant/ks.yaml
   - immich/ks.yaml
