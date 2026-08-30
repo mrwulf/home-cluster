@@ -184,11 +184,3 @@ spec:
               - path: /var/app/tmp/imports/watched
                 subPath: watched
           sidekiq: *storageMounts
-      tmp:
-        type: emptyDir
-        globalMounts:
-          - path: /tmp
-      app-tmp:
-        type: emptyDir
-        globalMounts:
-          - path: /var/app/tmp
