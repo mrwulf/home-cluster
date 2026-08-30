@@ -34,6 +34,8 @@ spec:
             image:
               repository: freikin/dawarich
               tag: 1.14.0
+            command:
+              - web-entrypoint.sh
             args:
               - bin/rails
               - server
@@ -91,6 +93,8 @@ spec:
             image:
               repository: freikin/dawarich
               tag: 1.14.0
+            command:
+              - sidekiq-entrypoint.sh
             args:
               - sidekiq
             env:
