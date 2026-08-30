@@ -30,7 +30,7 @@ spec:
               OIDC_USER_IDENTIFIER: "sub"
               OIDC_AUTO_CREATE_USER: "true"
               OIDC_DISABLE_PASSWORD_LOGIN: "true"
-              SSRF_ALLOWLIST: "id.${SECRET_DOMAIN}"
+              SSRF_ALLOWLIST: "id.${SECRET_DOMAIN},smtp-relay.system.svc.cluster.local"
             envFrom:
               - secretRef:
                   name: wallos-oidc-credentials
