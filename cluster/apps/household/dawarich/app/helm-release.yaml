@@ -186,11 +186,9 @@ spec:
           sidekiq: *storageMounts
       tmp:
         type: emptyDir
-        advancedMounts:
-          dawarich: &tmpMounts
-            app:
-              - path: /tmp
-                subPath: tmp
-              - path: /var/app/tmp
-                subPath: app-tmp
-          sidekiq: *tmpMounts
+        globalMounts:
+          - path: /tmp
+      app-tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /var/app/tmp
