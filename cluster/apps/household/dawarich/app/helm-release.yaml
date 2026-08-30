@@ -34,6 +34,13 @@ spec:
             image:
               repository: freikin/dawarich
               tag: 1.14.0
+            args:
+              - bin/rails
+              - server
+              - -p
+              - "3000"
+              - -b
+              - "::"
             env:
               WEB_CONCURRENCY: "1"
               PROMETHEUS_EXPORTER_ENABLED: "true"
@@ -84,6 +91,8 @@ spec:
             image:
               repository: freikin/dawarich
               tag: 1.14.0
+            args:
+              - sidekiq
             env:
               BACKGROUND_PROCESSING_CONCURRENCY: "3"
               PROMETHEUS_EXPORTER_ENABLED: "false"
