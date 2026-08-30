@@ -6,6 +6,7 @@ metadata:
 data:
   APPLICATION_HOSTS: "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN},localhost,127.0.0.1,::1"
   APPLICATION_PROTOCOL: "https"
+  APPLICATION_URL: "https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
   DOMAIN: "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
   DISTANCE_UNIT: "mi"
   STORE_GEODATA: "true"
@@ -22,6 +23,7 @@ data:
   OIDC_PROVIDER_NAME: "Home PocketID"
   OIDC_AUTO_REGISTER: "true"
   OIDC_PKCE_ENABLED: "true"
+  OIDC_REDIRECT_URI: "https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/users/auth/openid_connect/callback"
   ALLOW_EMAIL_PASSWORD_REGISTRATION: "false"
   SMTP_SERVER: "smtp-relay.system.svc.cluster.local."
   SMTP_PORT: "2525"
