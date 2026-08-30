@@ -34,7 +34,6 @@ spec:
             image:
               repository: freikin/dawarich
               tag: 1.14.0
-            command: ["bin/rails", "server", "-p", "3000", "-b", "::"]
             env:
               WEB_CONCURRENCY: "1"
               PROMETHEUS_EXPORTER_ENABLED: "true"
@@ -55,7 +54,7 @@ spec:
                   httpGet:
                     path: /api/v1/health
                     port: 3000
-                  initialDelaySeconds: 15
+                  initialDelaySeconds: 30
                   periodSeconds: 15
                   timeoutSeconds: 5
                   failureThreshold: 5
@@ -66,7 +65,7 @@ spec:
                   httpGet:
                     path: /api/v1/health
                     port: 3000
-                  initialDelaySeconds: 15
+                  initialDelaySeconds: 30
                   periodSeconds: 15
                   timeoutSeconds: 5
                   failureThreshold: 5
@@ -85,7 +84,6 @@ spec:
             image:
               repository: freikin/dawarich
               tag: 1.14.0
-            command: ["sidekiq"]
             env:
               BACKGROUND_PROCESSING_CONCURRENCY: "3"
               PROMETHEUS_EXPORTER_ENABLED: "false"
@@ -101,10 +99,10 @@ spec:
                       - pgrep
                       - -f
                       - sidekiq
-                  initialDelaySeconds: 15
+                  initialDelaySeconds: 30
                   periodSeconds: 15
                   timeoutSeconds: 5
-                  failureThreshold: 3
+                  failureThreshold: 5
               readiness:
                 enabled: true
                 custom: true
@@ -114,10 +112,10 @@ spec:
                       - pgrep
                       - -f
                       - sidekiq
-                  initialDelaySeconds: 15
+                  initialDelaySeconds: 30
                   periodSeconds: 15
                   timeoutSeconds: 5
-                  failureThreshold: 3
+                  failureThreshold: 5
             resources: *dawarichResources
 
     service:
