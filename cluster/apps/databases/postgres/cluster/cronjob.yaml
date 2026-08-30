@@ -29,6 +29,8 @@ spec:
               command:
                 - "/backup.sh"
               env:
+                - name: POSTGRES_DB
+                  value: "bazarr,box,forgejo,gatus,immich,lidarr_log,lidarr_main,netbird,openwebui,outline,paperless,plainspace,pocketid,super-productivity,vikunja"
                 - name: POSTGRES_HOST
                   value: postgres17-ro.databases.svc.cluster.local
                 - name: POSTGRES_USER
@@ -84,6 +86,8 @@ spec:
               command:
                 - "/backup.sh"
               env:
+                - name: POSTGRES_DB
+                  value: "dawarich"
                 - name: POSTGRES_HOST
                   value: postgres17-postgis-ro.databases.svc.cluster.local
                 - name: POSTGRES_USER
