@@ -99,7 +99,8 @@ talos/                       # patches/, schematic.yaml, talenv.yaml, talsecret.
 3. **`ks.yaml`** — copy an existing one (e.g. [goldilocks](cluster/apps/monitoring/goldilocks/ks.yaml)): `targetNamespace`, `path: ./cluster/apps/<ns>/<app>/app`, `postBuild.substitute.APP`.
 4. **`app/kustomization.yaml`** lists the resources.
 5. **Register** the app's `ks.yaml` in `cluster/apps/<namespace>/kustomization.yaml`.
-   Always prefer the postgres16 database instance - the postgres instance is mostly just used for immich since it needs vector extensions.
+   Always prefer the shared `postgres17` instance ([cluster/apps/databases/postgres/cluster/cluster17.yaml](cluster/apps/databases/postgres/cluster/cluster17.yaml)) for a new app's database.
+   Only reach for the separate `postgres17-postgis` instance when the app specifically needs PostGIS (e.g. [dawarich](cluster/apps/household/dawarich/app/)).
 6. **Namespaces:** Do not specify `metadata.namespace` in application resource manifests (like Ingress, Service, ConfigMap, Secrets) unless absolutely necessary.
    Let the Flux `Kustomization`'s `targetNamespace` handle namespace assignment automatically.
 7. **Stagger VolSync backups:** If the app uses VolSync, you MUST run `python3 scripts/stagger-volsync.py` to calculate and apply staggered backup start minutes to its `ks.yaml`.
@@ -127,6 +128,43 @@ talos/                       # patches/, schematic.yaml, talenv.yaml, talsecret.
 - Dashboards: add a `GrafanaDashboard` CR with `instanceSelector.matchLabels.dashboards: grafana`.
   Use `url:`/`grafanaCom:` for published dashboards, or inline `json:` with a `datasources: [{inputName: DS_PROMETHEUS, datasourceName: Prometheus}]` mapping for hand-built ones.
   Keep it in the app's own dir (same namespace as the Grafana instance).
+
+### Sending email
+
+Apps that need outbound mail relay through the cluster's own `smtp-relay` ([cluster/apps/system/smtp-relay/](cluster/apps/system/smtp-relay/)) rather than talking to an external SMTP provider directly:
+`smtp-relay.system.svc.cluster.local:2525`, no auth. See [mealie](cluster/apps/household/mealie/app/helm-release.yaml) for a consuming example (`SMTP_HOST`/`SMTP_PORT`/`SMTP_AUTH_STRATEGY: none`).
+
+### Adding an MCP server (ToolHive)
+
+A dedicated pattern, distinct from the standard app-template scaffold above. ToolHive ([cluster/apps/ai/toolhive/](cluster/apps/ai/toolhive/)) is the declarative control plane for every MCP server in the cluster.
+See its own [README.md](cluster/apps/ai/toolhive/README.md) for the connection model: a single aggregated vMCP gateway at `toolhive.home.${SECRET_DOMAIN}`, LAN-only for MCP paths, Pocket ID OIDC for anything else on that route.
+
+1. Add one `MCPServer` manifest (`toolhive.stacklok.dev/v1beta1`) under `cluster/apps/ai/toolhive/servers/`, `groupRef.name: toolhive-servers`.
+2. Pick the transport that matches the upstream tool. `stdio` + `proxyMode: streamable-http` wraps a CLI-only server — the most common case, see [mcp-searxng.yaml](cluster/apps/ai/toolhive/servers/mcp-searxng.yaml).
+   Use `transport: streamable-http`/`sse` with `mcpPort` set instead when the upstream image already speaks MCP over HTTP natively — see [mcp-pullmd.yaml](cluster/apps/ai/toolhive/servers/mcp-pullmd.yaml).
+3. Register the new file in [servers/kustomization.yaml](cluster/apps/ai/toolhive/servers/kustomization.yaml).
+4. State, if any: default to an `emptyDir` in `podTemplateSpec.spec.volumes` for disposable/cache data — see [mcp-pullmd.yaml](cluster/apps/ai/toolhive/servers/mcp-pullmd.yaml).
+   Only reach for a PVC (`podTemplateSpec.spec.volumes[].persistentVolumeClaim`) when losing that state on every restart would meaningfully hurt startup time, or the volume must be shared across replicas.
+   Top-level `spec.volumes` on `MCPServer` only supports `hostPath`, which isn't node-portable — don't use it for either case.
+5. Secrets: `spec.secrets[]` reads a key straight out of a named `Secret`/`ExternalSecret` into an env var — see [mcp-github.yaml](cluster/apps/ai/toolhive/servers/mcp-github.yaml) + [externalsecret-github.yaml](cluster/apps/ai/toolhive/servers/externalsecret-github.yaml).
+6. Don't add a per-server `HTTPRoute`, OIDC client, or `GrafanaDashboard` — the operator-level ones in `cluster/apps/ai/toolhive/operator/` already cover every registered server generically.
+7. Update the "Active MCP Tool Inventory" table in `cluster/apps/ai/toolhive/README.md`.
+
+### Pattern reference
+
+Where to copy each recurring subsystem integration from, verified against the live cluster:
+
+| Need                                 | Canonical example                                                                                                                                                                  |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shared Postgres (init-container job) | [vikunja](cluster/apps/household/vikunja/app/patches/postgres.yaml) + [paperless externalsecret](cluster/apps/household/paperless/app/externalsecret.yaml)                         |
+| Native OIDC via Pocket ID            | [mealie oidc-client.yaml](cluster/apps/household/mealie/app/oidc-client.yaml) (`PocketIDOIDCClient` CRD)                                                                           |
+| Forward-auth (no native OIDC)        | `traefik-middleware-chain-pocket-id` `ExtensionRef` on the `HTTPRoute` — see [toolhive httproute.yaml](cluster/apps/ai/toolhive/operator/httproute.yaml)                           |
+| Single PVC, VolSync-backed           | [atuin](cluster/apps/development/atuin/app/helm-release.yaml) (`components: [.../templates/volsync/primary]`)                                                                      |
+| Disposable/cache state (default)     | [mcp-pullmd.yaml](cluster/apps/ai/toolhive/servers/mcp-pullmd.yaml) — `emptyDir`, not a PVC; prefer this unless losing the data on restart would meaningfully hurt startup time    |
+| Plain PVC, no backup (exception)     | [tdarr-server](cluster/apps/media/tdarr-server/app/shared-cache-pvc.yaml) — only when state must survive restarts for startup time, or be shared (`ReadWriteMany`) across replicas |
+| smtp-relay                           | [mealie helm-release.yaml](cluster/apps/household/mealie/app/helm-release.yaml)                                                                                                    |
+| ServiceMonitor + GrafanaDashboard    | [speedtest-exporter](cluster/apps/monitoring/speedtest-exporter/app/) (dashboard always lives in `namespace: monitoring` regardless of the app's own namespace)                    |
+| MCP server                           | [ToolHive `servers/`](cluster/apps/ai/toolhive/servers/) — see dedicated section above                                                                                             |
 
 ## Renovate — everything is tracked
 

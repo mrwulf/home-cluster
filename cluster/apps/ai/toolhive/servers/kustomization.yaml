@@ -16,4 +16,5 @@ resources:
   - ./mcp-victoriametrics.yaml
   - ./mcp-grafana.yaml
   - ./mcp-kubesearch.yaml
+  - ./mcp-pullmd.yaml
   - ./virtualmcpserver.yaml

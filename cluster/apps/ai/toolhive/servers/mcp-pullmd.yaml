@@ -1,0 +1,47 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: mcp-pullmd
+spec:
+  groupRef:
+    name: toolhive-servers
+  # renovate: depName=aeternalabshq/pullmd datasource=docker
+  image: docker.io/aeternalabshq/pullmd:3.10.1@sha256:0f13fade8b5a5437ec426b9e50169747ce5de64a62f091ded8cb58fc349495a1
+  # pullmd speaks MCP natively over Streamable-HTTP - no stdio proxy needed
+  transport: streamable-http
+  mcpPort: 3000
+  proxyPort: 8080
+  env:
+    - name: PORT
+      value: "3000"
+    - name: CACHE_DB
+      value: /data/cache.db
+    # No OIDC client here: pullmd has no native SSO support, and this server
+    # is only reachable through the toolhive vMCP gateway, which is already
+    # LAN-restricted (rfc1918-ips) - see cluster/apps/ai/toolhive/operator/httproute.yaml
+    - name: PULLMD_AUTH_MODE
+      value: disabled
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    # CPU limits omitted per cluster rule #6
+    limits:
+      memory: 512Mi
+  podTemplateSpec:
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+    spec:
+      containers:
+        - name: mcp
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      # emptyDir, not a PVC: the cache is fully disposable and rebuilds from
+      # re-fetched URLs, and a cold cache on restart doesn't hurt startup
+      # time - a PVC would only trade that for real Ceph capacity/latency.
+      volumes:
+        - name: data
+          emptyDir: {}
