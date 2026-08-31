@@ -5,11 +5,11 @@ metadata:
   name: trek
 spec:
   name: TREK
-  launchUrl: https://trip.${SECRET_DOMAIN}/
+  launchUrl: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/
   callbackUrls:
-    - https://trip.${SECRET_DOMAIN}/api/auth/oidc/callback
+    - https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/api/auth/oidc/callback
   logoutCallbackUrls:
-    - https://trip.${SECRET_DOMAIN}/
+    - https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/
   allowedUserGroups:
     - name: users
       namespace: auth

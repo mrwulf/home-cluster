@@ -32,4 +32,7 @@ spec:
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_NFS_START_MINUTE: "37"
       VOLSYNC_B2_START_MINUTE: "02"
+      # Must match GATUS_SUBDOMAIN in cluster/apps/household/trek/ks.yaml - the
+      # trip-ingest workflow talks to Trek over this same public hostname.
+      TREK_SUBDOMAIN: plans
   retryInterval: 2m

@@ -28,7 +28,9 @@ spec:
       APP: *app
       APP_UID: "1000"
       APP_GID: "1000"
-      GATUS_SUBDOMAIN: trip
+      # Must match TREK_SUBDOMAIN in cluster/apps/household/n8n/ks.yaml - n8n's
+      # trip-ingest workflow talks to Trek over this same public hostname.
+      GATUS_SUBDOMAIN: plans
       VOLSYNC_CLAIM: trek-data
       VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_NFS_START_MINUTE: "27"
