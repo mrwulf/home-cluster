@@ -14,4 +14,5 @@ resources:
   - ./openclaw/ks.yaml
   - ./paperless-ai/ks.yaml
   - ./searxng/ks.yaml
+  - ./speakr/ks.yaml
   - ./toolhive/ks.yaml

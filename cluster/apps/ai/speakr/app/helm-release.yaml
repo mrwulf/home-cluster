@@ -1,0 +1,132 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app speakr
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+      strategy: rollback
+  values:
+    controllers:
+      speakr:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 18.6
+            envFrom:
+              - secretRef:
+                  name: speakr
+        containers:
+          app:
+            image:
+              repository: learnedmachine/speakr
+              tag: v0.10.2-alpha
+            env:
+              ENABLE_SSO: "true"
+              SSO_PROVIDER_NAME: "Home PocketID"
+              SSO_REDIRECT_URI: "https://speakr.home.${SECRET_DOMAIN}/auth/sso/callback"
+              SSO_AUTO_REGISTER: "true"
+              SSO_REQUIRE_VERIFIED_EMAIL: "true"
+              ASR_BASE_URL: "http://speakr-whisperx:9000"
+              ASR_DIARIZE: "true"
+              ASR_RETURN_SPEAKER_EMBEDDINGS: "true"
+              TEXT_MODEL_BASE_URL: "http://ollama.ai.svc.cluster.local:11434/v1"
+              TEXT_MODEL_API_KEY: "ollama"
+              TEXT_MODEL_NAME: "qwen2.5:14b"
+              UPLOAD_FOLDER: "/data/uploads"
+              BLACK_HOLE_FOLDER: "/data/blackhole"
+              EXPORT_FOLDER: "/data/exports"
+            envFrom:
+              - secretRef:
+                  name: speakr
+              - secretRef:
+                  name: speakr-oidc-credentials
+            resources:
+              requests:
+                cpu: 250m
+                memory: 1Gi
+              limits:
+                memory: 4Gi
+      whisperx:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: learnedmachine/whisperx-asr-service
+              tag: v0.4.1
+            env:
+              PYTHONWARNINGS: "ignore::UserWarning"
+              DEVICE: "cpu"
+              COMPUTE_TYPE: "int8"
+              SERVE_MODE: "simple"
+              CACHE_DIR: "/cache"
+              HF_HOME: "/cache"
+            envFrom:
+              - secretRef:
+                  name: speakr
+            resources:
+              requests:
+                cpu: 500m
+                memory: 2Gi
+              limits:
+                memory: 8Gi
+    service:
+      app:
+        controller: speakr
+        ports:
+          http:
+            port: 8899
+      whisperx:
+        controller: whisperx
+        ports:
+          http:
+            port: 9000
+    route:
+      app:
+        enabled: true
+        annotations:
+          gatus.io/enabled: "true"
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "speakr.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: app
+                port: http
+    persistence:
+      data:
+        enabled: true
+        existingClaim: speakr
+        advancedMounts:
+          speakr:
+            app:
+              - path: /data
+      whisperx-cache:
+        type: emptyDir
+        advancedMounts:
+          whisperx:
+            app:
+              - path: /cache
