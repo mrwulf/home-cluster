@@ -71,6 +71,7 @@ For AI frameworks running directly inside the Kubernetes cluster (e.g., **Open W
 | **`mcp-flux`**           | Flux GitOps reconciliation & drift auditing    | `mcp-flux` RBAC             |
 | **`mcp-home-assistant`** | Home Assistant IoT entity & automation control | `mcp-home-assistant-secret` |
 | **`mcp-arr-stack`**      | Sonarr, Radarr, Prowlarr management            | Flux Secrets / Env          |
+| **`mcp-pullmd`**         | Convert any URL to clean Markdown              | None (unauthenticated core) |
 
 ---
 
