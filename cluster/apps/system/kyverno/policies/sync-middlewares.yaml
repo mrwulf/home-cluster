@@ -137,6 +137,7 @@ spec:
               names:
                 - ai
                 - auth
+                - household
       generate:
         generateExisting: true
         apiVersion: traefik.io/v1alpha1
@@ -156,6 +157,7 @@ spec:
               names:
                 - ai
                 - auth
+                - household
       generate:
         generateExisting: true
         apiVersion: traefik.io/v1alpha1

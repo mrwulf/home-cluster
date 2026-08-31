@@ -38,11 +38,15 @@ spec:
               N8N_HOST: &host "{{ .Release.Name }}.home.${SECRET_DOMAIN}"
               N8N_LOG_LEVEL: info
               N8N_LOG_OUTPUT: console
+              N8N_BLOCK_ENV_ACCESS_IN_NODE: false
               N8N_ENCRYPTION_KEY:
                 valueFrom:
                   secretKeyRef:
                     name: n8n
                     key: N8N_ENCRYPTION_KEY
+            envFrom:
+              - secretRef:
+                  name: n8n-trip-ingest-secrets
             resources:
               requests:
                 cpu: 100m
@@ -67,12 +71,33 @@ spec:
         hostnames:
           - "n8n.home.${SECRET_DOMAIN}"
         rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /webhook
+              - path:
+                  type: PathPrefix
+                  value: /webhook-test
+            filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: app
+                port: http
           - filters:
               - type: ExtensionRef
                 extensionRef:
                   group: traefik.io
                   kind: Middleware
                   name: rfc1918-ips
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: traefik-middleware-chain-pocket-id
             backendRefs:
               - identifier: app
                 port: http
@@ -93,6 +118,9 @@ spec:
               - path:
                   type: PathPrefix
                   value: /webhook
+              - path:
+                  type: PathPrefix
+                  value: /webhook-test
             filters:
               - type: ExtensionRef
                 extensionRef:
