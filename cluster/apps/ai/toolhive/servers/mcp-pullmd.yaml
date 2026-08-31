@@ -36,6 +36,35 @@ spec:
     spec:
       containers:
         - name: mcp
+          # pullmd's entrypoint runs as root, chowns /data, then drops to its
+          # own unprivileged "app" user via su-exec. The operator's default
+          # securityContext runs the container directly as a fixed non-root
+          # UID/GID that doesn't match pullmd's own user, so su-exec's
+          # setuid/setgid fails outright (verified: CrashLoopBackOff,
+          # "su-exec: setgroups(101): Operation not permitted"). Overriding
+          # here restores the image's own root-then-drop model instead of
+          # fighting it, while keeping capabilities minimal (rule 9).
+          # NOTE: this podTemplateSpec container entry replaces the whole
+          # container spec rather than field-merging onto it - `resources`
+          # must be repeated here too, or the operator silently drops it
+          # (verified empirically: omitting it produced `resources: {}`).
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+              add: ["SETUID", "SETGID", "CHOWN"]
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
           volumeMounts:
             - name: data
               mountPath: /data
