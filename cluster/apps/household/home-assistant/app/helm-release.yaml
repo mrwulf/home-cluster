@@ -36,9 +36,9 @@ spec:
             resources:
               requests:
                 cpu: 34m
-                memory: 381M
+                memory: 1500M
               limits:
-                memory: 2G
+                memory: 3G
           codeserver:
             image:
               repository: ghcr.io/coder/code-server
