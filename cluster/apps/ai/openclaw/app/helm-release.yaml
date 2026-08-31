@@ -22,6 +22,58 @@ spec:
       openclaw:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          migrate:
+            image:
+              repository: ghcr.io/openclaw/openclaw
+              tag: 2026.8.1
+            command:
+              - sh
+              - -c
+              - |
+                set -eu
+                node dist/index.js doctor --fix --allow-exec || true
+                node dist/index.js doctor --session-sqlite import --session-sqlite-all-agents || true
+                if [ -e /home/node/.openclaw/sessions ]; then
+                  mkdir -p /home/node/.openclaw/legacy-session-store-archive
+                  mv /home/node/.openclaw/sessions "/home/node/.openclaw/legacy-session-store-archive/sessions-$(date +%s)"
+                fi
+                mkdir -p /home/node/.openclaw/legacy-auth-backup
+                for f in /home/node/.openclaw/agents/*/agent/auth.json /home/node/.openclaw/agents/*/agent/auth-profiles.json; do
+                  [ -e "$f" ] || continue
+                  agent=$(basename "$(dirname "$(dirname "$f")")")
+                  mv "$f" "/home/node/.openclaw/legacy-auth-backup/${agent}.$(basename "$f")"
+                done
+                chown -R 1000:1000 /home/node/.openclaw
+                if [ -d /home/node/.openclaw/extensions ]; then
+                  chown -R root:1000 /home/node/.openclaw/extensions
+                  chmod -R g+rX /home/node/.openclaw/extensions
+                fi
+            env:
+              HOME: /home/node
+              PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/node/.openclaw/bin/bin"
+              npm_config_prefix: home/node/.openclaw/npm
+            envFrom:
+              - secretRef:
+                  name: openclaw-secrets
+            securityContext:
+              # Runs as root: doctor/session-sqlite migration steps need to chmod/chown
+              # files across ownership boundaries, and this cluster's container runtime
+              # doesn't propagate added Linux capabilities to non-root processes (verified
+              # empirically — capabilities.add lands in the bounding set only, never
+              # effective/ambient, for a non-zero runAsUser). Scoped to this one-shot init
+              # step; the app container keeps its non-root, all-capabilities-dropped profile.
+              runAsUser: 0
+              runAsGroup: 0
+              runAsNonRoot: false
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
         containers:
           app:
             image:
