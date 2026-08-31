@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: freikin/dawarich
-              tag: 1.14.0
+              tag: 1.14.1
             command:
               - web-entrypoint.sh
             args:
@@ -96,7 +96,7 @@ spec:
           app:
             image:
               repository: freikin/dawarich
-              tag: 1.14.0
+              tag: 1.14.1
             command:
               - sidekiq-entrypoint.sh
             args:
