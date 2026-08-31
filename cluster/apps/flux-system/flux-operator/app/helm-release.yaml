@@ -22,7 +22,9 @@ spec:
       name: flux-ui-oidc-credentials
       valuesKey: FLUX_UI_CLIENT_ID
       targetPath: web.config.authentication.oauth2.clientID
+      optional: true
     - kind: Secret
       name: flux-ui-oidc-credentials
       valuesKey: FLUX_UI_CLIENT_SECRET
       targetPath: web.config.authentication.oauth2.clientSecret
+      optional: true
