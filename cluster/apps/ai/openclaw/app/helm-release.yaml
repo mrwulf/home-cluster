@@ -172,6 +172,12 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
+          # openclaw's gateway.trustedProxies covers the whole pod CIDR (needed so Traefik
+          # is trusted from any node), so an in-cluster caller like Gatus collides with that
+          # same range and gets rejected as an unattributable proxy hop — 403 is expected here.
+          gatus.io/endpoint: |
+            conditions:
+              - "[STATUS] == 403"
         parentRefs:
           - name: internal-gateway
             namespace: networking
