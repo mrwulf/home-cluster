@@ -4,7 +4,7 @@
     {
       customType: "regex",
       description: ["Process OS image versions in Terraform/OpenTofu files"],
-      fileMatch: ["(^|/)cluster/.+\\.tf$"],
+      managerFilePatterns: ["/(^|/)cluster/.+\\.tf$/"],
       matchStrings: [
         '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s*\\n\\s*(?:image\\s*=\\s*"\\S+-|debian_version\\s*=\\s*")(?<currentValue>[^"]+)"',
       ],
@@ -13,7 +13,7 @@
     {
       customType: "regex",
       description: ["Process Docker images in cloud-init and systemd configs"],
-      fileMatch: ["(^|/)cluster/.+/vps-cloud-init\\.ya?ml$"],
+      managerFilePatterns: ["/(^|/)cluster/.+/vps-cloud-init\\.ya?ml$/"],
       matchStrings: [
         "# renovate: depName=(?<depName>[^\\s]+)(?: datasource=(?<datasource>[^\\s]+))?\\s*\\n(?:\\s+.*\\n)*?\\s+(?:docker\\.io\\/|ghcr\\.io\\/|quay\\.io\\/)?(?:[a-zA-Z0-9_.\\-\\/]+):(?<currentValue>[a-zA-Z0-9_.\\-]+(?:@sha256:[a-f0-9]+)?)",
       ],
@@ -24,7 +24,7 @@
       description: [
         "Process Docker images annotated in Kubernetes and ToolHive custom manifests",
       ],
-      fileMatch: ["(^|/)(cluster|talos)/.+\\.ya?ml$"],
+      managerFilePatterns: ["/(^|/)(cluster|talos)/.+\\.ya?ml$/"],
       matchStrings: [
         "# renovate: depName=(?<depName>[^\\s]+)(?: datasource=(?<datasource>[^\\s]+))?\\s*\\n\\s*(?:-\\s+)?image:\\s*[\"']?(?:[^\\s:\"']+:)?(?<currentValue>[a-zA-Z0-9_.\\-]+(?:@sha256:[a-f0-9]+)?)[\"']?",
       ],
@@ -35,7 +35,7 @@
       description: [
         "Process npm packages installed in shell scripts in Kubernetes manifests",
       ],
-      fileMatch: ["(^|/)(cluster|talos)/.+\\.ya?ml$"],
+      managerFilePatterns: ["/(^|/)(cluster|talos)/.+\\.ya?ml$/"],
       matchStrings: [
         "# renovate: datasource=npm depName=(?<depName>\\S+)\\s*\\n\\s*npm install -g (?:\\S+@)?(?<currentValue>[0-9a-zA-Z._-]+)",
       ],

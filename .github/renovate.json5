@@ -142,11 +142,12 @@
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["ghcr.io/home-operations/bazarr"],
+      allowedVersions: "!/1\\.6\\.0/",
     },
     {
       matchDatasources: ["docker"],
       matchPackageNames: ["node", "docker.io/library/node"],
-      matchFiles: [
+      matchFileNames: [
         "cluster/apps/system/external-secrets/app/bitwarden-api-helm-release.yaml",
       ],
       allowedVersions: "/^(?:20|22|24|26|28|30)\\b.*-alpine$/",

@@ -4,7 +4,7 @@
       matchDatasources: ["docker"],
       automerge: true,
       automergeType: "branch",
-      requiredStatusChecks: null,
+      ignoreTests: true,
       matchUpdateTypes: ["minor", "patch"],
       matchPackageNames: [
         "ghcr.io/home-operations/plex",
@@ -20,7 +20,7 @@
       matchDatasources: ["github-tags"],
       automerge: true,
       automergeType: "branch",
-      requiredStatusChecks: null,
+      ignoreTests: true,
       matchUpdateTypes: ["minor", "patch"],
     },
   ],
