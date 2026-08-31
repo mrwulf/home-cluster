@@ -44,6 +44,26 @@ spec:
                   agent=$(basename "$(dirname "$(dirname "$f")")")
                   mv "$f" "/home/node/.openclaw/legacy-auth-backup/$${agent}.$(basename "$f")"
                 done
+                node -e '
+                  const fs = require("fs");
+                  const path = "/home/node/.openclaw/openclaw.json";
+                  let cfg = {};
+                  if (fs.existsSync(path)) {
+                    try {
+                      cfg = JSON.parse(fs.readFileSync(path, "utf8"));
+                    } catch (e) {
+                      console.error("skip trustedProxies merge, could not parse existing config:", e.message);
+                      process.exit(0);
+                    }
+                  }
+                  cfg.gateway = cfg.gateway || {};
+                  const cidr = "10.244.0.0/16";
+                  const existing = Array.isArray(cfg.gateway.trustedProxies) ? cfg.gateway.trustedProxies : [];
+                  if (!existing.includes(cidr)) {
+                    cfg.gateway.trustedProxies = existing.concat([cidr]);
+                    fs.writeFileSync(path, JSON.stringify(cfg, null, 2));
+                  }
+                '
                 chown -R 1000:1000 /home/node/.openclaw
                 if [ -d /home/node/.openclaw/extensions ]; then
                   chown -R root:1000 /home/node/.openclaw/extensions
@@ -173,10 +193,3 @@ spec:
         existingClaim: *app
         globalMounts:
           - path: /home/node/.openclaw
-      config:
-        type: configMap
-        name: openclaw-configmap
-        globalMounts:
-          - path: /home/node/.openclaw/openclaw.json
-            subPath: openclaw.json
-            readOnly: true

@@ -5,9 +5,3 @@ kind: Kustomization
 resources:
   - ./secrets.sops.yaml
   - ./helm-release.yaml
-configMapGenerator:
-  - name: openclaw-configmap
-    files:
-      - ./resources/openclaw.json
-generatorOptions:
-  disableNameSuffixHash: true
