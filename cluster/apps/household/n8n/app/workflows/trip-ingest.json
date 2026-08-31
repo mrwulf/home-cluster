@@ -81,6 +81,47 @@
       "position": [576, 96],
       "id": "ed3732e3-a4f6-435f-92dd-57bebb1aa109",
       "name": "Respond Unauthorized"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst emailText = 'From: ' + (item.mimeFrom || '') + '\\nSubject: ' + (item.subject || '') + '\\n\\n' + (item.bodyPreview || '');\nconst systemPrompt = 'You extract structured travel booking data from an email. Return null for any field not present in the email - never invent data. IATA or station codes go in the _code fields; the human-readable name goes in the _name fields. Dates must be ISO-8601 (YYYY-MM-DDTHH:mm:ss) when a date is present; if only a date with no time is given, use T00:00:00.';\nconst schema = {\n  type: 'object',\n  properties: {\n    booking_type: { type: 'string', enum: ['flight', 'lodging', 'rental_car', 'transit', 'restaurant', 'activity', 'general'] },\n    confirmation_code: { type: ['string', 'null'] },\n    provider_name: { type: ['string', 'null'] },\n    start_datetime: { type: ['string', 'null'] },\n    end_datetime: { type: ['string', 'null'] },\n    origin_name: { type: ['string', 'null'] },\n    origin_code: { type: ['string', 'null'] },\n    destination_name: { type: ['string', 'null'] },\n    destination_code: { type: ['string', 'null'] },\n    notes: { type: ['string', 'null'] },\n  },\n  required: ['booking_type'],\n};\nconst response = await this.helpers.httpRequest({\n  method: 'POST',\n  url: 'http://ollama.ai.svc.cluster.local:11434/api/chat',\n  body: {\n    model: 'mistral:latest',\n    messages: [\n      { role: 'system', content: systemPrompt },\n      { role: 'user', content: emailText },\n    ],\n    stream: false,\n    format: schema,\n  },\n  json: true,\n  timeout: 60000,\n});\nlet extracted;\ntry {\n  extracted = JSON.parse(response.message.content);\n} catch (e) {\n  extracted = { booking_type: 'general', parse_error: String(e) };\n}\nreturn [{ json: { ...item, extracted } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 48],
+      "id": "bf507c2e-2ab2-4c01-9e45-7fbfdcf5aa4b",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst ex = item.extracted || {};\nconst helpers = this.helpers;\n\nconst TREK_URL = 'http://trek.household.svc.cluster.local:3000/mcp';\nconst TREK_TOKEN = $env.TREK_API_TOKEN;\n\nfunction baseHeaders(sessionId) {\n  const h = {\n    'Authorization': 'Bearer ' + TREK_TOKEN,\n    'Content-Type': 'application/json',\n    'Accept': 'application/json, text/event-stream',\n    'X-Forwarded-Proto': 'https',\n    'Host': 'trip.sysinfra.pro',\n  };\n  if (sessionId) h['Mcp-Session-Id'] = sessionId;\n  return h;\n}\n\nfunction parseMcpBody(bodyText) {\n  const match = bodyText.match(/data:\\s*(\\{[\\s\\S]*\\})/);\n  const jsonText = match ? match[1] : bodyText;\n  return JSON.parse(jsonText);\n}\n\nasync function mcpRpc(sessionId, method, params) {\n  const res = await helpers.httpRequest({\n    method: 'POST',\n    url: TREK_URL,\n    headers: baseHeaders(sessionId),\n    body: JSON.stringify({ jsonrpc: '2.0', id: Date.now(), method: method, params: params || {} }),\n    returnFullResponse: true,\n  });\n  return { parsed: parseMcpBody(String(res.body)), headers: res.headers };\n}\n\nasync function mcpTool(sessionId, toolName, args) {\n  const r = await mcpRpc(sessionId, 'tools/call', { name: toolName, arguments: args || {} });\n  if (r.parsed.error) {\n    throw new Error('Trek MCP error calling ' + toolName + ': ' + JSON.stringify(r.parsed.error));\n  }\n  const content = (r.parsed.result && r.parsed.result.content) || [];\n  const textPart = content[content.length - 1];\n  const raw = textPart ? textPart.text : '{}';\n  try {\n    return JSON.parse(raw);\n  } catch (e) {\n    return { raw: raw };\n  }\n}\n\nfunction toDate(s) {\n  return s ? new Date(s) : null;\n}\n\nconst initRes = await mcpRpc(null, 'initialize', {\n  protocolVersion: '2024-11-05',\n  capabilities: {},\n  clientInfo: { name: 'n8n-trip-ingest', version: '1.0' },\n});\nconst sessionId = initRes.headers['mcp-session-id'] || initRes.headers['Mcp-Session-Id'];\n\nconst tripsData = await mcpTool(sessionId, 'list_trips', {});\nconst trips = tripsData.trips || [];\n\nconst startDt = toDate(ex.start_datetime);\nconst endDt = toDate(ex.end_datetime) || startDt;\n\nlet matchedTrip = null;\nif (startDt) {\n  const windowMs = 3 * 24 * 60 * 60 * 1000;\n  for (const t of trips) {\n    const tStart = new Date(t.start_date + 'T00:00:00');\n    const tEnd = new Date(t.end_date + 'T23:59:59');\n    if (startDt.getTime() >= tStart.getTime() - windowMs && startDt.getTime() <= tEnd.getTime() + windowMs) {\n      matchedTrip = t;\n      break;\n    }\n  }\n}\n\nlet tripId;\nlet createdNewTrip = false;\nif (matchedTrip) {\n  tripId = matchedTrip.id;\n} else {\n  const destName = ex.destination_name || ex.destination_code || ex.provider_name || 'Trip';\n  const startDateStr = startDt ? startDt.toISOString().slice(0, 10) : null;\n  const endDateStr = endDt ? endDt.toISOString().slice(0, 10) : startDateStr;\n  const createArgs = { title: 'Trip to ' + destName };\n  if (startDateStr) createArgs.start_date = startDateStr;\n  if (endDateStr) createArgs.end_date = endDateStr;\n  const created = await mcpTool(sessionId, 'create_trip', createArgs);\n  tripId = created.trip ? created.trip.id : created.id;\n  createdNewTrip = true;\n}\n\nconst summary = await mcpTool(sessionId, 'get_trip_summary', { tripId: tripId });\nconst days = summary.days || [];\n\nfunction findDayId(dateStr) {\n  if (!dateStr) return null;\n  const day = days.find(function (d) {\n    return d.date === dateStr;\n  });\n  return day ? day.id : null;\n}\n\nconst startDateOnly = startDt ? startDt.toISOString().slice(0, 10) : null;\nconst endDateOnly = endDt ? endDt.toISOString().slice(0, 10) : startDateOnly;\nconst startDayId = findDayId(startDateOnly);\nconst endDayId = findDayId(endDateOnly) || startDayId;\n\nconst existingReservations = summary.reservations || [];\nconst isDuplicate = Boolean(\n  ex.confirmation_code &&\n  existingReservations.some(function (r) {\n    return r.confirmation_number === ex.confirmation_code;\n  })\n);\n\nlet createdBooking = null;\nif (!isDuplicate) {\n  if (ex.booking_type === 'flight' || ex.booking_type === 'transit') {\n    const transportType = ex.booking_type === 'flight' ? 'flight' : 'train';\n    const args = {\n      tripId: tripId,\n      type: transportType,\n      title: (ex.provider_name || transportType) + (ex.confirmation_code ? ' (' + ex.confirmation_code + ')' : ''),\n    };\n    if (startDayId) args.start_day_id = startDayId;\n    if (endDayId) args.end_day_id = endDayId;\n    if (ex.start_datetime) args.reservation_time = ex.start_datetime;\n    if (ex.end_datetime) args.reservation_end_time = ex.end_datetime;\n    if (ex.confirmation_code) args.confirmation_number = ex.confirmation_code;\n    createdBooking = await mcpTool(sessionId, 'create_transport', args);\n  } else {\n    const typeMap = { lodging: 'hotel', rental_car: 'other', restaurant: 'restaurant', activity: 'activity', general: 'other' };\n    const args = {\n      tripId: tripId,\n      type: typeMap[ex.booking_type] || 'other',\n      title: (ex.provider_name || ex.booking_type || 'Booking') + (ex.confirmation_code ? ' (' + ex.confirmation_code + ')' : ''),\n    };\n    if (startDayId) args.day_id = startDayId;\n    if (ex.start_datetime) args.reservation_time = ex.start_datetime;\n    if (ex.end_datetime) args.reservation_end_time = ex.end_datetime;\n    if (ex.confirmation_code) args.confirmation_number = ex.confirmation_code;\n    if (ex.notes) args.notes = ex.notes;\n    createdBooking = await mcpTool(sessionId, 'create_reservation', args);\n  }\n}\n\nreturn [{\n  json: Object.assign({}, item, {\n    trekTripId: tripId,\n    trekCreatedNewTrip: createdNewTrip,\n    trekIsDuplicate: isDuplicate,\n    trekCreatedBooking: createdBooking,\n  }),\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [944, 48],
+      "id": "c1a2e3f4-1111-4444-8888-aaaabbbbcccc",
+      "name": "Trek Resolve"
+    },
+    {
+      "parameters": {
+        "fromEmail": "trips@sysinfra.pro",
+        "toEmail": "={{ $json.envelopeFrom }}",
+        "subject": "={{ ($json.trekIsDuplicate ? 'Already in Trek: ' : 'Added to Trek: ') + ($json.extracted.provider_name || $json.extracted.booking_type || 'Booking') }}",
+        "emailFormat": "text",
+        "text": "={{ ($json.trekIsDuplicate ? 'This booking was already in Trek (matched by confirmation code) - no duplicate created.' : ($json.trekCreatedNewTrip ? 'Created a new trip and added this booking.' : 'Added this booking to an existing trip.')) + '\\n\\nTrip: https://trip.sysinfra.pro/trips/' + $json.trekTripId + '\\nType: ' + ($json.extracted.booking_type || 'unknown') + '\\nProvider: ' + ($json.extracted.provider_name || 'n/a') + '\\nConfirmation: ' + ($json.extracted.confirmation_code || 'n/a') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1168, 48],
+      "id": "d2b3f4a5-2222-5555-9999-bbbbccccdddd",
+      "name": "Notify Success",
+      "credentials": {
+        "smtp": {
+          "id": "YTFbz2x8AJs1KDkx",
+          "name": "smtp-relay (internal, no auth)"
+        }
+      }
     }
   ],
   "connections": {
@@ -110,7 +151,7 @@
       "main": [
         [
           {
-            "node": "Respond Success",
+            "node": "Code in JavaScript1",
             "type": "main",
             "index": 0
           }
@@ -118,6 +159,39 @@
         [
           {
             "node": "Respond Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Trek Resolve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trek Resolve": {
+      "main": [
+        [
+          {
+            "node": "Notify Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Success": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
             "type": "main",
             "index": 0
           }
