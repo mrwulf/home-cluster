@@ -34,7 +34,7 @@ spec:
           app:
             image:
               repository: learnedmachine/speakr
-              tag: v0.10.2-alpha
+              tag: 0.10.4-alpha
             env:
               ENABLE_SSO: "true"
               SSO_PROVIDER_NAME: "Home PocketID"
@@ -68,7 +68,7 @@ spec:
           app:
             image:
               repository: learnedmachine/whisperx-asr-service
-              tag: v0.4.1
+              tag: 0.4.1
             env:
               PYTHONWARNINGS: "ignore::UserWarning"
               DEVICE: "cpu"
