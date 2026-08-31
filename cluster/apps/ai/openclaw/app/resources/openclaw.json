@@ -1,0 +1,5 @@
+{
+  "gateway": {
+    "trustedProxies": ["10.244.0.0/16"]
+  }
+}
