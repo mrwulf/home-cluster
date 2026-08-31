@@ -60,6 +60,8 @@
     },
     {
       "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"accepted\",\n  \"message\": \"Email received and queued for processing. A follow-up email will confirm whether it was added to Trek.\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
@@ -168,7 +170,7 @@
       "main": [
         [
           {
-            "node": "Extract PDF Text",
+            "node": "Respond Success",
             "type": "main",
             "index": 0
           }
@@ -215,11 +217,11 @@
         ]
       ]
     },
-    "Notify": {
+    "Respond Success": {
       "main": [
         [
           {
-            "node": "Respond Success",
+            "node": "Extract PDF Text",
             "type": "main",
             "index": 0
           }
