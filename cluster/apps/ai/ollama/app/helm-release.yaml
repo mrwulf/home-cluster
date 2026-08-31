@@ -50,6 +50,8 @@ spec:
                 value: "24h"
               - name: OLLAMA_LOAD_TIMEOUT
                 value: "600"
+              - name: OLLAMA_IGPU_ENABLE
+                value: "1"
             resources:
               requests:
                 cpu: 100m
