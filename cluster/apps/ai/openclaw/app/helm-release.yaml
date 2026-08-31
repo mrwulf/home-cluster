@@ -42,7 +42,7 @@ spec:
                 for f in /home/node/.openclaw/agents/*/agent/auth.json /home/node/.openclaw/agents/*/agent/auth-profiles.json; do
                   [ -e "$f" ] || continue
                   agent=$(basename "$(dirname "$(dirname "$f")")")
-                  mv "$f" "/home/node/.openclaw/legacy-auth-backup/${agent}.$(basename "$f")"
+                  mv "$f" "/home/node/.openclaw/legacy-auth-backup/$${agent}.$(basename "$f")"
                 done
                 chown -R 1000:1000 /home/node/.openclaw
                 if [ -d /home/node/.openclaw/extensions ]; then
