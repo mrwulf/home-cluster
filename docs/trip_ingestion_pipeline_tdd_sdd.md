@@ -573,3 +573,51 @@ Create a git-versioned test fixture suite (`tests/fixtures/emails/`) containing 
 
 **Decision**: Don't add distributed locking (Redis/Valkey mutex, etc.) around the trip-matching check.
 **Why**: At household scale (a handful of forwards per trip, from a handful of people), the race window is small and the failure mode is cheap to fix by hand (merge two trips via the confirmation email's Edit link). Adding synchronization infrastructure for a rare, low-cost failure mode isn't proportionate — consistent with CLAUDE.md's instruction against building for hypothetical scale that doesn't apply here.
+
+---
+
+## 9. Future Improvements & Reliability Gaps (raw dump, not yet organized)
+
+Captured live during the cruise/PDF test, before triage into milestones. Keep as-is until deliberately organized.
+
+### 9.1 Checklist
+
+- [ ] Handle `message/rfc822` MIME encapsulation (double-forwarded emails) — currently silently dropped inside `walkMime` (no branch matches it, so it's neither parsed as multipart nor captured as an attachment; the email just proceeds with whatever else was found, no error, no signal).
+- [ ] Process all PDF attachments, not just the first — `collector.attachments.find(...)` in the MIME parser and the single `binary.attachment` property on "Extract PDF Text" both assume exactly one PDF.
+- [ ] Add a "couldn't process" failure-notification email back to `envelopeFrom`, distinct from the existing success path — needs a new branch off the `If` node (or a second condition) and a new `Respond to Webhook` + `Send Email` pair mirroring `Respond Unauthorized`.
+- [ ] Fix Trek dedup to tolerate cross-system confirmation-number mismatches (agency code vs. cruise-line code for the same real booking) — currently exact-string match only against `confirmation_number`. **Confirmed live, not hypothetical**: re-running the real cruise email (execution 28, 2026-08-31) extracted the agency confirmation `Q9FWAUB`, which doesn't match the pre-existing entry's cruise-line confirmation `5350680` (reservation id 15), so dedup missed it and `create_transport` created a genuine second reservation (id 492) for the same real-world booking. Deleted by hand via `delete_transport` immediately after verifying it — trip 3 is back to its original 4 reservations. Needs a real fix (fuzzy-match on provider name + overlapping date window when the exact confirmation string doesn't match) before this pipeline is trusted unattended on bookings likely to already exist in Trek from the original TripIt import.
+- [ ] Wrap the Ollama call in retry-with-backoff (2-3 attempts) — currently single-attempt, no `onError`, so a transient restart kills the whole run with no notification.
+- [ ] Wrap each Trek MCP call in retry-with-backoff similarly — same single-attempt, no-`onError` situation.
+- [ ] Route hard failures (Ollama unreachable, Trek MCP unreachable/session failure) to the failure-notification path instead of just dying — requires `onError: continueRegularOutput` (or similar) on those Code nodes plus a branch that reaches "couldn't process."
+- [ ] Treat Ollama's fallback `{booking_type: 'general', parse_error}` output as a failure worth telling the sender about, not something that silently proceeds to create a junk "general" Trek reservation.
+- [ ] Detect and flag PDFs with no extractable text (scanned image, no text layer) — `extractFromFile` succeeds with empty/near-empty text today, and Ollama then confidently extracts a near-empty booking with no error surfaced anywhere.
+- [ ] Investigate the Cloudflare Worker's behavior when the webhook fetch fails (n8n down, DNS blip, cert issue) — does it retry, bounce the SMTP transaction, or silently drop? Unverified, and this is upstream of the entire pipeline.
+- [ ] Consider whether the synchronous single-request design (Ollama up to 240s + Trek calls + SMTP send, all before `Respond to Webhook` returns) risks a mismatch between the Worker's own fetch/execution timeout and n8n's actual processing time — if the Worker gives up first while n8n keeps running and finishes successfully in the background, the sender gets no notification either way and the two systems disagree about what happened. Likely the single biggest structural gap.
+- [ ] No dead-letter/reprocess mechanism for a failed email — recovery today is manually finding the `.eml` and resubmitting by hand.
+- [ ] Investigate the n8n editor UI's broken WebSocket (`[WebSocketClient] Connection lost, code=1006`) at the infra level instead of just working around it via the Public API — suspected cause is Pocket ID forward-auth not passing through the WS upgrade on the internal-gateway `main` route (§7.1 already documents this as a known gap; listed here too since it blocks convenient future iteration).
+- [ ] Investigate the `Cannot load "@napi-rs/canvas" package` / `Cannot polyfill ImageData/Path2D` warnings seen in n8n logs during PDF extraction — assumed cosmetic since extraction succeeded, not confirmed.
+- [ ] Update this doc's earlier sections (MIME rewrite, PDF extraction, multi-stop cruise support) once the above settles — some of §4-§8 predates the real MIME parser and cruise/PDF work.
+- [x] ~~Cruise `create_transport` was rejected outright~~ — Trek requires lat/lng (or an IATA `code`) on every multi-stop `endpoints[]` entry; the initial cruise test's stops only had `name`/`local_date`. Fixed by resolving each stop's coordinates via `search_place` before calling `create_transport` (mirrors the lodging place-resolution pattern). Verified live: execution 28 created reservation 492 with all 6 endpoints correctly geocoded, then deleted per the dedup gap above.
+- [x] ~~`mcpTool`'s new error-detection silently broke every call~~ — added an `isError` check on the MCP `result` envelope assuming it followed the spec (true only on tool failure). Trek's server sets `result.isError: true` on **every** response, success included (confirmed directly against `list_trips`), so this treated all successful calls as failures. Reverted to relying solely on "response isn't valid JSON" as the failure signal, which is what the real "missing coordinates" error actually looked like. Worth filing upstream with Trek if that project takes issues.
+
+### 9.2 Correlation ID for diagnosis
+
+Worth adding: stamp `$execution.id` (available in every n8n Code node) into both success and failure notification emails, e.g. "ref: n8n-exec-4821" — gives a direct key into n8n's execution history (UI or API) to pull up exactly what data flowed through that run and where it stopped or diverged.
+
+This only pays off if n8n is actually retaining execution data — needs confirming that the `trip-ingest` workflow isn't configured to skip saving successful runs or expire them quickly. If retention is already reasonable, no new logging infrastructure is needed; the execution record already holds the incoming payload and every node's input/output, and the ID is just the pointer to it. Pairing the ID with a short human-readable reason code in failure emails (not just the opaque ID) avoids needing to open n8n at all for the common failure cases.
+
+### 9.3 Gaps where messages can get lost or fail silently (home-lab context: single replicas, pods restart, nodes reboot)
+
+1. Cloudflare Worker → n8n webhook: unverified retry/bounce behavior on webhook failure (see checklist above).
+2. Whole pipeline runs synchronously inside one webhook request — Worker/n8n timeout mismatch risk (see checklist above).
+3. Ollama unreachable/restarting mid-call: hard throw, no `onError`, execution dies with no notification.
+4. Malformed/schema-violating Ollama output: currently swallowed and proceeds to create a junk reservation rather than failing loudly.
+5. PDF with no text layer: succeeds with empty text, no signal.
+6. Trek MCP unreachable or session/token failure: same as #3, hard throw, no failure path reached.
+7. SMTP relay down when sending the success email: the Trek booking already exists by this point, but the sender is never told it succeeded — no separate "booking created, notification failed" path exists.
+8. No retry anywhere in the chain (Ollama call, every Trek MCP call, SMTP send) — a single transient blip kills the whole run.
+9. No dead-letter/reprocess mechanism (see checklist above).
+
+Rough priority order for closing these: retry-with-backoff on the Ollama and Trek MCP calls first (most home-lab failures are transient pod restarts), then `onError` + a routed failure branch on those same nodes so hard failures reach the notification path instead of dying silently, then separate "processing failed" from "processing succeeded but notification failed" so a Trek booking is never created without the sender being told either way.
+
+---
