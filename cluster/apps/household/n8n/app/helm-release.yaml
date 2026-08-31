@@ -44,7 +44,15 @@ spec:
                   secretKeyRef:
                     name: n8n
                     key: N8N_ENCRYPTION_KEY
+              EXTERNAL_HOOK_FILES: /etc/n8n/hooks/hooks.js
+              EXTERNAL_FRONTEND_HOOKS_URLS: /assets/oidc-frontend-hook.js
+              N8N_ADDITIONAL_NON_UI_ROUTES: auth
+              N8N_TRUST_PROXY: "true"
+              OIDC_ISSUER_URL: "https://id.${SECRET_DOMAIN}"
+              OIDC_REDIRECT_URI: "https://n8n.home.${SECRET_DOMAIN}/auth/oidc/callback"
             envFrom:
+              - secretRef:
+                  name: n8n-oidc-credentials
               - secretRef:
                   name: n8n-trip-ingest-secrets
             resources:
@@ -71,33 +79,12 @@ spec:
         hostnames:
           - "n8n.home.${SECRET_DOMAIN}"
         rules:
-          - matches:
-              - path:
-                  type: PathPrefix
-                  value: /webhook
-              - path:
-                  type: PathPrefix
-                  value: /webhook-test
-            filters:
-              - type: ExtensionRef
-                extensionRef:
-                  group: traefik.io
-                  kind: Middleware
-                  name: rfc1918-ips
-            backendRefs:
-              - identifier: app
-                port: http
           - filters:
               - type: ExtensionRef
                 extensionRef:
                   group: traefik.io
                   kind: Middleware
                   name: rfc1918-ips
-              - type: ExtensionRef
-                extensionRef:
-                  group: traefik.io
-                  kind: Middleware
-                  name: traefik-middleware-chain-pocket-id
             backendRefs:
               - identifier: app
                 port: http
@@ -132,6 +119,13 @@ spec:
                 port: http
 
     persistence:
+      hooks:
+        type: configMap
+        name: n8n-oidc-hooks
+        globalMounts:
+          - path: /etc/n8n/hooks/hooks.js
+            subPath: hooks.js
+            readOnly: true
       data:
         existingClaim: *app
         advancedMounts:

@@ -3,4 +3,14 @@ kind: Kustomization
 resources:
   - secret.sops.yaml
   - externalsecret.yaml
+  - configmap.yaml
+  - oidc-client.yaml
   - helm-release.yaml
+  - workflow-sync-cronjob.yaml
+
+configMapGenerator:
+  - name: n8n-trip-ingest-workflow
+    files:
+      - workflows/trip-ingest.json
+    options:
+      disableNameSuffixHash: true

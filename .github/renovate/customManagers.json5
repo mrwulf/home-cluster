@@ -41,5 +41,16 @@
       ],
       datasourceTemplate: "npm",
     },
+    {
+      customType: "regex",
+      description: [
+        "Process git-refs or github tags in annotations or comments in Kubernetes manifests",
+      ],
+      managerFilePatterns: ["/(^|/)(cluster|talos)/.+\\.ya?ml$/"],
+      matchStrings: [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s*\\n\\s*#?\\s*(?:ref|commit|version|tag):\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?",
+      ],
+      datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}git-refs{{/if}}",
+    },
   ],
 }

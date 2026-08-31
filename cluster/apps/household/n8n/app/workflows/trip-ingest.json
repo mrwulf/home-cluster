@@ -1,0 +1,132 @@
+{
+  "name": "Trip Ingest",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "trip-ingest",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0],
+      "id": "d22bcc71-f359-4ef2-a517-bd0d09e68d3c",
+      "name": "Webhook",
+      "webhookId": "fd028ab7-780a-41d4-a4ea-1d39c9b3c83e"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst headers = item.json.headers || {};\nconst providedSecret = headers['x-trip-ingest-secret'];\nconst expectedSecret = $env.TRIP_INGEST_SHARED_SECRET;\nconst secretValid = Boolean(expectedSecret) && providedSecret === expectedSecret;\nlet rawBody = '';\nif (item.binary && item.binary.data) {\n  const buffer = await this.helpers.getBinaryDataBuffer(0, 'data');\n  rawBody = buffer.toString('utf-8');\n}\nconst fromMatch = rawBody.match(/^From:\\s*(.+)$/mi);\nconst subjectMatch = rawBody.match(/^Subject:\\s*(.+)$/mi);\nreturn [{ json: {\n  secretValid,\n  envelopeFrom: headers['x-envelope-from'] || null,\n  mimeFrom: fromMatch ? fromMatch[1].trim() : null,\n  subject: subjectMatch ? subjectMatch[1].trim() : null,\n  bodyPreview: rawBody.slice(0, 500),\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [224, 0],
+      "id": "a189731b-ec16-4ff5-8897-87a0d19f8dc3",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "81406339-bc50-48aa-b420-76fdcc1926ab",
+              "leftValue": "={{ $json.secretValid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [448, 0],
+      "id": "08e10797-85c6-418c-8586-301c67fc6ee1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [576, -96],
+      "id": "ecc80e5d-2249-4b15-b75c-db93a5a7db9e",
+      "name": "Respond Success"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": \"unauthorized\"\n}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [576, 96],
+      "id": "ed3732e3-a4f6-435f-92dd-57bebb1aa109",
+      "name": "Respond Unauthorized"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  }
+}

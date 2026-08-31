@@ -1,0 +1,21 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: n8n
+spec:
+  name: n8n
+  launchUrl: https://n8n.home.${SECRET_DOMAIN}/
+  pkceEnabled: false
+  callbackUrls:
+    - https://n8n.home.${SECRET_DOMAIN}/auth/oidc/callback
+  logoutCallbackUrls:
+    - https://n8n.home.${SECRET_DOMAIN}/
+  allowedUserGroups:
+    - name: admin
+      namespace: auth
+  secret:
+    name: n8n-oidc-credentials
+    keys:
+      clientID: OIDC_CLIENT_ID
+      clientSecret: OIDC_CLIENT_SECRET

@@ -1,0 +1,51 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: n8n-workflow-sync
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: sync
+              image: curlimages/curl:8.11.0
+              env:
+                - name: WORKFLOW_ID
+                  value: VPRsjZRxTBmywAdW
+                - name: N8N_URL
+                  value: http://n8n.household.svc.cluster.local:8080
+              envFrom:
+                - secretRef:
+                    name: n8n-trip-ingest-secrets
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  curl -sf -X PUT \
+                    -H "X-N8N-API-KEY: $N8N_API_KEY" \
+                    -H "Content-Type: application/json" \
+                    --data @/workflows/trip-ingest.json \
+                    "$N8N_URL/api/v1/workflows/$WORKFLOW_ID"
+              volumeMounts:
+                - name: workflows
+                  mountPath: /workflows
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 64Mi
+          volumes:
+            - name: workflows
+              configMap:
+                name: n8n-trip-ingest-workflow
