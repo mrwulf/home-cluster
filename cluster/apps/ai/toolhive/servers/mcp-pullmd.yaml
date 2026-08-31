@@ -39,7 +39,9 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+      # emptyDir, not a PVC: the cache is fully disposable and rebuilds from
+      # re-fetched URLs, and a cold cache on restart doesn't hurt startup
+      # time - a PVC would only trade that for real Ceph capacity/latency.
       volumes:
         - name: data
-          persistentVolumeClaim:
-            claimName: pullmd-data
+          emptyDir: {}

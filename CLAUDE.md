@@ -143,7 +143,9 @@ See its own [README.md](cluster/apps/ai/toolhive/README.md) for the connection m
 2. Pick the transport that matches the upstream tool. `stdio` + `proxyMode: streamable-http` wraps a CLI-only server — the most common case, see [mcp-searxng.yaml](cluster/apps/ai/toolhive/servers/mcp-searxng.yaml).
    Use `transport: streamable-http`/`sse` with `mcpPort` set instead when the upstream image already speaks MCP over HTTP natively — see [mcp-pullmd.yaml](cluster/apps/ai/toolhive/servers/mcp-pullmd.yaml).
 3. Register the new file in [servers/kustomization.yaml](cluster/apps/ai/toolhive/servers/kustomization.yaml).
-4. Persistent state, if any: a plain single PVC referenced from `podTemplateSpec.spec.volumes[].persistentVolumeClaim` (top-level `spec.volumes` on `MCPServer` only supports `hostPath`, which isn't node-portable — don't use it). See [pullmd-pvc.yaml](cluster/apps/ai/toolhive/servers/pullmd-pvc.yaml).
+4. State, if any: default to an `emptyDir` in `podTemplateSpec.spec.volumes` for disposable/cache data — see [mcp-pullmd.yaml](cluster/apps/ai/toolhive/servers/mcp-pullmd.yaml).
+   Only reach for a PVC (`podTemplateSpec.spec.volumes[].persistentVolumeClaim`) when losing that state on every restart would meaningfully hurt startup time, or the volume must be shared across replicas.
+   Top-level `spec.volumes` on `MCPServer` only supports `hostPath`, which isn't node-portable — don't use it for either case.
 5. Secrets: `spec.secrets[]` reads a key straight out of a named `Secret`/`ExternalSecret` into an env var — see [mcp-github.yaml](cluster/apps/ai/toolhive/servers/mcp-github.yaml) + [externalsecret-github.yaml](cluster/apps/ai/toolhive/servers/externalsecret-github.yaml).
 6. Don't add a per-server `HTTPRoute`, OIDC client, or `GrafanaDashboard` — the operator-level ones in `cluster/apps/ai/toolhive/operator/` already cover every registered server generically.
 7. Update the "Active MCP Tool Inventory" table in `cluster/apps/ai/toolhive/README.md`.
@@ -152,16 +154,17 @@ See its own [README.md](cluster/apps/ai/toolhive/README.md) for the connection m
 
 Where to copy each recurring subsystem integration from, verified against the live cluster:
 
-| Need                                 | Canonical example                                                                                                                                               |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Shared Postgres (init-container job) | [vikunja](cluster/apps/household/vikunja/app/patches/postgres.yaml) + [paperless externalsecret](cluster/apps/household/paperless/app/externalsecret.yaml)      |
-| Native OIDC via Pocket ID            | [mealie oidc-client.yaml](cluster/apps/household/mealie/app/oidc-client.yaml) (`PocketIDOIDCClient` CRD)                                                        |
-| Forward-auth (no native OIDC)        | `traefik-middleware-chain-pocket-id` `ExtensionRef` on the `HTTPRoute` — see [toolhive httproute.yaml](cluster/apps/ai/toolhive/operator/httproute.yaml)        |
-| Single PVC, VolSync-backed           | [atuin](cluster/apps/development/atuin/app/helm-release.yaml) (`components: [.../templates/volsync/primary]`)                                                   |
-| Single PVC, no backup (disposable)   | [pullmd-pvc.yaml](cluster/apps/ai/toolhive/servers/pullmd-pvc.yaml) — plain `PersistentVolumeClaim`, documented deviation from VolSync per rule 8               |
-| smtp-relay                           | [mealie helm-release.yaml](cluster/apps/household/mealie/app/helm-release.yaml)                                                                                 |
-| ServiceMonitor + GrafanaDashboard    | [speedtest-exporter](cluster/apps/monitoring/speedtest-exporter/app/) (dashboard always lives in `namespace: monitoring` regardless of the app's own namespace) |
-| MCP server                           | [ToolHive `servers/`](cluster/apps/ai/toolhive/servers/) — see dedicated section above                                                                          |
+| Need                                 | Canonical example                                                                                                                                                                  |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shared Postgres (init-container job) | [vikunja](cluster/apps/household/vikunja/app/patches/postgres.yaml) + [paperless externalsecret](cluster/apps/household/paperless/app/externalsecret.yaml)                         |
+| Native OIDC via Pocket ID            | [mealie oidc-client.yaml](cluster/apps/household/mealie/app/oidc-client.yaml) (`PocketIDOIDCClient` CRD)                                                                           |
+| Forward-auth (no native OIDC)        | `traefik-middleware-chain-pocket-id` `ExtensionRef` on the `HTTPRoute` — see [toolhive httproute.yaml](cluster/apps/ai/toolhive/operator/httproute.yaml)                           |
+| Single PVC, VolSync-backed           | [atuin](cluster/apps/development/atuin/app/helm-release.yaml) (`components: [.../templates/volsync/primary]`)                                                                      |
+| Disposable/cache state (default)     | [mcp-pullmd.yaml](cluster/apps/ai/toolhive/servers/mcp-pullmd.yaml) — `emptyDir`, not a PVC; prefer this unless losing the data on restart would meaningfully hurt startup time    |
+| Plain PVC, no backup (exception)     | [tdarr-server](cluster/apps/media/tdarr-server/app/shared-cache-pvc.yaml) — only when state must survive restarts for startup time, or be shared (`ReadWriteMany`) across replicas |
+| smtp-relay                           | [mealie helm-release.yaml](cluster/apps/household/mealie/app/helm-release.yaml)                                                                                                    |
+| ServiceMonitor + GrafanaDashboard    | [speedtest-exporter](cluster/apps/monitoring/speedtest-exporter/app/) (dashboard always lives in `namespace: monitoring` regardless of the app's own namespace)                    |
+| MCP server                           | [ToolHive `servers/`](cluster/apps/ai/toolhive/servers/) — see dedicated section above                                                                                             |
 
 ## Renovate — everything is tracked
 
