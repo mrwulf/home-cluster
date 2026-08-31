@@ -121,3 +121,10 @@ spec:
         existingClaim: *app
         globalMounts:
           - path: /home/node/.openclaw
+      config:
+        type: configMap
+        name: openclaw-configmap
+        globalMounts:
+          - path: /home/node/.openclaw/openclaw.json
+            subPath: openclaw.json
+            readOnly: true
