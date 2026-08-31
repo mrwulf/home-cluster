@@ -16,7 +16,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: sync
-              image: curlimages/curl:8.11.0
+              image: curlimages/curl:8.11.1
               env:
                 - name: WORKFLOW_ID
                   value: VPRsjZRxTBmywAdW
