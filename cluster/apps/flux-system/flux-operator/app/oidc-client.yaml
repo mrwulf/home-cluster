@@ -6,6 +6,9 @@ metadata:
 spec:
   name: Flux UI
   launchUrl: https://flux-ui.home.${SECRET_DOMAIN}/
+  logo:
+    logoUrl: https://fluxoperator.dev/images/logo/flux-operator-icon-color.png
+    darkLogoUrl: https://fluxoperator.dev/images/logo/flux-operator-icon-color.png
   callbackUrls:
     - https://flux-ui.home.${SECRET_DOMAIN}/oauth2/callback
   logoutCallbackUrls:
