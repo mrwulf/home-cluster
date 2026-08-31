@@ -41,6 +41,7 @@ spec:
               SSO_REDIRECT_URI: "https://speakr.home.${SECRET_DOMAIN}/auth/sso/callback"
               SSO_AUTO_REGISTER: "true"
               SSO_REQUIRE_VERIFIED_EMAIL: "true"
+              SESSION_COOKIE_SECURE: "true"
               ASR_BASE_URL: "http://speakr-whisperx:9000"
               ASR_DIARIZE: "true"
               ASR_RETURN_SPEAKER_EMBEDDINGS: "true"
