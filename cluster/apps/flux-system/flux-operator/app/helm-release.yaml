@@ -18,3 +18,11 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: flux-operator-values
+    - kind: Secret
+      name: flux-ui-oidc-credentials
+      valuesKey: FLUX_UI_CLIENT_ID
+      targetPath: web.config.authentication.oauth2.clientID
+    - kind: Secret
+      name: flux-ui-oidc-credentials
+      valuesKey: FLUX_UI_CLIENT_SECRET
+      targetPath: web.config.authentication.oauth2.clientSecret

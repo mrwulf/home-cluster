@@ -6,6 +6,7 @@ resources:
   - ./helm-release.yaml
   - ./rbac.yaml
   - ./route.yaml
+  - ./oidc-client.yaml
 configMapGenerator:
   - name: flux-operator-values
     files:

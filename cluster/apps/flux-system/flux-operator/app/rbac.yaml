@@ -4,7 +4,7 @@ metadata:
   name: flux-infra
 subjects:
   - kind: Group
-    name: flux-admin
+    name: admin
     apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole

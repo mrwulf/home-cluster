@@ -3,12 +3,17 @@ serviceMonitor:
   create: true
 web:
   config:
+    baseURL: https://flux-ui.home.${SECRET_DOMAIN}
     authentication:
-      type: Anonymous
-      anonymous:
-        username: flux
-        groups:
-          - flux-admin
+      type: OAuth2
+      oauth2:
+        provider: OIDC
+        issuerURL: https://id.${SECRET_DOMAIN}
+        scopes:
+          - openid
+          - profile
+          - email
+          - groups
   rbac:
     createRoles: true
   networkPolicy:
