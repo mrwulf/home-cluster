@@ -6,6 +6,8 @@ metadata:
 spec:
   name: Speakr
   launchUrl: https://speakr.home.${SECRET_DOMAIN}/
+  logo:
+    logoUrl: https://raw.githubusercontent.com/murtaza-nasir/speakr/master/static/img/icon-512x512.png
   callbackUrls:
     - https://speakr.home.${SECRET_DOMAIN}/auth/sso/callback
   allowedUserGroups:
