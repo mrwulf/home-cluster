@@ -37,6 +37,8 @@ Before writing any YAML, resolve each of these against CLAUDE.md's "Pattern refe
 - **Traefik resolves `ExtensionRef` middleware in the route's own namespace**, not `networking` where middlewares are defined. If a new namespace needs `rfc1918-ips` or `traefik-middleware-chain-pocket-id`, add it to the Kyverno `sync-middlewares.yaml` clone policy first or the `HTTPRoute` will fail to resolve the filter.
 - **CPU limits get silently stripped by a Kyverno policy** (`remove-cpu-limit.yaml`) even if you set one — but don't rely on that; just don't set one (rule 6).
 - **Docs drift**: verify any version number or instance name CLAUDE.md states (e.g. a Postgres major version) against the actual live manifest before trusting it as fact — this skill was created after finding one such drift.
+- **ToolHive's operator applies a fixed non-root `securityContext` to every `MCPServer`'s `mcp` container by default.** If the upstream image's own entrypoint expects to start as root and drop privileges itself (common in images using `su-exec`/`gosu`), that default will crash it (`setgroups: Operation not permitted` or similar). Override `podTemplateSpec.spec.containers[name=mcp].securityContext` to match what the image actually needs — check its entrypoint script, don't guess.
+- **That `podTemplateSpec` container override replaces the whole container spec for the matched name, not just the fields you set.** If you override `securityContext` or `volumeMounts` on the `mcp` container, repeat `resources` there too — verified empirically that omitting it silently produces `resources: {}` even though the top-level `spec.resources` was set.
 
 ## Examples
 
