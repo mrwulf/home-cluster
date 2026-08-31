@@ -115,7 +115,7 @@ data:
       const response = await makeRequest(discoveryUrl);
 
       if (response.statusCode !== 200) {
-        throw new Error(`Failed to fetch OIDC discovery document: ${response.statusCode}`);
+        throw new Error(`Failed to fetch OIDC discovery document: $${response.statusCode}`);
       }
 
       discoveryCache = JSON.parse(response.body);
@@ -195,7 +195,7 @@ data:
 
       if (response.statusCode !== 200) {
         console.error('Token exchange failed:', response.body);
-        throw new Error(`Token exchange failed: ${response.statusCode}`);
+        throw new Error(`Token exchange failed: $${response.statusCode}`);
       }
 
       return JSON.parse(response.body);
@@ -210,13 +210,13 @@ data:
     async function fetchUserInfo(accessToken, discovery) {
       const response = await makeRequest(discovery.userinfo_endpoint, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer $${accessToken}`,
         },
       });
 
       if (response.statusCode !== 200) {
         console.error('UserInfo fetch failed:', response.body);
-        throw new Error(`UserInfo fetch failed: ${response.statusCode}`);
+        throw new Error(`UserInfo fetch failed: $${response.statusCode}`);
       }
 
       return JSON.parse(response.body);
@@ -337,7 +337,7 @@ data:
           async function (server, n8nConfig) {
             const missing = validateConfig();
             if (missing.length > 0) {
-              console.warn(`[OIDC Hook] Missing configuration: ${missing.join(', ')}. OIDC disabled.`);
+              console.warn(`[OIDC Hook] Missing configuration: $${missing.join(', ')}. OIDC disabled.`);
               return;
             }
 
@@ -490,7 +490,7 @@ data:
                   const result = await User.createUserWithProject(userData);
                   user = result.user;
 
-                  console.log(`[OIDC Hook] Created ${userCount === 0 ? 'owner' : 'member'} user with personal project: ${userInfo.email}`);
+                  console.log(`[OIDC Hook] Created $${userCount === 0 ? 'owner' : 'member'} user with personal project: $${userInfo.email}`);
                 }
 
                 if (!user) {
