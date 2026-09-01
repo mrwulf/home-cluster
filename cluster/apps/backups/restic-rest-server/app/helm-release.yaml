@@ -111,6 +111,9 @@ spec:
       main:
         enabled: true
         annotations:
+          # VPS-primary: must NOT be proxied, or Cloudflare's edge intercepts this instead
+          # of the VPS (see external-dns's --cloudflare-proxied default).
+          external-dns.kubernetes.io/cloudflare-proxied: "false"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             conditions:
