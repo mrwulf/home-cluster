@@ -1,0 +1,44 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: external-gateway-vps
+  namespace: networking
+  labels:
+    gateway.home-operations.io/type: external
+  annotations:
+    # Same Traefik instance/IP as external-gateway (traefik-external GatewayClass, one
+    # controller serves every attached Gateway) - this one exists only so external-dns
+    # (which reads the target annotation from the Gateway, never from a Route - see
+    # https://github.com/kubernetes-sigs/external-dns/issues/4779) can give a different
+    # set of routes a different target: VPS primary, Cloudflare Tunnel fallback, for
+    # apps that need raw TCP or large sustained transfers (Plex, Immich uploads, restic,
+    # netbird). Routes opt in via parentRefs, not an annotation on the route itself.
+    external-dns.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"
+    gatus.io/endpoint: |
+      group: external
+      client:
+        dns-resolver: "udp://1.1.1.1:53"
+spec:
+  gatewayClassName: traefik-external
+  addresses:
+    - type: IPAddress
+      value: "10.0.10.20"
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 8000
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: https
+      protocol: HTTPS
+      port: 8443
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: "wildcard-${SECRET_DOMAIN/./-}-tls"
+          - name: mlm-domains-tls

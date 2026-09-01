@@ -111,16 +111,15 @@ spec:
       main:
         enabled: true
         annotations:
-          # Large backup uploads: keep on the VPS/raw-TCP path rather than the
-          # Cloudflare-Tunnel-primary default (see cluster/apps/networking/traefik/external/gateway.yaml).
-          # Also avoids Cloudflare's free-tier upload size/timeout limits on large snapshots.
-          external-dns.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             conditions:
               - "[STATUS] == 401"
         parentRefs:
-          - name: external-gateway
+          # Large backup uploads: VPS-primary gateway, not the Cloudflare-Tunnel-primary default
+          # (see cluster/apps/networking/traefik/external/gateway.yaml) - also avoids Cloudflare's
+          # free-tier upload size/timeout limits on large snapshots.
+          - name: external-gateway-vps
             namespace: networking
         hostnames:
           - "backups.${SECRET_DOMAIN}"
