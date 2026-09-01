@@ -90,6 +90,11 @@ resource "cloudflare_workers_script" "fast_failover_monitor" {
       text = "vps-eu.${var.secret_domain}"
     },
     {
+      name = "PROXY_ROUND_ROBIN_CNAME"
+      type = "plain_text"
+      text = "proxy.${var.secret_domain}"
+    },
+    {
       name = "PROXY_US_CNAME"
       type = "plain_text"
       text = "proxy-us.${var.secret_domain}"

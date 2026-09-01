@@ -164,6 +164,8 @@ export default {
     const VPS_EU_HOST = env.VPS_EU_HOST
     const RECORD_NAME = env.RECORD_NAME
     const SECRET_DOMAIN = RECORD_NAME.replace(/^ingress\./, "")
+    const PROXY_ROUND_ROBIN_CNAME =
+      env.PROXY_ROUND_ROBIN_CNAME || `proxy.${SECRET_DOMAIN}`
     const PROXY_US_CNAME = env.PROXY_US_CNAME || `proxy-us.${SECRET_DOMAIN}`
     const PROXY_EU_CNAME = env.PROXY_EU_CNAME || `proxy-eu.${SECRET_DOMAIN}`
     const TUNNEL_CNAME = env.TUNNEL_CNAME || `external.${SECRET_DOMAIN}`
@@ -179,42 +181,40 @@ export default {
     let targetTier = null
     let isProxied = false
 
-    // 1. Probe Tier 1: US VPS (OVHcloud)
+    // Probe both regions (not short-circuited) so we can tell "both healthy" apart
+    // from "only one healthy" — those need different targets.
     const usProbe = await probeHost(VPS_US_HOST)
     allProbeLogs.push(...usProbe.attempts)
+    const euProbe = await probeHost(VPS_EU_HOST)
+    allProbeLogs.push(...euProbe.attempts)
 
-    if (usProbe.isUp) {
+    if (usProbe.isUp && euProbe.isUp) {
+      // Both regions healthy: use the shared round-robin record so clients can race
+      // both IPs and land on whichever one responds first for them.
+      targetContent = PROXY_ROUND_ROBIN_CNAME
+      targetTier = "US + EU (round-robin Proxy)"
+      isProxied = false
+      console.log(
+        `Both US and EU VPS are healthy. Routing to ${PROXY_ROUND_ROBIN_CNAME}.`
+      )
+    } else if (usProbe.isUp) {
       targetContent = PROXY_US_CNAME
       targetTier = "US Region (OVHcloud VPS / Proxy)"
       isProxied = false
-      console.log(
-        `US VPS (${VPS_US_HOST}) is healthy. Routing to ${PROXY_US_CNAME}.`
-      )
+      console.log(`Only US VPS is healthy. Routing to ${PROXY_US_CNAME}.`)
+    } else if (euProbe.isUp) {
+      targetContent = PROXY_EU_CNAME
+      targetTier = "EU Region (Hetzner VPS / Proxy)"
+      isProxied = false
+      console.log(`Only EU VPS is healthy. Routing to ${PROXY_EU_CNAME}.`)
     } else {
-      console.warn(
-        `US VPS (${VPS_US_HOST}) is UNHEALTHY. Probing EU VPS (${VPS_EU_HOST})...`
+      // Tier 3 Fallback: Cloudflare Tunnel
+      targetContent = TUNNEL_CNAME
+      targetTier = "Fallback (Cloudflare Tunnel)"
+      isProxied = true
+      console.error(
+        `Both US and EU VPS are UNHEALTHY! Falling back to Cloudflare Tunnel (${TUNNEL_CNAME}).`
       )
-
-      // 2. Probe Tier 2: EU VPS (Hetzner)
-      const euProbe = await probeHost(VPS_EU_HOST)
-      allProbeLogs.push(...euProbe.attempts)
-
-      if (euProbe.isUp) {
-        targetContent = PROXY_EU_CNAME
-        targetTier = "EU Region (Hetzner VPS / Proxy)"
-        isProxied = false
-        console.log(
-          `EU VPS (${VPS_EU_HOST}) is healthy. Routing to ${PROXY_EU_CNAME}.`
-        )
-      } else {
-        // 3. Tier 3 Fallback: Cloudflare Tunnel
-        targetContent = TUNNEL_CNAME
-        targetTier = "Fallback (Cloudflare Tunnel)"
-        isProxied = true
-        console.error(
-          `Both US and EU VPS are UNHEALTHY! Falling back to Cloudflare Tunnel (${TUNNEL_CNAME}).`
-        )
-      }
     }
 
     // 4. Query current DNS record

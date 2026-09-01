@@ -232,10 +232,24 @@ resource "cloudflare_dns_record" "vps_us" {
   ttl     = 1
 }
 
-# Proxy IPv4 A record for US VPS (region-specific: proxy.${domain} used to be
-# shared with the EU stack, which meant whichever region applied last silently
-# stole the record regardless of which one was actually healthy)
+# Proxy IPv4 A record for US VPS. Shared name with the EU stack's own record below
+# (each region's own Terraform state independently manages its own record; Cloudflare
+# adds both under the same name rather than one overwriting the other) — this gives a
+# real round-robin RRset so clients can race both regions and land on whichever
+# responds first, when both happen to be healthy.
 resource "cloudflare_dns_record" "proxy_us" {
+  zone_id = data.cloudflare_zones.domain_zones.result[0].id
+  name    = "proxy.${var.secret_domain}"
+  content = local.ovh_us_ipv4
+  type    = "A"
+  proxied = false
+  ttl     = 1
+}
+
+# Region-specific record (not client-facing): lets the failover workers target this
+# region alone when the other is unhealthy, which the shared round-robin name above
+# can't express.
+resource "cloudflare_dns_record" "proxy_us_only" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
   name    = "proxy-us.${var.secret_domain}"
   content = local.ovh_us_ipv4

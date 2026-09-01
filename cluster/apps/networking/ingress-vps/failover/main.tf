@@ -41,12 +41,13 @@ data "cloudflare_zones" "domain_zones" {
   name = var.secret_domain
 }
 
-# 2. Ingress CNAME (pointing to a regional VPS proxy or the failover tunnel) — used only by
-#    the apps carved out of the CF-primary path (see cluster/apps/networking/ingress-vps/failover-fast)
+# 2. Ingress CNAME (pointing to the round-robin proxy, a single healthy region, or the
+#    failover tunnel) — used only by the apps carved out of the CF-primary path
+#    (see cluster/apps/networking/ingress-vps/failover-fast)
 resource "cloudflare_dns_record" "ingress" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
   name    = "ingress.${var.secret_domain}"
-  content = "proxy-us.${var.secret_domain}"
+  content = "proxy.${var.secret_domain}"
   type    = "CNAME"
   proxied = false
   ttl     = 1
@@ -76,6 +77,11 @@ resource "cloudflare_workers_script" "failover_monitor" {
       name = "VPS_EU_HOST"
       type = "plain_text"
       text = "vps-eu.${var.secret_domain}"
+    },
+    {
+      name = "PROXY_ROUND_ROBIN_CNAME"
+      type = "plain_text"
+      text = "proxy.${var.secret_domain}"
     },
     {
       name = "PROXY_US_CNAME"
