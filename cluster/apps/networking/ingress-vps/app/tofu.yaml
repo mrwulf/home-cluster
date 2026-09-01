@@ -85,3 +85,33 @@ spec:
       name: cloudflare-ddns
     - kind: Secret
       name: ingress-tunnel-secrets
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: ingress-vps-failover-fast
+  namespace: networking
+spec:
+  dependsOn:
+    - name: ingress-vps-failover
+      namespace: networking
+  interval: 5m
+  retryInterval: 1m
+  approvePlan: auto
+  destroyResourcesOnDeletion: true
+  path: ./cluster/apps/networking/ingress-vps/failover-fast
+  serviceAccountName: tf-runner
+  sourceRef:
+    kind: GitRepository
+    name: tofu-infra-git
+    namespace: networking
+  vars:
+    - name: cloudflare_tunnel_cname
+      value: "${SECRET_CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"
+    - name: secret_domain
+      value: "${SECRET_DOMAIN}"
+  varsFrom:
+    - kind: Secret
+      name: cloudflare-ddns
+    - kind: Secret
+      name: ingress-tunnel-secrets

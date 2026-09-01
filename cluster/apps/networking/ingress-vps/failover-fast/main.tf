@@ -41,14 +41,16 @@ data "cloudflare_zones" "domain_zones" {
   name = var.secret_domain
 }
 
-# 2. Ingress CNAME (pointing to a regional VPS proxy or the failover tunnel) — used only by
-#    the apps carved out of the CF-primary path (see cluster/apps/networking/ingress-vps/failover-fast)
-resource "cloudflare_dns_record" "ingress" {
+# 2. Fast-path CNAME: Cloudflare Tunnel by default, VPS as a degraded fallback.
+#    Every externally-exposed app is on this record unless it explicitly overrides
+#    external-dns.kubernetes.io/target back to ingress.${secret_domain} (see the
+#    external-gateway default in cluster/apps/networking/traefik/external/gateway.yaml).
+resource "cloudflare_dns_record" "fast" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "ingress.${var.secret_domain}"
-  content = "proxy-us.${var.secret_domain}"
+  name    = "fast.${var.secret_domain}"
+  content = var.cloudflare_tunnel_cname
   type    = "CNAME"
-  proxied = false
+  proxied = true
   ttl     = 1
 
   lifecycle {
@@ -60,13 +62,23 @@ resource "cloudflare_dns_record" "ingress" {
 }
 
 # 3. Deploy the Cloudflare Worker Script & Bindings Declaratively
-resource "cloudflare_workers_script" "failover_monitor" {
+resource "cloudflare_workers_script" "fast_failover_monitor" {
   account_id  = data.cloudflare_zones.domain_zones.result[0].account.id
-  script_name = "ingress-tunnel-failover-monitor"
-  content     = file("${path.module}/failover-monitor.js")
-  main_module = "failover-monitor.js"
+  script_name = "fast-ingress-failover-monitor"
+  content     = file("${path.module}/fast-failover-monitor.js")
+  main_module = "fast-failover-monitor.js"
 
   bindings = [
+    {
+      name = "TUNNEL_HOST"
+      type = "plain_text"
+      text = "external.${var.secret_domain}"
+    },
+    {
+      name = "TUNNEL_CNAME"
+      type = "plain_text"
+      text = var.cloudflare_tunnel_cname
+    },
     {
       name = "VPS_US_HOST"
       type = "plain_text"
@@ -88,11 +100,6 @@ resource "cloudflare_workers_script" "failover_monitor" {
       text = "proxy-eu.${var.secret_domain}"
     },
     {
-      name = "TUNNEL_CNAME"
-      type = "plain_text"
-      text = var.cloudflare_tunnel_cname
-    },
-    {
       name = "CLOUDFLARE_ZONE_ID"
       type = "plain_text"
       text = data.cloudflare_zones.domain_zones.result[0].id
@@ -100,12 +107,12 @@ resource "cloudflare_workers_script" "failover_monitor" {
     {
       name = "CLOUDFLARE_RECORD_ID"
       type = "plain_text"
-      text = cloudflare_dns_record.ingress.id
+      text = cloudflare_dns_record.fast.id
     },
     {
       name = "RECORD_NAME"
       type = "plain_text"
-      text = "ingress.${var.secret_domain}"
+      text = "fast.${var.secret_domain}"
     },
     {
       name = "SMTP_SERVER"
@@ -131,9 +138,9 @@ resource "cloudflare_workers_script" "failover_monitor" {
 }
 
 # 4. Create the Cron Trigger for the Worker (runs every minute)
-resource "cloudflare_workers_cron_trigger" "failover_cron" {
+resource "cloudflare_workers_cron_trigger" "fast_failover_cron" {
   account_id  = data.cloudflare_zones.domain_zones.result[0].account.id
-  script_name = cloudflare_workers_script.failover_monitor.script_name
+  script_name = cloudflare_workers_script.fast_failover_monitor.script_name
   schedules = [
     {
       cron = "* * * * *"

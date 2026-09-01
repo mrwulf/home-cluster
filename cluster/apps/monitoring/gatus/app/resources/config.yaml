@@ -141,9 +141,9 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
-  - name: External Public Ingress via VPS
+  - name: VPS-Primary Ingress (excluded apps)
     group: external
-    url: "https://proxy.${SECRET_DOMAIN}"
+    url: "https://ingress.${SECRET_DOMAIN}"
     interval: 2m
     conditions:
       - "[STATUS] == 418"
@@ -151,7 +151,17 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
-  - name: External Backup Ingress via Cloudflare Tunnel
+  - name: Fast Ingress via Cloudflare Tunnel (primary)
+    group: external
+    url: "https://fast.${SECRET_DOMAIN}"
+    interval: 2m
+    conditions:
+      - "[STATUS] == 418"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: Cloudflare Tunnel Direct
     group: external
     url: "https://external.${SECRET_DOMAIN}"
     interval: 2m

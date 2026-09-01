@@ -68,7 +68,7 @@ tasks:
     desc: Statically validate OpenTofu manifests
     cmds:
       - |
-        for dir in cluster/apps/networking/ingress-vps/us cluster/apps/networking/ingress-vps/eu cluster/apps/networking/ingress-vps/failover; do
+        for dir in cluster/apps/networking/ingress-vps/us cluster/apps/networking/ingress-vps/eu cluster/apps/networking/ingress-vps/failover cluster/apps/networking/ingress-vps/failover-fast; do
           echo "Validating OpenTofu module in $dir..."
           (cd "{{.PROJECT_DIR}}/$dir" && rm -rf .terraform && tofu init -backend=false && tofu validate && rm -rf .terraform) || exit 1
         done
