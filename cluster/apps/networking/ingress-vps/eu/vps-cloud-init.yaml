@@ -73,6 +73,11 @@ write_files:
             # wildcard cert; skip verification because the transport itself (WireGuard)
             # is what actually authenticates this leg, not the TLS handshake.
             insecureSkipVerify: true
+            # The backend URL above is a bare IP, so no SNI would otherwise be sent;
+            # the cluster's Gateway has multiple certificateRefs and needs a matching
+            # SNI to pick one, or it hard-rejects the handshake with "unrecognized name"
+            # (confirmed live: this is what was causing every request to 502).
+            serverName: "${SECRET_DOMAIN}"
 
       tls:
         certificates:
