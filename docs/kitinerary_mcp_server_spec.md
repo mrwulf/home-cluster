@@ -2,7 +2,7 @@
 
 # `kitinerary-extractor` MCP Server — Build Spec
 
-**Status**: Not started — this document is the complete spec for a different agent/session to implement.
+**Status**: Done — built, published, and deployed. Image lives at [github.com/mrwulf/kitinerary-mcp](https://github.com/mrwulf/kitinerary-mcp) (option 1 from [§6](#6-image-source-location), `ghcr.io/mrwulf/kitinerary-mcp:v0.1.0`), registered in this repo via PR [#5044](https://github.com/mrwulf/home-cluster/pull/5044) (`cluster/apps/ai/toolhive/servers/mcp-kitinerary.yaml`). Wired into the trip-ingest pipeline per [trip_ingest_kitinerary_integration_spec.md](trip_ingest_kitinerary_integration_spec.md), which is also done and live-verified.
 **Owning feature**: Trip Ingest pipeline (TripIt replacement) — see [trip_ingestion_pipeline_tdd_sdd.md](trip_ingestion_pipeline_tdd_sdd.md).
 **Repository target**: this repo (`home-cluster`) for the ToolHive registration; the image itself can live in a new small repo or a `docker/` subtree — implementer's call, see [§6](#6-image-source-location).
 
