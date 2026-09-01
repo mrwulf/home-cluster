@@ -6,10 +6,11 @@ metadata:
 spec:
   groupRef:
     name: toolhive-servers
-  # Image source: https://github.com/mrwulf/kitinerary-mcp (standalone repo,
-  # per docs/kitinerary_mcp_server_spec.md §6 option 1). Wraps KDE's
-  # kitinerary-extractor CLI for deterministic schema.org Reservation
-  # JSON-LD extraction from travel confirmation emails/PDFs/pkpass files.
+  # Image source: https://github.com/mrwulf/kitinerary-mcp (standalone repo).
+  # Wraps KDE's kitinerary-extractor CLI for deterministic schema.org
+  # Reservation JSON-LD extraction from travel confirmation emails/PDFs/
+  # pkpass files - see docs/tripit_replacement.md for how this fits into
+  # the trip-ingest pipeline.
   # renovate: depName=ghcr.io/mrwulf/kitinerary-mcp datasource=docker
   image: ghcr.io/mrwulf/kitinerary-mcp:v0.1.0
   transport: stdio
