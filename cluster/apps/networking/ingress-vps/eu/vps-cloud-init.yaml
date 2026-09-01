@@ -35,8 +35,10 @@ write_files:
       accessLog: {}
 
   # 2. Write Traefik Edge Ingress Proxy Dynamic Configuration (TLS terminated at the
-  #    edge, forwarded to the cluster's own websecure entrypoint over the wg0 tunnel;
-  #    wg0 already encrypts that leg, and terminating here lets Traefik pool/reuse the
+  #    edge, forwarded to the cluster's own websecure entrypoint over wt0 (NetBird's
+  #    tunnel, terminating on routing-peer pods inside the cluster - not wg0, which is
+  #    scoped to NB_ADDR/32 only, for bootstrapping enrollment, and can't reach it).
+  #    wt0 already encrypts that leg, and terminating here lets Traefik pool/reuse the
   #    backend connection instead of paying a full TLS handshake over the tunnel per
   #    client request, and gives CrowdSec real HTTP visibility instead of opaque TCP.
   - path: /etc/traefik/dynamic.yaml
