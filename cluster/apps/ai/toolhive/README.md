@@ -63,15 +63,16 @@ For AI frameworks running directly inside the Kubernetes cluster (e.g., **Open W
 
 ## Active MCP Tool Inventory
 
-| Server Name              | Purpose                                        | Credentials Source          |
-| :----------------------- | :--------------------------------------------- | :-------------------------- |
-| **`mcp-kubernetes`**     | Pod logs, crashes, events, resource status     | Cluster RBAC                |
-| **`mcp-github`**         | GitHub PRs, issues & workflow status           | `mcp-github-secret`         |
-| **`mcp-memory`**         | Persistent AI knowledge graph storage          | In-Memory / PVC             |
-| **`mcp-flux`**           | Flux GitOps reconciliation & drift auditing    | `mcp-flux` RBAC             |
-| **`mcp-home-assistant`** | Home Assistant IoT entity & automation control | `mcp-home-assistant-secret` |
-| **`mcp-arr-stack`**      | Sonarr, Radarr, Prowlarr management            | Flux Secrets / Env          |
-| **`mcp-pullmd`**         | Convert any URL to clean Markdown              | None (unauthenticated core) |
+| Server Name              | Purpose                                                                                  | Credentials Source          |
+| :----------------------- | :--------------------------------------------------------------------------------------- | :-------------------------- |
+| **`mcp-kubernetes`**     | Pod logs, crashes, events, resource status                                               | Cluster RBAC                |
+| **`mcp-github`**         | GitHub PRs, issues & workflow status                                                     | `mcp-github-secret`         |
+| **`mcp-memory`**         | Persistent AI knowledge graph storage                                                    | In-Memory / PVC             |
+| **`mcp-flux`**           | Flux GitOps reconciliation & drift auditing                                              | `mcp-flux` RBAC             |
+| **`mcp-home-assistant`** | Home Assistant IoT entity & automation control                                           | `mcp-home-assistant-secret` |
+| **`mcp-arr-stack`**      | Sonarr, Radarr, Prowlarr management                                                      | Flux Secrets / Env          |
+| **`mcp-pullmd`**         | Convert any URL to clean Markdown                                                        | None (unauthenticated core) |
+| **`mcp-kitinerary`**     | Extract schema.org Reservation JSON-LD from travel confirmation emails/PDFs/pkpass files | None (no network egress)    |
 
 ---
 
