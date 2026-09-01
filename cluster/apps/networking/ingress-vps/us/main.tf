@@ -373,7 +373,7 @@ resource "null_resource" "home_ip_whitelist_sync" {
     inline = [
       "sudo install -o root -g root -m 0644 /tmp/00-whitelist.yaml /etc/crowdsec/parsers/s02-enrich/00-whitelist.yaml",
       "rm -f /tmp/00-whitelist.yaml",
-      "sudo docker exec crowdsec cscli reload",
+      "sudo docker exec crowdsec kill -SIGHUP 1",
     ]
   }
 

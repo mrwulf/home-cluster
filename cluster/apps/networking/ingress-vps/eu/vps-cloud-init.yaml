@@ -382,7 +382,7 @@ runcmd:
       type: syslog
     EOF
 
-    docker exec crowdsec cscli reload || true
+    docker exec crowdsec kill -SIGHUP 1
 
   # 6. Install NFTables Firewall Bouncer on host & connect to containerized LAPI
   - |
