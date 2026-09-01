@@ -2,9 +2,9 @@
 
 # Wiring the `kitinerary` MCP Server into Trip Ingest — Integration & Test Guide
 
-**Status**: Not started — companion to [kitinerary_mcp_server_spec.md](kitinerary_mcp_server_spec.md), which must be built and deployed first.
+**Status**: Done — implemented in PR [#5045](https://github.com/mrwulf/home-cluster/pull/5045), deployed, and live-tested end to end (execution 62: a synthetic `LodgingReservation` email correctly short-circuited Ollama in 7ms, created a real Trek trip/reservation with the right confirmation code/dates/cost, verified directly against Trek's own SQLite DB, then deleted via `delete_trip`). See [§8](#8-acceptance-checklist) — every item checked.
 **Owning feature**: Trip Ingest pipeline (TripIt replacement) — see [trip_ingestion_pipeline_tdd_sdd.md](trip_ingestion_pipeline_tdd_sdd.md).
-**Current live state**: `cluster/apps/household/n8n/app/workflows/trip-ingest.json` runs the Ollama-only pipeline (commit `7102c4c3e`) — a Trek-native hybrid was tried and reverted the same day; see [§7](#7-consolidated-gotchas-read-this-before-you-start) for exactly why, so nobody re-discovers it the hard way.
+**Current live state**: `cluster/apps/household/n8n/app/workflows/trip-ingest.json` calls `mcp-kitinerary`'s `extract_booking` first (new `Kitinerary Extract` node); Ollama only runs as a fallback when kitinerary returns nothing usable. `mcp-kitinerary`'s ToolHive proxy turned out to speak a **stateless** per-request MCP variant (`params._meta` envelope), not the stateful `initialize`+session pattern `Trek Resolve` uses — see [§2](#2-before-writing-any-workflow-code-verify-the-new-servers-own-contract), confirmed live before any workflow code was written.
 
 This document is everything a fresh session needs to pick this back up: what to build (the mapping + node wiring), how to deploy it into this specific cluster without silently testing stale code, and how to test it safely against live production data with zero cleanup risk.
 
@@ -153,11 +153,13 @@ Every one of these was discovered by testing, not by reading docs — treat this
 
 ## 8. Acceptance checklist
 
-- [ ] `mcp-kitinerary`'s actual tool name/args/endpoint/auth confirmed live (§2), not assumed from the build spec.
-- [ ] §3 mapping implemented for at least `LodgingReservation` and one transport type (`FlightReservation` or `TrainReservation`) — the two shapes with genuinely different date-field locations, so both code paths are actually exercised.
-- [ ] §3.1 (multi-leg flights) explicitly decided, not defaulted into.
-- [ ] Ollama fallback still fires correctly for a fixture with no structured markup (a plain-text/marketing-style test email) — this is a regression risk, verify it wasn't broken by the new short-circuit.
-- [ ] `mise x -- task test:all` green.
-- [ ] Deployed per §5, confirmed live in n8n's own API (not just git) before testing.
-- [ ] Live end-to-end test per §6 against a `ZZTEST`-marked fixture, `notifyText` inspected via the executions API, matching Trek trip/reservation/cost confirmed via a direct DB read.
-- [ ] Test trip deleted via `delete_trip` MCP tool; confirmed gone via a follow-up DB read; scratch pod files (`/tmp/zztest.eml`) and any manual sync Jobs removed.
+- [x] ~~`mcp-kitinerary`'s actual tool name/args/endpoint/auth confirmed live (§2), not assumed from the build spec.~~ Matches spec exactly (`extract_booking(file_base64, filename, context_date?)`, no auth) — but the transport contract didn't: the ToolHive proxy speaks a stateless per-request `params._meta` envelope, not Trek's stateful `initialize`+session pattern. Confirmed via a live `tools/call` from inside the `n8n` pod before writing any workflow code.
+- [x] ~~§3 mapping implemented for at least `LodgingReservation` and one transport type~~ — implemented for all 8 types in the table. `mapKitineraryItem` unit-tested standalone against real `LodgingReservation` (date fields on `r`) and `FlightReservation` (date fields on `reservationFor`) shapes, both correct, plus an unknown-`@type` fallthrough to `null`.
+- [x] ~~§3.1 (multi-leg flights) explicitly decided, not defaulted into.~~ First cut: one mapped item per email, same cardinality as the Ollama path. Each leg of a multi-leg flight becomes its own separate `flight` item. Documented as an explicit follow-up in the node's own code comment, not a silent default.
+- [x] ~~Ollama fallback still fires correctly for a fixture with no structured markup~~ — live-verified (execution 63, isolated test trip 182, deleted after): a plain-text ZZTEST marketing email correctly produced `kitineraryExtracted: null` / `kitineraryWarning: "no reservation data found in file"`, and `Code in JavaScript1` took 18.8s (a real Ollama round-trip, not the 7ms short-circuit), correctly classifying it `general`. The short-circuit did not break the fallback path.
+- [x] ~~`mise x -- task test:all` green.~~
+- [x] ~~Deployed per §5, confirmed live in n8n's own API (not just git) before testing.~~ All three checkpoints matched before any test fired: git → `n8n-trip-ingest-workflow` ConfigMap → n8n's own `/api/v1/workflows/:id` (post `n8n-workflow-sync` Job run).
+- [x] ~~Live end-to-end test per §6 against a `ZZTEST`-marked fixture~~ — execution 62: a synthetic `LodgingReservation` email matched in 7ms, correctly skipping Ollama entirely (execution time, not just a fast response, proves the short-circuit fired). Created trip 181 / reservation 518, `confirmation_number: "ZZTEST-0001"`, `type: "hotel"`, correct 2031-09-10→09-12 dates, $450.50 USD — all confirmed directly against Trek's own SQLite DB, not just `notifyText`.
+- [x] ~~Test trip deleted via `delete_trip` MCP tool; confirmed gone via a follow-up DB read; scratch pod files and any manual sync Jobs removed.~~ Both test trips (181, 182) deleted this way and confirmed gone via a follow-up DB read; all scratch pod files (`/tmp/zztest*.eml`, `/tmp/exec*.json`) and the manual `n8n-workflow-sync-manual` Job removed.
+
+Real gotcha found calling Trek's `delete_trip` directly (not through `Trek Resolve`, which already gets this right): its MCP endpoint's auth guard is sensitive to the `Host`/`X-Forwarded-Proto` headers `Trek Resolve` already sends (`Host: plans.sysinfra.pro`, `X-Forwarded-Proto: https`) — omitting them gets a `401 Access token required` on `initialize` itself, even with a valid bearer token. The tool's own arg name is `tripId`, not `trip_id`.
