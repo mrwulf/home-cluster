@@ -1,0 +1,63 @@
+---
+apiVersion: toolhive.stacklok.dev/v1beta1
+kind: MCPServer
+metadata:
+  name: mcp-kitinerary
+spec:
+  groupRef:
+    name: toolhive-servers
+  # Image source: https://github.com/mrwulf/kitinerary-mcp (standalone repo,
+  # per docs/kitinerary_mcp_server_spec.md §6 option 1). Wraps KDE's
+  # kitinerary-extractor CLI for deterministic schema.org Reservation
+  # JSON-LD extraction from travel confirmation emails/PDFs/pkpass files.
+  # renovate: depName=ghcr.io/mrwulf/kitinerary-mcp datasource=docker
+  image: ghcr.io/mrwulf/kitinerary-mcp:v0.1.0
+  transport: stdio
+  proxyMode: streamable-http
+  proxyPort: 8080
+  # No secrets, no outbound network calls, no persistent state - each call
+  # is an isolated CLI invocation against a temp file in the emptyDir below.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    # CPU limits omitted per cluster rule #6
+    limits:
+      memory: 256Mi
+  podTemplateSpec:
+    metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
+    spec:
+      containers:
+        - name: mcp
+          # This podTemplateSpec container entry replaces the whole
+          # container spec rather than field-merging onto it, so `resources`
+          # must be repeated here too (see mcp-pullmd.yaml for the same
+          # verified behavior) or the operator silently drops it.
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+            - name: TMPDIR
+              value: /tmp/kitinerary
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp/kitinerary
+      # emptyDir, not a PVC: the extraction temp file is fully disposable
+      # and cleaned up by the server itself after every call.
+      volumes:
+        - name: tmp
+          emptyDir: {}
