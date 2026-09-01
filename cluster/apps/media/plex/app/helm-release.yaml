@@ -92,15 +92,14 @@ spec:
       main:
         enabled: true
         annotations:
-          # Large sustained media streams: keep on the VPS/raw-TCP path rather than the
-          # Cloudflare-Tunnel-primary default (see cluster/apps/networking/traefik/external/gateway.yaml).
-          external-dns.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             conditions:
               - "[STATUS] == 401"
         parentRefs:
-          - name: external-gateway
+          # Large sustained media streams: VPS-primary gateway, not the Cloudflare-Tunnel-primary
+          # default (see cluster/apps/networking/traefik/external/gateway.yaml).
+          - name: external-gateway-vps
             namespace: networking
         hostnames:
           - "plex.${SECRET_DOMAIN}"

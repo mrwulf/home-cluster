@@ -6,3 +6,4 @@ resources:
   - route.yaml
   - gatewayclass.yaml
   - gateway.yaml
+  - gateway-vps.yaml

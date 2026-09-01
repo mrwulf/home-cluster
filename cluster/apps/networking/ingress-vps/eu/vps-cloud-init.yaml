@@ -49,12 +49,12 @@ write_files:
           web-catchall:
             entryPoints:
               - web
-            rule: "HostRegexp(`{host:.+}`)"
+            rule: "HostRegexp(`^.+$`)"
             service: k8s-http
           websecure-catchall:
             entryPoints:
               - websecure
-            rule: "HostRegexp(`{host:.+}`)"
+            rule: "HostRegexp(`^.+$`)"
             service: k8s-https
             tls: {}
         services:

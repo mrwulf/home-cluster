@@ -9,8 +9,10 @@ metadata:
   annotations:
     # Default target for every attached route: Cloudflare Tunnel primary, VPS fallback
     # (cluster/apps/networking/ingress-vps/failover-fast). Apps that need raw TCP or large
-    # sustained transfers (Plex, Immich, restic) override this back to ingress.${SECRET_DOMAIN}
-    # (VPS primary, Cloudflare Tunnel fallback) with their own route-level annotation.
+    # sustained transfers (Plex, Immich uploads, restic, netbird) attach to
+    # external-gateway-vps instead (same Traefik instance/IP, different target) - external-dns
+    # only reads the target annotation from the Gateway, never from a Route, so a per-route
+    # override here does nothing: https://github.com/kubernetes-sigs/external-dns/issues/4779
     external-dns.kubernetes.io/target: "fast.${SECRET_DOMAIN}"
     # Probe attached routes via public DNS (egress -> 1.1.1.1) so Gatus tests the
     # real external path. Inherited by all routes; per-route config wins on conflicts.
