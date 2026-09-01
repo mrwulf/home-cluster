@@ -5,6 +5,11 @@ metadata:
   name: netbird-control-plane
   namespace: networking
   annotations:
+    # gRPC (management sync, signal exchange) needs streaming/trailers that Cloudflare's
+    # proxy only passes through correctly with its account-level gRPC support enabled;
+    # keep this on the VPS/raw-TCP path rather than the Cloudflare-Tunnel-primary default
+    # (see cluster/apps/networking/traefik/external/gateway.yaml) until that's confirmed.
+    external-dns.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"
     gatus.io/enabled: "true"
     gatus.io/endpoint: |
       group: networking

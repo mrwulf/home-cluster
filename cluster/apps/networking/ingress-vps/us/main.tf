@@ -86,6 +86,14 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 3.0"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.2"
+    }
   }
 }
 
@@ -118,6 +126,22 @@ data "cloudflare_zones" "domain_zones" {
   name = var.secret_domain
 }
 
+# Read the cluster's cert-manager-issued wildcard cert so TF can push it to the
+# VPS whenever it renews, without that being part of the (replace-triggering)
+# instance user_data.
+data "kubernetes_secret_v1" "wildcard_cert" {
+  metadata {
+    name      = "wildcard-${replace(var.secret_domain, ".", "-")}-tls"
+    namespace = "networking"
+  }
+}
+
+# Dedicated automation keypair for TF-driven post-boot provisioning (cert/whitelist
+# pushes). Kept separate from var.ssh_public_key, which remains the human/break-glass key.
+resource "tls_private_key" "tf_admin" {
+  algorithm = "ED25519"
+}
+
 # OVH Public Cloud US Ingress VPS
 data "ovh_cloud_project_images" "debian" {
   service_name = var.ovh_service_name
@@ -145,12 +169,13 @@ resource "terraform_data" "cloud_init_us" {
       NETBIRD_SELFHOSTED_MGMT_URL  = "https://nb.${var.secret_domain}"
       NETBIRD_RELAY_AUTH_SECRET    = var.netbird_relay_auth_secret
       SECRET_DOMAIN                = var.secret_domain
-      HOME_IP                      = local.home_ip
       PROBE_HOSTNAME               = "vps-us.${var.secret_domain}"
       WG_PRIVATE_KEY               = var.peer_us_private_key
       WG_PEER_PUBLIC_KEY           = var.wg_public_key
       WG_ADDRESS                   = "10.13.13.10/32"
       NB_ADDR                      = "10.0.10.11"
+      SSH_PUBLIC_KEY               = var.ssh_public_key
+      TF_ADMIN_SSH_PUBLIC_KEY      = tls_private_key.tf_admin.public_key_openssh
     })
   }
 }
@@ -207,7 +232,11 @@ resource "cloudflare_dns_record" "vps_us" {
   ttl     = 1
 }
 
-# Proxy IPv4 A record for US VPS
+# Proxy IPv4 A record for US VPS. Shared name with the EU stack's own record below
+# (each region's own Terraform state independently manages its own record; Cloudflare
+# adds both under the same name rather than one overwriting the other) — this gives a
+# real round-robin RRset so clients can race both regions and land on whichever
+# responds first, when both happen to be healthy.
 resource "cloudflare_dns_record" "proxy_us" {
   zone_id = data.cloudflare_zones.domain_zones.result[0].id
   name    = "proxy.${var.secret_domain}"
@@ -216,6 +245,9 @@ resource "cloudflare_dns_record" "proxy_us" {
   proxied = false
   ttl     = 1
 }
+
+# Note: no separate region-specific "proxy-us" record — vps-us.${domain} below already
+# is one (single IP, same content), so the failover workers just target that directly.
 
 # Output US VPS public IP
 output "VPS_US_PUBLIC_IP" {
@@ -253,6 +285,96 @@ resource "kubernetes_secret_v1" "vps_us_output_flux" {
 
   data = {
     VPS_US_PUBLIC_IP = local.ovh_us_ipv4
+  }
+
+  depends_on = [
+    data.http.vps_us_healthcheck
+  ]
+}
+
+# Push the current cert-manager wildcard cert to the VPS and reload Traefik.
+# Triggered only by cert content, so a renewal never touches user_data / replaces the instance.
+resource "null_resource" "cert_sync" {
+  triggers = {
+    cert_hash = sha256(join("", [
+      data.kubernetes_secret_v1.wildcard_cert.data["tls.crt"],
+      data.kubernetes_secret_v1.wildcard_cert.data["tls.key"],
+    ]))
+  }
+
+  connection {
+    type        = "ssh"
+    host        = local.ovh_us_ipv4
+    user        = "debian"
+    private_key = tls_private_key.tf_admin.private_key_openssh
+    timeout     = "2m"
+  }
+
+  provisioner "file" {
+    content     = data.kubernetes_secret_v1.wildcard_cert.data["tls.crt"]
+    destination = "/tmp/tls.crt"
+  }
+
+  provisioner "file" {
+    content     = data.kubernetes_secret_v1.wildcard_cert.data["tls.key"]
+    destination = "/tmp/tls.key"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo install -o root -g root -m 0644 /tmp/tls.crt /etc/traefik/certs/tls.crt",
+      "sudo install -o root -g root -m 0600 /tmp/tls.key /etc/traefik/certs/tls.key",
+      "rm -f /tmp/tls.crt /tmp/tls.key",
+      "sudo systemctl restart traefik",
+    ]
+  }
+
+  depends_on = [
+    data.http.vps_us_healthcheck
+  ]
+}
+
+# Push the current home egress IP into CrowdSec's whitelist and reload it in place.
+# Triggered only by home_ip, so a residential IP change never touches user_data / replaces the instance.
+resource "null_resource" "home_ip_whitelist_sync" {
+  triggers = {
+    home_ip = local.home_ip
+  }
+
+  connection {
+    type        = "ssh"
+    host        = local.ovh_us_ipv4
+    user        = "debian"
+    private_key = tls_private_key.tf_admin.private_key_openssh
+    timeout     = "2m"
+  }
+
+  provisioner "file" {
+    content     = <<-EOF
+      name: local/whitelist
+      description: "Whitelist trusted IPs and internal networks"
+      filter: "1 == 1"
+      whitelist:
+        reason: "Whitelisted home IP and internal overlay networks"
+        ip:
+          - "${local.home_ip}"
+          - "127.0.0.1"
+          - "::1"
+        cidr:
+          - "100.64.0.0/10"
+          - "10.0.0.0/8"
+          - "172.16.0.0/12"
+          - "192.168.0.0/16"
+    EOF
+    destination = "/tmp/00-whitelist.yaml"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo install -o root -g root -m 0644 /tmp/00-whitelist.yaml /etc/crowdsec/parsers/s02-enrich/00-whitelist.yaml",
+      "rm -f /tmp/00-whitelist.yaml",
+      "sudo docker exec crowdsec cscli reload",
+    ]
   }
 
   depends_on = [

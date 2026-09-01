@@ -1,4 +1,7 @@
 #cloud-config
+ssh_authorized_keys:
+  - ${TF_ADMIN_SSH_PUBLIC_KEY}
+
 write_files:
   # 1. Write Traefik Edge Ingress Proxy Static Configuration
   - path: /etc/traefik/traefik.yaml
@@ -9,12 +12,18 @@ write_files:
           address: ":80"
         websecure:
           address: ":443"
+          transport:
+            respondingTimeouts:
+              readTimeout: 3600s
+              idleTimeout: 3600s
+              writeTimeout: 3600s
         metrics:
           address: ":8082"
 
       providers:
         file:
           filename: "/etc/traefik/dynamic.yaml"
+          watch: true
 
       metrics:
         prometheus:
@@ -25,7 +34,13 @@ write_files:
 
       accessLog: {}
 
-  # 2. Write Traefik Edge Ingress Proxy Dynamic Configuration (SNI TLS Passthrough to K8s)
+  # 2. Write Traefik Edge Ingress Proxy Dynamic Configuration (TLS terminated at the
+  #    edge, forwarded to the cluster's own websecure entrypoint over wt0 (NetBird's
+  #    tunnel, terminating on routing-peer pods inside the cluster - not wg0, which is
+  #    scoped to NB_ADDR/32 only, for bootstrapping enrollment, and can't reach it).
+  #    wt0 already encrypts that leg, and terminating here lets Traefik pool/reuse the
+  #    backend connection instead of paying a full TLS handshake over the tunnel per
+  #    client request, and gives CrowdSec real HTTP visibility instead of opaque TCP.
   - path: /etc/traefik/dynamic.yaml
     permissions: "0644"
     content: |
@@ -36,28 +51,33 @@ write_files:
               - web
             rule: "HostRegexp(`{host:.+}`)"
             service: k8s-http
+          websecure-catchall:
+            entryPoints:
+              - websecure
+            rule: "HostRegexp(`{host:.+}`)"
+            service: k8s-https
+            tls: {}
         services:
           k8s-http:
             loadBalancer:
               servers:
                 - url: "http://10.0.10.20:80"
-
-      tcp:
-        routers:
-          sni-passthrough:
-            entryPoints:
-              - websecure
-            rule: "HostSNI(`*`)"
-            service: k8s-traefik
-            tls:
-              passthrough: true
-        services:
-          k8s-traefik:
+          k8s-https:
             loadBalancer:
-              proxyProtocol:
-                version: 2
               servers:
-                - address: "10.0.10.20:443"
+                - url: "https://10.0.10.20:443"
+              serversTransport: k8s-internal
+        serversTransports:
+          k8s-internal:
+            # The cluster's own websecure listener already terminates the same
+            # wildcard cert; skip verification because the transport itself (WireGuard)
+            # is what actually authenticates this leg, not the TLS handshake.
+            insecureSkipVerify: true
+
+      tls:
+        certificates:
+          - certFile: /etc/traefik/certs/tls.crt
+            keyFile: /etc/traefik/certs/tls.key
 
   # 3. Write Traefik Systemd Container Service
   - path: /etc/systemd/system/traefik.service
@@ -226,7 +246,7 @@ runcmd:
     export DEBIAN_FRONTEND=noninteractive
     while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 2; done
     for i in $(seq 1 5); do
-      if apt-get update && apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io systemd-resolved gnupg apt-transport-https wireguard-tools curl; then
+      if apt-get update && apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io systemd-resolved gnupg apt-transport-https wireguard-tools curl openssl; then
         break
       fi
       sleep 3
@@ -280,6 +300,16 @@ runcmd:
   - echo "net.ipv4.tcp_keepalive_probes=3" >> /etc/sysctl.conf
   - echo "net.ipv4.tcp_retries2=5" >> /etc/sysctl.conf
 
+  # 5b. Bootstrap a self-signed cert so Traefik has something to serve on first boot;
+  #     the real wildcard cert is pushed moments later by the Terraform cert_sync provisioner.
+  - mkdir -p /etc/traefik/certs
+  - |
+    if [ ! -f /etc/traefik/certs/tls.crt ]; then
+      openssl req -x509 -nodes -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 \
+        -keyout /etc/traefik/certs/tls.key -out /etc/traefik/certs/tls.crt \
+        -days 7 -subj "/CN=bootstrap.${SECRET_DOMAIN}"
+    fi
+
   # 6. Enable and start NetBird, NetBird Relay, Traefik, Node Exporter & CrowdSec Container
   - mkdir -p /var/lib/crowdsec/data
   - systemctl daemon-reload
@@ -310,6 +340,9 @@ runcmd:
     fi
 
   # 5. Wait for CrowdSec container to populate base /etc/crowdsec/config.yaml and write custom whitelist/acquisition
+  #    (bootstrap-only: no home IP yet, that's pushed in place by the Terraform
+  #    home_ip_whitelist_sync provisioner right after this instance comes up, and again
+  #    any time it changes, without ever replacing the instance)
   - |
     until docker exec crowdsec cscli config show >/dev/null 2>&1; do sleep 2; done
 
@@ -320,9 +353,8 @@ runcmd:
     description: "Whitelist trusted IPs and internal networks"
     filter: "1 == 1"
     whitelist:
-      reason: "Whitelisted home IP and internal overlay networks"
+      reason: "Whitelisted internal overlay networks"
       ip:
-        - "${HOME_IP}"
         - "127.0.0.1"
         - "::1"
       cidr:

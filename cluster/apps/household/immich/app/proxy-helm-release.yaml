@@ -43,6 +43,8 @@ spec:
       main:
         enabled: true
         annotations:
+          # Sharing-only, no uploads through this endpoint: fine on the Cloudflare-Tunnel-primary
+          # default (see cluster/apps/networking/traefik/external/gateway.yaml), unlike photos.${SECRET_DOMAIN}.
           gatus.io/enabled: "true"
         parentRefs:
           - name: external-gateway

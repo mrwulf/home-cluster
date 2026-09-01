@@ -15,6 +15,7 @@ spec:
     - "vps-eu.${SECRET_DOMAIN}"
     - "proxy.${SECRET_DOMAIN}"
     - "ingress.${SECRET_DOMAIN}"
+    - "fast.${SECRET_DOMAIN}"
     - "external.${SECRET_DOMAIN}"
   rules:
     - backendRefs:

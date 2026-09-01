@@ -1,5 +1,11 @@
 import { connect } from "cloudflare:sockets"
 
+// Cloudflare-primary counterpart to ../failover/failover-monitor.js: that worker
+// keeps ingress.${domain} VPS-primary for the apps carved out of this path (large
+// transfers / raw TCP needs). This one keeps fast.${domain} on the Cloudflare Tunnel
+// by default (single-digit-ms edge latency vs. several hundred ms through either VPS
+// region) and only falls back to a VPS if the tunnel itself is unreachable.
+
 async function sendEmailViaSMTP(env, from, to, subject, body) {
   let socket
   let writer
@@ -117,14 +123,14 @@ async function probeHost(host, maxProbes = 3) {
 
   for (let attempt = 1; attempt <= maxProbes; attempt++) {
     console.log(
-      `Probing direct endpoint https://${host} (attempt ${attempt}/${maxProbes})...`
+      `Probing endpoint https://${host} (attempt ${attempt}/${maxProbes})...`
     )
     const startTime = Date.now()
     try {
       const res = await fetch(`https://${host}`, {
         method: "HEAD",
         headers: {
-          "User-Agent": "Cloudflare-Worker-Failover-Monitor/1.0",
+          "User-Agent": "Cloudflare-Worker-Fast-Failover-Monitor/1.0",
         },
         signal: AbortSignal.timeout(5000),
       })
@@ -160,59 +166,77 @@ async function probeHost(host, maxProbes = 3) {
 
 export default {
   async scheduled(event, env, ctx) {
+    const TUNNEL_HOST = env.TUNNEL_HOST
     const VPS_US_HOST = env.VPS_US_HOST
     const VPS_EU_HOST = env.VPS_EU_HOST
     const RECORD_NAME = env.RECORD_NAME
-    const SECRET_DOMAIN = RECORD_NAME.replace(/^ingress\./, "")
+    const SECRET_DOMAIN = RECORD_NAME.replace(/^fast\./, "")
+    const TUNNEL_CNAME = env.TUNNEL_CNAME
     const PROXY_ROUND_ROBIN_CNAME =
       env.PROXY_ROUND_ROBIN_CNAME || `proxy.${SECRET_DOMAIN}`
-    const TUNNEL_CNAME = env.TUNNEL_CNAME || `external.${SECRET_DOMAIN}`
     const ZONE_ID = env.CLOUDFLARE_ZONE_ID
     const RECORD_ID = env.CLOUDFLARE_RECORD_ID
     const API_TOKEN = env.CLOUDFLARE_API_TOKEN
 
-    const fromEmail = `failover-monitor@${SECRET_DOMAIN}`
+    const fromEmail = `fast-failover-monitor@${SECRET_DOMAIN}`
     const toEmail = `postmaster@${SECRET_DOMAIN}`
 
     const allProbeLogs = []
     let targetContent = null
     let targetTier = null
     let isProxied = false
+    let degraded = false
 
-    // Probe both regions (not short-circuited) so we can tell "both healthy" apart
-    // from "only one healthy" — those need different targets.
-    const usProbe = await probeHost(VPS_US_HOST)
-    allProbeLogs.push(...usProbe.attempts)
-    const euProbe = await probeHost(VPS_EU_HOST)
-    allProbeLogs.push(...euProbe.attempts)
+    // 1. Probe Tier 1: Cloudflare Tunnel (default/primary — lowest latency, global anycast)
+    const tunnelProbe = await probeHost(TUNNEL_HOST)
+    allProbeLogs.push(...tunnelProbe.attempts)
 
-    if (usProbe.isUp && euProbe.isUp) {
-      // Both regions healthy: use the shared round-robin record so clients can race
-      // both IPs and land on whichever one responds first for them.
-      targetContent = PROXY_ROUND_ROBIN_CNAME
-      targetTier = "US + EU (round-robin Proxy)"
-      isProxied = false
-      console.log(
-        `Both US and EU VPS are healthy. Routing to ${PROXY_ROUND_ROBIN_CNAME}.`
-      )
-    } else if (usProbe.isUp) {
-      targetContent = VPS_US_HOST
-      targetTier = "US Region (OVHcloud VPS / Proxy)"
-      isProxied = false
-      console.log(`Only US VPS is healthy. Routing to ${VPS_US_HOST}.`)
-    } else if (euProbe.isUp) {
-      targetContent = VPS_EU_HOST
-      targetTier = "EU Region (Hetzner VPS / Proxy)"
-      isProxied = false
-      console.log(`Only EU VPS is healthy. Routing to ${VPS_EU_HOST}.`)
-    } else {
-      // Tier 3 Fallback: Cloudflare Tunnel
+    if (tunnelProbe.isUp) {
       targetContent = TUNNEL_CNAME
-      targetTier = "Fallback (Cloudflare Tunnel)"
+      targetTier = "Cloudflare Tunnel"
       isProxied = true
-      console.error(
-        `Both US and EU VPS are UNHEALTHY! Falling back to Cloudflare Tunnel (${TUNNEL_CNAME}).`
+      console.log(
+        `Cloudflare Tunnel (${TUNNEL_HOST}) is healthy. Routing to ${TUNNEL_CNAME}.`
       )
+    } else {
+      console.warn(
+        `Cloudflare Tunnel (${TUNNEL_HOST}) is UNHEALTHY. Probing both VPS regions...`
+      )
+
+      // 2/3. Tunnel down: probe both regions (not short-circuited) so we can prefer
+      // the round-robin record when both happen to be healthy.
+      const usProbe = await probeHost(VPS_US_HOST)
+      allProbeLogs.push(...usProbe.attempts)
+      const euProbe = await probeHost(VPS_EU_HOST)
+      allProbeLogs.push(...euProbe.attempts)
+
+      if (usProbe.isUp && euProbe.isUp) {
+        targetContent = PROXY_ROUND_ROBIN_CNAME
+        targetTier = "US + EU (round-robin Proxy) — degraded, higher latency"
+        isProxied = false
+        degraded = true
+        console.log(
+          `Both VPS regions are healthy. Routing to ${PROXY_ROUND_ROBIN_CNAME}.`
+        )
+      } else if (usProbe.isUp) {
+        targetContent = VPS_US_HOST
+        targetTier =
+          "US Region (OVHcloud VPS / Proxy) — degraded, higher latency"
+        isProxied = false
+        degraded = true
+        console.log(`Only US VPS is healthy. Routing to ${VPS_US_HOST}.`)
+      } else if (euProbe.isUp) {
+        targetContent = VPS_EU_HOST
+        targetTier =
+          "EU Region (Hetzner VPS / Proxy) — degraded, higher latency"
+        isProxied = false
+        degraded = true
+        console.log(`Only EU VPS is healthy. Routing to ${VPS_EU_HOST}.`)
+      } else {
+        console.error(
+          `Tunnel, US VPS, and EU VPS are ALL unhealthy! Leaving ${RECORD_NAME} unchanged and alerting.`
+        )
+      }
     }
 
     // 4. Query current DNS record
@@ -240,6 +264,27 @@ export default {
       console.log(`Current DNS record content: ${currentContent}`)
     } catch (err) {
       console.error(`Error querying DNS record:`, err)
+      return
+    }
+
+    if (targetContent === null) {
+      // All tiers unhealthy: nothing sane to switch to, just alert.
+      const now = new Date()
+      ctx.waitUntil(
+        sendEmailViaSMTP(
+          env,
+          fromEmail,
+          toEmail,
+          `[CRITICAL] ${RECORD_NAME} has no healthy ingress tier - ${now.toISOString()}`,
+          [
+            `All three ingress tiers (Cloudflare Tunnel, US VPS, EU VPS) failed their health checks.`,
+            `${RECORD_NAME} was left pointing at its last-known-good target: ${currentContent}.`,
+            ``,
+            `=== Probe Attempts ===`,
+            ...allProbeLogs,
+          ].join("\r\n")
+        )
+      )
       return
     }
 
@@ -278,7 +323,6 @@ export default {
               `DNS record successfully updated to point to ${targetContent} (proxied: ${isProxied}, Tier: ${targetTier})`
             )
 
-            // Format Subject line with date and hour
             const now = new Date()
             const yyyy = now.getUTCFullYear()
             const mm = String(now.getUTCMonth() + 1).padStart(2, "0")
@@ -286,9 +330,10 @@ export default {
             const hh = String(now.getUTCHours()).padStart(2, "0")
             const dateStr = `${yyyy}-${mm}-${dd} ${hh}:00 UTC`
 
-            const subject = `[Failover] Ingress DNS Switched to ${targetTier} - ${dateStr}`
+            const severity = degraded ? "[Degraded Failover]" : "[Failover]"
+            const subject = `${severity} ${RECORD_NAME} switched to ${targetTier} - ${dateStr}`
             const body = [
-              `Failover monitor detected that the ingress DNS record ${RECORD_NAME} was pointing to ${currentContent}, but has been updated to ${targetContent} (${targetTier}).`,
+              `Fast-failover monitor detected that ${RECORD_NAME} was pointing to ${currentContent}, but has been updated to ${targetContent} (${targetTier}).`,
               ``,
               `Action: DNS record updated to a CNAME pointing to ${targetContent} (proxied: ${isProxied}).`,
               ``,
@@ -312,7 +357,7 @@ export default {
       }
     } else {
       console.log(
-        `No action required. Ingress target is already aligned with active healthy node (${currentContent} - ${targetTier}).`
+        `No action required. ${RECORD_NAME} is already aligned with active healthy tier (${currentContent} - ${targetTier}).`
       )
     }
   },
