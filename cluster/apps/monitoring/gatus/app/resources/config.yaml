@@ -161,6 +161,23 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
+  - name: Ordinary App DNS/Proxy Routing (flux-receiver)
+    group: external
+    # Unlike the checks above, this hits a real per-app hostname on the default
+    # Cloudflare-primary path (same external-dns-managed CNAME as any other app, e.g.
+    # meals/plans/etc.) rather than one of the meta hostnames external-dns never touches.
+    # Catches the class of bug where fast.${SECRET_DOMAIN} itself is healthy but an
+    # individual app's own CNAME record isn't proxied, so it can't reach the tunnel at
+    # all - the fast-failover worker's own tunnel-health probe can't see that, since it
+    # only tests a hostname (external.${SECRET_DOMAIN}) that's always explicitly proxied.
+    url: "https://flux-receiver.${SECRET_DOMAIN}"
+    interval: 2m
+    conditions:
+      - "[STATUS] == 404"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
   - name: Cloudflare Tunnel Direct
     group: external
     url: "https://external.${SECRET_DOMAIN}"
