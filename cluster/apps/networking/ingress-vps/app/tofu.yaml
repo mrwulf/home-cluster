@@ -64,9 +64,12 @@ metadata:
   name: ingress-vps-failover
   namespace: networking
 spec:
-  dependsOn:
-    - name: ingress-vps-us
-      namespace: networking
+  # Deliberately independent of ingress-vps-eu/-us: this creates its own DNS record and
+  # worker, doesn't need either VPS to have ever successfully applied, and its probes
+  # already treat an unresolvable vps-us/vps-eu hostname as unhealthy - falling through to
+  # the Cloudflare Tunnel tier. If it depended on the VPS stacks, a broken VPS apply (like
+  # the one that just happened) would block this from ever deploying too, leaving no
+  # automatic fallback during exactly the outage it exists to route around.
   interval: 5m
   retryInterval: 1m
   approvePlan: auto
@@ -94,9 +97,9 @@ metadata:
   name: ingress-vps-failover-fast
   namespace: networking
 spec:
-  dependsOn:
-    - name: ingress-vps-failover
-      namespace: networking
+  # Deliberately independent - see the comment on ingress-vps-failover above. This
+  # record is the default target for nearly every externally-exposed app, so it
+  # matters even more that it can't be blocked by a broken VPS apply.
   interval: 5m
   retryInterval: 1m
   approvePlan: auto
