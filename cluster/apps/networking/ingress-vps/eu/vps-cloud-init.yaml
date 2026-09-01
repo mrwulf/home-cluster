@@ -335,6 +335,7 @@ runcmd:
           --enable-ssh-root \
           --allow-server-ssh \
           --rosenpass-permissive \
+          --disable-dns \
           --wireguard-port 51822; then
           echo "NetBird connected successfully"
           break
