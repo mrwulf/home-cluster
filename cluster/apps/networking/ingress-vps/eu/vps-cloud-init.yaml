@@ -181,7 +181,7 @@ write_files:
         -v /var/lib/crowdsec/data:/var/lib/crowdsec/data \
         -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
         -v /var/log:/var/log:ro \
-        docker.io/crowdsecurity/crowdsec:v1.7.8
+        docker.io/crowdsecurity/crowdsec:v1.8.0
 
   # 10. Write WireGuard Client Configuration for NetBird Control Plane Uplink
   - path: /etc/wireguard/wg0.conf
