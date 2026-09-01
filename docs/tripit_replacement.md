@@ -2,7 +2,7 @@
 
 # TripIt Replacement — Trip Ingestion Pipeline
 
-**What this is**: a self-hosted replacement for TripIt-style trip aggregators. Forward any booking confirmation email to a dedicated address; it gets parsed, matched or created as a trip, and written into [Trek](https://github.com/Kurea/trek) (a self-hosted travel-planning app) — no third party ever sees your itinerary.
+**What this is**: a self-hosted replacement for TripIt-style trip aggregators. Forward any booking confirmation email to a dedicated address; it gets parsed, matched or created as a trip, and written into [Trek](https://github.com/liketrek/trek) (a self-hosted travel-planning app) — no third party ever sees your itinerary.
 
 **Status**: live and in daily use. See the [features checklist](#features-checklist) for what's built vs. not.
 
