@@ -300,6 +300,10 @@ resource "null_resource" "cert_sync" {
       data.kubernetes_secret_v1.wildcard_cert.data["tls.crt"],
       data.kubernetes_secret_v1.wildcard_cert.data["tls.key"],
     ]))
+    # Also re-run whenever the instance itself gets replaced (e.g. a debian_version bump)
+    # even if the cert content hasn't changed - otherwise the new box is stuck on its
+    # bootstrap self-signed cert forever, since cert_hash alone never changes on its own.
+    instance_id = ovh_cloud_project_instance.us_vps.id
   }
 
   connection {
@@ -339,6 +343,9 @@ resource "null_resource" "cert_sync" {
 resource "null_resource" "home_ip_whitelist_sync" {
   triggers = {
     home_ip = local.home_ip
+    # Also re-run whenever the instance itself gets replaced - see the matching note on
+    # cert_sync's instance_id trigger above.
+    instance_id = ovh_cloud_project_instance.us_vps.id
   }
 
   connection {
