@@ -2,39 +2,11 @@
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
 metadata:
-  name: ingress-vps-us
-  namespace: networking
-spec:
-  interval: 5m
-  retryInterval: 1m
-  approvePlan: auto
-  destroyResourcesOnDeletion: true
-  path: ./cluster/apps/networking/ingress-vps/us
-  serviceAccountName: tf-runner
-  sourceRef:
-    kind: GitRepository
-    name: tofu-infra-git
-    namespace: networking
-  vars:
-    - name: secret_domain
-      value: "${SECRET_DOMAIN}"
-  varsFrom:
-    - kind: Secret
-      name: cloudflare-ddns
-    - kind: Secret
-      name: ingress-tunnel-secrets
-  writeOutputsToSecret:
-    name: vps-us-output
----
-apiVersion: infra.contrib.fluxcd.io/v1alpha2
-kind: Terraform
-metadata:
   name: ingress-vps-eu
   namespace: networking
 spec:
-  dependsOn:
-    - name: ingress-vps-us
-      namespace: networking
+  # EU applies first: it's the less-used region, so a bad Terraform/cloud-init change
+  # hits it before it ever reaches US.
   interval: 5m
   retryInterval: 1m
   approvePlan: auto
@@ -59,12 +31,45 @@ spec:
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
 metadata:
-  name: ingress-vps-failover
+  name: ingress-vps-us
   namespace: networking
 spec:
   dependsOn:
     - name: ingress-vps-eu
       namespace: networking
+  interval: 5m
+  retryInterval: 1m
+  approvePlan: auto
+  destroyResourcesOnDeletion: true
+  path: ./cluster/apps/networking/ingress-vps/us
+  serviceAccountName: tf-runner
+  sourceRef:
+    kind: GitRepository
+    name: tofu-infra-git
+    namespace: networking
+  vars:
+    - name: secret_domain
+      value: "${SECRET_DOMAIN}"
+  varsFrom:
+    - kind: Secret
+      name: cloudflare-ddns
+    - kind: Secret
+      name: ingress-tunnel-secrets
+  writeOutputsToSecret:
+    name: vps-us-output
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: ingress-vps-failover
+  namespace: networking
+spec:
+  # Deliberately independent of ingress-vps-eu/-us: this creates its own DNS record and
+  # worker, doesn't need either VPS to have ever successfully applied, and its probes
+  # already treat an unresolvable vps-us/vps-eu hostname as unhealthy - falling through to
+  # the Cloudflare Tunnel tier. If it depended on the VPS stacks, a broken VPS apply (like
+  # the one that just happened) would block this from ever deploying too, leaving no
+  # automatic fallback during exactly the outage it exists to route around.
   interval: 5m
   retryInterval: 1m
   approvePlan: auto
@@ -92,9 +97,9 @@ metadata:
   name: ingress-vps-failover-fast
   namespace: networking
 spec:
-  dependsOn:
-    - name: ingress-vps-failover
-      namespace: networking
+  # Deliberately independent - see the comment on ingress-vps-failover above. This
+  # record is the default target for nearly every externally-exposed app, so it
+  # matters even more that it can't be blocked by a broken VPS apply.
   interval: 5m
   retryInterval: 1m
   approvePlan: auto
