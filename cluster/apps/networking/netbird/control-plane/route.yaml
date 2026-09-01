@@ -5,20 +5,20 @@ metadata:
   name: netbird-control-plane
   namespace: networking
   annotations:
-    # VPS-primary: must NOT be proxied, or Cloudflare's edge intercepts this instead of
-    # the VPS (see external-dns's --cloudflare-proxied default).
-    external-dns.kubernetes.io/cloudflare-proxied: "false"
+    # Default (Cloudflare-proxied) path, same as every other app on external-gateway.
+    # Previously pinned to external-gateway-vps because Cloudflare's proxy only passes
+    # gRPC (management sync, signal exchange) through correctly with the account-level
+    # gRPC toggle enabled - confirmed on in the dashboard (Network settings) 2026-09-01.
+    # If clients start disconnecting while the control plane still reports them
+    # connected, that's the known gRPC-streaming-through-proxy failure mode - revert
+    # parentRefs to external-gateway-vps and restore cloudflare-proxied: "false".
     gatus.io/enabled: "true"
     gatus.io/endpoint: |
       group: networking
       path: /
 spec:
   parentRefs:
-    # gRPC (management sync, signal exchange) needs streaming/trailers that Cloudflare's
-    # proxy only passes through correctly with its account-level gRPC support enabled;
-    # keep this on the VPS-primary gateway rather than the Cloudflare-Tunnel-primary default
-    # (see cluster/apps/networking/traefik/external/gateway.yaml) until that's confirmed.
-    - name: external-gateway-vps
+    - name: external-gateway
       namespace: networking
   hostnames:
     - "nb.${SECRET_DOMAIN}"
