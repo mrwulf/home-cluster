@@ -74,3 +74,13 @@ spec:
       - --gateway-label-filter=gateway.home-operations.io/type=external
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
+      # Default every record this manages to proxied. An unproxied CNAME chain that
+      # bottoms out at a Cloudflare Tunnel (fast.${SECRET_DOMAIN} -> <tunnelid>.cfargotunnel.com)
+      # only resolves to Cloudflare's real anycast IPs for the hostname that is *itself*
+      # proxied - an unproxied intermediate hop just returns the literal configured
+      # target, which for a tunnel is a deliberately unroutable address (confirmed live:
+      # every app CNAMEing through fast.${SECRET_DOMAIN} was unreachable by real clients
+      # until this). The handful of apps that need to stay on the VPS path (unproxied,
+      # since Cloudflare must not intercept them) override back with
+      # external-dns.kubernetes.io/cloudflare-proxied: "false" on their own route.
+      - --cloudflare-proxied
