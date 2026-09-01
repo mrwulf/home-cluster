@@ -166,8 +166,6 @@ export default {
     const SECRET_DOMAIN = RECORD_NAME.replace(/^ingress\./, "")
     const PROXY_ROUND_ROBIN_CNAME =
       env.PROXY_ROUND_ROBIN_CNAME || `proxy.${SECRET_DOMAIN}`
-    const PROXY_US_CNAME = env.PROXY_US_CNAME || `proxy-us.${SECRET_DOMAIN}`
-    const PROXY_EU_CNAME = env.PROXY_EU_CNAME || `proxy-eu.${SECRET_DOMAIN}`
     const TUNNEL_CNAME = env.TUNNEL_CNAME || `external.${SECRET_DOMAIN}`
     const ZONE_ID = env.CLOUDFLARE_ZONE_ID
     const RECORD_ID = env.CLOUDFLARE_RECORD_ID
@@ -198,15 +196,15 @@ export default {
         `Both US and EU VPS are healthy. Routing to ${PROXY_ROUND_ROBIN_CNAME}.`
       )
     } else if (usProbe.isUp) {
-      targetContent = PROXY_US_CNAME
+      targetContent = VPS_US_HOST
       targetTier = "US Region (OVHcloud VPS / Proxy)"
       isProxied = false
-      console.log(`Only US VPS is healthy. Routing to ${PROXY_US_CNAME}.`)
+      console.log(`Only US VPS is healthy. Routing to ${VPS_US_HOST}.`)
     } else if (euProbe.isUp) {
-      targetContent = PROXY_EU_CNAME
+      targetContent = VPS_EU_HOST
       targetTier = "EU Region (Hetzner VPS / Proxy)"
       isProxied = false
-      console.log(`Only EU VPS is healthy. Routing to ${PROXY_EU_CNAME}.`)
+      console.log(`Only EU VPS is healthy. Routing to ${VPS_EU_HOST}.`)
     } else {
       // Tier 3 Fallback: Cloudflare Tunnel
       targetContent = TUNNEL_CNAME

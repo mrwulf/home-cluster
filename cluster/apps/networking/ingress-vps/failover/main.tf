@@ -84,16 +84,6 @@ resource "cloudflare_workers_script" "failover_monitor" {
       text = "proxy.${var.secret_domain}"
     },
     {
-      name = "PROXY_US_CNAME"
-      type = "plain_text"
-      text = "proxy-us.${var.secret_domain}"
-    },
-    {
-      name = "PROXY_EU_CNAME"
-      type = "plain_text"
-      text = "proxy-eu.${var.secret_domain}"
-    },
-    {
       name = "TUNNEL_CNAME"
       type = "plain_text"
       text = var.cloudflare_tunnel_cname

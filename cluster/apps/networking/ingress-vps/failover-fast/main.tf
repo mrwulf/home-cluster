@@ -95,16 +95,6 @@ resource "cloudflare_workers_script" "fast_failover_monitor" {
       text = "proxy.${var.secret_domain}"
     },
     {
-      name = "PROXY_US_CNAME"
-      type = "plain_text"
-      text = "proxy-us.${var.secret_domain}"
-    },
-    {
-      name = "PROXY_EU_CNAME"
-      type = "plain_text"
-      text = "proxy-eu.${var.secret_domain}"
-    },
-    {
       name = "CLOUDFLARE_ZONE_ID"
       type = "plain_text"
       text = data.cloudflare_zones.domain_zones.result[0].id

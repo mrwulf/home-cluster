@@ -14,8 +14,6 @@ spec:
     - "vps-us.${SECRET_DOMAIN}"
     - "vps-eu.${SECRET_DOMAIN}"
     - "proxy.${SECRET_DOMAIN}"
-    - "proxy-us.${SECRET_DOMAIN}"
-    - "proxy-eu.${SECRET_DOMAIN}"
     - "ingress.${SECRET_DOMAIN}"
     - "fast.${SECRET_DOMAIN}"
     - "external.${SECRET_DOMAIN}"

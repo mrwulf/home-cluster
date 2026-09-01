@@ -270,15 +270,8 @@ resource "cloudflare_dns_record" "proxy_eu" {
   ttl     = 1
 }
 
-# Region-specific record (not client-facing): see note on proxy_us_only in us/main.tf
-resource "cloudflare_dns_record" "proxy_eu_only" {
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "proxy-eu.${var.secret_domain}"
-  content = hcloud_server.eu_vps.ipv4_address
-  type    = "A"
-  proxied = false
-  ttl     = 1
-}
+# Note: no separate region-specific "proxy-eu" record — vps-eu.${domain} below already
+# is one (single IP, same content), so the failover workers just target that directly.
 
 # Output EU VPS public IP
 output "VPS_EU_PUBLIC_IP" {

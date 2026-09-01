@@ -246,17 +246,8 @@ resource "cloudflare_dns_record" "proxy_us" {
   ttl     = 1
 }
 
-# Region-specific record (not client-facing): lets the failover workers target this
-# region alone when the other is unhealthy, which the shared round-robin name above
-# can't express.
-resource "cloudflare_dns_record" "proxy_us_only" {
-  zone_id = data.cloudflare_zones.domain_zones.result[0].id
-  name    = "proxy-us.${var.secret_domain}"
-  content = local.ovh_us_ipv4
-  type    = "A"
-  proxied = false
-  ttl     = 1
-}
+# Note: no separate region-specific "proxy-us" record — vps-us.${domain} below already
+# is one (single IP, same content), so the failover workers just target that directly.
 
 # Output US VPS public IP
 output "VPS_US_PUBLIC_IP" {
