@@ -94,7 +94,7 @@ spec:
           gatus.io/enabled: "true"
           gatus.io/endpoint: |
             conditions:
-              - "[STATUS] == 404"
+              - "[STATUS] == 200"
         parentRefs:
           - name: external-gateway
             namespace: networking
