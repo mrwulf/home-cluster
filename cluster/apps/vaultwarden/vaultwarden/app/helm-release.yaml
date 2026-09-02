@@ -23,7 +23,6 @@ spec:
               ICON_CACHE_FOLDER: "data/icon_cache"
               ATTACHMENTS_FOLDER: "data/attachments"
               DOMAIN: "https://bw.${SECRET_DOMAIN}"
-              TZ: "${TIMEZONE}"
               SIGNUPS_ALLOWED: "false"
               INVITATIONS_ALLOWED: "false"
               ORG_EVENTS_ENABLED: "true"
@@ -41,6 +40,15 @@ spec:
               SMTP_FROM_NAME: vaultwarden@${SECRET_DOMAIN}
               SMTP_PORT: 2525
               SMTP_SECURITY: "off"
+              SSO_ENABLED: true
+              SSO_ONLY: false
+              SSO_PKCE: true
+              SSO_SIGNUPS_MATCH_EMAIL: true
+              SSO_AUTHORITY: https://id.${SECRET_DOMAIN}
+              SSO_SCOPES: email profile groups openid offline_access
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-oidc-credentials"
             probes:
               liveness: &probes
                 enabled: true
@@ -76,6 +84,12 @@ spec:
               BACKUP_ON_STARTUP: true
               GID: 0
               UID: 0
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
 
     service:
       main:
