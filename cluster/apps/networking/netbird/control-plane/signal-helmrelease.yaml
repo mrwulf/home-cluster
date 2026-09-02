@@ -44,6 +44,8 @@ spec:
                 "run",
                 "--port",
                 "10000",
+                "--metrics-port",
+                "9090",
                 "--log-file",
                 "console",
                 "--log-level",
@@ -84,3 +86,5 @@ spec:
           grpc:
             port: 10000
             appProtocol: kubernetes.io/h2c
+          metrics:
+            port: 9090
