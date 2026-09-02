@@ -12,7 +12,7 @@ spec:
   # pkpass files - see docs/tripit_replacement.md for how this fits into
   # the trip-ingest pipeline.
   # renovate: depName=ghcr.io/mrwulf/kitinerary-mcp datasource=docker
-  image: ghcr.io/mrwulf/kitinerary-mcp:v0.1.0
+  image: ghcr.io/mrwulf/kitinerary-mcp:v0.1.1
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
