@@ -166,6 +166,23 @@ spec:
       enabled: true
     kubelet:
       enabled: true
+      # Chart default labelmaps *every* node label (incl. Node Feature Discovery's
+      # extensions.talos.dev/* and feature.node.kubernetes.io/* labels, which carry
+      # driver/microcode version strings) onto every single kubelet/cadvisor/probes/
+      # resources series. Any NFD label value change then mints a brand-new series
+      # identity for the node's entire (very high cardinality) cadvisor series set,
+      # doubling storage until the old copies age out of retention. Narrow the
+      # labelmap to the few labels that are actually stable and useful to have on
+      # every series.
+      vmScrape:
+        spec:
+          relabelConfigs:
+            - action: labelmap
+              regex: __meta_kubernetes_node_label_(kubernetes_io_hostname|node_role_kubernetes_io_control_plane|node_home_arpa_physical)
+            - sourceLabels: [__metrics_path__]
+              targetLabel: metrics_path
+            - targetLabel: job
+              replacement: kubelet
     kubeScheduler:
       service:
         selector:
