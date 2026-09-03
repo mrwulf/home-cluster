@@ -7,7 +7,7 @@ metadata:
 spec:
   # EU applies first: it's the less-used region, so a bad Terraform/cloud-init change
   # hits it before it ever reaches US.
-  interval: 5m
+  interval: 15m
   retryInterval: 1m
   approvePlan: auto
   destroyResourcesOnDeletion: true
@@ -37,7 +37,7 @@ spec:
   dependsOn:
     - name: ingress-vps-eu
       namespace: networking
-  interval: 5m
+  interval: 15m
   retryInterval: 1m
   approvePlan: auto
   destroyResourcesOnDeletion: true
@@ -70,7 +70,7 @@ spec:
   # the Cloudflare Tunnel tier. If it depended on the VPS stacks, a broken VPS apply (like
   # the one that just happened) would block this from ever deploying too, leaving no
   # automatic fallback during exactly the outage it exists to route around.
-  interval: 5m
+  interval: 15m
   retryInterval: 1m
   approvePlan: auto
   destroyResourcesOnDeletion: true
@@ -100,7 +100,7 @@ spec:
   # Deliberately independent - see the comment on ingress-vps-failover above. This
   # record is the default target for nearly every externally-exposed app, so it
   # matters even more that it can't be blocked by a broken VPS apply.
-  interval: 5m
+  interval: 15m
   retryInterval: 1m
   approvePlan: auto
   destroyResourcesOnDeletion: true
