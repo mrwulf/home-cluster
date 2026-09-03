@@ -12,5 +12,50 @@
       matchPackageNames: ["docker.io/ollama/ollama", "ollama/ollama"],
       sourceUrl: "https://github.com/ollama/ollama",
     },
+    {
+      description: "docker.io/chromadb/chroma ships no OCI source label, so Renovate can't auto-detect its changelog",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["docker.io/chromadb/chroma", "chromadb/chroma"],
+      sourceUrl: "https://github.com/chroma-core/chroma",
+    },
+    {
+      description: "ghcr.io/coder/code-server ships no OCI source label, so Renovate can't auto-detect its changelog",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/coder/code-server"],
+      sourceUrl: "https://github.com/coder/code-server",
+    },
+    {
+      description: "netbird management/signal images ship no OCI source label; both live in the main netbird monorepo, distinct from netbirdio/dashboard which already resolves",
+      matchDatasources: ["docker"],
+      matchPackageNames: [
+        "docker.io/netbirdio/management",
+        "docker.io/netbirdio/signal",
+      ],
+      sourceUrl: "https://github.com/netbirdio/netbird",
+    },
+    {
+      description: "ghcr.io/miguelndecarvalho/speedtest-exporter ships no OCI source label, so Renovate can't auto-detect its changelog",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/miguelndecarvalho/speedtest-exporter"],
+      sourceUrl: "https://github.com/MiguelNdeCarvalho/speedtest-exporter",
+    },
+    {
+      description: "docker.io/bellamy/scrob ships no OCI source label; the Docker Hub namespace (bellamy) differs from the GitHub org (ellite), same as ghcr.io/ellite/wallos",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["docker.io/bellamy/scrob", "bellamy/scrob"],
+      sourceUrl: "https://github.com/ellite/scrob",
+    },
+    {
+      description: "bruceforce/vaultwarden-backup ships no OCI source label, so Renovate can't auto-detect its changelog",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["bruceforce/vaultwarden-backup"],
+      sourceUrl: "https://github.com/Bruceforce/vaultwarden-backup",
+    },
+    {
+      description: "vikunja/api and vikunja/frontend ship no OCI source label; the project's GitHub org is go-vikunja, not vikunja",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["vikunja/api", "vikunja/frontend"],
+      sourceUrl: "https://github.com/go-vikunja/vikunja",
+    },
   ],
 }
