@@ -26,7 +26,18 @@ spec:
         }
       ],
       "annotations": {
-        "list": []
+        "list": [
+          {
+            "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+            "enable": true,
+            "expr": "changes((count(up{job=~\"ingress-vps-.*\", service=\"traefik\"} == 1))[2m:15s]) > 0",
+            "iconColor": "orange",
+            "name": "Failover tier changed",
+            "titleFormat": "Edge tier changed",
+            "textFormat": "Number of healthy edge VPS nodes changed - check the Current Failover Tier panel",
+            "step": "15s"
+          }
+        ]
       },
       "editable": true,
       "fiscalYearStartMonth": 0,
@@ -322,6 +333,56 @@ spec:
               "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
               "expr": "relay_peers_idle{job=~\"ingress-vps-.*\"}",
               "legendFormat": "{{job}} - idle"
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 5, "w": 24, "x": 0, "y": 29 },
+          "id": 10,
+          "title": "Current Failover Tier",
+          "description": "Approximates the Cloudflare failover-monitor Worker's own decision (it probes vps-us/vps-eu directly over HTTPS from Cloudflare's edge) using this dashboard's own Traefik-up signal instead, since the Worker's live state isn't otherwise exported. The two should track each other in practice, but this is a proxy, not the literal DNS state - annotations above mark whenever the count of healthy edges changes.",
+          "type": "stat",
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {
+                  "options": {
+                    "0": { "text": "TIER 2 - Cloudflare Tunnel Fallback", "color": "red" },
+                    "1": { "text": "TIER 1 - Degraded (1 edge down)", "color": "orange" },
+                    "2": { "text": "TIER 1 - Both Edges Healthy", "color": "green" }
+                  },
+                  "type": "value"
+                }
+              ],
+              "color": { "mode": "thresholds" },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": null },
+                  { "color": "orange", "value": 1 },
+                  { "color": "green", "value": 2 }
+                ]
+              }
+            }
+          },
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": ["lastNotNull"],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value"
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "count(up{job=~\"ingress-vps-.*\", service=\"traefik\"} == 1)",
+              "instant": true,
+              "legendFormat": "Healthy edge VPS count"
             }
           ]
         }
