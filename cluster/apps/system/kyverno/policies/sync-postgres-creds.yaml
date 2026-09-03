@@ -23,27 +23,7 @@ spec:
           - resources:
               kinds:
                 - Namespace
-              names: [auth, household] # databases ns excluded (since that's the source)
-      generate:
-        generateExisting: true
-        apiVersion: v1
-        kind: Secret
-        name: postgres-superuser
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: databases
-          name: postgres-superuser
-    # Separate rule (not an added namespace on sync-postgres-creds above) because Kyverno
-    # treats a generate rule's fields as immutable after creation — editing the existing
-    # rule's match list in place is rejected by the admission webhook.
-    - name: sync-postgres-creds-media
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names: [media]
+              names: [auth, household, media] # databases ns excluded (since that's the source)
       generate:
         generateExisting: true
         apiVersion: v1
