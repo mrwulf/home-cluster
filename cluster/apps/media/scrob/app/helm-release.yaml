@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app scrob
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: docker.io/bellamy/scrob
+              tag: 2.11.0
+            envFrom:
+              - secretRef:
+                  name: scrob-secret
+              - secretRef:
+                  name: scrob-oidc-credentials
+            env:
+              SERVER_URL: https://scrob.home.${SECRET_DOMAIN}
+              OIDC_ENABLED: "true"
+              OIDC_PROVIDER_NAME: "Pocket ID"
+              OIDC_REDIRECT_URL: https://scrob.home.${SECRET_DOMAIN}/oidc-callback
+              OIDC_AUTO_CREATE_USERS: "true"
+              OIDC_DISABLE_PASSWORD_LOGIN: "true"
+              SMTP_ADDRESS: smtp-relay.system.svc.cluster.local.
+              SMTP_PORT: "2525"
+              SMTP_ENCRYPTION: none
+              FROM_EMAIL: scrob@${SECRET_DOMAIN}
+            resources:
+              requests:
+                cpu: 15m
+                memory: 128Mi
+              limits:
+                memory: 1Gi
+
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: 7330
+
+    route:
+      main:
+        enabled: true
+        annotations:
+          gatus.io/enabled: "true"
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "scrob.home.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: main
+                port: http
+
+    persistence:
+      data:
+        type: emptyDir
+        globalMounts:
+          - path: /app/backend/data
