@@ -13,6 +13,7 @@
     "github>mrwulf/home-cluster//.github/renovate/autoMerge.json5",
     "github>mrwulf/home-cluster//.github/renovate/customManagers.json5",
     "github>mrwulf/home-cluster//.github/renovate/groups.json5",
+    "github>mrwulf/home-cluster//.github/renovate/sourceUrls.json5",
   ],
   enabled: true,
   dependencyDashboardTitle: "Renovate Dashboard",

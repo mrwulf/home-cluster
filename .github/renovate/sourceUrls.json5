@@ -1,0 +1,10 @@
+{
+  packageRules: [
+    {
+      description: "mauriceboe/trek ships no OCI source label, so Renovate can't auto-detect its changelog",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["mauriceboe/trek"],
+      sourceUrl: "https://github.com/liketrek/TREK",
+    },
+  ],
+}
