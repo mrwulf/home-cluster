@@ -133,7 +133,7 @@ write_files:
         -e NB_STUN_PORTS=3478 \
         -e NB_METRICS_PORT=9091 \
         -e NB_LOG_LEVEL=info \
-        docker.io/netbirdio/relay:0.77.1
+        docker.io/netbirdio/relay:0.78.0
 
       [Install]
       WantedBy=multi-user.target
