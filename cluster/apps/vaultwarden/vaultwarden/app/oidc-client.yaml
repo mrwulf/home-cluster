@@ -5,8 +5,9 @@ metadata:
   name: vaultwarden
 spec:
   name: Vaultwarden
+  launchUrl: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/
   callbackUrls:
-    - "https://bw.${SECRET_DOMAIN}/identity/connect/oidc-signin"
+    - "https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/identity/connect/oidc-signin"
   pkceEnabled: true
   allowedUserGroups:
     - name: admin

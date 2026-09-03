@@ -22,7 +22,7 @@ spec:
               DATA_FOLDER: "data"
               ICON_CACHE_FOLDER: "data/icon_cache"
               ATTACHMENTS_FOLDER: "data/attachments"
-              DOMAIN: "https://bw.${SECRET_DOMAIN}"
+              DOMAIN: "https:/${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
               SIGNUPS_ALLOWED: "false"
               INVITATIONS_ALLOWED: "false"
               ORG_EVENTS_ENABLED: "true"
@@ -122,7 +122,7 @@ spec:
           - name: external-gateway
             namespace: networking
         hostnames:
-          - "bw.${SECRET_DOMAIN}"
+          - "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef
