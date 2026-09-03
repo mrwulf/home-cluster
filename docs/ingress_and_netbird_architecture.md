@@ -206,17 +206,17 @@ flowchart TD
 
 ### 4.3 Access Control & Routing Policy Matrix
 
-| Source          | Target / Destination                    | Ports                 | Gateway                       | Policy                               | Description                                                     |
-| :-------------- | :-------------------------------------- | :-------------------- | :---------------------------- | :----------------------------------- | :-------------------------------------------------------------- |
-| **`vps-peers`** | `*.${SECRET_DOMAIN}`, `10.0.10.20`      | `80, 443, 8000, 8443` | `networkrouter-k8s`           | `Public Sites`, `External Ingress`   | Reverse-proxying public web apps without exposing ports on LAN. |
-| **`users`**     | `*.${SECRET_DOMAIN}`, `10.0.10.20`      | `443`                 | `networkrouter-k8s`           | `Public Sites Policy`                | Authenticated access to public apps.                            |
-| **`users`**     | `*.home.${SECRET_DOMAIN}`, `10.0.10.30` | `443`                 | `networkrouter-k8s`           | `Private Sites`, `Internal Ingress`  | Internal home apps (Home Assistant, Grafana, Plex, etc.).       |
-| **`users`**     | Gateway `10.0.0.1`, Backup `10.0.1.1`   | Any                   | `firewall02/03`               | `firewall-active`, `firewall-backup` | Core DNS and gateway routing.                                   |
-| **`admin`**     | `k8s.home` (`10.0.10.201`)              | `6443`                | `networkrouter-k8s`           | `K8s API Policy`                     | Direct kubectl / k8s cluster administration.                    |
-| **`admin`**     | Talos Subnet (`10.0.1.48/29`)           | Any                   | `networkrouter-k8s`           | `k8s nodes Policy`                   | `talosctl` node management and diagnostics.                     |
-| **`admin`**     | NAS Storage (`${CORE_NFS_SERVER}`)      | `22, 443, 7090`       | `networkrouter-k8s`           | `NAS Policy`, `Git Access`           | Storage admin, NFS shares, and Git SSH repositories.            |
-| **`admin`**     | Firewalls (`10.0.0.2`, `10.0.0.3`)      | Any                   | `firewall02/03`               | `firewall02`, `firewall03`           | OPNsense firewall administrative web GUIs and SSH.              |
-| **`admin`**     | Internet Egress (`0.0.0.0/0`)           | Any                   | `firewall02/03` / `vps-peers` | `home-internet-access`, `VPS VPN`    | Full tunnel egress through home or VPS exit nodes.              |
+| Source          | Target / Destination                    | Ports                 | Gateway             | Policy                               | Description                                                     |
+| :-------------- | :-------------------------------------- | :-------------------- | :------------------ | :----------------------------------- | :-------------------------------------------------------------- |
+| **`vps-peers`** | `*.${SECRET_DOMAIN}`, `10.0.10.20`      | `80, 443, 8000, 8443` | `networkrouter-k8s` | `Public Sites`, `External Ingress`   | Reverse-proxying public web apps without exposing ports on LAN. |
+| **`users`**     | `*.${SECRET_DOMAIN}`, `10.0.10.20`      | `443`                 | `networkrouter-k8s` | `Public Sites Policy`                | Authenticated access to public apps.                            |
+| **`users`**     | `*.home.${SECRET_DOMAIN}`, `10.0.10.30` | `443`                 | `networkrouter-k8s` | `Private Sites`, `Internal Ingress`  | Internal home apps (Home Assistant, Grafana, Plex, etc.).       |
+| **`users`**     | Gateway `10.0.0.1`, Backup `10.0.1.1`   | Any                   | `firewall02/03`     | `firewall-active`, `firewall-backup` | Core DNS and gateway routing.                                   |
+| **`admin`**     | `k8s.home` (`10.0.10.201`)              | `6443`                | `networkrouter-k8s` | `K8s API Policy`                     | Direct kubectl / k8s cluster administration.                    |
+| **`admin`**     | Talos Subnet (`10.0.1.48/29`)           | Any                   | `networkrouter-k8s` | `k8s nodes Policy`                   | `talosctl` node management and diagnostics.                     |
+| **`admin`**     | NAS Storage (`${CORE_NFS_SERVER}`)      | `22, 443, 7090`       | `networkrouter-k8s` | `NAS Policy`, `Git Access`           | Storage admin, NFS shares, and Git SSH repositories.            |
+| **`admin`**     | Firewalls (`10.0.0.2`, `10.0.0.3`)      | Any                   | `firewall02/03`     | `firewall02`, `firewall03`           | OPNsense firewall administrative web GUIs and SSH.              |
+| **`admin`**     | Internet Egress (`0.0.0.0/0`)           | Any                   | `firewall02/03`     | `home-internet-access`               | Full tunnel egress through home exit nodes.                     |
 
 ### 4.4 Declarative NetworkRouter & Ephemeral Lifecycle Invariants
 

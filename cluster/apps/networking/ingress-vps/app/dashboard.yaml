@@ -269,6 +269,61 @@ spec:
               "legendFormat": "{{job}} - {{device}} (TX)"
             }
           ]
+        },
+        {
+          "gridPos": { "h": 8, "w": 16, "x": 0, "y": 21 },
+          "id": 8,
+          "title": "Outbound Traffic Attribution (Mbps) - what's actually using the WAN link",
+          "description": "Splits physical-NIC egress into the two instrumented consumers (Traefik responses to public clients, and NetBird relay traffic relayed to other mesh peers) and whatever is left over. A large 'Unattributed' band that doesn't track request/relay activity usually means something outside these two services is using the VPS as its egress path (e.g. a NetBird peer left on full-tunnel exit-node routing through this VPS) - cross-check with `netbird status` / the NetBird management dashboard on the box.",
+          "type": "timeseries",
+          "fieldConfig": {
+            "defaults": {
+              "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 25, "stacking": { "mode": "normal" } },
+              "unit": "bps"
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "sum by (job) (rate(traefik_entrypoint_responses_bytes_total{job=~\"ingress-vps-.*\", entrypoint=\"websecure\"}[5m])) * 8",
+              "legendFormat": "{{job}} - Traefik HTTPS responses (public clients)"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "sum by (job) (rate(relay_transfer_sent_bytes_total{job=~\"ingress-vps-.*\"}[5m])) * 8",
+              "legendFormat": "{{job}} - NetBird relay (sent to peers)"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "clamp_min(sum by (job) (rate(node_network_transmit_bytes_total{job=~\"ingress-vps-.*\", device=~\"eth.*|ens.*|enp.*\"}[5m])) * 8 - (sum by (job) (rate(traefik_entrypoint_responses_bytes_total{job=~\"ingress-vps-.*\", entrypoint=\"websecure\"}[5m])) * 8) - (sum by (job) (rate(relay_transfer_sent_bytes_total{job=~\"ingress-vps-.*\"}[5m])) * 8), 0)",
+              "legendFormat": "{{job}} - Unattributed (not Traefik, not relay)"
+            }
+          ]
+        },
+        {
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 21 },
+          "id": 9,
+          "title": "NetBird Relay - Active/Idle Peers",
+          "description": "How many mesh peers currently hold a relayed (non-P2P) session through this VPS. Correlate spikes here against the Unattributed band on the attribution panel.",
+          "type": "timeseries",
+          "fieldConfig": {
+            "defaults": {
+              "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "fillOpacity": 10 },
+              "unit": "short"
+            }
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "relay_peers_active{job=~\"ingress-vps-.*\"}",
+              "legendFormat": "{{job}} - active"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+              "expr": "relay_peers_idle{job=~\"ingress-vps-.*\"}",
+              "legendFormat": "{{job}} - idle"
+            }
+          ]
         }
       ],
       "refresh": "30s",

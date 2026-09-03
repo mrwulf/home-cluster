@@ -367,22 +367,6 @@ spec:
   policySourceGroups:
     - "admin"
 ---
-apiVersion: netbird.io/v1
-kind: NBResource
-metadata:
-  name: vps-vpn-exit
-  namespace: networking
-  annotations:
-    netbird.io/policy: "vps-internet-access-policy"
-spec:
-  name: "VPS VPN Internet Egress"
-  address: 0.0.0.0/0
-  networkID: ${NETBIRD_SELFHOSTED_NETWORK_ID:-da8gl8fbkucc73a14du0}
-  groups:
-    - "vps-peers"
-  policySourceGroups:
-    - "admin"
----
 # ==============================================================================
 # Declarative Access Policies (NBPolicy)
 # ==============================================================================
@@ -553,14 +537,3 @@ spec:
     - tcp
   ports:
     - 443
----
-apiVersion: netbird.io/v1
-kind: NBPolicy
-metadata:
-  name: vps-vpn-policy
-spec:
-  name: "VPS VPN Policy"
-  sourceGroups:
-    - "admin"
-  destinationGroups:
-    - vps-peers
