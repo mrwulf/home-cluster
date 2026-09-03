@@ -24,9 +24,9 @@ sops:
             -----END AGE ENCRYPTED FILE-----
           recipient: age10ls774hqamu0vgl65vwxrfu2tqm6h7p7pj9k6gagcpluxllypfwsk3hqzm
     encrypted_regex: ^(value)$
-    lastmodified: "2026-06-14T07:39:13Z"
-    mac: ENC[AES256_GCM,data:xog3h0n6jVkFvhZGRwwaj25D96u4+ynVjW75KBfvAY2BFuyp1xaLouThcJXBZ+vxLwaQFnNNE/g9xPCyPiz8ZR1jPPtZlnJinLQtIdXExvNcpPqX5HAwY3vh5N40QsV3ID6l2EiNvej7HINTg/eXkxL/tLXHUcW0mpKZKoou9Ww=,iv:EINFrY2u1lELkns95uA6hlt1akebsgI8jV9T2GktEY4=,tag:7BEwhnwV3Rqqli1qiuIWDw==,type:str]
-    version: 3.13.1
+    lastmodified: "2026-09-03T22:43:11Z"
+    mac: ENC[AES256_GCM,data:6XpRQtGTuwnTctoTRU6kg9oWsiyQkzadNdnI0NHSxoyE2tmgnvU/5mAyEqQ6doxuar9ZG4CBltEZuxHQmQKhl8VC3HSfYJTeGXi4kWfMnIIE/vn6NERP6pCYy4Z7HS0fOMUFIkG0k4ziRvbPoEaKYVlpRLIaAlOlDRbBBwPAAyo=,iv:8Wvn/MQfNMuc6gNrZlO5ytXdzTRNg16sbwsNDUu6J4k=,tag:ABuDMVuJTczrrh3g6A3YmA==,type:str]
+    version: 3.13.3
 ---
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDUser
@@ -54,9 +54,9 @@ sops:
             -----END AGE ENCRYPTED FILE-----
           recipient: age10ls774hqamu0vgl65vwxrfu2tqm6h7p7pj9k6gagcpluxllypfwsk3hqzm
     encrypted_regex: ^(value)$
-    lastmodified: "2026-06-14T07:39:13Z"
-    mac: ENC[AES256_GCM,data:xog3h0n6jVkFvhZGRwwaj25D96u4+ynVjW75KBfvAY2BFuyp1xaLouThcJXBZ+vxLwaQFnNNE/g9xPCyPiz8ZR1jPPtZlnJinLQtIdXExvNcpPqX5HAwY3vh5N40QsV3ID6l2EiNvej7HINTg/eXkxL/tLXHUcW0mpKZKoou9Ww=,iv:EINFrY2u1lELkns95uA6hlt1akebsgI8jV9T2GktEY4=,tag:7BEwhnwV3Rqqli1qiuIWDw==,type:str]
-    version: 3.13.1
+    lastmodified: "2026-09-03T22:43:11Z"
+    mac: ENC[AES256_GCM,data:6XpRQtGTuwnTctoTRU6kg9oWsiyQkzadNdnI0NHSxoyE2tmgnvU/5mAyEqQ6doxuar9ZG4CBltEZuxHQmQKhl8VC3HSfYJTeGXi4kWfMnIIE/vn6NERP6pCYy4Z7HS0fOMUFIkG0k4ziRvbPoEaKYVlpRLIaAlOlDRbBBwPAAyo=,iv:8Wvn/MQfNMuc6gNrZlO5ytXdzTRNg16sbwsNDUu6J4k=,tag:ABuDMVuJTczrrh3g6A3YmA==,type:str]
+    version: 3.13.3
 ---
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDUser
@@ -84,6 +84,36 @@ sops:
             -----END AGE ENCRYPTED FILE-----
           recipient: age10ls774hqamu0vgl65vwxrfu2tqm6h7p7pj9k6gagcpluxllypfwsk3hqzm
     encrypted_regex: ^(value)$
-    lastmodified: "2026-06-14T07:39:13Z"
-    mac: ENC[AES256_GCM,data:xog3h0n6jVkFvhZGRwwaj25D96u4+ynVjW75KBfvAY2BFuyp1xaLouThcJXBZ+vxLwaQFnNNE/g9xPCyPiz8ZR1jPPtZlnJinLQtIdXExvNcpPqX5HAwY3vh5N40QsV3ID6l2EiNvej7HINTg/eXkxL/tLXHUcW0mpKZKoou9Ww=,iv:EINFrY2u1lELkns95uA6hlt1akebsgI8jV9T2GktEY4=,tag:7BEwhnwV3Rqqli1qiuIWDw==,type:str]
-    version: 3.13.1
+    lastmodified: "2026-09-03T22:43:11Z"
+    mac: ENC[AES256_GCM,data:6XpRQtGTuwnTctoTRU6kg9oWsiyQkzadNdnI0NHSxoyE2tmgnvU/5mAyEqQ6doxuar9ZG4CBltEZuxHQmQKhl8VC3HSfYJTeGXi4kWfMnIIE/vn6NERP6pCYy4Z7HS0fOMUFIkG0k4ziRvbPoEaKYVlpRLIaAlOlDRbBBwPAAyo=,iv:8Wvn/MQfNMuc6gNrZlO5ytXdzTRNg16sbwsNDUu6J4k=,tag:ABuDMVuJTczrrh3g6A3YmA==,type:str]
+    version: 3.13.3
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUser
+metadata:
+    name: gordons
+spec:
+    admin: false
+    email:
+        value: ENC[AES256_GCM,data:GNTwBdHXEyzUgCvMoO/FcVcgaA==,iv:/OS0nNyCevxKaHfEexWhmxs6K2uHstYap2bDoM80Uzs=,tag:iLDnp80lyzMoQ3lmiF3tuQ==,type:str]
+    firstName:
+        value: ENC[AES256_GCM,data:ttdF+MPSDbS4Ddg=,iv:+HhQ+kmLKhdXaLKhKDVF9EPB33WyXIYrIVPmFIyJY3c=,tag:Bn85a5H8VRs2BSizYT/ksw==,type:str]
+    lastName:
+        value: ENC[AES256_GCM,data:cqk5+LXp,iv:ZroHxqm1e0mzk6BH7MGxEjstM1DVBPoZm/7yWR6EA68=,tag:P2gX1BZBsqh8+c5kGKBn/A==,type:str]
+    username:
+        value: ENC[AES256_GCM,data:Z4cEiN0i3g==,iv:m3T5gUWSNiTnzC3a+EMBG3Ok8xqKXhHUVCjH1o1Y+cQ=,tag:kNeahwcTj0w06HXVzIA46w==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBlVjlFeWt3ejZBUDNUYzJL
+            VzJ4TnIxbElaRFFOT2tQbk9DcEVXTDNkY0JZCkNHM3pZeWIwRUFXay8rQWlOem4v
+            M1VGRXVaeUF3akdreXNtZHVSRHZZaVkKLS0tIG9BUS9xaTJoSVNidTRTU244WmFt
+            UkNsYnE0V1M5VnVQUWhvZnJjcXlDV2sKfOQ3i+nDH5haVdK/gtuHEKuU2uZl2Hxc
+            kjwNz/O6Zs+yJHhwAiEI5poMk1UZW47ScymYfS3P7fY7VYQpStElrA==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age10ls774hqamu0vgl65vwxrfu2tqm6h7p7pj9k6gagcpluxllypfwsk3hqzm
+    encrypted_regex: ^(value)$
+    lastmodified: "2026-09-03T22:43:11Z"
+    mac: ENC[AES256_GCM,data:6XpRQtGTuwnTctoTRU6kg9oWsiyQkzadNdnI0NHSxoyE2tmgnvU/5mAyEqQ6doxuar9ZG4CBltEZuxHQmQKhl8VC3HSfYJTeGXi4kWfMnIIE/vn6NERP6pCYy4Z7HS0fOMUFIkG0k4ziRvbPoEaKYVlpRLIaAlOlDRbBBwPAAyo=,iv:8Wvn/MQfNMuc6gNrZlO5ytXdzTRNg16sbwsNDUu6J4k=,tag:ABuDMVuJTczrrh3g6A3YmA==,type:str]
+    version: 3.13.3
