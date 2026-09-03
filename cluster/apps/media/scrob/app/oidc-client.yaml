@@ -5,7 +5,7 @@ metadata:
   name: scrob
 spec:
   name: Scrob
-  pkceEnabled: true
+  pkceEnabled: false
   launchUrl: https://scrob.home.${SECRET_DOMAIN}/
   callbackUrls:
     - https://scrob.home.${SECRET_DOMAIN}/oidc-callback
