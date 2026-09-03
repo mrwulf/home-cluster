@@ -6,5 +6,11 @@
       matchPackageNames: ["mauriceboe/trek"],
       sourceUrl: "https://github.com/liketrek/TREK",
     },
+    {
+      description: "docker.io/ollama/ollama ships no OCI source label, so Renovate can't auto-detect its changelog",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["docker.io/ollama/ollama", "ollama/ollama"],
+      sourceUrl: "https://github.com/ollama/ollama",
+    },
   ],
 }
