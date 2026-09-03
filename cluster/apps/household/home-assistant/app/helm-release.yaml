@@ -30,7 +30,7 @@ spec:
           main:
             image:
               repository: ghcr.io/home-assistant/home-assistant
-              tag: "2026.8"
+              tag: "2026.9"
             env:
               TZ: "${TIMEZONE}"
             resources:
