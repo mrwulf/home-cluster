@@ -1,0 +1,18 @@
+---
+# Not VolSync-backed (deviates from the usual PVC pattern, rule 8): this is
+# purely a re-derivable TMDB/TheTVDB poster/backdrop cache, admin-pruned to a
+# configurable size cap — losing it just means re-downloading covers, not
+# data loss. It's a plain PVC instead of emptyDir because the library here is
+# large enough that redownloading the whole cache on every pod restart is
+# too slow to be worth avoiding a small PVC.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: scrob-cache
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ceph-block
+  resources:
+    requests:
+      storage: 10Gi

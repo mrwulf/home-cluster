@@ -72,6 +72,6 @@ spec:
 
     persistence:
       data:
-        type: emptyDir
+        existingClaim: scrob-cache
         globalMounts:
           - path: /app/backend/data
