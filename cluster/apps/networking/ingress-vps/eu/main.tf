@@ -283,8 +283,12 @@ output "VPS_EU_PUBLIC_IP" {
 data "http" "vps_eu_healthcheck" {
   url      = "https://vps-eu.${var.secret_domain}"
   insecure = true
+  # 90 attempts x up to 10s gives cloud-init a ~15m budget to finish (apt/docker pulls,
+  # netbird's own 10x5s connect retry, crowdsec's apt repo setup) before Terraform gives
+  # up; 36 attempts (~6m) was observed to be too tight on a cold Hetzner boot and made a
+  # healthy rebuild look like a failed apply.
   retry {
-    attempts     = 36
+    attempts     = 90
     min_delay_ms = 5000
     max_delay_ms = 10000
   }

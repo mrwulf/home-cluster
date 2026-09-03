@@ -70,3 +70,33 @@ spec:
           for: 5m
           labels:
             severity: warning
+
+        - alert: IngressVPSTerraformStateLocked
+          annotations:
+            summary: "Ingress VPS Terraform state has been locked for a long time"
+            description: "Terraform resource {{ $labels.name }} has held its state lock for over 25m. tfstate.forceUnlock=auto should clear a stale lock automatically; a lock surviving this long points at something still applying, or the auto-unlock itself failing."
+          expr: |
+            tofu_resource_info{name=~"ingress-vps-.*", state_locked="True"}
+          for: 25m
+          labels:
+            severity: critical
+
+        - alert: IngressVPSTerraformNotReady
+          annotations:
+            summary: "Ingress VPS Terraform resource failing to reconcile"
+            description: "Terraform resource {{ $labels.name }} has been Ready=False for over 15m - check `kubectl get terraform {{ $labels.name }} -n {{ $labels.exported_namespace }}` and the tf-runner pod logs."
+          expr: |
+            tofu_resource_info{name=~"ingress-vps-.*", ready="False"}
+          for: 15m
+          labels:
+            severity: warning
+
+        - alert: IngressVPSTerraformFlapping
+          annotations:
+            summary: "Ingress VPS Terraform resource repeatedly failing to apply"
+            description: "Terraform resource {{ $labels.name }} has racked up {{ $value }} consecutive reconciliation failures."
+          expr: |
+            tofu_reconciliation_failures{name=~"ingress-vps-.*"} > 3
+          for: 10m
+          labels:
+            severity: warning

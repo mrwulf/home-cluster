@@ -27,6 +27,12 @@ spec:
       name: ingress-tunnel-secrets
   writeOutputsToSecret:
     name: vps-eu-output
+  # Self-heal a stale state lock left behind by a killed/evicted tf-runner pod (single
+  # controller, GitOps-only workflow here - no other process ever applies this state, so
+  # there's nothing "auto" could actually collide with). Without this, an orphaned lock
+  # blocks every future reconcile forever with no recovery but a manual force-unlock.
+  tfstate:
+    forceUnlock: auto
 ---
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
@@ -57,6 +63,8 @@ spec:
       name: ingress-tunnel-secrets
   writeOutputsToSecret:
     name: vps-us-output
+  tfstate:
+    forceUnlock: auto
 ---
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
@@ -90,6 +98,8 @@ spec:
       name: cloudflare-ddns
     - kind: Secret
       name: ingress-tunnel-secrets
+  tfstate:
+    forceUnlock: auto
 ---
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
@@ -120,3 +130,5 @@ spec:
       name: cloudflare-ddns
     - kind: Secret
       name: ingress-tunnel-secrets
+  tfstate:
+    forceUnlock: auto

@@ -243,6 +243,52 @@ spec:
                   replacement: $1
                   sourceLabels: ["__meta_kubernetes_pod_node_name"]
                   targetLabel: kubernetes_node
+      # tofu-controller doesn't emit per-object gotk_reconcile_condition metrics like the
+      # core Flux controllers do (it only exposes an aggregate error counter across every
+      # Terraform object), so a stuck/locked apply is otherwise invisible to Prometheus.
+      # This surfaces each Terraform CR's own status as a metric the same way KSM already
+      # does for Flux's own CRDs, so ingress-vps-*'s PrometheusRule can alert on it.
+      rbac:
+        extraRules:
+          - apiGroups:
+              - infra.contrib.fluxcd.io
+            resources:
+              - terraforms
+            verbs: ["list", "watch"]
+      customResourceState:
+        enabled: true
+        config:
+          spec:
+            resources:
+              - groupVersionKind:
+                  group: infra.contrib.fluxcd.io
+                  version: v1alpha2
+                  kind: Terraform
+                metricNamePrefix: tofu
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a tofu-controller Terraform resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      state_locked:
+                        [status, conditions, "[type=StateLocked]", status]
+                      last_applied_revision: [status, lastAppliedRevision]
+                      last_attempted_revision: [status, lastAttemptedRevision]
+                  - name: "reconciliation_failures"
+                    help: "Consecutive reconciliation failures for a Terraform resource."
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, reconciliationFailures]
+                    labelsFromPath:
+                      name: [metadata, name]
+                      exported_namespace: [metadata, namespace]
 
     prometheus-node-exporter:
       fullnameOverride: node-exporter
