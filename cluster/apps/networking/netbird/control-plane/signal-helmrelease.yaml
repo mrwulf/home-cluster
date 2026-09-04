@@ -37,7 +37,7 @@ spec:
             image:
               # renovate: depName=netbirdio/signal datasource=docker
               repository: docker.io/netbirdio/signal
-              tag: 0.78.0
+              tag: 0.78.1
             command: ["/go/bin/netbird-signal"]
             args:
               [
