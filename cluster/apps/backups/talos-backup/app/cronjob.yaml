@@ -16,7 +16,7 @@ spec:
           containers:
             - name: talos-backup
               # renovate: depName=ghcr.io/siderolabs/talosctl datasource=docker
-              image: ghcr.io/siderolabs/talosctl:v1.13.9
+              image: ghcr.io/siderolabs/talosctl:v1.13.10
               workingDir: /tmp
               imagePullPolicy: IfNotPresent
               resources:
