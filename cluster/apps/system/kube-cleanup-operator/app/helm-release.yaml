@@ -29,6 +29,12 @@ spec:
   maxHistory: 3
   values:
     replicas: 2
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 25m
+      limits:
+        memory: 256Mi
     rbac:
       create: true
       global: true
