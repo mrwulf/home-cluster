@@ -40,8 +40,11 @@ spec:
         cephx:
           daemon:
             keyRotationPolicy: KeyGeneration
-            keyGeneration: 2
-            keyType: aes
+            keyGeneration: 3
+            keyType: aes256k
+          # CSI client keys stay on aes: aes256k cephx tickets require Linux
+          # kernel >=7.0 on the mounting host (Talos nodes run 6.18), so
+          # rotating CSI to aes256k would break RBD/CephFS mounts today.
           csi:
             keyRotationPolicy: KeyGeneration
             keyGeneration: 1
