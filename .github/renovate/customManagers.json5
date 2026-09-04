@@ -48,7 +48,7 @@
       ],
       managerFilePatterns: ["/(^|/)(cluster|talos)/.+\\.ya?ml$/"],
       matchStrings: [
-        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: versioning=(?<versioning>\\S+))?\\s*\\n\\s*#?\\s*(?:ref|commit|version|tag):\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?",
+        "# renovate: depName=(?<depName>\\S+)(?: datasource=(?<datasource>\\S+))?(?: versioning=(?<versioning>\\S+))?\\s*\\n\\s*#?\\s*(?:ref|commit|version|tag):\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?",
       ],
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}git-refs{{/if}}",
     },
