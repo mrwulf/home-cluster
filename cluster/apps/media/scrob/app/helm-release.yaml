@@ -18,7 +18,7 @@ spec:
           main:
             image:
               repository: docker.io/bellamy/scrob
-              tag: 2.13.0
+              tag: 2.14.0
             envFrom:
               - secretRef:
                   name: scrob-secret
