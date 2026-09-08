@@ -42,7 +42,7 @@ spec:
           codeserver:
             image:
               repository: ghcr.io/coder/code-server
-              tag: 4.136.1
+              tag: 4.136.2
             args:
               - --auth
               - "none"
