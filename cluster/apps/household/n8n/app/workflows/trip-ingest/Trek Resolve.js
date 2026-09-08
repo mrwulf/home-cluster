@@ -578,6 +578,23 @@ if (!extractionError) {
         }
       }
 
+      // create_reservation always lands as pending (it has no status field at all) and
+      // create_transport defaults to pending too - but the forwarded email itself IS the
+      // confirmation of the booking, so every booking this pipeline creates should read
+      // as confirmed rather than sit as an unconfirmed draft.
+      async function confirmReservation(bookingResult) {
+        const reservationId =
+          bookingResult &&
+          bookingResult.reservation &&
+          bookingResult.reservation.id
+        if (!reservationId) return
+        await mcpTool(sessionId, "update_reservation", {
+          tripId: tripId,
+          reservationId: reservationId,
+          status: "confirmed",
+        })
+      }
+
       if (
         ex.booking_type === "flight" ||
         ex.booking_type === "transit" ||
@@ -595,6 +612,7 @@ if (!extractionError) {
           title:
             (ex.provider_name || transportType) +
             (ex.confirmation_code ? " (" + ex.confirmation_code + ")" : ""),
+          status: "confirmed",
         }
         if (startDayId) args.start_day_id = startDayId
         if (endDayId) args.end_day_id = endDayId
@@ -840,6 +858,7 @@ if (!extractionError) {
             args.budget_category = costPlan.category
           }
           createdBooking = await mcpTool(sessionId, "create_reservation", args)
+          await confirmReservation(createdBooking)
           await attachTravelers(createdBooking)
           if (costPlan && !costPlan.linked)
             await recordBudgetItem(args.title, null)
@@ -870,6 +889,7 @@ if (!extractionError) {
           args.budget_category = costPlan.category
         }
         createdBooking = await mcpTool(sessionId, "create_reservation", args)
+        await confirmReservation(createdBooking)
         await attachTravelers(createdBooking)
         if (costPlan && !costPlan.linked)
           await recordBudgetItem(args.title, null)
