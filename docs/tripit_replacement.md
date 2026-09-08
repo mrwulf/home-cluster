@@ -59,9 +59,11 @@ graph TD
 
 ### 1. Email ingestion — Cloudflare Worker
 
-A Cloudflare Worker already bound to Email Routing traffic gets one extra rule: if the recipient matches the trip-ingest alias, stream the raw RFC-822 MIME (headers + body + attachments, unparsed) as the POST body to the n8n webhook, with `Content-Type: message/rfc822`. Two headers ride along: `X-Trip-Ingest-Secret` (the real auth gate — see below) and `X-Envelope-From` (n8n needs this to know who to notify; it isn't reliably present in the forwarded MIME's own `From:` header).
+A Cloudflare Worker already bound to Email Routing traffic gets one extra rule: if the recipient matches the trip-ingest alias, stream the raw RFC-822 MIME (headers + body + attachments, unparsed) as the POST body to the n8n webhook, with `Content-Type: message/rfc822`. Two headers ride along: `X-Trip-Ingest-Secret` (the real auth gate — see below) and `X-Envelope-From` (n8n needs this to know who to notify and, for a new trip, who to add as a member).
 
 The Worker also does a cheap sender-allowlist check before forwarding anything — not real auth (envelope `from` is trivially spoofable), just a deterrent against opportunistic scanner traffic. **The real gate is the shared secret**: the webhook route has zero auth at the ingress/proxy level (it has to stay open — it's shared infrastructure for every external trigger n8n handles), so the workflow's first node validates `X-Trip-Ingest-Secret` and returns a bare 401 with no further processing on mismatch. This is not optional — without it, the endpoint is an open door to both arbitrary compute consumption and arbitrary data injection.
+
+**A real bug found live**: a genuine resend silently vanished — no n8n execution, no bounce visible to the sender. Cloudflare's `message.from` is the SMTP envelope sender, and webwulf.net's own mail relay rewrites it into a VERP bounce-tracking address (`bounce+<hash>-plans=sysinfra.pro@webwulf.net`) for some forwarding paths — which matches no sender-allowlist rule and is neither a deliverable inbox nor a Trek account, even though the message's own `From:` header still carried the real sender. The Worker (a separate repo, [`cloudflare-implementation`](https://github.com/mrwulf/cloudflare-implementation)) now also parses the raw message's own `From:` header as a second trust signal, and prefers it (when present) over the envelope for the `X-Envelope-From` value forwarded to n8n — that's the address n8n actually needs to be reachable.
 
 ### 2. n8n workflow — `cluster/apps/household/n8n/app/workflows/trip-ingest.json`
 
@@ -140,6 +142,20 @@ Two related gaps found live-testing a real forwarded confirmation: passenger nam
 
 Both resolution failures (a guest that couldn't be created, an unreachable `add_trip_member`) surface as a `Warning:` line in the notification email — degraded, never silent.
 
+#### Flight route detail: endpoints, legs, and metadata
+
+Found live against a real 1-layover booking: the Trek record showed the correct overall departure/arrival time but no airports, no layover, and no flight numbers at all.
+
+**Root cause.** `Trek Resolve`'s `endpoints[]` builder only ran when `stops.length > 1` — but `stops[]` carries **intermediate** connections only (origin/destination live in separate `ex.origin_*`/`destination_*` fields), so a direct flight (0 stops) or the overwhelmingly common single-layover flight (1 stop) never triggered it at all. `endpoints[]` now builds whenever a full route exists (`origin` + `destination` present), regardless of stop count — origin, every intermediate stop, and destination each become one endpoint.
+
+**Flight numbers were never captured at all** — `mapFlightGroup` read `airline` off each leg's `reservationFor` but never `flightNumber`. `Kitinerary Extract` now collects it per leg (`flight_number: "6550 / 3245"` for a 2-leg itinerary) onto the `ex` shape, and `Trek Resolve` writes it into the booking's `metadata` (`{ airline, flight_number, departure_airport, arrival_airport }` — the shape `create_transport`'s own docstring specifies for flights) alongside the endpoints.
+
+**Airport coordinates: code over geocoding.** For a flight endpoint, `Trek Resolve` now sets `code: <IATA>` instead of free-text geocoding through `search_place` — Trek resolves the airport's coordinates from the code server-side, which is both more reliable and skips a network round-trip. Non-flight transport (train, cruise) still geocodes by name, since there's no equivalent universal code system for those.
+
+**Per-connection times need `legs[]`, not just `endpoints[]`.** A shared connecting airport (the layover) is a single `endpoints[]` row with one `local_time` field — it cannot hold both "arrived 4:45pm" and "departed 6:00pm" at once. Trek's `legs[]` input (`from`/`to`/`airline`/`flight_number`/`dep_time`/`arr_time` per segment, one entry per real flight, one fewer than `endpoints[]`) is the only way to record both. `Kitinerary Extract` now builds `leg_details[]` (empty for a direct flight, where there's no shared stop to disambiguate) and `Trek Resolve` passes it straight through as `args.legs`.
+
+Confirmed live end-to-end (disposable workflow, synthetic 2-leg fixture): the resulting Trek booking carried correct `metadata.legs[]` times, IATA-resolved endpoint coordinates, and the full ACY→PHL→SAN route with layover — with no manual follow-up.
+
 ### 4. Trip resolution — Trek's native MCP endpoint
 
 Trek ships its own `/mcp` endpoint natively (bearer-token auth, independent of its human-login OIDC mode) — call it directly over cluster-internal DNS. **Do not wrap an already-MCP-native app behind a gateway like ToolHive**; that's a redundant hop and a second thing to keep in sync for no capability gained.
@@ -181,6 +197,8 @@ Every arrow can lag independently, and the sync CronJob runs on its own 15-minut
 - **kitinerary depends entirely on the provider embedding schema.org markup.** Some real providers don't (confirmed: Expedia's flight-purchase-confirmation template) — those emails always land on the Ollama fallback path, regardless of email quality.
 - **No traveler field on accommodations.** Trek's `set_reservation_travelers` only attaches to `reservations`-table bookings (flights, transit, cruises, and the generic/hotel-fallback `create_reservation` path) — a place-linked `create_accommodation` booking gets passenger names folded into its `notes` field instead, since Trek has no equivalent tool for it.
 - **`add_trip_member(envelopeFrom)` only works for a sender with an existing Trek account.** A forward from someone with no account (or a non-household address) fails harmlessly and surfaces as a notification warning — there's no invite-and-add flow.
+- **Per-leg flight detail (`legs[]`, IATA-code endpoints) only exists on the deterministic kitinerary path.** The Ollama fallback schema has a `flight_number` field, but building accurate per-segment `dep_time`/`arr_time` from an LLM's free-text understanding was judged not worth the added hallucination surface — a fallback-path flight still gets its overall route (`origin`/`destination`/`stops`) and metadata, just not disambiguated per-leg layover times.
+- **Ollama's choice of confirmation code is a prompt instruction, not a guarantee.** When a source states more than one reference number (an airline confirmation plus an OTA/travel-agency itinerary number, e.g. Expedia's own itinerary number alongside the airline's), the prompt says to prefer the provider's own code — but, being an LLM, it can still pick wrong or omit one on a given run.
 
 ## Features checklist
 
@@ -191,7 +209,8 @@ Every arrow can lag independently, and the sync CronJob runs on its own 15-minut
 - [x] Multi-leg flight grouping (connecting legs → one booking)
 - [x] Multi-passenger booking dedup (identical legs collapsed before grouping, passenger identity preserved across the collapse)
 - [x] Passenger capture (`underName`) attached to the Trek booking via `set_reservation_travelers`, creating trip guests as needed
-- [x] Best-effort trip-membership for the actual sender (`add_trip_member(envelopeFrom)`), not just whoever owns the API token
+- [x] Best-effort trip-membership for the actual sender (`add_trip_member(envelopeFrom)`), not just whoever owns the API token, preferring the message's own `From:` header over a relay-rewritten envelope sender
+- [x] Flight route detail: endpoints built for any full route (not just 2+ stops), IATA-code airport resolution, flight numbers, and per-leg layover times via `legs[]`
 - [x] Multiple genuinely-separate bookings per email (fan-out, one Trek booking each)
 - [x] Zero-width-junk stripping and a larger body-preview budget so real content isn't truncated away before extraction
 - [x] LLM fallback extraction (Ollama) when kitinerary finds nothing
