@@ -181,6 +181,8 @@ One email per created/duplicate/failed booking (n8n's default per-item behavior 
 
 ## Deployment — how to change it
 
+**Editing a Code node's JavaScript.** `trip-ingest.json` is the literal export n8n's Public API expects — every Code node's script sits inline as one long JSON string, which makes it unreadable and gives every edit a one-line, whole-blob git diff. The reviewable source lives instead in `workflows/trip-ingest/`: `workflow.json` (the same export with each Code node's `jsCode` blanked out) plus one formatted `<node name>.js` file per Code node (`Trek Resolve.js`, `Kitinerary Extract.js`, etc.). To change a node's logic: edit its `.js` file, then run `task n8n:build` to fold it back into `trip-ingest.json` (which also runs `prettier --write` on the result) and commit both. `task n8n:extract` does the reverse — bootstrap or re-adopt after an edit made directly in the n8n UI and re-exported. `task test:all` (via `task n8n:check`) fails the build if `trip-ingest.json` and the `.js` files ever drift apart, so the two can't silently diverge. The sync script is `scripts/n8n-workflow-sync.mjs`; both directions only move text, they never reformat it — that's prettier's job, which is why every edit still needs a `task n8n:build` before it will pass lint.
+
 There's no file-mount or CLI-import path into a running n8n instance; the live workflow lives in n8n's own DB. The chain from a git commit to a live change:
 
 ```text

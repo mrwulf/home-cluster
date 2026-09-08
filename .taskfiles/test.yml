@@ -20,6 +20,7 @@ tasks:
       - lint:tofu
       - lint:format
       - lint:paths
+      - :n8n:check
 
   lint:markdown:
     desc: Lint Markdown files

@@ -17,6 +17,7 @@ includes:
   k: .taskfiles/kubernetes.yml
   lint: .taskfiles/lint.yml
   monitoring: .taskfiles/monitoring.yml
+  n8n: .taskfiles/n8n.yml
   pre-commit: .taskfiles/pre-commit.yml
   rook: .taskfiles/rook.yml
   sops: .taskfiles/sops.yml

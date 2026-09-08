@@ -1,0 +1,259 @@
+{
+  "name": "Trip Ingest",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "trip-ingest",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0],
+      "id": "d22bcc71-f359-4ef2-a517-bd0d09e68d3c",
+      "name": "Webhook",
+      "webhookId": "fd028ab7-780a-41d4-a4ea-1d39c9b3c83e"
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [224, 0],
+      "id": "a189731b-ec16-4ff5-8897-87a0d19f8dc3",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "81406339-bc50-48aa-b420-76fdcc1926ab",
+              "leftValue": "={{ $json.secretValid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [448, 0],
+      "id": "08e10797-85c6-418c-8586-301c67fc6ee1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"accepted\",\n  \"message\": \"Email received and queued for processing. A follow-up email will confirm whether it was added to Trek.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [576, -96],
+      "id": "ecc80e5d-2249-4b15-b75c-db93a5a7db9e",
+      "name": "Respond Success"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": \"unauthorized\"\n}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [576, 96],
+      "id": "ed3732e3-a4f6-435f-92dd-57bebb1aa109",
+      "name": "Respond Unauthorized"
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [944, 48],
+      "id": "bf507c2e-2ab2-4c01-9e45-7fbfdcf5aa4b",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "",
+        "mode": "runOnceForEachItem"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1168, 48],
+      "id": "c1a2e3f4-1111-4444-8888-aaaabbbbcccc",
+      "name": "Trek Resolve"
+    },
+    {
+      "parameters": {
+        "fromEmail": "${TREK_SUBDOMAIN}@${SECRET_DOMAIN}",
+        "toEmail": "={{ $json.envelopeFrom }}",
+        "subject": "={{ $json.notifySubject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.notifyText }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1392, 48],
+      "id": "d2b3f4a5-2222-5555-9999-bbbbccccdddd",
+      "name": "Notify",
+      "credentials": {
+        "smtp": {
+          "id": "YTFbz2x8AJs1KDkx",
+          "name": "smtp-relay (internal, no auth)"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "attachment",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [608, 48],
+      "id": "e5f6a7b8-3333-6666-aaaa-ccccddddeeee",
+      "name": "Extract PDF Text",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": ""
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 48],
+      "id": "e9c96308-0b7d-4993-8f14-5508eda6a1ea",
+      "name": "Kitinerary Extract",
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Trek Resolve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trek Resolve": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF Text": {
+      "main": [
+        [
+          {
+            "node": "Kitinerary Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond Success": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kitinerary Extract": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  }
+}

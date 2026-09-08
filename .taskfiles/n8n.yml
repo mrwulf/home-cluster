@@ -1,0 +1,42 @@
+---
+version: "3"
+
+vars:
+  WORKFLOWS_DIR: "{{.PROJECT_DIR}}/cluster/apps/household/n8n/app/workflows"
+  PRETTIER_CONFIG: "{{.PROJECT_DIR}}/.github/linters/.prettierrc.yaml"
+  SYNC_SCRIPT: "{{.PROJECT_DIR}}/scripts/n8n-workflow-sync.mjs"
+
+tasks:
+  build:
+    desc: Rebuild an n8n workflow's deployed JSON from its formatted .js source (WORKFLOW=trip-ingest by default)
+    vars:
+      WORKFLOW: '{{.WORKFLOW | default "trip-ingest"}}'
+    cmds:
+      - node "{{.SYNC_SCRIPT}}" build "{{.WORKFLOWS_DIR}}/{{.WORKFLOW}}" "{{.WORKFLOWS_DIR}}/{{.WORKFLOW}}.json"
+      - prettier --write --config "{{.PRETTIER_CONFIG}}" "{{.WORKFLOWS_DIR}}/{{.WORKFLOW}}.json"
+
+  extract:
+    desc: Split a deployed n8n workflow JSON into a template + one .js file per Code node (bootstrap, or re-adopt after editing in the n8n UI)
+    vars:
+      WORKFLOW: '{{.WORKFLOW | default "trip-ingest"}}'
+    cmds:
+      - node "{{.SYNC_SCRIPT}}" extract "{{.WORKFLOWS_DIR}}/{{.WORKFLOW}}.json" "{{.WORKFLOWS_DIR}}/{{.WORKFLOW}}"
+      - prettier --write --config "{{.PRETTIER_CONFIG}}" "{{.WORKFLOWS_DIR}}/{{.WORKFLOW}}"
+
+  check:
+    desc: Verify an n8n workflow's deployed JSON matches its .js source (WORKFLOW=trip-ingest by default)
+    vars:
+      WORKFLOW: '{{.WORKFLOW | default "trip-ingest"}}'
+    cmds:
+      - echo "Checking {{.WORKFLOW}}.json is in sync with its .js source..."
+      - |
+        set -eu
+        TMP="$(mktemp --suffix=.json)"
+        trap 'rm -f "$TMP"' EXIT
+        node "{{.SYNC_SCRIPT}}" build "{{.WORKFLOWS_DIR}}/{{.WORKFLOW}}" "$TMP"
+        prettier --config "{{.PRETTIER_CONFIG}}" "$TMP" > "$TMP.pretty"
+        diff "{{.WORKFLOWS_DIR}}/{{.WORKFLOW}}.json" "$TMP.pretty" || {
+          echo "{{.WORKFLOW}}.json is out of sync with cluster/apps/household/n8n/app/workflows/{{.WORKFLOW}}/*.js - run 'task n8n:build'." >&2
+          exit 1
+        }
+    ignore_error: false
