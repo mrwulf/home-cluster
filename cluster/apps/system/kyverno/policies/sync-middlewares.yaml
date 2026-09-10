@@ -128,6 +128,25 @@ spec:
           namespace: networking
           name: rfc1918-ips
 
+    - name: sync-buffering-large-upload
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - media
+      generate:
+        generateExisting: true
+        apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        name: traefik-middleware-buffering-large-upload
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: traefik-middleware-buffering-large-upload
+
     - name: sync-pocket-id-forward-auth
       match:
         any:

@@ -77,6 +77,11 @@ spec:
                   group: traefik.io
                   kind: Middleware
                   name: rfc1918-ips
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: traefik-middleware-buffering-large-upload
             backendRefs:
               - identifier: app
                 port: http

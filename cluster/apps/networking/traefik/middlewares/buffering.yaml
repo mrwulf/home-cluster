@@ -1,0 +1,9 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-middleware-buffering-large-upload
+spec:
+  buffering:
+    maxRequestBodyBytes: 5368709120 # 5Gi
+    memRequestBodyBytes: 2097152 # 2Mi in memory before spilling to disk
