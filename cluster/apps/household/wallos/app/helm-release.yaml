@@ -19,7 +19,7 @@ spec:
             image:
               # renovate: depName=ghcr.io/ellite/wallos datasource=docker
               repository: ghcr.io/ellite/wallos
-              tag: 5.6.0
+              tag: 5.7.1
             env:
               OIDC_ENABLED: "true"
               OIDC_PROVIDER_NAME: "Home PocketID"
