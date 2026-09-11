@@ -14,7 +14,6 @@ resources:
   - ./mcp-arr-stack.yaml
   - ./mcp-searxng.yaml
   - ./mcp-victoriametrics.yaml
-  - ./mcp-grafana.yaml
   - ./mcp-kubesearch.yaml
   - ./mcp-kitinerary.yaml
   - ./mcp-pullmd.yaml

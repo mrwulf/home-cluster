@@ -24,7 +24,6 @@
    - **`mcp-kubernetes`**: Inspecting pods, deployments, services, events, logs, and metrics in the cluster. Prefer over raw `kubectl`.
    - **`mcp-github`**: Searching code, checking commits, managing pull requests/issues, and inspecting GHCR.io container registries.
    - **`mcp-flux`**: Inspecting Flux `GitRepository`, `Kustomization`, and `HelmRelease` statuses or debugging reconciliation failures.
-   - **`mcp-grafana`**: Querying Loki logs, inspecting Grafana dashboards, viewing panels, and checking alert manager routing/rules.
    - **`mcp-victoriametrics`**: Running PromQL queries to inspect cluster memory/CPU usage trends, node statistics, and metrics.
    - **`mcp-searxng`**: Web searching via private internal SearXNG meta-search engine for documentation, releases, or troubleshooting.
    - **`mcp-kubesearch`**: Searching upstream Helm charts, chart values (`values.yaml`), release history, and container image versions.
@@ -64,7 +63,7 @@ When asked to add or audit Grafana dashboards in this cluster:
 
 ### 1. Audit live Grafana FIRST (before any file changes)
 
-- Use `mcp-grafana` `search_dashboards` (with an empty query to list all) to enumerate what is currently deployed.
+- `mcp-grafana` is not deployed (removed — its stdio/HTTP health-check bridge would never pass, blocking the `toolhive-servers` Kustomization). Use `mcp-kubernetes` to check the `GrafanaDashboard` CRs directly, or query the Grafana HTTP API (`grafana-service.monitoring.svc.cluster.local:3000`) to enumerate what is currently deployed.
 - Cross-reference against the git YAML files in `cluster/apps/monitoring/grafana/instance/dashboards/` to confirm parity.
 - Do NOT add a dashboard that is already present. Do NOT assume git = live.
 
