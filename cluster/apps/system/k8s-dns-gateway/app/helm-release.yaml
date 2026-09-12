@@ -6,9 +6,9 @@ spec:
   interval: 1h
   chart:
     spec:
-      # renovate: registryUrl=https://k8s-gateway.github.io/k8s_gateway/
+      # renovate: registryUrl=https://ori-edge.github.io/k8s_gateway/
       chart: k8s-gateway
-      version: 3.7.2
+      version: 2.4.0
       sourceRef:
         kind: HelmRepository
         name: k8s-gateway-charts
@@ -34,6 +34,10 @@ spec:
     mode: enabled
   maxHistory: 3
   values:
+    image:
+      registry: ""
+      repository: ghcr.io/k8s-gateway/k8s_gateway
+      tag: 1.7.0
     domain: "home.${SECRET_DOMAIN} ${SECRET_DOMAIN}"
     ttl: 1
     service:
