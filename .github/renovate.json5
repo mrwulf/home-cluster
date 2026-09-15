@@ -142,11 +142,6 @@
     },
     {
       matchDatasources: ["docker"],
-      matchPackageNames: ["ghcr.io/home-operations/bazarr"],
-      allowedVersions: "!/1\\.6\\.0/",
-    },
-    {
-      matchDatasources: ["docker"],
       matchPackageNames: ["node", "docker.io/library/node"],
       matchFileNames: [
         "cluster/apps/system/external-secrets/app/bitwarden-api-helm-release.yaml",
