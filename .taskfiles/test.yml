@@ -17,10 +17,11 @@ tasks:
       - lint:markdown
       - lint:yaml
       - lint:kubernetes
-      - lint:tofu
       - lint:format
       - lint:paths
       - :n8n:check
+    cmds:
+      - task: lint:tofu
 
   lint:markdown:
     desc: Lint Markdown files
