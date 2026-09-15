@@ -3,7 +3,7 @@
     {
       matchDatasources: ["docker"],
       automerge: true,
-      automergeType: "branch",
+      automergeType: "pr",
       ignoreTests: true,
       matchUpdateTypes: ["minor", "patch"],
       matchPackageNames: [
@@ -19,7 +19,7 @@
       matchManagers: ["github-actions"],
       matchDatasources: ["github-tags"],
       automerge: true,
-      automergeType: "branch",
+      automergeType: "pr",
       ignoreTests: true,
       matchUpdateTypes: ["minor", "patch"],
     },

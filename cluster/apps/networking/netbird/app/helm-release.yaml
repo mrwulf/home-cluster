@@ -11,7 +11,7 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    # renovate: depName=netbird-operator
+    # renovate: depName=ghcr.io/netbirdio/helm-charts/netbird-operator datasource=docker
     tag: 0.8.0
   url: oci://ghcr.io/netbirdio/helm-charts/netbird-operator
 ---
