@@ -57,7 +57,7 @@ spec:
     vmsingle:
       enabled: true
       spec:
-        retentionPeriod: "3"
+        retentionPeriod: "30d"
         replicaCount: 1
         storage:
           accessModes:
@@ -161,6 +161,21 @@ spec:
           requests:
             cpu: 50m
             memory: 200Mi
+        # Global cardinality diet: these metric families have no VMRule or
+        # dashboard consumer in this repo and account for tens of thousands
+        # of series with zero alerting value. Dropped at scrape time (not
+        # remote-write) so they never hit vmsingle's indexdb at all.
+        # container_tasks_state: per-container process-state histogram
+        # (nr_sleeping/nr_running/...), a known-noisy cAdvisor default.
+        # prober_probe_duration_seconds_bucket: kubelet's own liveness/
+        # readiness/startup probe latency histogram, never queried here.
+        # gotk_reconcile_duration_seconds_bucket: Flux's internal per-object
+        # reconcile-latency histogram, scales with kustomization/helmrelease
+        # count, never queried here.
+        inlineRelabelConfig:
+          - action: drop
+            source_labels: [__name__]
+            regex: "container_tasks_state|prober_probe_duration_seconds_bucket|gotk_reconcile_duration_seconds_bucket"
 
     kubeApiServer:
       enabled: true
