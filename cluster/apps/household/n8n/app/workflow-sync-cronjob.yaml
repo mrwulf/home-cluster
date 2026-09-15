@@ -30,6 +30,20 @@ spec:
                 - -c
                 - |
                   set -eu
+                  apk add --no-cache jq >/dev/null
+                  set -o pipefail
+
+                  current=$(curl -sf -H "X-N8N-API-KEY: $N8N_API_KEY" \
+                    "$N8N_URL/api/v1/workflows/$WORKFLOW_ID" \
+                    | jq -Sc '{name, nodes, connections, settings}')
+                  desired=$(jq -Sc '{name, nodes, connections, settings}' /workflows/trip-ingest.json)
+
+                  if [ "$current" = "$desired" ]; then
+                    echo "trip-ingest workflow already up to date, skipping publish"
+                    exit 0
+                  fi
+
+                  echo "trip-ingest workflow changed, publishing update"
                   curl -sf -X PUT \
                     -H "X-N8N-API-KEY: $N8N_API_KEY" \
                     -H "Content-Type: application/json" \

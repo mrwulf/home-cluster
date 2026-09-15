@@ -23,7 +23,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [224, 0],
+      "position": [260, 0],
       "id": "a189731b-ec16-4ff5-8897-87a0d19f8dc3",
       "name": "Code in JavaScript"
     },
@@ -54,7 +54,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [448, 0],
+      "position": [520, 0],
       "id": "08e10797-85c6-418c-8586-301c67fc6ee1",
       "name": "If"
     },
@@ -66,7 +66,7 @@
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
-      "position": [576, -96],
+      "position": [780, -150],
       "id": "ecc80e5d-2249-4b15-b75c-db93a5a7db9e",
       "name": "Respond Success"
     },
@@ -80,7 +80,7 @@
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
-      "position": [576, 96],
+      "position": [780, 150],
       "id": "ed3732e3-a4f6-435f-92dd-57bebb1aa109",
       "name": "Respond Unauthorized"
     },
@@ -90,7 +90,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [944, 48],
+      "position": [1560, -150],
       "id": "bf507c2e-2ab2-4c01-9e45-7fbfdcf5aa4b",
       "name": "Code in JavaScript1"
     },
@@ -101,7 +101,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1168, 48],
+      "position": [1820, -150],
       "id": "c1a2e3f4-1111-4444-8888-aaaabbbbcccc",
       "name": "Trek Resolve"
     },
@@ -116,7 +116,7 @@
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [1392, 48],
+      "position": [2080, -150],
       "id": "d2b3f4a5-2222-5555-9999-bbbbccccdddd",
       "name": "Notify",
       "credentials": {
@@ -138,7 +138,7 @@
       },
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
-      "position": [608, 48],
+      "position": [1040, -150],
       "id": "e5f6a7b8-3333-6666-aaaa-ccccddddeeee",
       "name": "Extract PDF Text",
       "onError": "continueRegularOutput"
@@ -149,7 +149,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [720, 48],
+      "position": [1300, -150],
       "id": "e9c96308-0b7d-4993-8f14-5508eda6a1ea",
       "name": "Kitinerary Extract",
       "onError": "continueRegularOutput"
