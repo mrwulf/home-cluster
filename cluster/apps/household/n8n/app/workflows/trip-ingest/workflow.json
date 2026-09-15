@@ -128,7 +128,8 @@
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 5000,
-      "onError": "continueRegularOutput"
+      "onError": "continueRegularOutput",
+      "webhookId": "27e5ee0b-9c61-4246-b5f5-8ada2ab94567"
     },
     {
       "parameters": {

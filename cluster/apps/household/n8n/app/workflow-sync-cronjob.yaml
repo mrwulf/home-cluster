@@ -16,7 +16,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: sync
-              image: curlimages/curl:8.22.0
+              image: alpine:3.22.5
               env:
                 - name: WORKFLOW_ID
                   value: VPRsjZRxTBmywAdW
@@ -30,7 +30,7 @@ spec:
                 - -c
                 - |
                   set -eu
-                  apk add --no-cache jq >/dev/null
+                  apk add --no-cache curl jq >/dev/null
                   set -o pipefail
 
                   current=$(curl -sf -H "X-N8N-API-KEY: $N8N_API_KEY" \
