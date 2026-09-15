@@ -142,6 +142,11 @@ spec:
             - receiver: "null"
               matchers:
                 - alertname =~ "InfoInhibitor|Watchdog|etcdDatabaseHighFragmentationRatio|NodeBondingDegraded|CephNodeNetworkBondDegraded"
+            # count:up0 = count(up == 0): legitimately empty (no samples) whenever every target is healthy
+            - receiver: "null"
+              matchers:
+                - alertname = "RecordingRulesNoData"
+                - recording = "count:up0"
             - receiver: "pushover"
               matchers:
                 - severity = critical
