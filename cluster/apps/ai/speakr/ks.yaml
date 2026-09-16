@@ -28,6 +28,6 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 20Gi
-      VOLSYNC_NFS_START_MINUTE: "41"
-      VOLSYNC_B2_START_MINUTE: "12"
+      VOLSYNC_NFS_START_MINUTE: "46"
+      VOLSYNC_B2_START_MINUTE: "11"
   retryInterval: 2m

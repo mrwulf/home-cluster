@@ -5,7 +5,7 @@ import hashlib
 
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-def get_staggered_minutes(app_name, doc):
+def get_staggered_minutes(app_name, doc, used_nfs, used_b2):
     # Search for VOLSYNC_CAPACITY: e.g. "20Gi", "200Gi", "500Mi"
     cap_match = re.search(r'VOLSYNC_CAPACITY:\s*["\']?([0-9]+)\s*([a-zA-Z]+)["\']?', doc)
     capacity_gi = 0
@@ -20,29 +20,35 @@ def get_staggered_minutes(app_name, doc):
     # Hardcode slots for the three giant volumes >= 100Gi
     if capacity_gi >= 100:
         if "qbittorrent" in app_name:
-            return "05", "35"
+            nfs_min, b2_min = "05", "35"
         elif "jellyfin" in app_name:
-            return "25", "55"
+            nfs_min, b2_min = "25", "55"
         elif "plex" in app_name:
-            return "45", "15"
+            nfs_min, b2_min = "45", "15"
         else:
-            return "15", "45"
+            nfs_min, b2_min = "15", "45"
+        used_nfs.add(int(nfs_min))
+        used_b2.add(int(b2_min))
+        return nfs_min, b2_min
 
     # Hash-based for normal volumes
     nfs_int = int(hashlib.sha256(f"{app_name}-nfs".encode("utf-8")).hexdigest(), 16) % 60
 
-    # Reserve giant slots (05, 25, 45 for NFS and 35, 55, 15 for B2)
+    # Reserve giant slots (05, 25, 45 for NFS and 15, 35, 55 for B2), and any
+    # minute already claimed by another app's NFS run, so backups never overlap.
     giant_slots = {5, 25, 45, 15, 35, 55}
-    while nfs_int in giant_slots:
+    while nfs_int in giant_slots or nfs_int in used_nfs:
         nfs_int = (nfs_int + 7) % 60
 
     b2_int = (nfs_int + 25) % 60
-    while b2_int in giant_slots or b2_int == nfs_int:
+    while b2_int in giant_slots or b2_int == nfs_int or b2_int in used_b2:
         b2_int = (b2_int + 7) % 60
 
+    used_nfs.add(nfs_int)
+    used_b2.add(b2_int)
     return f"{nfs_int:02d}", f"{b2_int:02d}"
 
-def process_file(filepath):
+def process_file(filepath, used_nfs, used_b2):
     with open(filepath, "r") as f:
         content = f.read()
 
@@ -66,7 +72,7 @@ def process_file(filepath):
         app_name = name_match.group(1)
 
         # Calculate deterministic minutes taking capacity into account
-        nfs_min, b2_min = get_staggered_minutes(app_name, doc)
+        nfs_min, b2_min = get_staggered_minutes(app_name, doc, used_nfs, used_b2)
 
         # Clean up any existing generated variables and the original VOLSYNC_START_MINUTE to avoid duplication
         doc = re.sub(r'^\s+VOLSYNC_(?:NFS|B2|MINIO)_START_MINUTE:.*?(?:\n|$)', '', doc, flags=re.MULTILINE)
@@ -101,10 +107,12 @@ def process_file(filepath):
             print(f"Updated {os.path.relpath(filepath, root_dir)}")
 
 def main():
-    for dirpath, _, filenames in os.walk(os.path.join(root_dir, "cluster/apps")):
-        for filename in filenames:
+    used_nfs = set()
+    used_b2 = set()
+    for dirpath, _, filenames in sorted(os.walk(os.path.join(root_dir, "cluster/apps"))):
+        for filename in sorted(filenames):
             if filename == "ks.yaml":
-                process_file(os.path.join(dirpath, filename))
+                process_file(os.path.join(dirpath, filename), used_nfs, used_b2)
 
 if __name__ == "__main__":
     main()

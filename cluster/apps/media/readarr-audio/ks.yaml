@@ -25,8 +25,8 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: readarr-audio-config
       VOLSYNC_CAPACITY: 10Gi
-      VOLSYNC_NFS_START_MINUTE: "48"
-      VOLSYNC_B2_START_MINUTE: "13"
+      VOLSYNC_NFS_START_MINUTE: "23"
+      VOLSYNC_B2_START_MINUTE: "48"
       APP_UID: "568"
       APP_GID: "568"
   retryInterval: 2m

@@ -25,8 +25,8 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: sonarr-config
       VOLSYNC_CAPACITY: 10Gi
-      VOLSYNC_NFS_START_MINUTE: "29"
-      VOLSYNC_B2_START_MINUTE: "54"
+      VOLSYNC_NFS_START_MINUTE: "04"
+      VOLSYNC_B2_START_MINUTE: "50"
       APP_UID: "568"
       APP_GID: "568"
   retryInterval: 2m

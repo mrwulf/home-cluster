@@ -26,6 +26,6 @@ spec:
       GATUS_SUBDOMAIN: bw
       VOLSYNC_CLAIM: vaultwarden-db
       VOLSYNC_CAPACITY: 1Gi
-      VOLSYNC_NFS_START_MINUTE: "46"
-      VOLSYNC_B2_START_MINUTE: "11"
+      VOLSYNC_NFS_START_MINUTE: "53"
+      VOLSYNC_B2_START_MINUTE: "18"
   retryInterval: 2m

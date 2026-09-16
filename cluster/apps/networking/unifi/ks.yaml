@@ -29,6 +29,6 @@ spec:
       APP_GID: "999"
       VOLSYNC_CLAIM: unifi-data
       VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_NFS_START_MINUTE: "54"
-      VOLSYNC_B2_START_MINUTE: "19"
+      VOLSYNC_NFS_START_MINUTE: "39"
+      VOLSYNC_B2_START_MINUTE: "04"
   retryInterval: 2m

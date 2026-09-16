@@ -27,8 +27,8 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: mariadb-data
       VOLSYNC_CAPACITY: 2Gi
-      VOLSYNC_NFS_START_MINUTE: "42"
-      VOLSYNC_B2_START_MINUTE: "07"
+      VOLSYNC_NFS_START_MINUTE: "03"
+      VOLSYNC_B2_START_MINUTE: "28"
       APP_UID: "999"
       APP_GID: "999"
   retryInterval: 2m

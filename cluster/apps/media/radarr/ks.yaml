@@ -26,8 +26,8 @@ spec:
       VOLSYNC_CACHE_CAPACITY: 2Gi
       VOLSYNC_CLAIM: radarr-config
       VOLSYNC_CAPACITY: 20Gi
-      VOLSYNC_NFS_START_MINUTE: "01"
-      VOLSYNC_B2_START_MINUTE: "26"
+      VOLSYNC_NFS_START_MINUTE: "36"
+      VOLSYNC_B2_START_MINUTE: "01"
       APP_UID: "568"
       APP_GID: "568"
   retryInterval: 2m

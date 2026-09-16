@@ -31,6 +31,6 @@ spec:
       APP_GID: "0"
       VOLSYNC_CLAIM: paperless-data
       VOLSYNC_CAPACITY: 20Gi
-      VOLSYNC_NFS_START_MINUTE: "48"
-      VOLSYNC_B2_START_MINUTE: "13"
+      VOLSYNC_NFS_START_MINUTE: "02"
+      VOLSYNC_B2_START_MINUTE: "27"
   retryInterval: 2m

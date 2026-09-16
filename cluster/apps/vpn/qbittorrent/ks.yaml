@@ -29,8 +29,8 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: *app
       VOLSYNC_CAPACITY: 2Gi
-      VOLSYNC_NFS_START_MINUTE: "41"
-      VOLSYNC_B2_START_MINUTE: "06"
+      VOLSYNC_NFS_START_MINUTE: "58"
+      VOLSYNC_B2_START_MINUTE: "30"
 
   retryInterval: 2m
 ---

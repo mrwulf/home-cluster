@@ -27,7 +27,7 @@ spec:
       APP: *app
       VOLSYNC_CLAIM: lidarr-config
       VOLSYNC_CAPACITY: 15Gi
-      VOLSYNC_NFS_START_MINUTE: "40"
-      VOLSYNC_B2_START_MINUTE: "12"
+      VOLSYNC_NFS_START_MINUTE: "47"
+      VOLSYNC_B2_START_MINUTE: "40"
       VOLSYNC_MOVER_MEMORY_LIMIT: 2Gi
   retryInterval: 2m
