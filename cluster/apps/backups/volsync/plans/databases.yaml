@@ -3,6 +3,7 @@ kind: NFSBackupPlan
 metadata:
   name: databases
 spec:
+  schedule: "10 4 * * *"
   nfs:
     path: /mnt/user/backups/postgres-backup
     server: ${CORE_NFS_SERVER}

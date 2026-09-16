@@ -3,6 +3,7 @@ kind: NFSBackupPlan
 metadata:
   name: photos
 spec:
+  schedule: "0 5 * * *"
   nfs:
     path: /mnt/user/Photos
     server: ${CORE_NFS_SERVER}
