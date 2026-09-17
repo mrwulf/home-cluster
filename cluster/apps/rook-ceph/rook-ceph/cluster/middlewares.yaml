@@ -5,6 +5,13 @@
 # carries the user's raw JWT, so it's kept out of the shared
 # traefik-middleware-chain-pocket-id used by every other app behind Pocket
 # ID rather than added there.
+#
+# Authorization is deliberately NOT relayed here (unlike the shared chain):
+# after Ceph's own oauth2 login completes, its Angular frontend sends its
+# own Ceph-issued JWT as Authorization on every /api/* call. Forwarding
+# Pocket ID's id_token in that header instead overwrites the browser's
+# header before Traefik proxies to the backend, so Ceph tries to validate
+# the wrong token and every data call 500s even though login succeeds.
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
@@ -14,11 +21,6 @@ spec:
     address: http://oauth2-proxy.auth.svc.cluster.local:4180/
     trustForwardHeader: true
     authResponseHeaders:
-      - X-Auth-Request-User
-      - X-Auth-Request-Email
-      - X-Auth-Request-Preferred-Username
-      - X-Auth-Request-Groups
-      - Authorization
       - X-Access-Token
 ---
 apiVersion: traefik.io/v1alpha1
