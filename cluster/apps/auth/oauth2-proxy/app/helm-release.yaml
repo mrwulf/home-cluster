@@ -22,12 +22,12 @@ spec:
             args:
               - --alpha-config=/etc/oauth2-proxy/config/alpha-config.yaml
             env:
-              # Provider, scope, upstream and header-injection settings live in
-              # the alpha config (configmap.yaml) - oauth2-proxy errors if those
-              # are set both ways. Cookie/server/redirect settings below aren't
-              # part of the alpha config schema and stay as flags/env vars.
-              - name: OAUTH2_PROXY_HTTP_ADDRESS
-                value: 0.0.0.0:4180
+              # Provider, scope, upstream, header-injection and server bind
+              # address settings live in the alpha config (configmap.yaml) -
+              # oauth2-proxy errors (or, for bindAddress, silently ignores the
+              # env var) if those are set both ways. Cookie/redirect settings
+              # below aren't part of the alpha config schema and stay as
+              # flags/env vars.
               - name: OAUTH2_PROXY_REDIRECT_URL
                 value: https://oauth.${SECRET_DOMAIN}/oauth2/callback
               - name: OAUTH2_PROXY_COOKIE_DOMAINS
