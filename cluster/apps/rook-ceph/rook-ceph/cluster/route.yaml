@@ -23,7 +23,7 @@ spec:
           extensionRef:
             group: traefik.io
             kind: Middleware
-            name: traefik-middleware-chain-pocket-id
+            name: rook-ceph-chain-pocket-id
       backendRefs:
         - name: rook-ceph-mgr-dashboard
           port: 7000

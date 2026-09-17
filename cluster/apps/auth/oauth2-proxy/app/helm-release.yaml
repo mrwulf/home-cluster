@@ -19,11 +19,13 @@ spec:
             image:
               repository: quay.io/oauth2-proxy/oauth2-proxy
               tag: v7.15.4
+            args:
+              - --alpha-config=/etc/oauth2-proxy/config/alpha-config.yaml
             env:
-              - name: OAUTH2_PROXY_PROVIDER
-                value: oidc
-              - name: OAUTH2_PROXY_UPSTREAMS
-                value: static://202
+              # Provider, scope, upstream and header-injection settings live in
+              # the alpha config (configmap.yaml) - oauth2-proxy errors if those
+              # are set both ways. Cookie/server/redirect settings below aren't
+              # part of the alpha config schema and stay as flags/env vars.
               - name: OAUTH2_PROXY_HTTP_ADDRESS
                 value: 0.0.0.0:4180
               - name: OAUTH2_PROXY_REDIRECT_URL
@@ -40,25 +42,31 @@ spec:
                 value: "true"
               - name: OAUTH2_PROXY_REVERSE_PROXY
                 value: "true"
-              - name: OAUTH2_PROXY_SET_XAUTHREQUEST
-                value: "true"
-              - name: OAUTH2_PROXY_SET_AUTHORIZATION_HEADER
-                value: "true"
-              - name: OAUTH2_PROXY_CODE_CHALLENGE_METHOD
-                value: "S256"
-              - name: OAUTH2_PROXY_SCOPE
-                value: "openid email profile groups"
             envFrom:
               - secretRef:
                   name: oauth2-proxy-secret
-              - secretRef:
-                  name: oauth2-proxy-oidc-credentials
             resources:
               requests:
                 cpu: 10m
                 memory: 16Mi
               limits:
                 memory: 64Mi
+
+    persistence:
+      alpha-config:
+        type: configMap
+        name: oauth2-proxy-alpha-config
+        globalMounts:
+          - path: /etc/oauth2-proxy/config/alpha-config.yaml
+            subPath: alpha-config.yaml
+            readOnly: true
+      oidc-client-secret:
+        type: secret
+        name: oauth2-proxy-oidc-credentials
+        globalMounts:
+          - path: /etc/oauth2-proxy/secrets/client-secret
+            subPath: OAUTH2_PROXY_CLIENT_SECRET
+            readOnly: true
 
     service:
       app:
