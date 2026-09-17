@@ -5,6 +5,7 @@ metadata:
   name: paperless
 spec:
   name: Paperless
+  pkceEnabled: true
   launchUrl: https://paperless.home.${SECRET_DOMAIN}/
   callbackUrls:
     - https://paperless.home.${SECRET_DOMAIN}/accounts/oidc/pocketid/login/callback/
