@@ -177,6 +177,23 @@ spec:
                 - ai
                 - auth
                 - household
+      generate:
+        generateExisting: true
+        apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        name: traefik-middleware-chain-pocket-id
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: traefik-middleware-chain-pocket-id
+    - name: sync-chain-pocket-id-rook-ceph
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
                 - rook-ceph
       generate:
         generateExisting: true
