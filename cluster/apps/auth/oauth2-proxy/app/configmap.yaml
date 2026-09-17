@@ -8,6 +8,8 @@ data:
   # oauth2-proxy's alpha config only supports a file source for clientSecret, not
   # clientID - keep them in sync if the OIDC client is ever recreated.
   alpha-config.yaml: |
+    server:
+      bindAddress: "0.0.0.0:4180"
     providers:
       - id: pocket-id
         provider: oidc
