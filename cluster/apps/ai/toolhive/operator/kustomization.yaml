@@ -6,7 +6,6 @@ resources:
   - ./helmrelease-crds.yaml
   - ./helmrelease.yaml
   - ./httproute.yaml
-  - ./oidc-client.yaml
   - ./podmonitor.yaml
   - ./prometheusrule.yaml
   - ./dashboard.yaml

@@ -5,6 +5,7 @@ metadata:
   name: outline
 spec:
   name: Outline
+  pkceEnabled: true
   launchUrl: https://docs.${SECRET_DOMAIN}/
   callbackUrls:
     - https://docs.${SECRET_DOMAIN}/auth/oidc.callback
