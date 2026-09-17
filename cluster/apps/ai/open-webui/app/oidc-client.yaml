@@ -5,6 +5,7 @@ metadata:
   name: open-webui
 spec:
   name: Open WebUI
+  pkceEnabled: true
   launchUrl: https://chat.${SECRET_DOMAIN}/
   callbackUrls:
     - https://chat.${SECRET_DOMAIN}/oauth/oidc/callback
