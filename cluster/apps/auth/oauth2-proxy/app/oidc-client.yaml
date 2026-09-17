@@ -6,6 +6,15 @@ metadata:
 spec:
   name: OAuth2 Proxy
   clientID: c6c0b4d2-7e1a-4c9f-8d2b-6f8a3c9e1b7d
+  # Matches oauth2-proxy's own default --cookie-expire (168h). oauth2-proxy
+  # never gets a fresh id_token on refresh (OAuth2 spec-compliant but
+  # oauth2-proxy-known limitation: refresh_token grant only returns a new
+  # access_token) - Pocket ID's 1h default access/ID token lifetime meant
+  # the id_token relayed to apps like Ceph's dashboard (which client-side
+  # enforces the token's own exp) went stale long before the oauth2-proxy
+  # session itself expired, causing an auto-logout -> re-login -> same
+  # stale token -> auto-logout redirect loop.
+  accessTokenDurationMinutes: 10080
   callbackUrls:
     - https://oauth.${SECRET_DOMAIN}/oauth2/callback
   logoutCallbackUrls:
