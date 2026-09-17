@@ -5,6 +5,11 @@ metadata:
   name: trek
 spec:
   name: TREK
+  # TREK isn't in the homarr-labs dashboard-icons set; pulling square app
+  # icons straight from its own repo instead.
+  logo:
+    logoUrl: https://raw.githubusercontent.com/liketrek/TREK/main/client/public/icons/icon.svg
+    darkLogoUrl: https://raw.githubusercontent.com/liketrek/TREK/main/client/public/icons/icon-white.svg
   launchUrl: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/
   callbackUrls:
     - https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/api/auth/oidc/callback

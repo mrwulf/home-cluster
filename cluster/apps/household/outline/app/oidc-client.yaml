@@ -6,6 +6,11 @@ metadata:
 spec:
   name: Outline
   pkceEnabled: true
+  logo:
+    # dashboard-icons' outline-light.svg is upstream-broken (white mark on
+    # white badge, invisible in dark mode); their own metadata maps Outline's
+    # dark-theme variant to this base file instead.
+    darkLogoUrl: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/webp/outline.webp
   launchUrl: https://docs.${SECRET_DOMAIN}/
   callbackUrls:
     - https://docs.${SECRET_DOMAIN}/auth/oidc.callback
