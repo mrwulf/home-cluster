@@ -19,6 +19,11 @@ spec:
             group: traefik.io
             kind: Middleware
             name: rfc1918-ips
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: traefik-middleware-chain-pocket-id
       backendRefs:
         - name: rook-ceph-mgr-dashboard
           port: 7000
