@@ -19,3 +19,15 @@ spec:
       - name: chelsea
       - name: emerald
       - name: gordons
+---
+# Group name must exactly match a Ceph dashboard system role (see
+# rook-ceph's oauth2 SSO roles_path config) - Ceph string-matches groups
+# claims against its own role names, no remapping available.
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDUserGroup
+metadata:
+  name: administrator
+spec:
+  users:
+    userRefs:
+      - name: brandon

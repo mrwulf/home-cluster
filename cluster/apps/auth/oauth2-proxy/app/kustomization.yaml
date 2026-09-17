@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
   - secret.sops.yaml
   - oidc-client.yaml
+  - configmap.yaml
   - helm-release.yaml
