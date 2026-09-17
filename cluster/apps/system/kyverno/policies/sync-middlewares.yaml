@@ -177,6 +177,7 @@ spec:
                 - ai
                 - auth
                 - household
+                - rook-ceph
       generate:
         generateExisting: true
         apiVersion: traefik.io/v1alpha1
