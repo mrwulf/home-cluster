@@ -1,0 +1,18 @@
+---
+# Lets rook-ceph's HTTPRoute send /oauth2/* traffic straight to this Service
+# (co-located path pattern Ceph's dashboard OAuth2 logout redirect expects -
+# see cluster/apps/rook-ceph/rook-ceph/cluster/route.yaml) instead of
+# through Kyverno-cloned middleware/DNS tricks.
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: rook-ceph-httproute-oauth2-proxy
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: rook-ceph
+  to:
+    - group: ""
+      kind: Service
+      name: oauth2-proxy

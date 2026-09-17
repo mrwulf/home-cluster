@@ -5,3 +5,4 @@ resources:
   - oidc-client.yaml
   - configmap.yaml
   - helm-release.yaml
+  - referencegrant-rook-ceph.yaml

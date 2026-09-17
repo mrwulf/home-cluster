@@ -13,6 +13,26 @@ spec:
   hostnames:
     - "rook.home.${SECRET_DOMAIN}"
   rules:
+    # Ceph's dashboard hardcodes its OAuth2 logout redirect to a relative
+    # /oauth2/sign_out path on its own hostname - the standard pattern
+    # assumes oauth2-proxy is co-located on the same domain via a path
+    # rule, so route it there instead of at the Ceph backend (which 404s,
+    # it has no such path). Not behind the pocket-id chain: a user with an
+    # expired session still needs to be able to sign out.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /oauth2/
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: rfc1918-ips
+      backendRefs:
+        - name: oauth2-proxy
+          namespace: auth
+          port: 4180
     - filters:
         - type: ExtensionRef
           extensionRef:
