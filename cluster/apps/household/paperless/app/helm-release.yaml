@@ -35,7 +35,7 @@ spec:
           init-oidc:
             image:
               repository: alpine
-              tag: 3.24.1
+              tag: 3.24.2
             command: ["/bin/sh", "-c"]
             args:
               - |
