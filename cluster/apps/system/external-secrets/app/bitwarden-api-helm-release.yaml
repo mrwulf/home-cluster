@@ -29,8 +29,14 @@ spec:
               - -c
               - |
                 apk add --no-cache curl jq
+                # Pinned below 2026.9.0: that release's post-login UserKeyIdBackfillMigration
+                # calls a Bitwarden-cloud-only API that self-hosted Vaultwarden 404s on, which
+                # crashes the login step and leaves the vault "locked" (bw serve then 400s every
+                # /object/item lookup). Fixed on Vaultwarden main (dani-garcia/vaultwarden#7750,
+                # PR #7693) but not yet in a tagged release (still on 1.37.3 as of this pin).
+                # Bump once a Vaultwarden release containing that fix is deployed.
                 # renovate: datasource=npm depName=@bitwarden/cli
-                npm install -g @bitwarden/cli@2026.9.0
+                npm install -g @bitwarden/cli@2026.8.0
                 export BITWARDENCLI_APPDATA_DIR=/.config
                 mkdir -p "$BITWARDENCLI_APPDATA_DIR"
                 echo '{"global_applicationId_appId":"b4a2d8e0-6f91-4c3e-8a5b-9d7e1f3a5c2b"}' > "$BITWARDENCLI_APPDATA_DIR/data.json"
