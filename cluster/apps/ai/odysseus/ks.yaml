@@ -13,7 +13,6 @@ spec:
     - name: ollama
     - name: searxng
     - name: ntfy
-      namespace: system
     - name: chromadb
     - name: volsync
   path: ./cluster/apps/ai/odysseus/app
