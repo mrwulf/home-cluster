@@ -23,7 +23,27 @@ spec:
           - resources:
               kinds:
                 - Namespace
-              names: [auth, household, media, system] # databases ns excluded (since that's the source)
+              names: [auth, household, media] # databases ns excluded (since that's the source)
+      generate:
+        generateExisting: true
+        apiVersion: v1
+        kind: Secret
+        name: postgres-superuser
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: databases
+          name: postgres-superuser
+    # Kyverno rejects in-place edits to a generate rule's match criteria
+    # ("immutable fields"), so `system` gets its own rule instead of joining
+    # the list above.
+    - name: sync-postgres-creds-system
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names: [system]
       generate:
         generateExisting: true
         apiVersion: v1
