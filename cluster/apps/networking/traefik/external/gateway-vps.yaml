@@ -19,6 +19,9 @@ metadata:
       group: external
       client:
         dns-resolver: "udp://1.1.1.1:53"
+      alerts:
+        - type: pushover
+        - type: ntfy
 spec:
   gatewayClassName: traefik-external
   addresses:
