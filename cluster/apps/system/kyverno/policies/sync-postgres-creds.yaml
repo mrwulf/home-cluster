@@ -23,7 +23,7 @@ spec:
           - resources:
               kinds:
                 - Namespace
-              names: [auth, household, media] # databases ns excluded (since that's the source)
+              names: [auth, household, media, system] # databases ns excluded (since that's the source)
       generate:
         generateExisting: true
         apiVersion: v1

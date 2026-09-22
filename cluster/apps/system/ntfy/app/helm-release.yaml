@@ -17,6 +17,20 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
 
+        initContainers:
+          init-config:
+            image:
+              repository: alpine
+              tag: 3.24.2
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                sed -e "s|NTFY_DATABASE_URL_PLACEHOLDER|$NTFY_DATABASE_URL|g" \
+                    /etc/ntfy-template/server.yml > /etc/ntfy/server.yml
+            envFrom:
+              - secretRef:
+                  name: ntfy-secret
+
         containers:
           main:
             image:
@@ -24,6 +38,25 @@ spec:
               tag: v2.28.0
             args:
               - serve
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /v1/health
+                    port: 80
+                  initialDelaySeconds: 5
+                  periodSeconds: 15
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /v1/health
+                    port: 80
+                  initialDelaySeconds: 5
+                  periodSeconds: 15
             resources:
               requests:
                 cpu: 10m
@@ -43,3 +76,49 @@ spec:
         ports:
           http:
             port: 80
+          metrics:
+            port: 9090
+
+    serviceMonitor:
+      main:
+        serviceName: ntfy
+        endpoints:
+          - port: metrics
+            scheme: http
+            path: /metrics
+            interval: 1m
+
+    route:
+      main:
+        enabled: true
+        annotations:
+          gatus.io/enabled: "true"
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "ntfy.${SECRET_DOMAIN}"
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: 80
+
+    persistence:
+      config-template:
+        type: custom
+        volumeSpec:
+          configMap:
+            name: ntfy
+        advancedMounts:
+          ntfy:
+            init-config:
+              - path: /etc/ntfy-template/server.yml
+                subPath: server.yml
+      config:
+        type: emptyDir
+        advancedMounts:
+          ntfy:
+            init-config:
+              - path: /etc/ntfy
+            main:
+              - path: /etc/ntfy

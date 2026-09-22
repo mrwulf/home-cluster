@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ntfy
+data:
+  server.yml: |
+    base-url: "https://ntfy.${SECRET_DOMAIN}"
+    listen-http: ":80"
+    behind-proxy: true
+    cache-duration: "12h"
+    # No OIDC support upstream (binwiederhier/ntfy#1596) - ntfy's own token/ACL
+    # system gates access instead so the phone apps and curl publishers (which
+    # can't do a browser OIDC redirect) keep working. Create the first admin with:
+    #   kubectl exec -it -n system deploy/ntfy -- ntfy user add --role=admin <username>
+    auth-default-access: "deny-all"
+    enable-metrics: true
+    metrics-listen-http: ":9090"
+    database-url: "NTFY_DATABASE_URL_PLACEHOLDER"
