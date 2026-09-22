@@ -34,3 +34,30 @@ spec:
         clone:
           namespace: databases
           name: postgres-superuser
+    # Dead rule, left in place on purpose: Kyverno's admission webhooks
+    # exclude the `system` namespace by default (it's where Kyverno itself
+    # runs), so this can never actually fire. ntfy (the app that needed it)
+    # pulls its postgres superuser creds from Bitwarden instead. Removing
+    # this rule is blocked - Kyverno treats any edit/removal of an existing
+    # generate rule as an immutable-field change and rejects it; only
+    # additions are accepted. Deleting+recreating the whole ClusterPolicy
+    # would be the only way to actually remove it, and risks cascading
+    # deletes of the postgres-superuser copies already synced into
+    # auth/household/media - not worth it for a no-op rule.
+    - name: sync-postgres-creds-system
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names: [system]
+      generate:
+        generateExisting: true
+        apiVersion: v1
+        kind: Secret
+        name: postgres-superuser
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: databases
+          name: postgres-superuser
