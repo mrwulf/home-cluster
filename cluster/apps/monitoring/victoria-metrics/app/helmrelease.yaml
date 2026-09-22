@@ -98,6 +98,14 @@ spec:
           resolve_timeout: 5m
         receivers:
           - name: "null"
+          - name: "ntfy"
+            webhook_configs:
+              - url: "http://ntfy-alertmanager.monitoring.svc.cluster.local:8080"
+                send_resolved: true
+                http_config:
+                  basic_auth:
+                    username: alertmanager
+                    password_file: /etc/vm/secrets/alertmanager-secret/ntfy_bridge_webhook_password
           - name: "pushover"
             pushover_configs:
               - html: true
@@ -148,8 +156,8 @@ spec:
                 - alertname = "RecordingRulesNoData"
                 - recording = "count:up0"
             - receiver: "pushover"
-              matchers:
-                - severity = critical
+              continue: true
+            - receiver: "ntfy"
               continue: true
         inhibit_rules:
           - source_matchers:

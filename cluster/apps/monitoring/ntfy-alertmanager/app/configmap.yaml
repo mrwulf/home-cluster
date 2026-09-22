@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ntfy-alertmanager
+data:
+  config.scfg: |
+    http-address :8080
+    log-level info
+    alert-mode multi
+
+    user alertmanager
+    password NTFY_ALERTMANAGER_WEBHOOK_PASSWORD_PLACEHOLDER
+
+    labels {
+        order "severity"
+
+        severity "critical" {
+            priority 5
+            tags "rotating_light"
+        }
+
+        severity "warning" {
+            priority 3
+            tags "warning"
+        }
+
+        severity "info" {
+            priority 2
+        }
+    }
+
+    resolved {
+        tags "white_check_mark"
+        priority 1
+    }
+
+    ntfy {
+        server https://ntfy.${SECRET_DOMAIN}
+        topic alertmanager-alerts
+        access-token NTFY_ALERTMANAGER_ACCESS_TOKEN_PLACEHOLDER
+        markdown true
+        generator-url-label source
+    }
