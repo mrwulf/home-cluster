@@ -22,6 +22,16 @@ alerting:
       send-on-resolved: true
       failure-threshold: 3
       success-threshold: 3
+  ntfy:
+    url: "https://ntfy.${SECRET_DOMAIN}"
+    topic: gatus-alerts
+    token: $${NTFY_TOKEN}
+    priority: 4
+    default-alert:
+      description: health-check failed
+      send-on-resolved: true
+      failure-threshold: 3
+      success-threshold: 3
 # connectivity:
 #   checker:
 #     target: https://radar.cloudflare.com/ip
@@ -39,6 +49,7 @@ endpoints:
       - "[DNS_RCODE] == NOERROR"
     alerts: &alerts
       - type: pushover
+      - type: ntfy
     ui:
       hide-hostname: true
       hide-url: true
