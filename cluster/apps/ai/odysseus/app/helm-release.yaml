@@ -33,7 +33,7 @@ spec:
               ODYSSEUS_ADMIN_USER: "admin"
               OLLAMA_BASE_URL: "http://ollama.ai.svc.cluster.local:11434"
               SEARXNG_URL: "http://searxng.ai.svc.cluster.local:8080"
-              NTFY_URL: "http://ntfy.ai.svc.cluster.local:80"
+              NTFY_URL: "http://ntfy.system.svc.cluster.local:80"
               CHROMADB_HOST: "chromadb.ai.svc.cluster.local"
               CHROMADB_PORT: "8000"
               CHROMADB_URL: "http://chromadb.ai.svc.cluster.local:8000"

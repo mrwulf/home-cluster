@@ -5,11 +5,11 @@ metadata:
   name: &app ntfy
   namespace: flux-system
 spec:
-  targetNamespace: ai
+  targetNamespace: system
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: "./cluster/apps/ai/ntfy/app/"
+  path: "./cluster/apps/system/ntfy/app/"
   prune: true
   sourceRef:
     kind: GitRepository
