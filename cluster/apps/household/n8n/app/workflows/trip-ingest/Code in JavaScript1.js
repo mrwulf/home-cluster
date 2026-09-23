@@ -149,7 +149,7 @@ async function callOllamaExtract(promptEmailText) {
           method: "POST",
           url: "http://ollama.ai.svc.cluster.local:11434/api/chat",
           body: {
-            model: "mistral:latest",
+            model: "qwen3.5:4b",
             messages: [
               { role: "system", content: systemPrompt },
               { role: "user", content: exampleEmail },

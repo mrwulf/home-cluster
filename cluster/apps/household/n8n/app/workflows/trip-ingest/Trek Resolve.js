@@ -133,6 +133,92 @@ function toDate(s) {
   return s ? new Date(s) : null
 }
 
+// The person forwarding a booking often writes a short note of their own above
+// the quoted confirmation/forward block ("this one's for the Miami trip"). Only
+// that note - never the receipt content below it - is worth showing a model, so
+// this cuts the body off at the first sign of the quoted/forwarded material.
+function extractForwardNote(bodyText) {
+  if (!bodyText) return ""
+  const markers = [
+    /-{2,}\s*(original|forwarded) message\s*-{2,}/i,
+    /^begin forwarded message:/im,
+    /^from:\s.*\n^sent:\s/im,
+    /^on .+ wrote:$/im,
+    /^>+\s/m,
+  ]
+  let cutIdx = bodyText.length
+  for (const re of markers) {
+    const m = bodyText.match(re)
+    if (m && m.index < cutIdx) cutIdx = m.index
+  }
+  return bodyText.slice(0, cutIdx).trim()
+}
+
+// A small, recent model is plenty for this - it's a one-shot classification over
+// a handful of trip titles/dates plus a short human note, not free-form extraction.
+const TRIP_SUGGEST_MODEL = "qwen3.5:4b"
+const TRIP_SUGGEST_SCHEMA = {
+  type: "object",
+  properties: {
+    action: { type: "string", enum: ["attach", "new_trip", "none"] },
+    trip_id: { type: ["string", "null"] },
+  },
+  required: ["action", "trip_id"],
+}
+
+// Best-effort: only called when there's an actual note to read and existing trips
+// to choose from, and any failure (timeout, bad JSON, model unavailable) falls
+// through to the ordinary date-based matching below rather than blocking the
+// booking - this is a convenience layer on top of that matching, not a
+// replacement for it.
+async function suggestTrip(note, trips) {
+  if (!note || !trips.length) return null
+  const tripList = trips
+    .map(function (t) {
+      return (
+        t.id +
+        ": " +
+        (t.title || "Untitled") +
+        " (" +
+        t.start_date +
+        " to " +
+        t.end_date +
+        ")"
+      )
+    })
+    .join("\n")
+  const systemPrompt =
+    "You decide which existing trip a forwarded travel booking belongs to, based only on the sender's own note (not the booking details themselves). Existing trips:\n" +
+    tripList +
+    '\n\nIf the note clearly asks for one of these trips, return {"action":"attach","trip_id":"<id>"} using the exact id from the list above. If the note clearly asks for a brand new trip, return {"action":"new_trip","trip_id":null}. If the note gives no preference either way, return {"action":"none","trip_id":null}. Never invent a trip_id that is not in the list above.'
+  try {
+    const res = await withRetry(
+      function () {
+        return helpers.httpRequest({
+          method: "POST",
+          url: "http://ollama.ai.svc.cluster.local:11434/api/chat",
+          body: {
+            model: TRIP_SUGGEST_MODEL,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: note },
+            ],
+            stream: false,
+            format: TRIP_SUGGEST_SCHEMA,
+          },
+          json: true,
+          timeout: 60000,
+        })
+      },
+      2,
+      1000
+    )
+    return JSON.parse(res.message.content)
+  } catch (e) {
+    return null
+  }
+}
+
 function overlaps(aStart, aEnd, bStart, bEnd) {
   if (aStart == null || bStart == null) return false
   const aE = aEnd != null ? aEnd : aStart
@@ -173,6 +259,7 @@ function planCost(ex, tripCurrency) {
 }
 
 let tripId = null
+let tripTitle = null
 let createdNewTrip = false
 let isDuplicate = false
 let duplicateMatch = null
@@ -185,6 +272,8 @@ let costPlan = null
 let memberAddWarning = null
 let travelerWarning = null
 let resolvedTravelerIds = []
+let tripSuggestionWarning = null
+const forwardNote = extractForwardNote(item.bodyPreview)
 
 if (!extractionError) {
   try {
@@ -205,25 +294,75 @@ if (!extractionError) {
     const endDateOnly = endDt ? endDt.toISOString().slice(0, 10) : startDateOnly
 
     let matchedTrip = null
-    if (startDt) {
-      const windowMs = 3 * 24 * 60 * 60 * 1000
-      for (const t of trips) {
-        const tStart = new Date(t.start_date + "T00:00:00")
-        const tEnd = new Date(t.end_date + "T23:59:59")
-        if (
-          startDt.getTime() >= tStart.getTime() - windowMs &&
-          startDt.getTime() <= tEnd.getTime() + windowMs
-        ) {
-          matchedTrip = t
-          break
+
+    // An LLM read of the forwarder's own note always wins over date-based matching -
+    // it's never run at all when the note asked for a new trip, so that instruction
+    // can't be silently overridden by a trip that happens to already cover the dates.
+    const tripSuggestion = await suggestTrip(forwardNote, trips)
+    if (
+      tripSuggestion &&
+      tripSuggestion.action === "attach" &&
+      tripSuggestion.trip_id
+    ) {
+      matchedTrip =
+        trips.find(function (t) {
+          return String(t.id) === String(tripSuggestion.trip_id)
+        }) || null
+      if (!matchedTrip) {
+        tripSuggestionWarning =
+          "Your note asked for trip " +
+          tripSuggestion.trip_id +
+          ", but no trip with that id exists - matched automatically by date instead."
+      }
+    }
+    const forceNewTrip = Boolean(
+      tripSuggestion && tripSuggestion.action === "new_trip"
+    )
+
+    if (!matchedTrip && !forceNewTrip) {
+      if (startDt) {
+        const windowMs = 1 * 24 * 60 * 60 * 1000
+        let bestFuzzyTrip = null
+        let bestFuzzyDistance = Infinity
+        for (const t of trips) {
+          const tStart = new Date(t.start_date + "T00:00:00")
+          const tEnd = new Date(t.end_date + "T23:59:59")
+          // A trip whose recorded dates already span the booking - no fuzz needed -
+          // always wins over a trip that only matches within the +/-1 day fuzz below,
+          // even if that other trip happens to come first in list_trips order. Without
+          // this, a short trip (e.g. a single day) could steal a booking that actually
+          // belongs to a longer trip already covering the date, forcing that short
+          // trip's range to expand instead of just attaching to the trip that fits.
+          if (
+            startDt.getTime() >= tStart.getTime() &&
+            startDt.getTime() <= tEnd.getTime()
+          ) {
+            matchedTrip = t
+            break
+          }
+          const distance = Math.max(
+            0,
+            tStart.getTime() - startDt.getTime(),
+            startDt.getTime() - tEnd.getTime()
+          )
+          if (
+            startDt.getTime() >= tStart.getTime() - windowMs &&
+            startDt.getTime() <= tEnd.getTime() + windowMs &&
+            distance < bestFuzzyDistance
+          ) {
+            bestFuzzyTrip = t
+            bestFuzzyDistance = distance
+          }
         }
+        if (!matchedTrip) matchedTrip = bestFuzzyTrip
       }
     }
 
     if (matchedTrip) {
       tripId = matchedTrip.id
+      tripTitle = matchedTrip.title
       // A booking can land outside the trip's recorded window (an extra night tacked
-      // on, a longer drive home) even though it matched within the +/-3 day fuzz above -
+      // on, a longer drive home) even though it matched within the +/-1 day fuzz above -
       // keep the trip's own date range accurate so future list_trips window-matching
       // (and the Trek UI) reflects reality instead of just whichever booking created it.
       const curStart = matchedTrip.start_date
@@ -249,6 +388,7 @@ if (!extractionError) {
       if (endDateOnly) createArgs.end_date = endDateOnly
       const created = await mcpTool(sessionId, "create_trip", createArgs)
       tripId = created.trip ? created.trip.id : created.id
+      tripTitle = created.trip ? created.trip.title : createArgs.title
       createdNewTrip = true
     }
 
@@ -919,6 +1059,14 @@ const memberAddWarningLine = memberAddWarning
 const travelerWarningLine = travelerWarning
   ? "\n\nWarning: " + travelerWarning
   : ""
+const tripSuggestionWarningLine = tripSuggestionWarning
+  ? "\n\nWarning: " + tripSuggestionWarning
+  : ""
+const tripLine =
+  "Trip: " +
+  (tripTitle ? tripTitle + " - " : "") +
+  "https://${TREK_SUBDOMAIN}.${SECRET_DOMAIN}/trips/" +
+  tripId
 
 let notifySubject
 let notifyText
@@ -979,8 +1127,7 @@ if (extractionError) {
     " (confirmation: " +
     matchedConfirmation +
     ")\n" +
-    "Trip: https://${TREK_SUBDOMAIN}.${SECRET_DOMAIN}/trips/" +
-    tripId +
+    tripLine +
     "\n" +
     "Type: " +
     (ex.booking_type || "unknown") +
@@ -991,6 +1138,7 @@ if (extractionError) {
     "Confirmation: " +
     (ex.confirmation_code || "n/a") +
     (pdfExtractionWarning ? "\n\nWarning: " + pdfExtractionWarning : "") +
+    tripSuggestionWarningLine +
     "\n\nRef: " +
     execRef
 } else {
@@ -1001,8 +1149,7 @@ if (extractionError) {
       ? "Created a new trip and added this booking."
       : "Added this booking to an existing trip.") +
     "\n\n" +
-    "Trip: https://${TREK_SUBDOMAIN}.${SECRET_DOMAIN}/trips/" +
-    tripId +
+    tripLine +
     "\n" +
     "Type: " +
     (ex.booking_type || "unknown") +
@@ -1017,6 +1164,7 @@ if (extractionError) {
     costWarning +
     memberAddWarningLine +
     travelerWarningLine +
+    tripSuggestionWarningLine +
     "\n\nRef: " +
     execRef
 }
@@ -1026,6 +1174,8 @@ if (extractionError) {
 return {
   json: Object.assign({}, item, {
     trekTripId: tripId,
+    trekTripTitle: tripTitle,
+    trekTripSuggestionWarning: tripSuggestionWarning,
     trekCreatedNewTrip: createdNewTrip,
     trekIsDuplicate: isDuplicate,
     trekDuplicateMatchReason: duplicateMatchReason,
