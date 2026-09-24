@@ -30,7 +30,13 @@ spec:
               PGID: 568
               SECURITY_ENABLELOGIN: "true"
               SYSTEM_DEFAULTLOCALE: en-US
+              SYSTEM_FRONTENDURL: "https://${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
               JAVA_TOOL_OPTIONS: "-Xms512m -Xmx1024m -XX:MaxMetaspaceSize=512m"
+              MAIL_ENABLED: "true"
+              MAIL_HOST: smtp-relay.system.svc.cluster.local
+              MAIL_PORT: 2525
+              MAIL_FROM: "pdf@${SECRET_DOMAIN}"
+              MAIL_STARTTLSENABLE: "false"
               SECURITY_LOGINMETHOD: oauth2
               SECURITY_OAUTH2_ENABLED: "true"
               SECURITY_OAUTH2_PROVIDER: pocketid
