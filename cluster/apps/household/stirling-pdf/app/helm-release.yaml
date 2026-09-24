@@ -30,13 +30,20 @@ spec:
               PGID: 568
               SECURITY_ENABLELOGIN: "true"
               SYSTEM_DEFAULTLOCALE: en-US
-              SYSTEM_FRONTENDURL: "https://${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
+              SYSTEM_FRONTENDURL: "https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+              SYSTEM_SERVERCERTIFICATE_ENABLED: "true"
               JAVA_TOOL_OPTIONS: "-Xms512m -Xmx1024m -XX:MaxMetaspaceSize=512m"
               MAIL_ENABLED: "true"
               MAIL_HOST: smtp-relay.system.svc.cluster.local
               MAIL_PORT: 2525
               MAIL_FROM: "pdf@${SECRET_DOMAIN}"
               MAIL_STARTTLSENABLE: "false"
+              STORAGE_ENABLED: "true"
+              STORAGE_LOCAL_BASEPATH: /storage
+              STORAGE_SHARING_ENABLED: "true"
+              STORAGE_SHARING_LINKENABLED: "true"
+              STORAGE_SHARING_EMAILENABLED: "true"
+              STORAGE_SIGNING_ENABLED: "true"
               SECURITY_LOGINMETHOD: oauth2
               SECURITY_OAUTH2_ENABLED: "true"
               SECURITY_OAUTH2_PROVIDER: pocketid
@@ -65,22 +72,17 @@ spec:
         annotations:
           gatus.io/enabled: "true"
         parentRefs:
-          - name: internal-gateway
+          - name: external-gateway
             namespace: networking
         hostnames:
-          - "${GATUS_SUBDOMAIN}.home.${SECRET_DOMAIN}"
+          - "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef
                 extensionRef:
                   group: traefik.io
                   kind: Middleware
-                  name: rfc1918-ips
-              - type: ExtensionRef
-                extensionRef:
-                  group: traefik.io
-                  kind: Middleware
-                  name: traefik-middleware-chain-internal-no-auth
+                  name: traefik-middleware-chain-no-auth
             backendRefs:
               - identifier: main
                 port: http
@@ -94,3 +96,5 @@ spec:
                 path: /configs
               - subPath: customFiles
                 path: /customFiles
+              - subPath: storage
+                path: /storage
