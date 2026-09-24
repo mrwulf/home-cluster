@@ -1,9 +1,9 @@
 # Cluster Metadata
 clusterName: k8s
-# renovate: depName=ghcr.io/siderolabs/installer datasource=docker
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
 talosVersion: v1.13.10
-# renovate: depName=ghcr.io/siderolabs/kubelet datasource=docker
-kubernetesVersion: v1.36.3
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+kubernetesVersion: v1.37.1
 
 # Network References
 clusterEndpointIP: 10.0.10.200
