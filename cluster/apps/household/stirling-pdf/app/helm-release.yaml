@@ -28,9 +28,18 @@ spec:
             env:
               PUID: 568
               PGID: 568
-              SECURITY_ENABLELOGIN: "false"
+              SECURITY_ENABLELOGIN: "true"
               SYSTEM_DEFAULTLOCALE: en-US
               JAVA_TOOL_OPTIONS: "-Xms512m -Xmx1024m -XX:MaxMetaspaceSize=512m"
+              SECURITY_OAUTH2_ENABLED: "true"
+              SECURITY_OAUTH2_PROVIDER: pocketid
+              SECURITY_OAUTH2_ISSUER: "https://id.${SECRET_DOMAIN}"
+              SECURITY_OAUTH2_SCOPES: "openid, profile, email"
+              SECURITY_OAUTH2_USEASUSERNAME: preferred_username
+              SECURITY_OAUTH2_AUTOCREATEUSER: "true"
+            envFrom:
+              - secretRef:
+                  name: stirling-pdf-oidc-credentials
             resources:
               requests:
                 cpu: 50m
