@@ -8,7 +8,7 @@ spec:
     path: /mnt/user/Documents
     server: ${CORE_NFS_SERVER}
   restic:
-    repository: "${B2_RESTIC_REPO}:home-backups/documents"
+    repository: "${B2_RESTIC_REPO}/home-backups/documents"
     password: "${NFS_RESTIC_PWD}"
     moverMemoryRequest: 1Gi
     moverMemoryLimit: 2Gi

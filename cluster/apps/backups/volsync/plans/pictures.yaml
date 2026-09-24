@@ -8,7 +8,7 @@ spec:
     path: /mnt/user/Photos
     server: ${CORE_NFS_SERVER}
   restic:
-    repository: "${B2_RESTIC_REPO}:home-backups/Pictures"
+    repository: "${B2_RESTIC_REPO}/home-backups/Pictures"
     password: "${NFS_RESTIC_PWD}"
     moverMemoryRequest: 12Gi
     moverMemoryLimit: 24Gi

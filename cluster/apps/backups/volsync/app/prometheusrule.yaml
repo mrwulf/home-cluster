@@ -22,3 +22,14 @@ spec:
           for: 15m
           labels:
             severity: critical
+        # Out-of-sync only fires once the next scheduled slot is missed (up to 24h
+        # for daily plans); this catches a hung mover as soon as it overruns.
+        - alert: VolSyncMoverStuck
+          annotations:
+            summary: "{{ $labels.namespace }}/{{ $labels.job_name }} mover has been running for over an hour."
+          expr: |
+            (time() - kube_job_status_start_time{job_name=~"volsync-(src|dst)-.+"})
+              * on(namespace, job_name) group_left() (kube_job_status_active > 0) > 3600
+          for: 5m
+          labels:
+            severity: warning

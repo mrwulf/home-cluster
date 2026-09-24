@@ -81,6 +81,8 @@ Most applications deployed in the Kubernetes cluster (e.g., `vaultwarden`, `home
 - **Copy 1 (Production):** Rook-Ceph PVC (`ceph-block` or `ceph-fs`).
 - **Copy 2 (Local Backup):** Replicated to the local NAS via VolSync's NFS replication (`${APP}-nfs` ReplicationSource). Schedules are staggered to prevent resource contention.
 - **Copy 3 (Offsite Backup):** Replicated to Backblaze B2 via VolSync's B2 replication (`${APP}-b2` ReplicationSource).
+  Restic talks to B2 through its S3-compatible API (`s3:https://s3.us-west-004.backblazeb2.com/...`), not the native `b2:` backend, which hangs indefinitely on stalled uploads.
+  `VolSyncMoverStuck` alerts when any mover runs over an hour; `VolSyncVolumeOutOfSync` fires once a scheduled slot is missed.
 
 ---
 

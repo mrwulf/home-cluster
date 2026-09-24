@@ -49,8 +49,9 @@ spec:
           RESTIC_PASSWORD: ${schema.spec.restic.password}
           RESTIC_PACK_SIZE: "128"
           RESTIC_READ_CONCURRENCY: "16"
-          B2_ACCOUNT_ID: ${schema.spec.restic.b2.id}
-          B2_ACCOUNT_KEY: ${schema.spec.restic.b2.key}
+          # B2 app key via the S3-compatible API; restic's native b2 backend hangs on stalled uploads
+          AWS_ACCESS_KEY_ID: ${schema.spec.restic.b2.id}
+          AWS_SECRET_ACCESS_KEY: ${schema.spec.restic.b2.key}
     - id: pv
       template:
         apiVersion: v1
