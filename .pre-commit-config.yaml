@@ -52,10 +52,6 @@ repos:
           )$
       - id: forbid-personal-domains
         name: Forbid personal domains/PII (Rule 7)
-        entry: '(sysinfra\.pro|webwulf\.net)'
-        language: pygrep
+        entry: .github/linters/forbid-personal-domains.sh
+        language: script
         types: [text]
-        exclude: |
-          (?x)^(
-              .pre-commit-config.yaml
-          )$
