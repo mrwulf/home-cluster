@@ -50,3 +50,8 @@ repos:
           (?x)^(
               .pre-commit-config.yaml
           )$
+      - id: forbid-pii
+        name: Forbid PII (Rule 7)
+        entry: .github/linters/forbid-pii.sh
+        language: script
+        types: [text]
