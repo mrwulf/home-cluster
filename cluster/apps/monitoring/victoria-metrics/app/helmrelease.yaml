@@ -185,10 +185,25 @@ spec:
         # gotk_reconcile_duration_seconds_bucket: Flux's internal per-object
         # reconcile-latency histogram, scales with kustomization/helmrelease
         # count, never queried here.
+        # etcd_request_duration_seconds_bucket / apiserver_request_duration_seconds_bucket:
+        # ~96k series combined, the two single largest metrics in the cluster.
+        # The etcd and k8s-system-api-server dashboards only chart the
+        # _sum/_count siblings (rate/avg), never histogram_quantile on these,
+        # and no VMRule references them either — verified against every
+        # GrafanaDashboard's rendered JSON and every VMRule's expr.
+        # apiserver_watch_list_duration_seconds_bucket, apiserver_request_body_size_bytes_bucket,
+        # apiserver_watch_cache_read_wait_seconds_bucket, apiserver_watch_events_sizes_bucket,
+        # apiserver_response_sizes_bucket: same story, other unused apiserver histograms.
+        # container_memory_failures_total, container_blkio_device_usage_total: esoteric
+        # per-cgroup cAdvisor counters, same category as container_tasks_state above.
+        # kubernetes_feature_enabled: static per-apiserver/controller-manager/scheduler
+        # feature-gate list, never changes, never queried.
+        # workqueue_queue_duration_seconds_bucket, workqueue_work_duration_seconds_bucket:
+        # per-controller internal queue-latency histograms, no alerting/dashboard consumer.
         inlineRelabelConfig:
           - action: drop
             source_labels: [__name__]
-            regex: "container_tasks_state|prober_probe_duration_seconds_bucket|gotk_reconcile_duration_seconds_bucket"
+            regex: "container_tasks_state|prober_probe_duration_seconds_bucket|gotk_reconcile_duration_seconds_bucket|etcd_request_duration_seconds_bucket|apiserver_request_duration_seconds_bucket|apiserver_watch_list_duration_seconds_bucket|apiserver_request_body_size_bytes_bucket|apiserver_watch_cache_read_wait_seconds_bucket|apiserver_watch_events_sizes_bucket|apiserver_response_sizes_bucket|container_memory_failures_total|container_blkio_device_usage_total|kubernetes_feature_enabled|workqueue_queue_duration_seconds_bucket|workqueue_work_duration_seconds_bucket"
 
     kubeApiServer:
       enabled: true
