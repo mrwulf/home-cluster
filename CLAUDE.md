@@ -11,6 +11,10 @@ There is no `kubectl apply` workflow — you change YAML, it gets committed, and
 
 These apply to **every** change. Do not check anything in that violates them.
 
+0. **Check [TODO.md](TODO.md) before applying a fix or merging a Renovate PR.** It tracks
+   known-broken/blocked items (upstream regressions, unreviewed updates, open investigations) —
+   a version bump or "fix" that looks obviously right may already be a known dead end there.
+
 1. **Tests must pass before commit.** Run:
 
    ```sh
