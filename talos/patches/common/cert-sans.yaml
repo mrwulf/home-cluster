@@ -4,10 +4,5 @@ machine:
     - ${clusterEndpointIP}
     - 127.0.0.1
     - 10.0.10.201
-cluster:
-  apiServer:
-    certSANs:
-      - k8s.home
-      - ${clusterEndpointIP}
-      - 127.0.0.1
-      - 10.0.10.201
+# .cluster.apiServer.certSANs moved to KubeAPIServerConfig.certExtraSANs in
+# controlplane/apiserver.yaml — the two documents conflict if both set it.

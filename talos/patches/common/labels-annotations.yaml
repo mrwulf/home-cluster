@@ -1,6 +1,6 @@
-machine:
-  nodeLabels:
-    node.home.arpa/physical: "true"
-    node-role.kubernetes.io/control-plane: ""
-  nodeAnnotations:
-    installerImage: factory.talos.dev/metal-installer/${schematicId}:${talosVersion}
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  node.home.arpa/physical: "true"
+annotations:
+  installerImage: factory.talos.dev/metal-installer/${schematicId}:${talosVersion}

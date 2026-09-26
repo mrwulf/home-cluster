@@ -1,8 +1,11 @@
 machine:
   type: controlplane
-  install:
-    diskSelector:
-      type: ssd
+---
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+provisioning:
+  diskSelector:
+    match: "!disk.rotational"
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig

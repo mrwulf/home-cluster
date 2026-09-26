@@ -20,6 +20,16 @@ echo "Derived schematic ID: ${schematicId}"
 eval "$(yq -r 'to_entries | .[] | "export " + .key + "=\"" + .value + "\""' "${TALOS_DIR}/talenv.yaml")"
 eval "$(sops -d "${TALOS_DIR}/talenv.sops.yaml" | yq -r 'to_entries | .[] | "export " + .key + "=\"" + .value + "\""')"
 
+# Explicit envsubst variable allowlist, so patch content is never mistaken for a template
+# variable (e.g. a literal "$patch: delete" strategic-merge directive in a document patch).
+ENVSUBST_VARS="$(
+  {
+    yq -r 'keys | .[]' "${TALOS_DIR}/talenv.yaml"
+    sops -d "${TALOS_DIR}/talenv.sops.yaml" | yq -r 'keys | .[]'
+    echo schematicId
+  } | sed 's/^/$/' | paste -sd, -
+)"
+
 # Decrypt Talos secrets
 sops -d "${TALOS_DIR}/talsecret.sops.yaml" > "${TMP_DIR}/secrets.yaml"
 
@@ -51,17 +61,17 @@ mkdir -p "${TMP_DIR}/rendered/common" "${TMP_DIR}/rendered/controlplane" "${TMP_
 
 for p in "${TALOS_DIR}"/patches/common/*.yaml; do
   [ -f "$p" ] || continue
-  envsubst < "$p" > "${TMP_DIR}/rendered/common/$(basename "$p")"
+  envsubst "${ENVSUBST_VARS}" < "$p" > "${TMP_DIR}/rendered/common/$(basename "$p")"
 done
 
 for p in "${TALOS_DIR}"/patches/controlplane/*.yaml; do
   [ -f "$p" ] || continue
-  envsubst < "$p" > "${TMP_DIR}/rendered/controlplane/$(basename "$p")"
+  envsubst "${ENVSUBST_VARS}" < "$p" > "${TMP_DIR}/rendered/controlplane/$(basename "$p")"
 done
 
 for p in "${TALOS_DIR}"/patches/nodes/*.yaml; do
   [ -f "$p" ] || continue
-  envsubst < "$p" > "${TMP_DIR}/rendered/nodes/$(basename "$p")"
+  envsubst "${ENVSUBST_VARS}" < "$p" > "${TMP_DIR}/rendered/nodes/$(basename "$p")"
 done
 
 # Prepare patch arguments (sorted order for deterministic generation)
@@ -77,9 +87,12 @@ for p in $(ls "${TMP_DIR}"/rendered/controlplane/*.yaml | sort); do
   CONTROLPLANE_PATCHES+=(--patch "@$p")
 done
 
-# Strip default HostnameConfig resource from base configs so node patches have full control
-yq 'select(.kind != "HostnameConfig") | del(.machine.install.disk) | del(.cluster.apiServer.admissionControl) | del(.machine.nodeLabels."node.kubernetes.io/exclude-from-external-load-balancers")' "${TMP_DIR}/base/controlplane.yaml" > "${TMP_DIR}/base/controlplane-clean.yaml"
-yq 'select(.kind != "HostnameConfig") | del(.machine.install.disk)' "${TMP_DIR}/base/worker.yaml" > "${TMP_DIR}/base/worker-clean.yaml"
+# Strip default HostnameConfig resource so node patches have full control, and drop the
+# default KubeFlannelCNIConfig document — this cluster runs Cilium, not Talos's built-in
+# Flannel; its mere presence in the bundle is what makes Talos deploy it, there is no
+# separate off switch in the Talos v1.14 multi-document config model.
+yq 'select(.kind != "HostnameConfig" and .kind != "KubeFlannelCNIConfig") | del(.machine.install.disk) | del(.cluster.apiServer.admissionControl) | del(.machine.nodeLabels."node.kubernetes.io/exclude-from-external-load-balancers")' "${TMP_DIR}/base/controlplane.yaml" > "${TMP_DIR}/base/controlplane-clean.yaml"
+yq 'select(.kind != "HostnameConfig" and .kind != "KubeFlannelCNIConfig") | del(.machine.install.disk)' "${TMP_DIR}/base/worker.yaml" > "${TMP_DIR}/base/worker-clean.yaml"
 
 # Process each node
 for node_file in $(ls "${TALOS_DIR}"/patches/nodes/*.yaml | sort); do

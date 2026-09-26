@@ -1,2 +1,6 @@
-cluster:
-  allowSchedulingOnControlPlanes: true
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+# allowSchedulingOnControlPlanes: true (old v1alpha1 field) == absence of the
+# default control-plane NoSchedule taint in the new document model.
+taints:
+  $patch: delete

@@ -1,5 +1,6 @@
-machine:
-  install:
-    image: factory.talos.dev/metal-installer/${schematicId}:${talosVersion}
-    wipe: false
-    grubUseUKICmdline: true
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+installer:
+  image: factory.talos.dev/metal-installer/${schematicId}:${talosVersion}
+provisioning:
+  wipe: false

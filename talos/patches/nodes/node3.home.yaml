@@ -1,8 +1,11 @@
 machine:
   type: controlplane
-  install:
-    diskSelector:
-      model: SAMSUNG MZVLV256HCHP-000L2
+---
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+provisioning:
+  diskSelector:
+    match: disk.model == "SAMSUNG MZVLV256HCHP-000L2"
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig
