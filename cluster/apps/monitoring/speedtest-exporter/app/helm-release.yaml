@@ -74,6 +74,15 @@ spec:
             path: /metrics
             interval: 30m
             scrapeTimeout: 1m
+            # Single-replica Deployment: instance defaults to the pod IP, which
+            # changes on every restart and mints a new series identity. The
+            # imported dashboard's $instance variable is single-select, so it
+            # silently pins to whichever IP is newest, making history vanish
+            # from panels every time the pod restarts. Pin instance to a
+            # stable value instead (matches the smartctl-exporter pattern).
+            relabelings:
+              - targetLabel: instance
+                replacement: speedtest-exporter
             metricRelabelings:
               - action: labeldrop
                 regex: (pod)
