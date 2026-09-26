@@ -12,6 +12,13 @@ curl https://mise.run | sh
 
 /home/coder/.local/bin/mise install
 
+echo "Installing Node.js..."
+/home/coder/.local/bin/mise use -g node@lts
+
+echo "Installing Claude Code..."
+# renovate: datasource=npm depName=@anthropic-ai/claude-code
+/home/coder/.local/bin/mise exec node -- npm install -g @anthropic-ai/claude-code@2.1.283
+
 # echo "Installing kubectl..."
 # curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 

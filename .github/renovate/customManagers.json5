@@ -35,7 +35,7 @@
       description: [
         "Process npm packages installed in shell scripts in Kubernetes manifests",
       ],
-      managerFilePatterns: ["/(^|/)(cluster|talos)/.+\\.ya?ml$/"],
+      managerFilePatterns: ["/(^|/)(cluster|talos)/.+\\.(ya?ml|sh)$/"],
       matchStrings: [
         "# renovate: datasource=npm depName=(?<depName>\\S+)\\s*\\n\\s*npm install -g (?:\\S+@)?(?<currentValue>[0-9a-zA-Z._-]+)",
       ],
