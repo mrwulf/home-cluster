@@ -148,5 +148,14 @@
       ],
       allowedVersions: "/^(?:20|22|24|26|28|30)\\b.*-alpine$/",
     },
+    {
+      // v5.26.0 regresses `modified_on` planning on cloudflare_dns_record updates,
+      // breaking apply with "Provider produced inconsistent result after apply"
+      // whenever the record is updated out-of-band (our failover Workers do this).
+      // Unpin once fixed upstream: https://github.com/cloudflare/terraform-provider-cloudflare/issues/7387
+      matchDatasources: ["terraform-provider"],
+      matchPackageNames: ["cloudflare/cloudflare"],
+      allowedVersions: "< 5.26.0",
+    },
   ],
 }
