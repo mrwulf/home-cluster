@@ -20,6 +20,9 @@ echo "Installing Claude Code..."
 # renovate: datasource=npm depName=@anthropic-ai/claude-code
 mise exec node -- npm install -g @anthropic-ai/claude-code@2.1.283
 
+echo "Aliasing code -> code-server for VS Code CLI compatibility..."
+ln -sf /usr/bin/code-server /home/coder/.local/bin/code
+
 # echo "Installing kubectl..."
 # curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 
