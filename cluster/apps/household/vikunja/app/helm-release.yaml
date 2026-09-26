@@ -34,42 +34,22 @@ spec:
               - secretRef:
                   name: vikunja-oidc-credentials
         containers:
-          main:
+          app:
             image:
-              repository: caddy
-              tag: 2.11.4-alpine
+              repository: vikunja/vikunja
+              tag: 2.6.0
               pullPolicy: IfNotPresent
-            resources:
-              requests:
-                cpu: 15m
-                memory: 100M
-              limits:
-                memory: 1024M
-          frontend:
-            image:
-              repository: vikunja/frontend
-              tag: 0.22.1
-            resources:
-              requests:
-                cpu: 10m
-                memory: 26Mi
-              limits:
-                memory: 512Mi
-          api:
-            image:
-              repository: vikunja/api
-              tag: 0.22.1
             env:
               - name: VIKUNJA_SERVICE_TIMEZONE
                 value: ${TIMEZONE}
+              - name: VIKUNJA_SERVICE_PUBLICURL
+                value: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
               - name: VIKUNJA_DATABASE_TYPE
                 value: "postgres"
               - name: VIKUNJA_DATABASE_HOST
                 value: postgres17-rw.databases.svc.cluster.local.
               - name: VIKUNJA_DATABASE_DATABASE
                 value: vikunja
-              - name: VIKUNJA_SERVICE_FRONTENDURL
-                value: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
               - name: VIKUNJA_SERVICE_ENABLETASKCOMMENTS
                 value: "false"
               - name: VIKUNJA_MAILER_FROMEMAIL
@@ -82,11 +62,11 @@ spec:
                 value: "2525"
               - name: VIKUNJA_METRICS_ENABLED
                 value: "true"
-              - name: &envjwt VIKUNJA_SERVICE_JWT
+              - name: &envsecret VIKUNJA_SERVICE_SECRET
                 valueFrom:
                   secretKeyRef:
                     name: *app
-                    key: *envjwt
+                    key: *envsecret
               - name: &envdbuser VIKUNJA_DATABASE_USER
                 valueFrom:
                   secretKeyRef:
@@ -99,17 +79,17 @@ spec:
                     key: *envdbpass
             resources:
               requests:
-                cpu: 15m
-                memory: 24Mi
+                cpu: 20m
+                memory: 128Mi
               limits:
-                memory: 512Mi
+                memory: 1024Mi
 
     service:
       main:
         controller: main
         ports:
           http:
-            port: 8080
+            port: 3456
 
     route:
       main:
@@ -131,7 +111,7 @@ spec:
         existingClaim: "${VOLSYNC_CLAIM}"
         advancedMounts:
           main:
-            api:
+            app:
               - path: /app/vikunja/files
       config-template:
         type: custom
@@ -149,15 +129,5 @@ spec:
           main:
             init-config:
               - path: /etc/vikunja
-            api:
+            app:
               - path: /etc/vikunja
-      caddy-config:
-        type: "custom"
-        volumeSpec:
-          configMap:
-            name: vikunja
-        advancedMounts:
-          main:
-            main:
-              - path: /etc/caddy/Caddyfile
-                subPath: Caddyfile
