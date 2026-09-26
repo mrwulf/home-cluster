@@ -1,7 +1,7 @@
 ---
 customization:
   extraKernelArgs:
-    - talos.logging.kernel=udp://vector-aggregator.monitoring.svc.cluster.local:6050/
+    - talos.logging.kernel=udp://10.0.10.15:6050/
     - talos.auditd.disabled=1
     - mitigations=off
     - apparmor=0

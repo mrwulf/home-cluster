@@ -7,6 +7,9 @@ kubernetesVersion: v1.37.1
 
 # Network References
 clusterEndpointIP: 10.0.10.200
+# LoadBalancer IP for vector-aggregator (cluster/apps/monitoring/vector) — Talos nodes' host
+# resolver can't reach *.svc.cluster.local, so machine.logging must target an IP, not the DNS name.
+vectorAggregatorAddr: 10.0.10.15
 
 # renovate: datasource=docker depName=ghcr.io/prometheus-operator/prometheus-operator
 promVersion: v0.94.1
