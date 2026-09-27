@@ -11,7 +11,6 @@ resources:
   - k8s-dns-gateway/ks.yaml
   - k8tz/ks.yaml
   - kro/ks.yaml
-  - kube-cleanup-operator/ks.yaml
   - kyverno/ks.yaml
   - metrics-server/ks.yaml
   - ntfy/ks.yaml

@@ -63,25 +63,6 @@ spec:
                   memory: 20
                   pods: 25
                 useDeviationThresholds: true
-            - name: PodLifeTime
-              args:
-                maxPodLifeTimeSeconds: 300
-                states:
-                  - ContainerCannotRun
-                  - CrashLoopBackOff
-                  - CreateContainerConfigError
-                  - CreateContainerError
-                  - ErrImagePull
-                  - Error
-                  - ImagePullBackOff
-                  - InvalidImageName
-                  - OOMKilled
-                  - Pending
-                  - PodInitializing
-            - name: RemoveFailedPods
-              args:
-                includingInitContainers: true
-                minPodLifetimeSeconds: 300
             - name: RemoveDuplicates
               args:
                 excludeOwnerKinds:
@@ -108,9 +89,45 @@ spec:
                 - LowNodeUtilization
             deschedule:
               enabled:
-                - RemoveFailedPods
                 - RemovePodsHavingTooManyRestarts
                 - RemovePodsViolatingNodeTaints
                 - RemovePodsViolatingNodeAffinity
                 - RemovePodsViolatingInterPodAntiAffinity
+        # Garbage-collects dead pods (stuck-Pending, Failed, Evicted, etc.) regardless of
+        # owner kind. Split out from the "default" profile because nodeFit: true there
+        # blocks these evictions for node-pinned pods (e.g. Rook's mon/osd/exporter,
+        # which have a nodeSelector to their own host and so never "fit" elsewhere) -
+        # replaces kube-cleanup-operator, which only ever reaped Job-owned or
+        # ownerless pods.
+        - name: cleanup
+          pluginConfig:
+            - name: DefaultEvictor
+              args:
+                nodeFit: false
+                evictFailedBarePods: true
+                evictLocalStoragePods: true
+                evictSystemCriticalPods: true
+            - name: PodLifeTime
+              args:
+                maxPodLifeTimeSeconds: 300
+                states:
+                  - ContainerCannotRun
+                  - CrashLoopBackOff
+                  - CreateContainerConfigError
+                  - CreateContainerError
+                  - ErrImagePull
+                  - Error
+                  - ImagePullBackOff
+                  - InvalidImageName
+                  - OOMKilled
+                  - Pending
+                  - PodInitializing
+            - name: RemoveFailedPods
+              args:
+                includingInitContainers: true
+                minPodLifetimeSeconds: 300
+          plugins:
+            deschedule:
+              enabled:
+                - RemoveFailedPods
                 - PodLifeTime

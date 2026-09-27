@@ -8,6 +8,7 @@ spec:
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 3600
       template:
         spec:
           automountServiceAccountToken: false
@@ -65,6 +66,7 @@ spec:
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 3600
       template:
         spec:
           automountServiceAccountToken: false
