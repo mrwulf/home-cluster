@@ -120,6 +120,14 @@
       separateMinorPatch: true,
     },
     {
+      description: "ToolHive operator and CRDs - always update together",
+      groupName: "ToolHive Operator",
+      matchPackageNames: ["/toolhive-operator/"],
+      matchDatasources: ["helm"],
+      group: { commitMessageTopic: "{{{groupName}}} group" },
+      separateMinorPatch: true,
+    },
+    {
       description: "Kubernetes and tuppr upgrades",
       groupName: "Kubernetes",
       matchPackageNames: [
