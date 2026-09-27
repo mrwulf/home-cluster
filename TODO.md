@@ -17,21 +17,39 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   Found: 2026-09-26, while investigating intermittent `ingress-vps-failover-tf-runner` failures.
 
 - **`task talos:apply-config`/`talos:diff-config` still fail on every node — down to exactly one
-  cause, and it's a confirmed Talos v1.14.1 gap, not something we can fix from this repo.**
+  cause, and there's a known real fix, just not applied yet (needs care first).**
   Migrated all patches in `talos/patches/` from legacy v1alpha1 fields to the new Talos v1.14
   multi-document config (discovery, install image/disk-selector, hostDNS, kubelet args/config,
   network CNI, kubePrism, apiserver/OIDC via `KubeAuthenticationConfig`, controller-manager,
   scheduler, proxy, node labels/annotations/taints) — took `talosctl validate --mode metal` from
   13 errors down to 1. The one that's left: `.machine.kubelet.extraMounts` (bind-mounts
-  `/var/mnt/extra` for openebs-hostpath) has **no equivalent in the new `KubeletConfig` document** —
+  `/var/mnt/extra` for openebs-hostpath) has no equivalent in the new `KubeletConfig` document —
   confirmed at the source level: `pkg/machinery/config/types/k8s/kubelet.go`'s
   `KubeletConfigV1Alpha1.ExtraMounts()` is hardcoded `return nil`, and
   `V1Alpha1ConflictValidate` rejects `.machine.kubelet` if it's non-nil at all — not per-field, so
   even leaving _only_ `extraMounts` behind still conflicts with the document's mere presence.
   Talos validates the whole config bundle atomically, so this single remaining conflict still
   blocks `apply-config`/`diff-config` end-to-end despite the other 12 being fully resolved.
-  No workaround exists short of dropping the mount (risks breaking openebs-hostpath) or Talos
-  shipping a real equivalent. Revisit when a newer Talos version adds one.
+  **Real fix found** (researched other Talos GitOps repos hitting the identical issue):
+  `extraMounts` was deliberately removed — [siderolabs/talos#13716](https://github.com/siderolabs/talos/issues/13716)
+  ("not needed anymore with user volumes") — and Longhorn/LINSTOR/TopoLVM/generic-hostpath users
+  all hit the same wall and moved to `UserVolumeConfig` (`volumeType: directory`), a first-class
+  Talos volume that auto-mounts at `/var/mnt/<name>` with zero kubelet involvement, so it never
+  touches `.machine.kubelet` at all. For us that's:
+
+  ```yaml
+  apiVersion: v1alpha1
+  kind: UserVolumeConfig
+  name: extra
+  volumeType: directory
+  ```
+
+  **Not applied yet** — confirmed live that `/var/mnt/extra` already has real data
+  (`openebs/` subdirectory, actively used by openebs-hostpath PVs), and switching to a
+  Talos-managed `UserVolumeConfig` volume is not guaranteed to preserve what's already on that
+  path ([siderolabs/talos#14411](https://github.com/siderolabs/talos/issues/14411) tracks exactly
+  this migration-data-loss risk for v1.13→v1.14). Verify what's safe to lose/back up before
+  applying this — don't rewrite `install-image.yaml` blind.
   Ruled out along the way: `.machine.install.grubUseUKICmdline` looked like a second unfixable
   gap (no new-document equivalent either), but is provably dead weight here — checked
   `bootedentries` on all 3 nodes and confirmed every one boots via systemd-boot/UKI
@@ -51,26 +69,16 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   switch to a different cleanup tool, or a small CronJob to reap `Failed` pods this operator misses.
   Found: 2026-09-26, after node3's reboot left 91 pods stuck in `rook-ceph`.
 
-- **Kernel-log shipping to Vector is fixed at the config level but the rollout is mid-flight.**
-  Root cause was the same `vector-aggregator.monitoring.svc.cluster.local` DNS-vs-LAN-resolver
-  bug as the service-log fix below, but for kernel logs it's baked into `talos/schematic.yaml`'s
-  `extraKernelArgs` (`talos.logging.kernel=...`), so fixing it changes the schematic ID and needs
-  an actual `talosctl upgrade --image` + reboot per node, not a config patch. As of 2026-09-26,
-  node1 has been upgraded and reports the fixed endpoint on its live `/proc/cmdline`; node2 and
-  node3 are still on the old broken one. Confirm all 3 land on the new schematic, then confirm
-  `talos_kernel_logs` shows nonzero `vector_component_sent_events_total` in Vector's own metrics
-  (service logs already confirmed flowing this way — fully resolved, see the resolver/talenv fix
-  in `talos/patches/common/logging.yaml` and `talos/talenv.yaml`).
-
 - **No BMC/IPMI check yet for node3's 2026-09-24T19:46:41Z reboot.**
   Confirmed a genuine full reboot via fresh Talos `Member`/`PlatformMetadata` resources, ruled out
   a tuppr-triggered Talos upgrade (last one completed 121 days prior) and a fatal hardware error
   (`CperHardwareErrorFatal` untouched since Feb 25). `talosctl dmesg`'s ring buffer only retains
   ~36-48h and rotates on volume, not on reboot, so the actual boot-time kernel log was already
   gone by the time this was investigated — inconclusive whether it was a clean power-cycle
-  (`NodeShutdown` leans this way) or a crash. Once kernel-log shipping above is fully rolled out,
-  the _next_ reboot will be diagnosable from Loki; this one still needs node3's BMC/IPMI SEL log
-  checked directly, if it's still retained there.
+  (`NodeShutdown` leans this way) or a crash. Kernel-log shipping to Vector/Loki is now fixed and
+  fully rolled out across all 3 nodes (2026-09-26), so the _next_ reboot will be diagnosable from
+  Loki directly; this one still needs node3's BMC/IPMI SEL log checked directly, if it's still
+  retained there.
   Found: 2026-09-26.
 
 ## Unreviewed — verify before merging
