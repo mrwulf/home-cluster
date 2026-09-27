@@ -59,6 +59,7 @@ spec:
           concurrencyPolicy: Forbid
           successfulJobsHistory: 3
           failedJobsHistory: 3
+          ttlSecondsAfterFinished: 3600
         containers:
           main:
             image:

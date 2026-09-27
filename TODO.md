@@ -72,15 +72,6 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
 
 ## Needs a real fix (not upstream-blocked, just not done yet)
 
-- **`kube-cleanup-operator` never reaps `Failed` pods owned by a ReplicaSet/Deployment/StatefulSet.**
-  Confirmed in its source (`lwolf/kube-cleanup-operator` v1.0.4, `pkg/controller/pod.go`
-  `shouldDeletePod()`): the `--delete-failed-after` path only fires for pods with
-  `status.reason == "Evicted"` or a single `Job` owner reference. Anything else (e.g. Rook's
-  mon/osd/exporter pods failing with `NodeShutdown`) is silently ignored forever, regardless of
-  the flag. Will keep recurring on every future node reboot. Needs either a fix/fork upstream, a
-  switch to a different cleanup tool, or a small CronJob to reap `Failed` pods this operator misses.
-  Found: 2026-09-26, after node3's reboot left 91 pods stuck in `rook-ceph`.
-
 - **No BMC/IPMI check yet for node3's 2026-09-24T19:46:41Z reboot.**
   Confirmed a genuine full reboot via fresh Talos `Member`/`PlatformMetadata` resources, ruled out
   a tuppr-triggered Talos upgrade (last one completed 121 days prior) and a fatal hardware error

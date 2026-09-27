@@ -33,6 +33,7 @@ spec:
         cronjob:
           concurrencyPolicy: Forbid
           schedule: "@hourly"
+          ttlSecondsAfterFinished: 3600
 
         pod:
           restartPolicy: OnFailure
