@@ -17,7 +17,7 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   Found: 2026-09-26, while investigating intermittent `ingress-vps-failover-tf-runner` failures.
 
 - **`task talos:apply-config`/`talos:diff-config` still fail on every node — down to exactly one
-  cause, and there's a known real fix, just not applied yet (needs care first).**
+  cause, now confirmed permanent short of a full node wipe.**
   Migrated all patches in `talos/patches/` from legacy v1alpha1 fields to the new Talos v1.14
   multi-document config (discovery, install image/disk-selector, hostDNS, kubelet args/config,
   network CNI, kubePrism, apiserver/OIDC via `KubeAuthenticationConfig`, controller-manager,
@@ -44,12 +44,24 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   volumeType: directory
   ```
 
-  **Not applied yet** — confirmed live that `/var/mnt/extra` already has real data
-  (`openebs/` subdirectory, actively used by openebs-hostpath PVs), and switching to a
-  Talos-managed `UserVolumeConfig` volume is not guaranteed to preserve what's already on that
-  path ([siderolabs/talos#14411](https://github.com/siderolabs/talos/issues/14411) tracks exactly
-  this migration-data-loss risk for v1.13→v1.14). Verify what's safe to lose/back up before
-  applying this — don't rewrite `install-image.yaml` blind.
+  **Ruled out as unfixable without a full node wipe — closing this as a permanent, intentional
+  exception rather than something to revisit.** The `openebs-hostpath` data at `/var/mnt/extra`
+  turned out to be a non-issue (every single PVC on that storage class is a `volsync-src-*-cache`
+  volume — VolSync's own disposable sync cache, confirmed via `kubectl get pvc -A`, nothing
+  precious). The real blocker is disk space: `UserVolumeConfig` doesn't just reserve a directory,
+  it **allocates a brand-new GPT partition** on the disk. Checked live on all 3 nodes
+  (`talosctl get volumestatus`): `EPHEMERAL` is 248-254 GB on ~250 GB system disks — it grows to
+  consume 100% of the disk by default at install time, so there is zero free space left for a new
+  partition. Confirmed by Talos maintainers directly that this can't be fixed live: EPHEMERAL
+  cannot be shrunk on an already-provisioned node
+  ([siderolabs/talos#9373](https://github.com/siderolabs/talos/discussions/9373)), and system
+  volumes are always provisioned before user volumes specifically so they win the space race
+  ([siderolabs/talos#12713](https://github.com/siderolabs/talos/discussions/12713)) — `maxSize` on
+  EPHEMERAL only takes effect at initial provisioning, not on a running node. No home-operations
+  repo has done this migration live on an existing cluster; every real example sets EPHEMERAL's
+  `maxSize` as part of a fresh install. Revisit only if a full wipe+reinstall of a node is already
+  planned for some other reason — do it in that same pass by setting EPHEMERAL's `maxSize` before
+  first boot, not as a standalone fix.
   Ruled out along the way: `.machine.install.grubUseUKICmdline` looked like a second unfixable
   gap (no new-document equivalent either), but is provably dead weight here — checked
   `bootedentries` on all 3 nodes and confirmed every one boots via systemd-boot/UKI
