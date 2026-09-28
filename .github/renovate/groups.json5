@@ -123,7 +123,7 @@
       description: "ToolHive operator and CRDs - always update together",
       groupName: "ToolHive Operator",
       matchPackageNames: ["/toolhive-operator/"],
-      matchDatasources: ["helm"],
+      matchDatasources: ["docker", "helm"],
       group: { commitMessageTopic: "{{{groupName}}} group" },
       separateMinorPatch: true,
     },
