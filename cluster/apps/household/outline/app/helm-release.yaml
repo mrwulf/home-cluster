@@ -36,6 +36,8 @@ spec:
                   name: outline-secret
               - secretRef:
                   name: outline-oidc-credentials
+              - secretRef:
+                  name: outline-minio-credentials
             env:
               AWS_S3_ACL: private
               AWS_S3_FORCE_PATH_STYLE: "true"

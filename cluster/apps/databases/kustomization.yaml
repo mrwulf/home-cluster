@@ -7,3 +7,4 @@ resources:
   - minio/ks.yaml
   - obsidian-couchdb/ks.yaml
   - postgres/ks.yaml
+  - postgres/minio-bucket-ks.yaml

@@ -14,6 +14,7 @@ resources:
   - mealie/ks.yaml
   - n8n/ks.yaml
   - outline/ks.yaml
+  - outline/minio-bucket-ks.yaml
   - paperless/ks.yaml
   - plainspace/ks.yaml
   - stirling-pdf/ks.yaml

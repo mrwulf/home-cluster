@@ -48,14 +48,15 @@ spec:
       serverName: postgres-17
       s3Credentials:
         accessKeyId:
-          name: postgres-minio
+          name: postgres-backup-minio-credentials
           key: MINIO_ACCESS_KEY
         secretAccessKey:
-          name: postgres-minio
+          name: postgres-backup-minio-credentials
           key: MINIO_SECRET_KEY
 # DISASTER RECOVERY RESTORE GUIDE
 # If the Kubernetes cluster or this DB cluster is completely destroyed and you need to restore from Barman backups:
-# 1. Ensure the postgres-minio S3 credentials secret exists in the databases namespace.
+# 1. Ensure the postgres-backup-minio-credentials S3 credentials secret exists in the databases namespace
+#    (created by the minio-bucket-postgres-backup Terraform CR - see ../minio-bucket/).
 # 2. Add/uncomment the recovery bootstrap below to restore from the MinIO S3 backups:
 #
 #   bootstrap:
@@ -70,10 +71,10 @@ spec:
 #         serverName: postgres-17  # Must match the serverName of the backup (postgres-17)
 #         s3Credentials:
 #           accessKeyId:
-#             name: postgres-minio
+#             name: postgres-backup-minio-credentials
 #             key: MINIO_ACCESS_KEY
 #           secretAccessKey:
-#             name: postgres-minio
+#             name: postgres-backup-minio-credentials
 #             key: MINIO_SECRET_KEY
 #         wal:
 #           maxParallel: 8

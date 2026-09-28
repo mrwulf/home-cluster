@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: outline-minio-bucket
+  namespace: flux-system
+spec:
+  # Deployed to databases (not household, unlike ../ks.yaml) since the
+  # Terraform CR here needs to be in the same namespace as MinIO's root
+  # credentials (minio-secret) to read them via varsFrom.
+  targetNamespace: databases
+  path: ./cluster/apps/household/outline/minio-bucket
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
