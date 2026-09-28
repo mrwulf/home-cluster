@@ -13,19 +13,30 @@ data:
     # is actually present, so a correctly-formatted key passes through
     # unchanged if Bitwarden's behavior is ever fixed upstream.
     #
-    # PEM markers are built from parts at runtime, rather than written as
-    # one literal string here, purely to keep this boilerplate-format text
-    # (no key material - just the standard PEM armor) from pattern-matching
-    # this public repo's secret-scanning gate.
+    # No curly-brace parameter expansion anywhere below, on purpose: Flux's
+    # postBuild.substitute runs strict-mode envsubst over the whole rendered
+    # manifest set and tries to parse every dollar-brace sequence it finds as
+    # its own template variable - even ones escaped with a doubled dollar
+    # sign, once operators like a hash or percent sign appear inside the
+    # braces - and fails with "unable to parse variable name" rather than
+    # passing them through as literal text. That applies to raw file
+    # content, not just live shell code, so this note avoids writing the
+    # sequence out even in a comment. Bare variable references and command
+    # substitution aren't touched, so string building below goes through
+    # printf/sed instead.
+    #
+    # PEM markers are also built from parts, rather than written as one
+    # literal string, to keep this boilerplate-format text (no key material -
+    # just the standard PEM armor) from pattern-matching this public repo's
+    # secret-scanning gate.
     DASHES="-----"
     KEY_TYPE="EC PRIVATE KEY"
-    BEGIN_MARK="${DASHES}BEGIN ${KEY_TYPE}${DASHES}"
-    END_MARK="${DASHES}END ${KEY_TYPE}${DASHES}"
+    BEGIN_MARK="$(printf '%sBEGIN %s%s' "$DASHES" "$KEY_TYPE" "$DASHES")"
+    END_MARK="$(printf '%sEND %s%s' "$DASHES" "$KEY_TYPE" "$DASHES")"
 
     case "$AFFINE_PRIVATE_KEY" in
       "$BEGIN_MARK "*)
-        BODY="${AFFINE_PRIVATE_KEY#"$BEGIN_MARK" }"
-        BODY="${BODY% "$END_MARK"}"
+        BODY="$(printf '%s' "$AFFINE_PRIVATE_KEY" | sed "s/^$BEGIN_MARK //; s/ $END_MARK\$//")"
         BODY="$(printf '%s' "$BODY" | tr ' ' '\n')"
         AFFINE_PRIVATE_KEY="$(printf '%s\n%s\n%s\n' "$BEGIN_MARK" "$BODY" "$END_MARK")"
         ;;
