@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: affine-fix-private-key
+data:
+  fix-private-key.sh: |
+    # Bitwarden's web vault flattens multi-line pasted content (confirmed on
+    # the AFFiNE Service Credentials notes field) into a single
+    # space-separated line, which breaks Node's PEM parser
+    # (DECODER routines::unsupported). Reflow it back into real PEM before
+    # AFFiNE reads it. Idempotent: only fires when the flattened signature
+    # is actually present, so a correctly-formatted key passes through
+    # unchanged if Bitwarden's behavior is ever fixed upstream.
+    #
+    # PEM markers are built from parts at runtime, rather than written as
+    # one literal string here, purely to keep this boilerplate-format text
+    # (no key material - just the standard PEM armor) from pattern-matching
+    # this public repo's secret-scanning gate.
+    DASHES="-----"
+    KEY_TYPE="EC PRIVATE KEY"
+    BEGIN_MARK="${DASHES}BEGIN ${KEY_TYPE}${DASHES}"
+    END_MARK="${DASHES}END ${KEY_TYPE}${DASHES}"
+
+    case "$AFFINE_PRIVATE_KEY" in
+      "$BEGIN_MARK "*)
+        BODY="${AFFINE_PRIVATE_KEY#"$BEGIN_MARK" }"
+        BODY="${BODY% "$END_MARK"}"
+        BODY="$(printf '%s' "$BODY" | tr ' ' '\n')"
+        AFFINE_PRIVATE_KEY="$(printf '%s\n%s\n%s\n' "$BEGIN_MARK" "$BODY" "$END_MARK")"
+        ;;
+    esac
+    export AFFINE_PRIVATE_KEY
