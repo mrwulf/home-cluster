@@ -15,8 +15,53 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
-          # init-db (postgres provisioning) is merged in via patches/postgres.yaml
-          # and sorts before this one so the database exists first.
+          # init-db (postgres provisioning) is merged in via patches/postgres.yaml.
+          # bjw-s app-template sorts initContainers by key name, so ordering here
+          # is: init-config, init-db, migrate.
+          init-config:
+            image:
+              repository: alpine
+              tag: 3.24.2
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                cat <<EOF > /root/.affine/config/config.json
+                {
+                  "\$schema": "https://github.com/toeverything/affine/releases/latest/download/config.schema.json",
+                  "server": {
+                    "name": "AFFiNE Self-hosted",
+                    "externalUrl": "https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+                  },
+                  "oauth": {
+                    "providers.oidc": {
+                      "clientId": "$${OIDC_CLIENT_ID}",
+                      "clientSecret": "$${OIDC_CLIENT_SECRET}",
+                      "issuer": "https://id.${SECRET_DOMAIN}",
+                      "args": {}
+                    }
+                  },
+                  "storages": {
+                    "blob.storage": {
+                      "provider": "aws-s3",
+                      "bucket": "affine",
+                      "config": {
+                        "endpoint": "https://cdn.${SECRET_DOMAIN}",
+                        "region": "us-east-1",
+                        "forcePathStyle": true,
+                        "credentials": {
+                          "accessKeyId": "$${MINIO_ACCESS_KEY}",
+                          "secretAccessKey": "$${MINIO_SECRET_KEY}"
+                        }
+                      }
+                    }
+                  }
+                }
+                EOF
+            envFrom:
+              - secretRef:
+                  name: affine-secret
+              - secretRef:
+                  name: affine-oidc-credentials
           migrate:
             image:
               repository: ghcr.io/toeverything/affine
@@ -41,10 +86,10 @@ spec:
               DEPLOYMENT_TYPE: selfhosted
               REDIS_SERVER_HOST: dragonfly.databases.svc.cluster.local
               REDIS_SERVER_DATABASE: 7
-              AFFINE_SERVER_HOST: affine.${SECRET_DOMAIN}
+              AFFINE_SERVER_HOST: "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
               AFFINE_SERVER_HTTPS: "true"
               AFFINE_SERVER_PORT: 3010
-              AFFINE_SERVER_EXTERNAL_URL: https://affine.${SECRET_DOMAIN}
+              AFFINE_SERVER_EXTERNAL_URL: "https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
             resources:
               requests:
                 cpu: 100m
@@ -68,7 +113,7 @@ spec:
           - name: external-gateway
             namespace: networking
         hostnames:
-          - "affine.${SECRET_DOMAIN}"
+          - "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef
@@ -81,11 +126,17 @@ spec:
                 port: http
 
     persistence:
+      config:
+        type: emptyDir
+        advancedMounts:
+          main:
+            init-config:
+              - path: /root/.affine/config
+            migrate:
+              - path: /root/.affine/config
+            main:
+              - path: /root/.affine/config
       storage:
         type: emptyDir
         globalMounts:
           - path: /root/.affine/storage
-      config:
-        type: emptyDir
-        globalMounts:
-          - path: /root/.affine/config
