@@ -107,6 +107,9 @@ spec:
               AFFINE_SERVER_HTTPS: "true"
               AFFINE_SERVER_PORT: 3010
               AFFINE_SERVER_EXTERNAL_URL: "https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+              MAILER_HOST: smtp-relay.system.svc.cluster.local
+              MAILER_PORT: 2525
+              MAILER_SENDER: "AFFiNE <affine@${SECRET_DOMAIN}>"
             resources:
               requests:
                 cpu: 100m
