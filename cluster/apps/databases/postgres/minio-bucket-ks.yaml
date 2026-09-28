@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: postgres-minio-bucket
+  namespace: flux-system
+spec:
+  # No Kyverno clone needed here, unlike outline/affine: the consuming
+  # resources (cluster17.yaml, cluster17-postgis.yaml) are already in
+  # databases, same as this Terraform CR and minio-secret.
+  targetNamespace: databases
+  path: ./cluster/apps/databases/postgres/minio-bucket
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m

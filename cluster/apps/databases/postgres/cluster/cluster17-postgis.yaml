@@ -50,8 +50,8 @@ spec:
       serverName: postgres17-postgis
       s3Credentials:
         accessKeyId:
-          name: postgres-minio
+          name: postgres-backup-minio-credentials
           key: MINIO_ACCESS_KEY
         secretAccessKey:
-          name: postgres-minio
+          name: postgres-backup-minio-credentials
           key: MINIO_SECRET_KEY

@@ -9,3 +9,5 @@ resources:
   - sync-postgres-creds.yaml
   - remove-cpu-limit.yaml
   - sync-middlewares.yaml
+  - sync-affine-minio-credentials.yaml
+  - sync-outline-minio-credentials.yaml
