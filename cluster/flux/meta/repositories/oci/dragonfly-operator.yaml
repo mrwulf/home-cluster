@@ -10,5 +10,5 @@ spec:
     operation: copy
   ref:
     # renovate: depName=dragonflydb/dragonfly-operator datasource=github-releases
-    tag: v1.6.1
+    tag: v1.7.0
   url: oci://ghcr.io/dragonflydb/dragonfly-operator/helm/dragonfly-operator
