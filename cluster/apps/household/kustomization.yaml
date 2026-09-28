@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   # - adventurelog/ks.yaml
+  - affine/ks.yaml
   - box/ks.yaml
   - dawarich/ks.yaml
   - karakeep/ks.yaml

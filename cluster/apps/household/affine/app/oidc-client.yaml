@@ -1,0 +1,18 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: affine
+spec:
+  name: AFFiNE
+  launchUrl: https://affine.${SECRET_DOMAIN}/
+  callbackUrls:
+    - https://affine.${SECRET_DOMAIN}/oauth/callback
+  allowedUserGroups:
+    - name: users
+      namespace: auth
+  secret:
+    name: affine-oidc-credentials
+    keys:
+      clientID: OIDC_CLIENT_ID
+      clientSecret: OIDC_CLIENT_SECRET
