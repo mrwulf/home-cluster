@@ -41,6 +41,13 @@ spec:
                       "args": {}
                     }
                   },
+                  "copilot": {
+                    "enabled": true,
+                    "byok.enabled": true,
+                    "byok.allowedProviders": ["openai"],
+                    "byok.allowCustomEndpoint": true,
+                    "byok.allowPrivateEndpoint": true
+                  },
                   "storages": {
                     "blob.storage": {
                       "provider": "aws-s3",
