@@ -4,3 +4,5 @@ resources:
   - oidc-client.yaml
   - minio-secret.sops.yaml
   - helm-release.yaml
+  - rbac.yaml
+  - gitrepo.yaml

@@ -1,0 +1,27 @@
+---
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: minio-bucket-affine
+  namespace: databases
+spec:
+  interval: 15m
+  retryInterval: 1m
+  approvePlan: auto
+  destroyResourcesOnDeletion: false
+  path: ./cluster/apps/household/affine/minio-bucket
+  serviceAccountName: tf-runner
+  sourceRef:
+    kind: GitRepository
+    name: tofu-infra-git
+    namespace: databases
+  varsFrom:
+    - kind: Secret
+      name: minio-secret
+      varsKeys:
+        - MINIO_ROOT_USER
+        - MINIO_ROOT_PASSWORD
+  writeOutputsToSecret:
+    name: affine-minio-credentials
+  tfstate:
+    forceUnlock: auto

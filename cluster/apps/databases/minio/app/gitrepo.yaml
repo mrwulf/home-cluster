@@ -1,0 +1,27 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: tofu-infra-git
+  namespace: databases
+spec:
+  interval: 5m
+  url: https://github.com/mrwulf/home-cluster.git
+  ref:
+    branch: main
+  ignore: |
+    # Ignore everything by default
+    /*
+
+    # Allow walking down into each app's own MinIO bucket-provisioning module.
+    # Bucket definitions live with their app (cluster/apps/<app>/minio-bucket/),
+    # not centralized here, so deleting an app also deletes its bucket
+    # definition - only the GitRepository/RBAC plumbing stays centralized.
+    !/cluster/
+    /cluster/*
+    !/cluster/apps/
+    /cluster/apps/*
+    !/cluster/apps/household/
+    /cluster/apps/household/*
+    !/cluster/apps/household/affine/
+    /cluster/apps/household/affine/*
+    !/cluster/apps/household/affine/minio-bucket/

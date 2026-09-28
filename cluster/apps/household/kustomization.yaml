@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   # - adventurelog/ks.yaml
   - affine/ks.yaml
+  - affine/minio-bucket-ks.yaml
   - box/ks.yaml
   - dawarich/ks.yaml
   - karakeep/ks.yaml

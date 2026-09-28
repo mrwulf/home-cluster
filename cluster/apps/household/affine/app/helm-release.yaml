@@ -62,6 +62,8 @@ spec:
                   name: affine-secret
               - secretRef:
                   name: affine-oidc-credentials
+              - secretRef:
+                  name: affine-minio-credentials
           migrate:
             image:
               repository: ghcr.io/toeverything/affine
