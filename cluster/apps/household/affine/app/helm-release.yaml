@@ -37,6 +37,7 @@ spec:
                       "clientId": "$${OIDC_CLIENT_ID}",
                       "clientSecret": "$${OIDC_CLIENT_SECRET}",
                       "issuer": "https://id.${SECRET_DOMAIN}",
+                      "allowPrivateNetwork": true,
                       "args": {}
                     }
                   },
