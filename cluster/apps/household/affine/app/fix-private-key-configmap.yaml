@@ -17,15 +17,20 @@ data:
     # one literal string here, purely to keep this boilerplate-format text
     # (no key material - just the standard PEM armor) from pattern-matching
     # this public repo's secret-scanning gate.
+    #
+    # Every ${...} below is escaped as $${...} so Flux's postBuild.substitute
+    # (strict-mode envsubst over the whole rendered manifest set) doesn't try
+    # to resolve these as its own template variables - same escape paperless's
+    # init-oidc container uses for the same reason.
     DASHES="-----"
     KEY_TYPE="EC PRIVATE KEY"
-    BEGIN_MARK="${DASHES}BEGIN ${KEY_TYPE}${DASHES}"
-    END_MARK="${DASHES}END ${KEY_TYPE}${DASHES}"
+    BEGIN_MARK="$${DASHES}BEGIN $${KEY_TYPE}$${DASHES}"
+    END_MARK="$${DASHES}END $${KEY_TYPE}$${DASHES}"
 
     case "$AFFINE_PRIVATE_KEY" in
       "$BEGIN_MARK "*)
-        BODY="${AFFINE_PRIVATE_KEY#"$BEGIN_MARK" }"
-        BODY="${BODY% "$END_MARK"}"
+        BODY="$${AFFINE_PRIVATE_KEY#"$BEGIN_MARK" }"
+        BODY="$${BODY% "$END_MARK"}"
         BODY="$(printf '%s' "$BODY" | tr ' ' '\n')"
         AFFINE_PRIVATE_KEY="$(printf '%s\n%s\n%s\n' "$BEGIN_MARK" "$BODY" "$END_MARK")"
         ;;
