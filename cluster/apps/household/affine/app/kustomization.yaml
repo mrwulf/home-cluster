@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - oidc-client.yaml
   - externalsecret.yaml
+  - fix-private-key-configmap.yaml
   - helm-release.yaml
 patchesStrategicMerge:
   - patches/postgres.yaml

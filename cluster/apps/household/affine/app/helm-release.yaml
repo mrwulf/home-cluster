@@ -68,7 +68,12 @@ spec:
             image:
               repository: ghcr.io/toeverything/affine
               tag: "0.27.4"
-            command: ["sh", "-c", "node ./scripts/self-host-predeploy.js"]
+            command:
+              [
+                "sh",
+                "-c",
+                ". /scripts/fix-private-key.sh && exec node ./scripts/self-host-predeploy.js",
+              ]
             envFrom:
               - secretRef:
                   name: affine-secret
@@ -81,6 +86,15 @@ spec:
             image:
               repository: ghcr.io/toeverything/affine
               tag: "0.27.4"
+            # docker-entrypoint.sh node ./dist/main.js is this image's own
+            # default Entrypoint+Cmd - replicated here (rather than left
+            # implicit) because fix-private-key.sh must run first.
+            command:
+              [
+                "sh",
+                "-c",
+                ". /scripts/fix-private-key.sh && exec docker-entrypoint.sh node ./dist/main.js",
+              ]
             envFrom:
               - secretRef:
                   name: affine-secret
@@ -128,6 +142,20 @@ spec:
                 port: http
 
     persistence:
+      fix-private-key:
+        type: configMap
+        name: affine-fix-private-key
+        defaultMode: 0555
+        advancedMounts:
+          main:
+            migrate:
+              - path: /scripts/fix-private-key.sh
+                subPath: fix-private-key.sh
+                readOnly: true
+            main:
+              - path: /scripts/fix-private-key.sh
+                subPath: fix-private-key.sh
+                readOnly: true
       config:
         type: emptyDir
         advancedMounts:
