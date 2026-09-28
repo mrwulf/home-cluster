@@ -5,12 +5,12 @@ metadata:
   name: traefik-middleware-secure-headers
 spec:
   headers:
-    accessControlAllowMethods:
-      - GET
-      - OPTIONS
-      - PUT
-      - POST
-    accessControlMaxAge: 100
+    # No accessControl* fields here on purpose: setting any of them makes
+    # Traefik itself answer CORS preflight (OPTIONS) requests instead of
+    # forwarding them to the backend, and without accessControlAllowOriginList
+    # it always omits Access-Control-Allow-Origin - silently breaking preflight
+    # for every app behind this chain, including apps (e.g. affine) with their
+    # own working dynamic CORS logic. Let each app own its own CORS handling.
     hostsProxyHeaders:
       - "X-Forwarded-Host"
       - "X-Forwarded-For"
