@@ -20,7 +20,7 @@ spec:
           app:
             image:
               repository: docker.io/getmeili/meilisearch
-              tag: v1.54.1
+              tag: v1.54.2
             env:
               MEILI_ENV: production
               MEILI_NO_ANALYTICS: true
