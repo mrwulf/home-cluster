@@ -5,19 +5,35 @@
 1. **Pocket ID** (Traefik forward-auth, `middlewares.yaml`) - gates network
    access to the route.
 2. **Ceph dashboard's own OAuth2 SSO** (`ceph dashboard sso enable oauth2
-groups`, run once via the toolbox pod) - auto-logs the authenticated user
+groups`, applied by a Job) - auto-logs the authenticated user
    in, mapping their Pocket ID `groups` claim onto Ceph's dashboard roles.
    Membership is managed via the `administrator` `PocketIDUserGroup` in
    `cluster/apps/auth/pocket-id/app/groups.yaml`.
 
 This is not a config Rook exposes declaratively - it's stored in Ceph's own
-mgr key-value store, so it doesn't survive a full `CephCluster` rebuild and
-must be re-run by hand:
+mgr key-value store. The `ceph-dashboard-config` Job
+(`cluster/dashboard-config-job.yaml`) applies it, and is idempotent: Flux
+recreates it on each reconcile (after its TTL), and it only acts when the
+stored value is missing, so a full `CephCluster` rebuild or mgr restart is
+healed on the next reconcile. To apply it immediately, re-run the Job:
+
+```sh
+kubectl delete job -n rook-ceph ceph-dashboard-config --ignore-not-found
+flux reconcile kustomization rook-ceph-cluster --with-source
+```
+
+Verify the roles path was persisted (should show `"oauth2": {"roles_path": "groups"}`):
 
 ```sh
 kubectl exec -n rook-ceph deploy/rook-ceph-tools -- \
-  ceph dashboard sso enable oauth2 groups
+  ceph config-key get mgr/dashboard/ssodb_v1
 ```
+
+If it shows `{"onelogin_settings": {}}` instead, login loops back to
+`/#/login?returnUrl=%2Ferror` because `POST /api/auth/check` returns 403 (no roles
+claim mapping). On a mgr that has not yet loaded the SSO DB as OAuth2, the first
+`ceph dashboard sso enable oauth2 groups` only sets `roles_path` in memory, so a
+mgr restart drops it; a second run persists it. The Job retries for this reason.
 
 ## Local admin login (last resort)
 

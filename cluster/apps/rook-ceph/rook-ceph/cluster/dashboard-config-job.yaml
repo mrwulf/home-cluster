@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ceph-dashboard-grafana-config
+  name: ceph-dashboard-config
   namespace: rook-ceph
 spec:
   ttlSecondsAfterFinished: 60
@@ -32,17 +32,42 @@ spec:
 
               write_endpoints
 
-              # Check current configuration to be idempotent
+              # Each block checks current state first, so the job is idempotent and
+              # re-applies whatever a mgr restart or cluster rebuild dropped.
+
+              # --- Grafana ---
               current_url=$(ceph config-key get mgr/dashboard/grafana_api_url 2>/dev/null || true)
               if [[ "$current_url" == "http://grafana-service.monitoring.svc.cluster.local:3000" ]]; then
-                echo "Grafana configuration is already set correctly. Exiting."
-                exit 0
+                echo "Grafana configuration is already set correctly."
+              else
+                echo "Setting Ceph Dashboard Grafana settings..."
+                ceph dashboard set-grafana-api-url "http://grafana-service.monitoring.svc.cluster.local:3000"
+                ceph dashboard set-grafana-api-ssl-verify False
+                ceph dashboard set-grafana-frontend-api-url "https://grafana.home.${SECRET_DOMAIN}"
               fi
 
-              echo "Setting Ceph Dashboard Grafana settings..."
-              ceph dashboard set-grafana-api-url "http://grafana-service.monitoring.svc.cluster.local:3000"
-              ceph dashboard set-grafana-api-ssl-verify False
-              ceph dashboard set-grafana-frontend-api-url "https://grafana.home.${SECRET_DOMAIN}"
+              # --- OAuth2 SSO (Pocket ID via oauth2-proxy; see ../README.md) ---
+              # The roles_path only persists if the mgr already loaded the SSO DB
+              # as OAuth2. On a mgr still in local/SAML2 mode the first "enable"
+              # sets it in memory only, so verify the stored value and retry.
+              sso_persisted() {
+                ceph config-key get mgr/dashboard/ssodb_v1 2>/dev/null | python3 -c '
+              import json, sys
+              d = json.load(sys.stdin)
+              sys.exit(0 if d.get("protocol") == "oauth2" and d.get("oauth2", {}).get("roles_path") == "groups" else 1)'
+              }
+              for attempt in 1 2 3; do
+                if sso_persisted; then
+                  echo "OAuth2 SSO is already configured."
+                  break
+                fi
+                if [[ "$attempt" == 3 ]]; then
+                  echo "OAuth2 SSO roles_path did not persist after retries" >&2
+                  exit 1
+                fi
+                echo "Enabling Ceph Dashboard OAuth2 SSO (attempt $attempt)..."
+                ceph dashboard sso enable oauth2 groups
+              done
               echo "Done!"
           env:
             - name: ROOK_CEPH_USERNAME
