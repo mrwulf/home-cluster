@@ -20,6 +20,10 @@
   suppressNotifications: ["prIgnoreNotification"],
   commitBodyTable: true,
   rebaseWhen: "conflicted",
+  // Let every release soak before it is mergeable. "none" opens the PR right away with a
+  // pending renovate/stability-days check, so upcoming updates stay visible instead of hidden.
+  minimumReleaseAge: "3 days",
+  internalChecksFilter: "none",
   ignoreDeps: [
     "ghcr.io/fluxcd/helm-controller",
     "ghcr.io/fluxcd/image-automation-controller",
