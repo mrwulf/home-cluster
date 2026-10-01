@@ -128,6 +128,13 @@
       separateMinorPatch: true,
     },
     {
+      description: "Flux operator, instance, manifests, MCP server and CLI - always update together",
+      groupName: "Flux",
+      matchPackageNames: ["/controlplaneio-fluxcd/", "flux2"],
+      group: { commitMessageTopic: "{{{groupName}}} group" },
+      separateMinorPatch: true,
+    },
+    {
       description: "Kubernetes and tuppr upgrades",
       groupName: "Kubernetes",
       matchPackageNames: [
