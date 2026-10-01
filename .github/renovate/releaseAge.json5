@@ -1,0 +1,24 @@
+{
+  packageRules: [
+    {
+      description: "Core infra: let releases soak 3 days before they are mergeable",
+      matchPackageNames: [
+        "/pocket-id/",
+        "/rook/",
+        "/ceph/",
+        "/traefik/",
+        "/cloudnative-pg/",
+        "/cnpg/",
+        "/cert-manager/",
+        "/kyverno/",
+        "/external-secrets/",
+        "/volsync/",
+        "/vaultwarden/",
+      ],
+      minimumReleaseAge: "3 days",
+    },
+  ],
+  // Open aged PRs right away with a pending renovate/stability-days check so they stay visible.
+  // Only affects updates that have a minimumReleaseAge (these rules and cilium).
+  internalChecksFilter: "none",
+}
