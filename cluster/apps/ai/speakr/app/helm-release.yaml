@@ -74,7 +74,7 @@ spec:
           app:
             image:
               repository: learnedmachine/whisperx-asr-service
-              tag: 0.4.1
+              tag: 0.4.2
             env:
               PYTHONWARNINGS: "ignore::UserWarning"
               DEVICE: "cpu"
