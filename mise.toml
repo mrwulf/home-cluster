@@ -3,7 +3,7 @@ minimum_release_age = "0s"
 
 [tools]
 kubectl = "1.37.1"
-task = "3.53.1"
+task = "3.54.0"
 yq = "4.54.1"
 jq = "1.8.2"
 # Keep in sync with talosVersion in talos/talenv.yaml — an older client can't
