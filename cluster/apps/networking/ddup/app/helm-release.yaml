@@ -102,7 +102,7 @@ spec:
           - name: internal-gateway
             namespace: networking
         hostnames:
-          - "ddup.networking.${SECRET_DOMAIN}"
+          - "ddup.home.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef

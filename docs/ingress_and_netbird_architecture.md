@@ -91,7 +91,7 @@ fork of ItalyPaleAle/ddup) in the `networking` namespace. It health-checks
 and publishes only the healthy VPS IPs as A records for the separate test
 record `ddup-test.${SECRET_DOMAIN}` through the Cloudflare API. It does **not**
 manage `ingress.` or `fast.`; the Workers above still own those. Its status
-dashboard is at `ddup.networking.${SECRET_DOMAIN}` (LAN/VPN only).
+dashboard is at `ddup.home.${SECRET_DOMAIN}` (LAN/VPN only).
 
 Alerts go to in-cluster ntfy and to email through the Resend HTTP API
 (webhooks in the ddup ConfigMap). Credentials come from the Bitwarden item
