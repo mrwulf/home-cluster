@@ -32,6 +32,13 @@ data:
           - name: "vps-eu"
             url: "https://vps-eu.${SECRET_DOMAIN}"
             ip: "${VPS_EU_PUBLIC_IP}"
+          # Fallback tier: only published when neither VPS is healthy. A proxied CNAME to the Cloudflare
+          # Tunnel, probed through its own hostname (same probe as fast-failover-monitor.js)
+          - name: "tunnel"
+            url: "https://external.${SECRET_DOMAIN}"
+            cname: "${SECRET_CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"
+            proxied: true
+            priority: 1
 
     providers:
       cloudflare:
