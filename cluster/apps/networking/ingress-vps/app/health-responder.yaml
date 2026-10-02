@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: responder
-          image: docker.io/library/caddy:2.11.4-alpine
+          image: docker.io/library/caddy:2.11.6-alpine
           command:
             - caddy
             - respond
