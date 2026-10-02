@@ -93,14 +93,12 @@ record `ddup-test.${SECRET_DOMAIN}` through the Cloudflare API. It does **not**
 manage `ingress.` or `fast.`; the Workers above still own those. Its status
 dashboard is at `ddup.networking.${SECRET_DOMAIN}` (LAN/VPN only).
 
-Alerts go to in-cluster ntfy and to email through the Cloudflare Email Service
-REST API (webhooks in the ddup ConfigMap). Credentials come from the Bitwarden
-item `ddup Service Credentials` through the `ddup` ExternalSecret and use two
-separate Cloudflare API tokens: `cloudflare_api_token` (**Zone → DNS → Edit** on
-the one zone) and `cloudflare_email_api_token` (**Account → Email Sending →
-Edit**). The email sender domain must be onboarded for Email Sending in the
-Cloudflare dashboard (adds MX/SPF/DKIM/DMARC records on the `cf-bounce`
-subdomain), and `email_from` must be an address on it.
+Alerts go to in-cluster ntfy and to email through the Resend HTTP API
+(webhooks in the ddup ConfigMap). Credentials come from the Bitwarden item
+`ddup Service Credentials` through the `ddup` ExternalSecret: a dedicated
+Cloudflare API token (`cloudflare_api_token`, **Zone → DNS → Edit** on the one
+zone), the Resend `email_api_key`, and the `email_from` / `email_to` addresses
+(`email_from` must be on a domain verified in Resend).
 
 ---
 
