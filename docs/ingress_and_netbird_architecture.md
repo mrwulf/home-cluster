@@ -83,6 +83,23 @@ and triggered every minute (`cloudflare_workers_cron_trigger.failover_cron`):
    - On state transitions, sends an SMTP notification via Mailgun to
      `postmaster@${SECRET_DOMAIN}` containing attempt latency and HTTP diagnostics.
 
+### 2.1 ddup (parallel test, not yet in the failover path)
+
+`cluster/apps/networking/ddup/` runs [ddup](https://github.com/mrwulf/ddup) (a
+fork of ItalyPaleAle/ddup) in the `networking` namespace. It health-checks
+`vps-us` and `vps-eu` the same way the Worker does (`HEAD`, expecting HTTP 418)
+and publishes only the healthy VPS IPs as A records for the separate test
+record `ddup-test.${SECRET_DOMAIN}` through the Cloudflare API. It does **not**
+manage `ingress.` or `fast.`; the Workers above still own those. Its status
+dashboard is at `ddup.networking.${SECRET_DOMAIN}` (LAN/VPN only).
+
+Alerts go to in-cluster ntfy and to email through the Resend HTTP API
+(webhooks in the ddup ConfigMap). Credentials come from the Bitwarden item
+`ddup Service Credentials` through the `ddup` ExternalSecret: a dedicated
+Cloudflare API token (`cloudflare_api_token`, **Zone → DNS → Edit** on the one
+zone), the Resend `email_api_key`, and the `email_from` / `email_to` addresses
+(`email_from` must be on a domain verified in Resend).
+
 ---
 
 ## 3. Kubernetes Gateway API & DNS Architecture

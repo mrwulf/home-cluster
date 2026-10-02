@@ -1,0 +1,65 @@
+---
+# ddup config. Loaded once at startup (no hot reload); reloader restarts the pod on change.
+# ${VAR} values are substituted by Flux at build time (not secret). Runtime secrets use the
+# ddup `!env` tag / `{{ env "X" }}` template func, fed from the `ddup` ExternalSecret.
+# Do NOT point this at a record managed by the failover Workers / tofu stacks
+# (ingress-vps/failover*): ddup only owns the test record below until the planned cutover (see TODO.md).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ddup
+data:
+  config.yaml: |
+    interval: 30s
+
+    domains:
+      - recordName: "ddup-test.${SECRET_DOMAIN}"
+        provider: cloudflare
+        ttl: 60
+        healthChecks:
+          timeout: "5s"
+          attempts: 3
+          recoverAfter: 3
+          # Same probe as failover-monitor.js: the VPS health responder answers 418
+          method: "HEAD"
+          expectStatus: ["418"]
+        endpoints:
+          # Probe by hostname (valid wildcard cert, resolves to the same single IP);
+          # publish the IP from the tofu output
+          - name: "vps-us"
+            url: "https://vps-us.${SECRET_DOMAIN}"
+            ip: "${VPS_US_PUBLIC_IP}"
+          - name: "vps-eu"
+            url: "https://vps-eu.${SECRET_DOMAIN}"
+            ip: "${VPS_EU_PUBLIC_IP}"
+
+    providers:
+      cloudflare:
+        cloudflare:
+          apiToken: !env CLOUDFLARE_API_TOKEN
+          zoneId: !env CLOUDFLARE_ZONE_ID
+
+    webhooks:
+      - name: "ntfy"
+        # In-cluster ntfy; default access is deny-all, so a token is required
+        url: "http://ntfy.system.svc.cluster.local:80/ddup"
+        events: ["dns_updated", "dns_update_failed", "all_unhealthy"]
+        headers:
+          Authorization: 'Bearer {{ env "NTFY_TOKEN" }}'
+          Title: "ddup: {{ .Subject }}"
+        body: '{{ .Text }}'
+        attempts: 5
+        timeout: "10s"
+      # Resend HTTP email API (https://resend.com/docs/api-reference/emails/send-email)
+      - name: "email"
+        url: "https://api.resend.com/emails"
+        events: ["dns_updated", "dns_update_failed", "all_unhealthy"]
+        headers:
+          Authorization: 'Bearer {{ env "EMAIL_API_KEY" }}'
+          Content-Type: "application/json"
+        body: '{"from": {{ json (env "EMAIL_FROM") }}, "to": [{{ json (env "EMAIL_TO") }}], "subject": {{ json (printf "[ddup] %s" .Subject) }}, "text": {{ json .Text }}}'
+
+    server:
+      enabled: true
+      bind: "0.0.0.0"
+      port: 7401

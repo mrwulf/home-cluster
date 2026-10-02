@@ -84,6 +84,15 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   retained there.
   Found: 2026-09-26.
 
+- **Cut `ingress.`/`fast.` failover over from the Cloudflare Workers to ddup.**
+  `cluster/apps/networking/ddup` currently runs in parallel on the test record `ddup-test.${SECRET_DOMAIN}`
+  only. It cannot replace the Workers yet: the `failover` tofu stack owns `ingress.` as a **CNAME**
+  (`proxy.` or `external.`, the latter proxied through the CF Tunnel) and has
+  `destroyResourcesOnDeletion: true`, while ddup only writes A/AAAA records and has no tier/CNAME
+  fallback concept. Before cutover ddup needs CNAME/tiered failover support, and the tofu stack must
+  stop owning (and would otherwise destroy) the record. Do not make ddup manage a record the tofu
+  stacks own.
+
 ## Unreviewed — verify before merging
 
 - **Renovate PR [#5269](https://github.com/mrwulf/home-cluster/pull/5269): `@bitwarden/cli` `2026.8.0` → `2026.9.0`.**

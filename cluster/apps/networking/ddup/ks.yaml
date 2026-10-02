@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app ddup
+  namespace: flux-system
+  labels:
+    # Opts out of the global substituteFrom patch in cluster/flux/cluster/ks.yaml, which marks the
+    # VPS outputs `optional: true`. ddup must fail loudly if an output is missing, otherwise an
+    # empty IP would be rendered into the config. The list below is therefore self-contained.
+    substitution.flux.home.arpa/disabled: "true"
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: external-secrets-stores
+    # ingress-vps creates the tofu stacks that write vps-{us,eu}-output
+    - name: ingress-vps
+  interval: 1h
+  path: ./cluster/apps/networking/ddup/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: networking
+  timeout: 5m
+  wait: false
+  retryInterval: 2m
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+      - kind: Secret
+        name: vps-us-output
+      - kind: Secret
+        name: vps-eu-output
