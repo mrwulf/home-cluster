@@ -27,10 +27,10 @@ data:
           # Probe by hostname (valid wildcard cert, resolves to the same single IP);
           # publish the IP from the tofu output
           - name: "vps-us"
-            url: "https://vps-us.${SECRET_DOMAIN}:9"
+            url: "https://vps-us.${SECRET_DOMAIN}"
             ip: "${VPS_US_PUBLIC_IP}"
           - name: "vps-eu"
-            url: "https://vps-eu.${SECRET_DOMAIN}:9"
+            url: "https://vps-eu.${SECRET_DOMAIN}"
             ip: "${VPS_EU_PUBLIC_IP}"
           # Fallback tier: only published when neither VPS is healthy. A proxied CNAME to the Cloudflare
           # Tunnel, probed through its own hostname (same probe as fast-failover-monitor.js)
