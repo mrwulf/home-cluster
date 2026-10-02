@@ -1,0 +1,124 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ddup
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+
+  values:
+    controllers:
+      ddup:
+        # Single replica + Recreate: two instances would double-notify and race on DNS updates
+        replicas: 1
+        strategy: Recreate
+        annotations:
+          # Config is read once at startup; restart on ConfigMap/Secret change
+          reloader.stakater.com/auto: "true"
+
+        containers:
+          main:
+            image:
+              # Fork of github.com/ItalyPaleAle/ddup (adds !env/!file tags and the env template func)
+              repository: ghcr.io/mrwulf/ddup
+              # TODO: confirm this tag exists on GHCR once the fork image publish has finished
+              tag: v0.6.0-fork.1
+            env:
+              DDUP_CONFIG: /etc/ddup/config.yaml
+              # Prometheus pull via the OTel autoexport library (defaults to "none" and to localhost)
+              OTEL_METRICS_EXPORTER: prometheus
+              OTEL_EXPORTER_PROMETHEUS_HOST: 0.0.0.0
+              OTEL_EXPORTER_PROMETHEUS_PORT: "9464"
+            envFrom:
+              - secretRef:
+                  name: ddup
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 7401
+                  periodSeconds: 15
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 7401
+                  periodSeconds: 15
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+
+    service:
+      app:
+        controller: ddup
+        ports:
+          http:
+            port: 7401
+          metrics:
+            port: 9464
+
+    serviceMonitor:
+      main:
+        serviceName: ddup
+        endpoints:
+          - port: metrics
+            scheme: http
+            path: /metrics
+            interval: 1m
+
+    # Status dashboard only: LAN/VPN restricted, no Pocket ID by decision
+    route:
+      main:
+        enabled: true
+        annotations:
+          gatus.io/enabled: "true"
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "ddup.networking.${SECRET_DOMAIN}"
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: app
+                port: http
+
+    persistence:
+      config:
+        type: configMap
+        name: ddup
+        globalMounts:
+          - path: /etc/ddup/config.yaml
+            subPath: config.yaml
+            readOnly: true
