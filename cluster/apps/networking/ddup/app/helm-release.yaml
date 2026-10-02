@@ -26,7 +26,7 @@ spec:
               # Fork of github.com/ItalyPaleAle/ddup (adds !env/!file tags and the env template func)
               repository: ghcr.io/mrwulf/ddup
               # fork.1 predates !env/!file support and must not be used
-              tag: v0.6.0-fork.2
+              tag: 0.6.0-fork.2
             env:
               DDUP_CONFIG: /etc/ddup/config.yaml
               # Prometheus pull via the OTel autoexport library (defaults to "none" and to localhost)
