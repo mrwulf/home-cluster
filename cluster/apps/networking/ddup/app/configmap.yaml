@@ -50,14 +50,14 @@ data:
         body: '{{ .Text }}'
         attempts: 5
         timeout: "10s"
-      # Generic HTTP email API (Resend-style: Authorization bearer + JSON body)
+      # Cloudflare Email Service REST API. The URL contains the account ID, so it comes from the environment
       - name: "email"
-        url: "https://api.resend.com/emails"
+        url: !env EMAIL_URL
         events: ["dns_updated", "dns_update_failed", "all_unhealthy"]
         headers:
-          Authorization: 'Bearer {{ env "EMAIL_API_KEY" }}'
+          Authorization: 'Bearer {{ env "EMAIL_API_TOKEN" }}'
           Content-Type: "application/json"
-        body: '{"from": {{ json (env "EMAIL_FROM") }}, "to": [{{ json (env "EMAIL_TO") }}], "subject": {{ json (printf "[ddup] %s" .Subject) }}, "text": {{ json .Text }}}'
+        body: '{"from": {{ json (env "EMAIL_FROM") }}, "to": {{ json (env "EMAIL_TO") }}, "subject": {{ json (printf "[ddup] %s" .Subject) }}, "text": {{ json .Text }}}'
 
     server:
       enabled: true
