@@ -99,6 +99,10 @@ data:
         headers:
           Authorization: 'Bearer {{ env "NTFY_TOKEN" }}'
           Title: "ddup: {{ .Subject }}"
+          # Green, yellow or red circle for the health of the domain (healthy, warning when some endpoints
+          # are down, unhealthy), like Gatus; urgent when nothing is healthy
+          Tags: "{{ .StatusTag }}"
+          Priority: '{{ if eq .Status "unhealthy" }}high{{ else }}default{{ end }}'
         body: '{{ .Text }}'
         attempts: 5
         timeout: "10s"
