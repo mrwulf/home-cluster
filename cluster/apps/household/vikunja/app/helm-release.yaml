@@ -43,7 +43,7 @@ spec:
           app:
             image:
               repository: vikunja/vikunja
-              tag: 2.6.0
+              tag: 2.7.0
               pullPolicy: IfNotPresent
             env:
               - name: VIKUNJA_SERVICE_TIMEZONE
