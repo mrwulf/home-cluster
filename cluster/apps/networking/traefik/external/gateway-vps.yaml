@@ -11,10 +11,11 @@ metadata:
     # controller serves every attached Gateway) - this one exists only so external-dns
     # (which reads the target annotation from the Gateway, never from a Route - see
     # https://github.com/kubernetes-sigs/external-dns/issues/4779) can give a different
-    # set of routes a different target: VPS primary, Cloudflare Tunnel fallback, for
+    # set of routes a different target: VPS primary, Cloudflare Tunnel fallback (published by
+    # ddup as ingress-lb, cluster/apps/networking/ddup), for
     # apps that need raw TCP or large sustained transfers (Plex, Immich uploads, restic,
     # netbird). Routes opt in via parentRefs, not an annotation on the route itself.
-    external-dns.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"
+    external-dns.kubernetes.io/target: "ingress-lb.${SECRET_DOMAIN}"
     gatus.io/endpoint: |
       group: external
       client:
