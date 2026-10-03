@@ -19,4 +19,3 @@ resources:
   - tautulli/ks.yaml
   - tdarr-node/ks.yaml
   - tdarr-server/ks.yaml
-  - watchstate/ks.yaml
