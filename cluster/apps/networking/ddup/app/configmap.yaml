@@ -61,16 +61,6 @@ data:
           - <<: *vps-eu
             priority: 1
 
-      # Permanent test record, for trying out new ddup builds and config without touching real traffic
-      - recordName: "ddup-test.${SECRET_DOMAIN}"
-        provider: cloudflare
-        ttl: 60
-        healthChecks: *healthChecks
-        endpoints:
-          - *vps-us
-          - *vps-eu
-          - *tunnel
-
     providers:
       cloudflare:
         cloudflare:

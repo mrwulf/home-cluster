@@ -76,12 +76,11 @@ published.
 | :---------------------------- | :------------------------------------ | :------------------------------------ | :--------- |
 | `ingress-lb.${SECRET_DOMAIN}` | US + EU VPS A records (round-robin)   | CNAME to the tunnel (`proxied: true`) | `ingress.` |
 | `fast-lb.${SECRET_DOMAIN}`    | CNAME to the tunnel (`proxied: true`) | US + EU VPS A records (round-robin)   | `fast.`    |
-| `ddup-test.${SECRET_DOMAIN}`  | US + EU VPS A records                 | CNAME to the tunnel                   | (test)     |
 
-`ddup-test` is a permanent test record for trying new ddup builds. When the record
-type changes, ddup overwrites the existing record in place, so the name never
-has no records. Its status dashboard is at `ddup.home.${SECRET_DOMAIN}` (LAN/VPN
-only).
+When the record type changes, ddup overwrites the existing record in place, so
+the name never has no records. ddup never deletes records, so a domain removed
+from its config leaves its records in Cloudflare until they are deleted by hand.
+Its status dashboard is at `ddup.home.${SECRET_DOMAIN}` (LAN/VPN only).
 
 Alerts go to in-cluster ntfy and to email through the Resend HTTP API
 (webhooks in the ddup ConfigMap). Credentials come from the Bitwarden item
