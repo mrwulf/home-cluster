@@ -84,14 +84,14 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   retained there.
   Found: 2026-09-26.
 
-- **Cut `ingress.`/`fast.` failover over from the Cloudflare Workers to ddup.**
-  `cluster/apps/networking/ddup` currently runs in parallel on the test record `ddup-test.${SECRET_DOMAIN}`
-  only. It cannot replace the Workers yet: the `failover` tofu stack owns `ingress.` as a **CNAME**
-  (`proxy.` or `external.`, the latter proxied through the CF Tunnel) and has
-  `destroyResourcesOnDeletion: true`, while ddup only writes A/AAAA records and has no tier/CNAME
-  fallback concept. Before cutover ddup needs CNAME/tiered failover support, and the tofu stack must
-  stop owning (and would otherwise destroy) the record. Do not make ddup manage a record the tofu
-  stacks own.
+- **Remove the legacy `ingress.`/`fast.` Cloudflare Workers.** ddup now publishes `ingress-lb.` and
+  `fast-lb.`, and external-dns targets them (cutover 2026-10-02: every route's HTTP status was identical
+  before and after). The `ingress-vps-failover` and `ingress-vps-failover-fast` tofu stacks, their Workers
+  and the `ingress.`/`fast.` records are still deployed, unused. After a soak (let resolver caches expire,
+  confirm Gatus stays green): delete `ingress-vps/failover*` and the two `Terraform` CRs in
+  `ingress-vps/app/tofu.yaml` (`destroyResourcesOnDeletion: true` removes the Workers and records), drop
+  `ingress.`/`fast.` from `vps-direct-route.yaml`, remove the two old Gatus checks, and delete
+  section 2.2 of `docs/ingress_and_netbird_architecture.md`.
 
 ## Unreviewed — verify before merging
 

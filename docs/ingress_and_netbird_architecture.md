@@ -15,11 +15,11 @@ at the home gateway.
 ```mermaid
 graph TD
     User["Public Traffic"] --> DNS["Cloudflare DNS"]
-    DNS -->|Public Services| IngressCNAME["ingress.domain"]
+    DNS -->|Public Services| IngressCNAME["ingress-lb.domain / fast-lb.domain"]
 
-    subgraph FailoverEngine["Failover Monitor Worker"]
-        IngressCNAME -->|Healthy VPS| ProxyTarget["proxy.domain (Direct A)"]
-        IngressCNAME -->|Both Down| TunnelTarget["external.domain (CF Tunnel)"]
+    subgraph FailoverEngine["ddup (health-checked DNS)"]
+        IngressCNAME -->|Healthy VPS| ProxyTarget["VPS A records"]
+        IngressCNAME -->|Both Down| TunnelTarget["CF Tunnel (proxied CNAME)"]
     end
 
     subgraph EdgeVPS["Dual Edge VPS Ingress Layer"]
@@ -58,32 +58,12 @@ graph TD
 
 Traffic routing follows a strict, zero-downtime failover model:
 
-| Tier                  | Path                                              | Description                                                                      | DNS              |
-| :-------------------- | :------------------------------------------------ | :------------------------------------------------------------------------------- | :--------------- |
-| **Tier 1 (Edge VPS)** | `ingress.domain` ➔ `proxy.domain` ➔ OVH & Hetzner | Requests hit edge VPS nodes; Traefik forwards TLS over WireGuard / NetBird mesh. | `proxied: false` |
-| **Tier 2 (Fallback)** | `ingress.domain` ➔ `external.domain` (CF Tunnel)  | If both VPS nodes fail probes, Worker switches `ingress.domain` to Tunnel.       | `proxied: true`  |
+| Tier                  | Path                                            | Description                                                                      | DNS              |
+| :-------------------- | :---------------------------------------------- | :------------------------------------------------------------------------------- | :--------------- |
+| **Tier 1 (Edge VPS)** | `ingress-lb.domain` ➔ OVH & Hetzner A records   | Requests hit edge VPS nodes; Traefik forwards TLS over WireGuard / NetBird mesh. | `proxied: false` |
+| **Tier 2 (Fallback)** | `ingress-lb.domain` ➔ CF Tunnel (proxied CNAME) | If both VPS nodes fail probes, ddup switches `ingress-lb.domain` to the Tunnel.  | `proxied: true`  |
 
-### 2.1 Cloudflare Failover Monitor Worker (`failover-monitor.js`)
-
-Deployed declaratively via OpenTofu (`cloudflare_workers_script.failover_monitor`)
-and triggered every minute (`cloudflare_workers_cron_trigger.failover_cron`):
-
-1. **Active Probing**:
-   - Probes `https://vps-us.${SECRET_DOMAIN}` (OVH US).
-   - Probes `https://vps-eu.${SECRET_DOMAIN}` (Hetzner EU).
-   - _Why direct hostnames are probed_: Probing `proxy.${SECRET_DOMAIN}` directly
-     would round-robin across both VPS nodes and mask single-node outages.
-     Probing direct unproxied hostnames isolates individual node health.
-2. **Decision Engine**:
-   - If either VPS is healthy (`status < 500`): sets `ingress.${SECRET_DOMAIN}`
-     CNAME to `proxy.${SECRET_DOMAIN}` (`proxied: false`).
-   - If both VPS nodes are unhealthy: patches `ingress.${SECRET_DOMAIN}`
-     CNAME to `external.${SECRET_DOMAIN}` (`proxied: true`).
-3. **Alerting**:
-   - On state transitions, sends an SMTP notification via Mailgun to
-     `postmaster@${SECRET_DOMAIN}` containing attempt latency and HTTP diagnostics.
-
-### 2.1 ddup (replaces the Workers; cutover in progress)
+### 2.1 ddup (health-checked DNS failover)
 
 `cluster/apps/networking/ddup/` runs [ddup](https://github.com/mrwulf/ddup) (a
 fork of ItalyPaleAle/ddup) in the `networking` namespace. It health-checks
@@ -110,6 +90,33 @@ Cloudflare API token (`cloudflare_api_token`, **Zone → DNS → Edit** on the o
 zone), the Resend `email_api_key`, and the `email_from` / `email_to` addresses
 (`email_from` must be on a domain verified in Resend).
 
+### 2.2 Legacy: Cloudflare Failover Monitor Workers (superseded by ddup)
+
+> **Superseded.** Since the cutover to ddup nothing points at `ingress.` or
+> `fast.` any more (external-dns targets `ingress-lb.` and `fast-lb.`). The
+> Workers and their tofu stacks (`ingress-vps/failover`, `ingress-vps/failover-fast`)
+> remain deployed only until they are removed after a soak period; see TODO.md.
+
+The original `ingress.` Worker (`failover-monitor.js`):
+
+Deployed declaratively via OpenTofu (`cloudflare_workers_script.failover_monitor`)
+and triggered every minute (`cloudflare_workers_cron_trigger.failover_cron`):
+
+1. **Active Probing**:
+   - Probes `https://vps-us.${SECRET_DOMAIN}` (OVH US).
+   - Probes `https://vps-eu.${SECRET_DOMAIN}` (Hetzner EU).
+   - _Why direct hostnames are probed_: Probing `proxy.${SECRET_DOMAIN}` directly
+     would round-robin across both VPS nodes and mask single-node outages.
+     Probing direct unproxied hostnames isolates individual node health.
+2. **Decision Engine**:
+   - If either VPS is healthy (`status < 500`): sets `ingress.${SECRET_DOMAIN}`
+     CNAME to `proxy.${SECRET_DOMAIN}` (`proxied: false`).
+   - If both VPS nodes are unhealthy: patches `ingress.${SECRET_DOMAIN}`
+     CNAME to `external.${SECRET_DOMAIN}` (`proxied: true`).
+3. **Alerting**:
+   - On state transitions, sends an SMTP notification via Mailgun to
+     `postmaster@${SECRET_DOMAIN}` containing attempt latency and HTTP diagnostics.
+
 ---
 
 ## 3. Kubernetes Gateway API & DNS Architecture
@@ -128,7 +135,7 @@ metadata:
   labels:
     gateway.home-operations.io/type: external
   annotations:
-    external-dns.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"
+    external-dns.kubernetes.io/target: "fast-lb.${SECRET_DOMAIN}"
     gatus.io/endpoint: |
       group: external
       client:
@@ -142,7 +149,7 @@ spec:
 
 - **Unified Gateway**: Consolidates standard and high-bandwidth services (`plex`,
   `photos`, `backups`, `docs`, `sp`, `id`, `nb`, etc.) under a single Gateway.
-- **Dynamic Ingress Resolution**: `external-dns.kubernetes.io/target: "ingress.${SECRET_DOMAIN}"`
+- **Dynamic Ingress Resolution**: `external-dns.kubernetes.io/target: "fast-lb.${SECRET_DOMAIN}"` (tunnel primary; apps on `external-gateway-vps` use `ingress-lb.${SECRET_DOMAIN}`, VPS primary)
   instructs `external-dns` to publish all attached `HTTPRoute` hostnames as
   unproxied CNAME records pointing to `ingress.${SECRET_DOMAIN}`.
 - **Decoupled Architecture**: `external-dns` manages service CNAMEs (`service ➔ ingress`);
@@ -351,7 +358,8 @@ docker ps
 
 ```bash
 # Query public DNS resolver for ingress and service targets
-dig +short ingress.${SECRET_DOMAIN} @1.1.1.1
+dig +short ingress-lb.${SECRET_DOMAIN} @1.1.1.1
+dig +short fast-lb.${SECRET_DOMAIN} @1.1.1.1
 dig +short proxy.${SECRET_DOMAIN} @1.1.1.1
 dig +short nb.${SECRET_DOMAIN} @1.1.1.1
 ```
