@@ -16,6 +16,9 @@ spec:
     - "proxy.${SECRET_DOMAIN}"
     - "ingress.${SECRET_DOMAIN}"
     - "fast.${SECRET_DOMAIN}"
+    # Published by ddup (cluster/apps/networking/ddup), replacing ingress./fast.
+    - "ingress-lb.${SECRET_DOMAIN}"
+    - "fast-lb.${SECRET_DOMAIN}"
     - "external.${SECRET_DOMAIN}"
   rules:
     - backendRefs:

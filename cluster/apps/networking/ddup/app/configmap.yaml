@@ -13,32 +13,63 @@ data:
     interval: 30s
 
     domains:
-      - recordName: "ddup-test.${SECRET_DOMAIN}"
+      # Replacement for the VPS-primary `ingress.` record the failover Worker manages: both VPS IPs while
+      # healthy (round-robin), the proxied Cloudflare Tunnel CNAME only when neither is. external-dns
+      # points the apps on external-gateway-vps at this name.
+      - recordName: "ingress-lb.${SECRET_DOMAIN}"
         provider: cloudflare
         ttl: 60
-        healthChecks:
+        healthChecks: &healthChecks
           timeout: "5s"
           attempts: 3
           recoverAfter: 3
-          # Same probe as failover-monitor.js: the VPS health responder answers 418
+          # Same probe as the failover Workers: the health responder answers 418
           method: "HEAD"
           expectStatus: ["418"]
         endpoints:
           # Probe by hostname (valid wildcard cert, resolves to the same single IP);
           # publish the IP from the tofu output
-          - name: "vps-us"
+          - &vps-us
+            name: "vps-us"
             url: "https://vps-us.${SECRET_DOMAIN}"
             ip: "${VPS_US_PUBLIC_IP}"
-          - name: "vps-eu"
+            priority: 0
+          - &vps-eu
+            name: "vps-eu"
             url: "https://vps-eu.${SECRET_DOMAIN}"
             ip: "${VPS_EU_PUBLIC_IP}"
-          # Fallback tier: only published when neither VPS is healthy. A proxied CNAME to the Cloudflare
-          # Tunnel, probed through its own hostname (same probe as fast-failover-monitor.js)
-          - name: "tunnel"
+            priority: 0
+          # Fallback tier: a proxied CNAME to the Cloudflare Tunnel, probed through its own hostname
+          - &tunnel
+            name: "tunnel"
             url: "https://external.${SECRET_DOMAIN}"
             cname: "${SECRET_CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"
             proxied: true
             priority: 1
+
+      # Replacement for the tunnel-primary `fast.` record: the Cloudflare Tunnel while it's healthy,
+      # the VPS IPs (round-robin) when it isn't. external-dns points the apps on external-gateway at this name.
+      - recordName: "fast-lb.${SECRET_DOMAIN}"
+        provider: cloudflare
+        ttl: 60
+        healthChecks: *healthChecks
+        endpoints:
+          - <<: *tunnel
+            priority: 0
+          - <<: *vps-us
+            priority: 1
+          - <<: *vps-eu
+            priority: 1
+
+      # Permanent test record, for trying out new ddup builds and config without touching real traffic
+      - recordName: "ddup-test.${SECRET_DOMAIN}"
+        provider: cloudflare
+        ttl: 60
+        healthChecks: *healthChecks
+        endpoints:
+          - *vps-us
+          - *vps-eu
+          - *tunnel
 
     providers:
       cloudflare:

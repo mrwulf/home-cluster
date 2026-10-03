@@ -172,6 +172,26 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
+  - name: VPS-Primary Ingress via ddup (excluded apps)
+    group: external
+    url: "https://ingress-lb.${SECRET_DOMAIN}"
+    interval: 2m
+    conditions:
+      - "[STATUS] == 418"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: Fast Ingress via ddup (Cloudflare Tunnel primary)
+    group: external
+    url: "https://fast-lb.${SECRET_DOMAIN}"
+    interval: 2m
+    conditions:
+      - "[STATUS] == 418"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
   - name: Ordinary App DNS/Proxy Routing (flux-receiver)
     group: external
     # Unlike the checks above, this hits a real per-app hostname on the default

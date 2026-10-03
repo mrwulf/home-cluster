@@ -83,15 +83,25 @@ and triggered every minute (`cloudflare_workers_cron_trigger.failover_cron`):
    - On state transitions, sends an SMTP notification via Mailgun to
      `postmaster@${SECRET_DOMAIN}` containing attempt latency and HTTP diagnostics.
 
-### 2.1 ddup (parallel test, not yet in the failover path)
+### 2.1 ddup (replaces the Workers; cutover in progress)
 
 `cluster/apps/networking/ddup/` runs [ddup](https://github.com/mrwulf/ddup) (a
 fork of ItalyPaleAle/ddup) in the `networking` namespace. It health-checks
-`vps-us` and `vps-eu` the same way the Worker does (`HEAD`, expecting HTTP 418)
-and publishes only the healthy VPS IPs as A records for the separate test
-record `ddup-test.${SECRET_DOMAIN}` through the Cloudflare API. It does **not**
-manage `ingress.` or `fast.`; the Workers above still own those. Its status
-dashboard is at `ddup.home.${SECRET_DOMAIN}` (LAN/VPN only).
+`vps-us`, `vps-eu` and the tunnel (`external.`) the same way the Workers do
+(`HEAD`, expecting HTTP 418) and publishes records through the Cloudflare API,
+in priority tiers: only the healthy endpoints with the lowest priority are
+published.
+
+| Record                        | Priority 0 (published while healthy)  | Priority 1 (fallback)                 | Replaces   |
+| :---------------------------- | :------------------------------------ | :------------------------------------ | :--------- |
+| `ingress-lb.${SECRET_DOMAIN}` | US + EU VPS A records (round-robin)   | CNAME to the tunnel (`proxied: true`) | `ingress.` |
+| `fast-lb.${SECRET_DOMAIN}`    | CNAME to the tunnel (`proxied: true`) | US + EU VPS A records (round-robin)   | `fast.`    |
+| `ddup-test.${SECRET_DOMAIN}`  | US + EU VPS A records                 | CNAME to the tunnel                   | (test)     |
+
+`ddup-test` is a permanent test record for trying new ddup builds. When the record
+type changes, ddup overwrites the existing record in place, so the name never
+has no records. Its status dashboard is at `ddup.home.${SECRET_DOMAIN}` (LAN/VPN
+only).
 
 Alerts go to in-cluster ntfy and to email through the Resend HTTP API
 (webhooks in the ddup ConfigMap). Credentials come from the Bitwarden item
