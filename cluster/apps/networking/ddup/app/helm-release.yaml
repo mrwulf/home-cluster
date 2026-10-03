@@ -25,8 +25,8 @@ spec:
             image:
               # Fork of github.com/ItalyPaleAle/ddup (adds !env/!file tags and the env template func)
               repository: ghcr.io/mrwulf/ddup
-              # fork.1 predates !env/!file support and must not be used; priorities and CNAME/proxied targets need fork.5 or later
-              tag: 0.6.0-fork.5
+              # fork.1 predates !env/!file support and must not be used; priorities and CNAME/proxied targets need fork.5 or later, IP lookup (dynamic DNS) fork.6
+              tag: 0.6.0-fork.6
             env:
               DDUP_CONFIG: /etc/ddup/config.yaml
               # Prometheus pull via the OTel autoexport library (defaults to "none" and to localhost)

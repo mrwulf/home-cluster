@@ -61,11 +61,35 @@ data:
           - <<: *vps-eu
             priority: 1
 
+      # Dynamic DNS for the home network, replacing the cloudflare-ddns CronJob: the record follows
+      # the public IPv4 address this cluster reaches the internet from. The name is not in git
+      # (DDNS_RECORD_NAME). No URL, so it's not health-checked: it's healthy while the lookup works.
+      - recordName: !env DDNS_RECORD_NAME
+        provider: cloudflare-ddns
+        # Automatic TTL, like the old script's records
+        ttl: 1
+        healthChecks:
+          timeout: "5s"
+          attempts: 3
+        endpoints:
+          - name: "home"
+            ipLookup:
+              # Tried in order; the same services the old script used
+              urls:
+                - "https://ipv4.icanhazip.com"
+                - "https://api.ipify.org"
+              family: 4
+
     providers:
       cloudflare:
         cloudflare:
           apiToken: !env CLOUDFLARE_API_TOKEN
           zoneId: !env CLOUDFLARE_ZONE_ID
+      # The dynamic DNS record lives in a different Cloudflare zone, with its own token
+      cloudflare-ddns:
+        cloudflare:
+          apiToken: !env DDNS_CLOUDFLARE_API_TOKEN
+          zoneId: !env DDNS_CLOUDFLARE_ZONE_ID
 
     webhooks:
       - name: "ntfy"

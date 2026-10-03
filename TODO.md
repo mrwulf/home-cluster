@@ -93,6 +93,14 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   `ingress.`/`fast.` from `vps-direct-route.yaml`, remove the two old Gatus checks, and delete
   section 2.2 of `docs/ingress_and_netbird_architecture.md`.
 
+- **Rename and relocate the `cloudflare-ddns` secret.** The dynamic DNS CronJob is gone (replaced by a
+  ddup domain), but `cluster/apps/networking/cloudflare-ddns/` still exists only because the OpenTofu
+  stacks in `ingress-vps` read the Cloudflare token (`CLOUDFLARE_APIKEY`) from the `cloudflare-ddns`
+  secret via `varsFrom`. Rename it to something accurate, update the four `varsFrom` entries in
+  `ingress-vps/app/tofu.yaml`, move the ExternalSecret next to them, delete the directory and the
+  `cloudflare-ddns` dependency in `cloudflare-tunnel/ks.yaml`. That token (`api-token-external-dns`) is
+  also broader than the tofu stacks need.
+
 ## Unreviewed — verify before merging
 
 - **Renovate PR [#5269](https://github.com/mrwulf/home-cluster/pull/5269): `@bitwarden/cli` `2026.8.0` → `2026.9.0`.**

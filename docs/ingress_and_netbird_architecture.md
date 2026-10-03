@@ -82,6 +82,13 @@ the name never has no records. ddup never deletes records, so a domain removed
 from its config leaves its records in Cloudflare until they are deleted by hand.
 Its status dashboard is at `ddup.home.${SECRET_DOMAIN}` (LAN/VPN only).
 
+ddup also keeps the home network's dynamic DNS record up to date (it replaced the
+`cloudflare-ddns` CronJob): the endpoint has no health check URL and finds its
+address with `ipLookup`, calling `icanhazip.com` and then `ipify.org` for the
+public IPv4 address the cluster reaches the internet from. The record is in a
+different Cloudflare zone, so it has its own provider with its own token and zone
+ID, and its name stays out of git (`DDNS_RECORD_NAME`, from Bitwarden).
+
 Alerts go to in-cluster ntfy and to email through the Resend HTTP API
 (webhooks in the ddup ConfigMap). Credentials come from the Bitwarden item
 `ddup Service Credentials` through the `ddup` ExternalSecret: a dedicated
