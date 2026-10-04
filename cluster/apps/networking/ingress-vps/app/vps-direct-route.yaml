@@ -13,10 +13,7 @@ spec:
   hostnames:
     - "vps-us.${SECRET_DOMAIN}"
     - "vps-eu.${SECRET_DOMAIN}"
-    - "proxy.${SECRET_DOMAIN}"
-    - "ingress.${SECRET_DOMAIN}"
-    - "fast.${SECRET_DOMAIN}"
-    # Published by ddup (cluster/apps/networking/ddup), replacing ingress./fast.
+    # Published by ddup (cluster/apps/networking/ddup)
     - "ingress-lb.${SECRET_DOMAIN}"
     - "fast-lb.${SECRET_DOMAIN}"
     - "external.${SECRET_DOMAIN}"

@@ -152,26 +152,6 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
-  - name: VPS-Primary Ingress (excluded apps)
-    group: external
-    url: "https://ingress.${SECRET_DOMAIN}"
-    interval: 2m
-    conditions:
-      - "[STATUS] == 418"
-    alerts: *alerts
-    ui:
-      hide-hostname: true
-      hide-url: true
-  - name: Fast Ingress via Cloudflare Tunnel (primary)
-    group: external
-    url: "https://fast.${SECRET_DOMAIN}"
-    interval: 2m
-    conditions:
-      - "[STATUS] == 418"
-    alerts: *alerts
-    ui:
-      hide-hostname: true
-      hide-url: true
   - name: VPS-Primary Ingress via ddup (excluded apps)
     group: external
     url: "https://ingress-lb.${SECRET_DOMAIN}"
