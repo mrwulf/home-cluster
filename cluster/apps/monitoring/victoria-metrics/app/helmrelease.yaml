@@ -207,6 +207,21 @@ spec:
 
     kubeApiServer:
       enabled: true
+      # The busiest apiserver instance's /metrics exceeds vmagent's 16MiB default
+      # max_scrape_size (the drop relabeling above runs after that check), which
+      # marks the target down and fires KubeAPIInstanceUnreachable. Raise the cap
+      # for this job only. `endpoints` is a list, so Helm replaces it: this
+      # restates the chart default and only adds max_scrape_size.
+      vmScrape:
+        spec:
+          endpoints:
+            - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              port: https
+              scheme: https
+              max_scrape_size: 64MiB
+              tlsConfig:
+                caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                serverName: kubernetes
     kubelet:
       enabled: true
       # Chart default labelmaps *every* node label (incl. Node Feature Discovery's
