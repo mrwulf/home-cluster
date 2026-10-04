@@ -8,14 +8,17 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
 
 ## Blocked on upstream
 
-- **Cloudflare Terraform provider pinned at `5.25.0`** (`cluster/apps/networking/ingress-vps/{failover,failover-fast,eu,us}/.terraform.lock.hcl`).
+- **Cloudflare Terraform provider pinned at `5.25.0`** (`cluster/apps/networking/ingress-vps/{eu,us}/.terraform.lock.hcl`).
   `5.26.0` regresses `modified_on` planning on `cloudflare_dns_record` updates, causing
-  `Provider produced inconsistent result after apply` whenever the record changes out-of-band
-  (the `failover`/`failover-fast` Workers that wrote to the same record every minute are gone since
-  2026-10-03, so the trigger no longer exists: try lifting the pin).
+  `Provider produced inconsistent result after apply` (other projects report it failing _every_
+  DNS record apply, not only out-of-band changes). The failover Workers that exposed it first
+  (they updated a record every minute) were removed on 2026-10-03, but that doesn't remove the bug:
+  any update to `vps_us`/`vps_eu` (a VPS IP change, for example) would hit it, so unpinning is
+  **not** safe yet. Checked 2026-10-03: upstream issue is still open, and `5.27.0` (released the same
+  day) has no change to the `dns_record` resource that addresses it.
   Renovate is blocked from re-proposing `>= 5.26.0` via `allowedVersions` in `.github/renovate.json5`.
-  Upstream: [cloudflare/terraform-provider-cloudflare#7387](https://github.com/cloudflare/terraform-provider-cloudflare/issues/7387) — unpin once fixed.
-  Found: 2026-09-26, while investigating intermittent `ingress-vps-failover-tf-runner` failures.
+  Upstream: [cloudflare/terraform-provider-cloudflare#7387](https://github.com/cloudflare/terraform-provider-cloudflare/issues/7387) — unpin once it's closed and a release notes the fix, then verify
+  with a plan-only run (`approvePlan` manual) and a harmless record update before trusting auto-apply.
 
 - **`task talos:apply-config`/`talos:diff-config` still fail on every node — down to exactly one
   cause, now confirmed permanent short of a full node wipe.**

@@ -152,8 +152,8 @@
     {
       // v5.26.0 regresses `modified_on` planning on cloudflare_dns_record updates,
       // breaking apply with "Provider produced inconsistent result after apply"
-      // whenever the record is updated out-of-band (the failover Workers used to do this; they are gone,
-      // so this pin can probably be lifted and tested, see TODO.md).
+      // (reported to fail every DNS record apply, not only out-of-band changes).
+      // Still broken as of 5.27.0, see TODO.md before lifting.
       // Unpin once fixed upstream: https://github.com/cloudflare/terraform-provider-cloudflare/issues/7387
       matchDatasources: ["terraform-provider"],
       matchPackageNames: ["cloudflare/cloudflare"],
