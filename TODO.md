@@ -11,7 +11,8 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
 - **Cloudflare Terraform provider pinned at `5.25.0`** (`cluster/apps/networking/ingress-vps/{failover,failover-fast,eu,us}/.terraform.lock.hcl`).
   `5.26.0` regresses `modified_on` planning on `cloudflare_dns_record` updates, causing
   `Provider produced inconsistent result after apply` whenever the record changes out-of-band
-  (our `failover`/`failover-fast` Workers write to the same record every minute).
+  (the `failover`/`failover-fast` Workers that wrote to the same record every minute are gone since
+  2026-10-03, so the trigger no longer exists: try lifting the pin).
   Renovate is blocked from re-proposing `>= 5.26.0` via `allowedVersions` in `.github/renovate.json5`.
   Upstream: [cloudflare/terraform-provider-cloudflare#7387](https://github.com/cloudflare/terraform-provider-cloudflare/issues/7387) — unpin once fixed.
   Found: 2026-09-26, while investigating intermittent `ingress-vps-failover-tf-runner` failures.
@@ -83,15 +84,6 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   Loki directly; this one still needs node3's BMC/IPMI SEL log checked directly, if it's still
   retained there.
   Found: 2026-09-26.
-
-- **Remove the legacy `ingress.`/`fast.` Cloudflare Workers.** ddup now publishes `ingress-lb.` and
-  `fast-lb.`, and external-dns targets them (cutover 2026-10-02: every route's HTTP status was identical
-  before and after). The `ingress-vps-failover` and `ingress-vps-failover-fast` tofu stacks, their Workers
-  and the `ingress.`/`fast.` records are still deployed, unused. After a soak (let resolver caches expire,
-  confirm Gatus stays green): delete `ingress-vps/failover*` and the two `Terraform` CRs in
-  `ingress-vps/app/tofu.yaml` (`destroyResourcesOnDeletion: true` removes the Workers and records), drop
-  `ingress.`/`fast.` from `vps-direct-route.yaml`, remove the two old Gatus checks, and delete
-  section 2.2 of `docs/ingress_and_netbird_architecture.md`.
 
 - **Rename and relocate the `cloudflare-ddns` secret.** The dynamic DNS CronJob is gone (replaced by a
   ddup domain), but `cluster/apps/networking/cloudflare-ddns/` still exists only because the OpenTofu

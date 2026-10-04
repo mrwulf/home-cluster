@@ -340,7 +340,7 @@ spec:
           "gridPos": { "h": 5, "w": 24, "x": 0, "y": 29 },
           "id": 10,
           "title": "Current Failover Tier",
-          "description": "Approximates the Cloudflare failover-monitor Worker's own decision (it probes vps-us/vps-eu directly over HTTPS from Cloudflare's edge) using this dashboard's own Traefik-up signal instead, since the Worker's live state isn't otherwise exported. The two should track each other in practice, but this is a proxy, not the literal DNS state - annotations above mark whenever the count of healthy edges changes.",
+          "description": "Approximates the failover decision ddup makes for ingress-lb (it probes vps-us/vps-eu directly over HTTPS from inside the cluster) using this dashboard's own Traefik-up signal instead; the live state is on the ddup dashboard. The two should track each other in practice, but this is a proxy, not the literal DNS state - annotations above mark whenever the count of healthy edges changes.",
           "type": "stat",
           "fieldConfig": {
             "defaults": {
