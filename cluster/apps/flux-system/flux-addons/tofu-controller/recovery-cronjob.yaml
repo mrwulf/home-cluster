@@ -12,6 +12,10 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: tofu-controller-recovery
+  annotations:
+    # The script is full of shell $vars; Flux's strict postBuild envsubst would try to
+    # resolve each one as a cluster variable and fail the whole Kustomization.
+    kustomize.toolkit.fluxcd.io/substitute: disabled
 spec:
   schedule: "7/15 * * * *"
   concurrencyPolicy: Forbid
