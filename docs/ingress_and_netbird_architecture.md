@@ -297,6 +297,15 @@ Edge VPS Node
 - **Remediation**: `NetworkRouter/k8s` configures declarative `hostAliases`
   mapping `vps-eu.${SECRET_DOMAIN}` and `vps-us.${SECRET_DOMAIN}`
   directly to their public IPs (`${VPS_EU_PUBLIC_IP}` and `${VPS_US_PUBLIC_IP}`).
+- **ddup probe hostnames must resolve publicly**: ddup health-checks `vps-us.`,
+  `vps-eu.` and the tunnel (`external.`) by name, so those names (and the
+  `ingress-lb.` / `fast-lb.` records it publishes) must be on the OPNsense list of
+  records that are not redirected to the local `k8s-gateway` resolver. If
+  `external.${SECRET_DOMAIN}` resolves to `10.0.10.20` instead, the probe is
+  answered by the internal gateway (HTTP 418) and passes even when `cloudflared`
+  is down, so ddup never fails over. Check with
+  `kubectl -n networking run x --rm -it --image=curlimages/curl -- curl -sI https://external.${SECRET_DOMAIN}`:
+  a healthy path shows `server: cloudflare` and a `cf-ray` header.
 - **Relay Invariant**: NetBird Relay containers require
   `NB_EXPOSED_ADDRESS=rel://${PROBE_HOSTNAME}:33073` and `NB_AUTH_SECRET` matching
   `Relay.Secret` in `management.json`.
