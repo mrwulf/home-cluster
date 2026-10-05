@@ -102,6 +102,15 @@ data "kubernetes_secret_v1" "wildcard_cert" {
   }
 }
 
+# The separate cert for the MLM domains (not under var.secret_domain). The VPS edge only
+# serves what it's given, so without this it answers those SNIs with Traefik's default cert.
+data "kubernetes_secret_v1" "mlm_cert" {
+  metadata {
+    name      = "mlm-domains-tls"
+    namespace = "networking"
+  }
+}
+
 # Dedicated automation keypair for TF-driven post-boot provisioning (cert/whitelist
 # pushes). Kept separate from the human keys picked up via data.hcloud_ssh_keys below.
 resource "tls_private_key" "tf_admin" {
@@ -315,6 +324,8 @@ resource "null_resource" "cert_sync" {
     cert_hash = sha256(join("", [
       data.kubernetes_secret_v1.wildcard_cert.data["tls.crt"],
       data.kubernetes_secret_v1.wildcard_cert.data["tls.key"],
+      data.kubernetes_secret_v1.mlm_cert.data["tls.crt"],
+      data.kubernetes_secret_v1.mlm_cert.data["tls.key"],
     ]))
     # Also re-run whenever the instance itself gets replaced (e.g. a debian_version bump)
     # even if the cert content hasn't changed - otherwise the new box is stuck on its
@@ -340,11 +351,27 @@ resource "null_resource" "cert_sync" {
     destination = "/tmp/tls.key"
   }
 
+  provisioner "file" {
+    content     = data.kubernetes_secret_v1.mlm_cert.data["tls.crt"]
+    destination = "/tmp/mlm.crt"
+  }
+
+  provisioner "file" {
+    content     = data.kubernetes_secret_v1.mlm_cert.data["tls.key"]
+    destination = "/tmp/mlm.key"
+  }
+
+  # The MLM cert entry is appended to the dynamic config here, not in vps-cloud-init.yaml:
+  # editing user_data would replace the instance. Traefik picks the cert by SNI. The grep
+  # keeps the append idempotent; tls.certificates is the last block of the file.
   provisioner "remote-exec" {
     inline = [
+      "install -o root -g root -m 0644 /tmp/mlm.crt /etc/traefik/certs/mlm.crt",
+      "install -o root -g root -m 0600 /tmp/mlm.key /etc/traefik/certs/mlm.key",
+      "grep -q certs/mlm.crt /etc/traefik/dynamic.yaml || printf '    - certFile: /etc/traefik/certs/mlm.crt\\n      keyFile: /etc/traefik/certs/mlm.key\\n' | tee -a /etc/traefik/dynamic.yaml >/dev/null",
       "install -o root -g root -m 0644 /tmp/tls.crt /etc/traefik/certs/tls.crt",
       "install -o root -g root -m 0600 /tmp/tls.key /etc/traefik/certs/tls.key",
-      "rm -f /tmp/tls.crt /tmp/tls.key",
+      "rm -f /tmp/tls.crt /tmp/tls.key /tmp/mlm.crt /tmp/mlm.key",
       "systemctl restart traefik",
     ]
   }
