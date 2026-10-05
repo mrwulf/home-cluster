@@ -26,7 +26,7 @@ spec:
               # Fork of github.com/ItalyPaleAle/ddup (adds !env/!file tags and the env template func)
               repository: ghcr.io/mrwulf/ddup
               # fork.1 predates !env/!file support and must not be used; priorities and CNAME/proxied targets need fork.5 or later, IP lookup (dynamic DNS) fork.6, fork.7 for the shared-address and log-redaction fixes, fork.9 for the status tags used by the ntfy webhook
-              tag: 0.6.0-fork.13
+              tag: 0.6.0-fork.14
             env:
               DDUP_CONFIG: /etc/ddup/config.yaml
               # Prometheus pull via the OTel autoexport library (defaults to "none" and to localhost)
