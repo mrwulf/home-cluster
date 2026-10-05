@@ -30,3 +30,20 @@ spec:
           for: 15m
           labels:
             severity: critical
+    - name: tofu.rules
+      rules:
+        - alert: TofuStackStuck
+          annotations:
+            summary: >-
+              Terraform {{ $labels.exported_namespace }}/{{ $labels.name }} has been stuck in
+              progress for more than 90 minutes.
+            description: >-
+              Ready=Unknown that long means tofu-controller is wedged, not applying (a real run
+              ends in minutes). The tofu-controller-recovery CronJob restarts the controller after
+              45m, so this firing means that didn't help or its 2h cooldown is holding it back.
+              Check `kubectl get terraform -A`, the controller logs, and the CronJob's last job.
+          expr: |
+            tofu_resource_info{ready="Unknown"}
+          for: 90m
+          labels:
+            severity: critical

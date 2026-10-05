@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tofu-controller-recovery
+---
+# Read-only view of every Terraform CR (they live in several namespaces)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tofu-controller-recovery
+rules:
+  - apiGroups: ["infra.contrib.fluxcd.io"]
+    resources: ["terraforms"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tofu-controller-recovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tofu-controller-recovery
+subjects:
+  - kind: ServiceAccount
+    name: tofu-controller-recovery
+    namespace: flux-system
+---
+# Restart only the tofu-controller Deployment (resourceNames), and look up its pods for the cooldown check
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tofu-controller-recovery
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    resourceNames: ["tofu-controller"]
+    verbs: ["get", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tofu-controller-recovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tofu-controller-recovery
+subjects:
+  - kind: ServiceAccount
+    name: tofu-controller-recovery
+    namespace: flux-system
