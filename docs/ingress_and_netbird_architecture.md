@@ -72,6 +72,10 @@ publishes records through the Cloudflare API,
 in priority tiers: only the healthy endpoints with the lowest priority are
 published.
 
+It runs two replicas. Both health-check, and a Kubernetes Lease named `ddup`
+(leader election) decides which one updates DNS and sends webhooks. If the
+leader goes away, the other takes over within about 15 seconds.
+
 | Record                        | Priority 0 (published while healthy)  | Priority 1 (fallback)                 | Replaced   |
 | :---------------------------- | :------------------------------------ | :------------------------------------ | :--------- |
 | `ingress-lb.${SECRET_DOMAIN}` | US + EU VPS A records (round-robin)   | CNAME to the tunnel (`proxied: true`) | `ingress.` |

@@ -12,6 +12,10 @@ data:
   config.yaml: |
     interval: 30s
 
+    # Two replicas: only the Lease holder updates DNS and sends webhooks. Namespace and identity come from the pod.
+    leaderElection:
+      enabled: true
+
     domains:
       # Replacement for the VPS-primary `ingress.` record the failover Worker manages: both VPS IPs while
       # healthy (round-robin), the proxied Cloudflare Tunnel CNAME only when neither is. external-dns
