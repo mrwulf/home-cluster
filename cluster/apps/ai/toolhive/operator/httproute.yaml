@@ -11,10 +11,11 @@ metadata:
       headers:
         Content-Type: application/json
         Accept: application/json, text/event-stream
-      body: '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"gatus","version":"0"}}}'
+      # Use ping, not initialize: initialize creates a vMCP session (~60Mi each, never reaped) and OOMs the gateway
+      body: '{"jsonrpc":"2.0","id":1,"method":"ping"}'
       conditions:
         - "[STATUS] == 200"
-        - "[BODY].result.serverInfo.name == toolhive-gateway"
+        - "[BODY].jsonrpc == 2.0"
 spec:
   parentRefs:
     - name: internal-gateway
