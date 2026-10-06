@@ -27,19 +27,23 @@ Add the single unified vMCP endpoint to your configuration file (e.g., `~/.claud
 {
   "mcpServers": {
     "toolhive": {
-      "url": "https://toolhive.home.${SECRET_DOMAIN}/sse",
-      "transport": "sse"
+      "type": "http",
+      "url": "https://toolhive.home.${SECRET_DOMAIN}/mcp"
     }
   }
 }
 ```
 
+Or via the CLI: `claude mcp add --transport http -s user toolhive https://toolhive.home.<domain>/mcp`.
+
+The gateway speaks **streamable HTTP only**. `/sse` returns `400 GET requires an Mcp-Session-Id header`, so legacy SSE clients cannot connect.
+
 ### 2. Antigravity / Cursor / Windsurf
 
-Add a single SSE MCP server under your IDE settings:
+Add a single streamable HTTP MCP server under your IDE settings:
 
-- **Type**: SSE
-- **URL**: `https://toolhive.home.${SECRET_DOMAIN}/sse`
+- **Type**: Streamable HTTP
+- **URL**: `https://toolhive.home.${SECRET_DOMAIN}/mcp`
 
 _Note: If connecting outside your LAN, authenticating through Pocket ID OIDC is required via browser redirect or cookie session._
 
@@ -51,12 +55,12 @@ For AI frameworks running directly inside the Kubernetes cluster (e.g., **Open W
 
 ### Internal Endpoint Format
 
-`http://vmcp-toolhive-gateway.ai.svc.cluster.local:4483/sse`
+`http://vmcp-toolhive-gateway.ai.svc.cluster.local:4483/mcp`
 
 ### Open WebUI Setup
 
 1. Navigate to **Admin Panel** $\rightarrow$ **Settings** $\rightarrow$ **Tools / MCP**.
-2. Add the internal cluster URL: `http://vmcp-toolhive-gateway.ai.svc.cluster.local:4483/sse`.
+2. Add the internal cluster URL: `http://vmcp-toolhive-gateway.ai.svc.cluster.local:4483/mcp`.
 3. Save and verify tool availability across chat sessions.
 
 ---
