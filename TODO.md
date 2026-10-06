@@ -95,10 +95,3 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   `ingress-vps/app/tofu.yaml`, move the ExternalSecret next to them, delete the directory and the
   `cloudflare-ddns` dependency in `cloudflare-tunnel/ks.yaml`. That token (`api-token-external-dns`) is
   also broader than the tofu stacks need.
-
-## Unreviewed — verify before merging
-
-- **Renovate PR [#5269](https://github.com/mrwulf/home-cluster/pull/5269): `@bitwarden/cli` `2026.8.0` → `2026.9.0`.**
-  Open, unmerged. No confirmed public regression found for `2026.9.0` as of 2026-09-26 — flagging
-  here because it was called out as a held-back update, but the specific blocking reason isn't
-  recorded anywhere in this repo or its PR. Confirm the actual issue before merging or dropping this entry.
