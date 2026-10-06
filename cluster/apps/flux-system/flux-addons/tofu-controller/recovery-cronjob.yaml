@@ -1,12 +1,18 @@
-# Auto-recovery for a wedged tofu-controller. Observed 2026-10-05: Terraform CRs sat at
-# Ready=Unknown ("Initializing" / "Fulfilling prerequisites") for a day with no runner pod
-# and nothing in the controller log, until the controller Deployment was restarted.
-# Unlike Ready=False, a stuck stack looks "in progress" forever, so it never retries or alerts.
+# Auto-recovery for stuck tofu-controller stacks. A stuck Terraform CR sits at Ready=Unknown
+# ("Initializing" / "Fulfilling prerequisites") and looks in-progress forever, so unlike
+# Ready=False it never retries or alerts. Two causes seen on 2026-10-05/06, handled here for
+# every Terraform that has been Ready=Unknown for STUCK_AFTER_SECONDS:
 #
-# If any Terraform has been Ready=Unknown for STUCK_AFTER_SECONDS, restart the controller.
-# The cooldown (newest controller pod must be older than COOLDOWN_SECONDS) stops a restart
-# loop when a restart doesn't help; the TofuStackStuck alert (flux-addons/monitoring) fires
-# later than this job acts, so it only pages when recovery failed.
+# 1. Stale lock record: the CR still has status.lock.pending and StateLocked=True, but the
+#    backing Lease has no holder. tofu-controller's forceUnlock=auto then fails every minute
+#    with "state is already unlocked" and aborts before it can clear the status. Fix: if (and
+#    only if) the Lease is free, remove the lock record from the CR status.
+# 2. Wedged controller: no runner pod and nothing in the log. Fix: restart the controller.
+#    The cooldown (newest controller pod must be older than COOLDOWN_SECONDS) stops a restart
+#    loop when a restart doesn't help.
+#
+# The TofuStackStuck alert (flux-addons/monitoring) fires later than this job acts, so it
+# only pages when recovery failed.
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -41,7 +47,7 @@ spec:
                   value: "2700"
                 - name: COOLDOWN_SECONDS
                   value: "7200"
-                # "true" logs the decision without restarting anything
+                # "true" logs the decision without changing anything
                 - name: DRY_RUN
                   value: "false"
               args:
@@ -50,26 +56,62 @@ spec:
                   now=$(date -u +%s)
                   epoch() { date -u -D '%Y-%m-%dT%H:%M:%SZ' -d "$1" +%s; }
 
-                  # Assigned on its own so a kubectl failure aborts the job (set -e) instead of
-                  # looking like "nothing stuck" (it wouldn't inside a heredoc's substitution)
-                  stacks=$(kubectl get terraform -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name} {.status.conditions[?(@.type=="Ready")].status} {.status.conditions[?(@.type=="Ready")].lastTransitionTime}{"\n"}{end}')
+                  # Remove a stale lock record from a Terraform CR's status. Returns non-zero
+                  # (so the caller falls back to a restart) unless the lock's Lease is verifiably
+                  # free: a held Lease means a runner may really be applying.
+                  clear_stale_lock() {
+                    ns=$1 name=$2 ws=${3:-default} pending=$4
+                    case $pending in *[!0-9a-fA-F-]*) return 1 ;; esac
+                    holder=$(kubectl -n "$ns" get lease "lock-tfstate-$ws-$name" -o jsonpath='{.spec.holderIdentity}') || {
+                      echo "$ns/$name: lock Lease not readable, leaving it"
+                      return 1
+                    }
+                    if [ -n "$holder" ]; then
+                      echo "$ns/$name: lock Lease is held by $holder, leaving it"
+                      return 1
+                    fi
+                    pos=$(kubectl -n "$ns" get terraform "$name" -o jsonpath='{range .status.conditions[*]}{.type}{"\n"}{end}' | grep -n '^StateLocked$' | cut -d: -f1)
+                    [ -n "$pos" ] || return 1
+                    i=$((pos - 1))
+                    if [ "$DRY_RUN" = "true" ]; then
+                      echo "DRY_RUN: would clear stale lock $pending on $ns/$name"
+                      return 0
+                    fi
+                    echo "$ns/$name: lock $pending is stale (Lease free), clearing it from status"
+                    # The test ops make this a no-op if the CR changed since we read it
+                    kubectl -n "$ns" patch terraform "$name" --subresource=status --type=json -p "[
+                      {\"op\":\"test\",\"path\":\"/status/lock/pending\",\"value\":\"$pending\"},
+                      {\"op\":\"test\",\"path\":\"/status/conditions/$i/type\",\"value\":\"StateLocked\"},
+                      {\"op\":\"remove\",\"path\":\"/status/conditions/$i\"},
+                      {\"op\":\"remove\",\"path\":\"/status/lock/pending\"}]"
+                  }
 
-                  stuck=""
-                  while read -r id status since; do
-                    [ "$status" = "Unknown" ] || continue
+                  # Assigned on its own so a kubectl failure aborts the job (set -e) instead of
+                  # looking like "nothing stuck" (it wouldn't inside a heredoc's substitution).
+                  # Fields are |-separated because several can be empty.
+                  stacks=$(kubectl get terraform -A -o jsonpath='{range .items[*]}{.metadata.namespace}|{.metadata.name}|{.status.conditions[?(@.type=="Ready")].status}|{.status.conditions[?(@.type=="Ready")].lastTransitionTime}|{.spec.workspace}|{.status.conditions[?(@.type=="StateLocked")].status}|{.status.lock.pending}{"\n"}{end}')
+
+                  cleared=""
+                  restart=""
+                  while IFS='|' read -r ns name ready since ws locked pending; do
+                    [ "$ready" = "Unknown" ] || continue
                     age=$((now - $(epoch "$since")))
-                    if [ "$age" -ge "$STUCK_AFTER_SECONDS" ]; then
-                      stuck="$stuck $id(${age}s)"
+                    [ "$age" -ge "$STUCK_AFTER_SECONDS" ] || continue
+                    if [ "$locked" = "True" ] && [ -n "$pending" ] && clear_stale_lock "$ns" "$name" "$ws" "$pending"; then
+                      cleared="$cleared $ns/$name"
+                    else
+                      restart="$restart $ns/$name(${age}s)"
                     fi
                   done <<EOF
                   $stacks
                   EOF
 
-                  if [ -z "$stuck" ]; then
-                    echo "no stuck Terraform resources"
+                  [ -z "$cleared" ] || echo "stale lock cleared on:$cleared"
+                  if [ -z "$restart" ]; then
+                    echo "nothing left that needs a controller restart"
                     exit 0
                   fi
-                  echo "stuck Terraform resources:$stuck"
+                  echo "stuck Terraform resources needing a restart:$restart"
 
                   started=$(kubectl -n flux-system get pods \
                     -l app.kubernetes.io/name=tofu-controller,app.kubernetes.io/instance=tofu-controller \
