@@ -23,8 +23,13 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
-          migrate:
-            image:
+          # Runs as the gateway's own uid: doctor takes the gateway state lock, which refuses
+          # state owned by another user, so as root it fails with GatewayLockError and the
+          # databases are never migrated. Failures are logged but non-fatal: doctor can exit
+          # non-zero on benign warnings, and the app container refuses to start on an
+          # unmigrated database anyway.
+          doctor:
+            image: &migrate-image
               repository: ghcr.io/openclaw/openclaw
               tag: 2026.9.8
             command:
@@ -32,8 +37,35 @@ spec:
               - -c
               - |
                 set -eu
-                node dist/index.js doctor --fix --allow-exec || true
-                node dist/index.js doctor --session-sqlite import --session-sqlite-all-agents || true
+                node dist/index.js doctor --fix --allow-exec || echo "WARNING: doctor --fix exited $?" >&2
+                node dist/index.js doctor --session-sqlite import --session-sqlite-all-agents || echo "WARNING: session-sqlite import exited $?" >&2
+            env: &migrate-env
+              HOME: /home/node
+              PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/node/.openclaw/bin/bin"
+              npm_config_prefix: home/node/.openclaw/npm
+            envFrom: &migrate-envfrom
+              - secretRef:
+                  name: openclaw-secrets
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+            resources: &migrate-resources
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+          migrate:
+            dependsOn: doctor
+            image: *migrate-image
+            command:
+              - sh
+              - -c
+              - |
+                set -eu
                 if [ -e /home/node/.openclaw/sessions ]; then
                   mkdir -p /home/node/.openclaw/legacy-session-store-archive
                   mv /home/node/.openclaw/sessions "/home/node/.openclaw/legacy-session-store-archive/sessions-$(date +%s)"
@@ -69,16 +101,11 @@ spec:
                   chown -R root:1000 /home/node/.openclaw/extensions
                   chmod -R g+rX /home/node/.openclaw/extensions
                 fi
-            env:
-              HOME: /home/node
-              PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/node/.openclaw/bin/bin"
-              npm_config_prefix: home/node/.openclaw/npm
-            envFrom:
-              - secretRef:
-                  name: openclaw-secrets
+            env: *migrate-env
+            envFrom: *migrate-envfrom
             securityContext:
-              # Runs as root: doctor/session-sqlite migration steps need to chmod/chown
-              # files across ownership boundaries, and this cluster's container runtime
+              # Runs as root: the legacy-file moves and the chown below need to cross ownership
+              # boundaries, and this cluster's container runtime
               # doesn't propagate added Linux capabilities to non-root processes (verified
               # empirically — capabilities.add lands in the bounding set only, never
               # effective/ambient, for a non-zero runAsUser). Scoped to this one-shot init
@@ -88,12 +115,7 @@ spec:
               runAsNonRoot: false
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
-            resources:
-              requests:
-                cpu: 100m
-                memory: 512Mi
-              limits:
-                memory: 2Gi
+            resources: *migrate-resources
         containers:
           app:
             image:
