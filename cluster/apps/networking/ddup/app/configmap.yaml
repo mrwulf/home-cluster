@@ -2,8 +2,8 @@
 # ddup config. Loaded once at startup (no hot reload); reloader restarts the pod on change.
 # ${VAR} values are substituted by Flux at build time (not secret). Runtime secrets use the
 # ddup `!env` tag / `{{ env "X" }}` template func, fed from the `ddup` ExternalSecret.
-# Do NOT point this at a record managed by the failover Workers / tofu stacks
-# (ingress-vps/failover*): ddup only owns the test record below until the planned cutover (see TODO.md).
+# ddup owns every record below (the failover Workers it replaced were removed on 2026-10-03): don't also
+# manage them from the ingress-vps tofu stacks or anywhere else, or the two will fight over the record.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -17,7 +17,7 @@ data:
       enabled: true
 
     domains:
-      # Replacement for the VPS-primary `ingress.` record the failover Worker manages: both VPS IPs while
+      # Replaces the VPS-primary `ingress.` record the failover Worker used to manage: both VPS IPs while
       # healthy (round-robin), the proxied Cloudflare Tunnel CNAME only when neither is. external-dns
       # points the apps on external-gateway-vps at this name.
       - recordName: "ingress-lb.${SECRET_DOMAIN}"
@@ -51,7 +51,7 @@ data:
             proxied: true
             priority: 1
 
-      # Replacement for the tunnel-primary `fast.` record: the Cloudflare Tunnel while it's healthy,
+      # Replaces the tunnel-primary `fast.` record: the Cloudflare Tunnel while it's healthy,
       # the VPS IPs (round-robin) when it isn't. external-dns points the apps on external-gateway at this name.
       - recordName: "fast-lb.${SECRET_DOMAIN}"
         provider: cloudflare
