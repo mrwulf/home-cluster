@@ -80,6 +80,15 @@ spec:
     defaultPodOptions:
       # Needed for the leader election Lease
       automountServiceAccountToken: true
+      # One replica per node, so a node loss leaves a standby. Required (not preferred): the rolling update
+      # surge pod needs a third node, which this 3-node cluster has.
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: ddup
+              topologyKey: kubernetes.io/hostname
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532
