@@ -74,7 +74,9 @@ published.
 
 It runs two replicas. Both health-check, and a Kubernetes Lease named `ddup`
 (leader election) decides which one updates DNS and sends webhooks. If the
-leader goes away, the other takes over within about 15 seconds.
+leader goes away, the other takes over within about 15 seconds. The Lease holder
+is identified by its pod IP, and the standby forwards dashboard API requests
+(status and "check now") to it, so the dashboard always shows the leader's view.
 
 | Record                        | Priority 0 (published while healthy)  | Priority 1 (fallback)                 | Replaced   |
 | :---------------------------- | :------------------------------------ | :------------------------------------ | :--------- |

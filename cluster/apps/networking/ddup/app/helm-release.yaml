@@ -31,15 +31,20 @@ spec:
             image:
               # Fork of github.com/ItalyPaleAle/ddup (adds !env/!file tags and the env template func)
               repository: ghcr.io/mrwulf/ddup
-              # fork.1 predates !env/!file support and must not be used; priorities and CNAME/proxied targets need fork.5 or later, IP lookup (dynamic DNS) fork.6, fork.7 for the shared-address and log-redaction fixes, fork.9 for the status tags used by the ntfy webhook, fork.19 for leader election (replicas: 2)
-              tag: 0.6.0-fork.19
+              # fork.1 predates !env/!file support and must not be used; priorities and CNAME/proxied targets need fork.5 or later, IP lookup (dynamic DNS) fork.6, fork.7 for the shared-address and log-redaction fixes, fork.9 for the status tags used by the ntfy webhook, fork.19 for leader election (replicas: 2), fork.20 for standbys forwarding API requests to the leader
+              tag: 0.6.0-fork.20
             env:
               DDUP_CONFIG: /etc/ddup/config.yaml
               # Prometheus pull via the OTel autoexport library (defaults to "none" and to localhost)
               OTEL_METRICS_EXPORTER: prometheus
               OTEL_EXPORTER_PROMETHEUS_HOST: 0.0.0.0
               OTEL_EXPORTER_PROMETHEUS_PORT: "9464"
-              # Identity of this replica in the leader election Lease
+              # Identity of this replica in the leader election Lease: the pod IP, so standbys can forward
+              # dashboard API requests to the leader (POD_IP wins over POD_NAME)
+              POD_IP:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: status.podIP
               POD_NAME:
                 valueFrom:
                   fieldRef:
