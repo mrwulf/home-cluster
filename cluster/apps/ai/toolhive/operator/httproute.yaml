@@ -6,8 +6,15 @@ metadata:
   annotations:
     gatus.io/enabled: "true"
     gatus.io/endpoint: |
+      url: "https://toolhive.home.${SECRET_DOMAIN}/mcp"
+      method: POST
+      headers:
+        Content-Type: application/json
+        Accept: application/json, text/event-stream
+      body: '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"gatus","version":"0"}}}'
       conditions:
-        - "[STATUS] == 406"
+        - "[STATUS] == 200"
+        - "[BODY].result.serverInfo.name == toolhive-gateway"
 spec:
   parentRefs:
     - name: internal-gateway
@@ -15,32 +22,14 @@ spec:
   hostnames:
     - "toolhive.home.${SECRET_DOMAIN}"
   rules:
-    # Machine-client SSE/MCP endpoints - no OIDC, LAN-only
+    # Machine-client streamable HTTP endpoint (vMCP does not serve legacy SSE) - no OIDC, LAN-only
     - matches:
-        - path:
-            type: PathPrefix
-            value: /sse
-        - path:
-            type: PathPrefix
-            value: /sse/
         - path:
             type: PathPrefix
             value: /mcp
         - path:
             type: PathPrefix
             value: /mcp/
-        - path:
-            type: PathPrefix
-            value: /message
-        - path:
-            type: PathPrefix
-            value: /message/
-        - path:
-            type: PathPrefix
-            value: /messages
-        - path:
-            type: PathPrefix
-            value: /messages/
       filters:
         - type: ExtensionRef
           extensionRef:
