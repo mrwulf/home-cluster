@@ -1,0 +1,106 @@
+# Auto-recovery for a wedged tofu-controller. Observed 2026-10-05: Terraform CRs sat at
+# Ready=Unknown ("Initializing" / "Fulfilling prerequisites") for a day with no runner pod
+# and nothing in the controller log, until the controller Deployment was restarted.
+# Unlike Ready=False, a stuck stack looks "in progress" forever, so it never retries or alerts.
+#
+# If any Terraform has been Ready=Unknown for STUCK_AFTER_SECONDS, restart the controller.
+# The cooldown (newest controller pod must be older than COOLDOWN_SECONDS) stops a restart
+# loop when a restart doesn't help; the TofuStackStuck alert (flux-addons/monitoring) fires
+# later than this job acts, so it only pages when recovery failed.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tofu-controller-recovery
+  annotations:
+    # The script is full of shell $vars; Flux's strict postBuild envsubst would try to
+    # resolve each one as a cluster variable and fail the whole Kustomization.
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+spec:
+  schedule: "7/15 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 120
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          serviceAccountName: tofu-controller-recovery
+          restartPolicy: Never
+          containers:
+            - name: recovery
+              # renovate: depName=alpine/kubectl datasource=docker
+              image: alpine/kubectl:1.37.1
+              command: ["/bin/sh", "-c"]
+              env:
+                # A legitimate plan+apply (even a VPS replacement) finishes well inside this
+                - name: STUCK_AFTER_SECONDS
+                  value: "2700"
+                - name: COOLDOWN_SECONDS
+                  value: "7200"
+                # "true" logs the decision without restarting anything
+                - name: DRY_RUN
+                  value: "false"
+              args:
+                - |
+                  set -eu
+                  now=$(date -u +%s)
+                  epoch() { date -u -D '%Y-%m-%dT%H:%M:%SZ' -d "$1" +%s; }
+
+                  # Assigned on its own so a kubectl failure aborts the job (set -e) instead of
+                  # looking like "nothing stuck" (it wouldn't inside a heredoc's substitution)
+                  stacks=$(kubectl get terraform -A -o jsonpath='{range .items[*]}{.metadata.namespace}/{.metadata.name} {.status.conditions[?(@.type=="Ready")].status} {.status.conditions[?(@.type=="Ready")].lastTransitionTime}{"\n"}{end}')
+
+                  stuck=""
+                  while read -r id status since; do
+                    [ "$status" = "Unknown" ] || continue
+                    age=$((now - $(epoch "$since")))
+                    if [ "$age" -ge "$STUCK_AFTER_SECONDS" ]; then
+                      stuck="$stuck $id(${age}s)"
+                    fi
+                  done <<EOF
+                  $stacks
+                  EOF
+
+                  if [ -z "$stuck" ]; then
+                    echo "no stuck Terraform resources"
+                    exit 0
+                  fi
+                  echo "stuck Terraform resources:$stuck"
+
+                  started=$(kubectl -n flux-system get pods \
+                    -l app.kubernetes.io/name=tofu-controller,app.kubernetes.io/instance=tofu-controller \
+                    --sort-by=.metadata.creationTimestamp \
+                    -o jsonpath='{.items[-1:].metadata.creationTimestamp}')
+                  pod_age=$((now - $(epoch "$started")))
+                  if [ "$pod_age" -lt "$COOLDOWN_SECONDS" ]; then
+                    echo "controller restarted ${pod_age}s ago (cooldown ${COOLDOWN_SECONDS}s), not restarting again"
+                    exit 0
+                  fi
+
+                  if [ "$DRY_RUN" = "true" ]; then
+                    echo "DRY_RUN: would restart deploy/tofu-controller"
+                    exit 0
+                  fi
+                  echo "restarting deploy/tofu-controller"
+                  kubectl -n flux-system rollout restart deploy/tofu-controller
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 128Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 65534
+                runAsGroup: 65534
+                capabilities:
+                  drop:
+                    - ALL
+                seccompProfile:
+                  type: RuntimeDefault
