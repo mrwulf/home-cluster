@@ -23,6 +23,7 @@ const ARR = {
   radarr: { url: process.env.RADARR_URL, key: process.env.RADARR_APIKEY },
 }
 const QUEUE_BUDGET = Number(process.env.QUEUE_BUDGET || 400)
+const MAX_SCANS_PER_RUN = Number(process.env.MAX_SCANS_PER_RUN || 60)
 // DRY_RUN=1: read everything, log every write instead of performing it
 const DRY = process.env.DRY_RUN === "1"
 const CACHE_DIR = process.env.CACHE_DIR || "/temp"
@@ -324,11 +325,6 @@ async function feed(libraries, favourites) {
     log("feeder: disabled (feed.json enabled=false)")
     return
   }
-  const scanner = await tdarr("get-filescanner-status")
-  if (scanner && scanner.scanning) {
-    log("feeder: file scanner busy, skipping this run")
-    return
-  }
   for (const lib of libraries) {
     if (!lib.priorityFile) continue
     const pies = await tdarr("stats/get-pies", { libraryId: lib.id })
@@ -362,6 +358,8 @@ async function feed(libraries, favourites) {
       if (fed.has(item.path)) continue
       if (favourites.has(item.path + "/")) continue
       if (budget <= 0 || (added > 0 && item.files > budget)) break
+      // Per-run cap: the library's queue count can lag a scan, so never trust it for a big batch
+      if (added >= MAX_SCANS_PER_RUN) break
       await tdarr("scan-files", {
         scanConfig: {
           dbID: lib.id,
@@ -385,7 +383,8 @@ async function feed(libraries, favourites) {
           item.cls +
           ")"
       )
-      await new Promise((r) => setTimeout(r, 5000))
+      // a one-folder scan finishes in about a second; scans fired this close together all land
+      await new Promise((r) => setTimeout(r, 1500))
     }
     writeAtomic(stateFile, JSON.stringify([...fed]))
   }
