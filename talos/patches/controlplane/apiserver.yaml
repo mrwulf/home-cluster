@@ -35,6 +35,9 @@ configuration:
       claimMappings:
         username:
           claim: email
+          # Required by the structured auth config; "" matches the old flag behavior for the
+          # email claim (no --oidc-username-prefix).
+          prefix: ""
         groups:
           claim: groups
           prefix: "oidc:"
