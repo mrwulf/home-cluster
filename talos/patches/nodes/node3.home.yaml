@@ -5,7 +5,7 @@ apiVersion: v1alpha1
 kind: UnattendedInstallConfig
 provisioning:
   diskSelector:
-    match: disk.model == "SAMSUNG MZVLV256HCHP-000L2"
+    match: disk.model == "PNY CS2241 1TB SSD"
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig
