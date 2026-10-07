@@ -1,0 +1,91 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: intel-gpu-exporter
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  values:
+    controllers:
+      main:
+        type: daemonset
+        strategy: RollingUpdate
+        pod:
+          # Only nodes with an Intel GPU (label published by the Intel GPU plugin's NFD rule)
+          nodeSelector:
+            intel.feature.node.kubernetes.io/gpu: "true"
+        containers:
+          main:
+            image:
+              # Maintained successor to the archived onedr0p/intel-gpu-exporter (only a mutable
+              # `rolling` tag). Wraps intel_gpu_top and exposes gpumon_* metrics on :9100.
+              repository: ghcr.io/clambin/intel-gpu-exporter
+              tag: 0.7.4@sha256:d78761fef018834c759db154fe9dcf3dd9db5974703fa50ca21f6abc35221be1
+            args:
+              # intel_gpu_top sampling interval; engine busy % is aggregated over this window
+              - --interval=5s
+            securityContext:
+              # Reading the i915 PMU needs only CAP_PERFMON (kernel >= 5.8); everything else is
+              # dropped. uid 0 is required because /dev/dri/card* is root-only on Talos.
+              # perf_event_open also passes the default seccomp profile once PERFMON is held.
+              runAsUser: 0
+              runAsGroup: 0
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+                add:
+                  - PERFMON
+              seccompProfile:
+                type: RuntimeDefault
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /metrics
+                    port: 9100
+                  initialDelaySeconds: 15
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 15m
+                memory: 64Mi
+                # Hands the pod /dev/dri via the Intel device plugin (enableMonitoring). Unlike
+                # gpu.intel.com/i915 this does NOT use up one of the shared transcode slots.
+                gpu.intel.com/monitoring: 1
+              limits:
+                memory: 128Mi
+                gpu.intel.com/monitoring: 1
+    # hostPID is deliberately off: it only feeds the per-process client count. Engine busy %,
+    # frequency, power and memory bandwidth come from the PMU and need no host PID namespace.
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: 9100
+    serviceMonitor:
+      main:
+        endpoints:
+          - port: http
+            scheme: http
+            path: /metrics
+            interval: 30s
+            scrapeTimeout: 10s
+            relabelings:
+              # One series set per node: label by the node the pod runs on
+              - sourceLabels: [__meta_kubernetes_pod_node_name]
+                targetLabel: node
+            metricRelabelings:
+              - action: labeldrop
+                regex: (pod)
