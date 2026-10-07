@@ -1,104 +1,92 @@
 [
   {
     "path": "/TVShows/Love Island",
-    "files": 445,
-    "gb": 873.1,
+    "files": 366,
+    "gb": 742.3,
     "cls": "3-12m"
   },
   {
     "path": "/TVShows/Gardeners' World",
-    "files": 275,
-    "gb": 522.0,
+    "files": 269,
+    "gb": 512.0,
     "cls": "12m+"
   },
   {
     "path": "/TVShows/Chopped",
-    "files": 346,
-    "gb": 446.0,
+    "files": 339,
+    "gb": 439.0,
     "cls": "12m+"
   },
   {
     "path": "/TVShows/America's Got Talent",
-    "files": 203,
-    "gb": 441.0,
+    "files": 200,
+    "gb": 437.9,
     "cls": "never"
   },
   {
     "path": "/TVShows/American Ninja Warrior",
-    "files": 127,
-    "gb": 330.7,
+    "files": 124,
+    "gb": 321.8,
     "cls": "never"
   },
   {
     "path": "/TVShows/Married at First Sight",
-    "files": 194,
-    "gb": 313.2,
+    "files": 192,
+    "gb": 311.0,
     "cls": "never"
   },
   {
     "path": "/TVShows/Project Runway",
-    "files": 252,
-    "gb": 309.4,
+    "files": 243,
+    "gb": 304.4,
     "cls": "never"
   },
   {
     "path": "/TVShows/Love Island (US)",
-    "files": 169,
-    "gb": 284.7,
+    "files": 163,
+    "gb": 278.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Catfish- The TV Show",
+    "files": 235,
+    "gb": 250.0,
     "cls": "never"
   },
   {
     "path": "/TVShows/Battlestar Galactica (2003)",
-    "files": 74,
-    "gb": 266.1,
+    "files": 65,
+    "gb": 240.5,
     "cls": "12m+"
   },
   {
-    "path": "/TVShows/Catfish- The TV Show",
-    "files": 240,
-    "gb": 257.3,
-    "cls": "never"
-  },
-  {
     "path": "/TVShows/Desperate Housewives",
-    "files": 180,
-    "gb": 247.7,
-    "cls": "never"
-  },
-  {
-    "path": "/TVShows/The Simpsons",
-    "files": 788,
-    "gb": 241.7,
+    "files": 174,
+    "gb": 238.8,
     "cls": "never"
   },
   {
     "path": "/TVShows/Bones",
-    "files": 246,
-    "gb": 240.8,
-    "cls": "never"
-  },
-  {
-    "path": "/TVShows/Gardening Australia",
-    "files": 159,
-    "gb": 233.1,
-    "cls": "never"
-  },
-  {
-    "path": "/TVShows/MasterClass",
-    "files": 1196,
-    "gb": 231.0,
+    "files": 241,
+    "gb": 233.6,
     "cls": "never"
   },
   {
     "path": "/TVShows/Ink Master",
-    "files": 207,
-    "gb": 227.9,
+    "files": 205,
+    "gb": 225.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gardening Australia",
+    "files": 155,
+    "gb": 225.2,
     "cls": "never"
   },
   {
     "path": "/TVShows/Murdoch Mysteries",
-    "files": 302,
-    "gb": 224.4,
+    "files": 300,
+    "gb": 222.0,
     "cls": "3-12m"
   },
   {
@@ -109,8 +97,8 @@
   },
   {
     "path": "/TVShows/Escape to the Chateau- DIY",
-    "files": 163,
-    "gb": 208.6,
+    "files": 161,
+    "gb": 206.0,
     "cls": "12m+"
   },
   {
@@ -121,8 +109,8 @@
   },
   {
     "path": "/TVShows/The Great British Bake Off",
-    "files": 158,
-    "gb": 196.4,
+    "files": 154,
+    "gb": 192.7,
     "cls": "12m+"
   },
   {
@@ -145,8 +133,8 @@
   },
   {
     "path": "/TVShows/Death in Paradise",
-    "files": 120,
-    "gb": 184.4,
+    "files": 118,
+    "gb": 182.0,
     "cls": "3-12m"
   },
   {
@@ -163,8 +151,8 @@
   },
   {
     "path": "/TVShows/Glee",
-    "files": 108,
-    "gb": 174.0,
+    "files": 105,
+    "gb": 169.2,
     "cls": "3-12m"
   },
   {
@@ -180,33 +168,39 @@
     "cls": "never"
   },
   {
-    "path": "/TVShows/The Vampire Diaries",
-    "files": 170,
-    "gb": 163.6,
-    "cls": "never"
-  },
-  {
     "path": "/TVShows/Supergirl",
     "files": 126,
     "gb": 161.0,
     "cls": "never"
   },
   {
+    "path": "/TVShows/The Simpsons",
+    "files": 388,
+    "gb": 159.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Vampire Diaries",
+    "files": 166,
+    "gb": 157.9,
+    "cls": "never"
+  },
+  {
     "path": "/TVShows/Whose Line Is It Anyway! (US)",
-    "files": 406,
-    "gb": 159.9,
+    "files": 397,
+    "gb": 155.8,
     "cls": "never"
   },
   {
     "path": "/TVShows/Horrible Histories (2009)",
-    "files": 96,
-    "gb": 158.0,
+    "files": 93,
+    "gb": 154.8,
     "cls": "3-12m"
   },
   {
     "path": "/TVShows/Shark Tank",
-    "files": 152,
-    "gb": 155.0,
+    "files": 150,
+    "gb": 152.8,
     "cls": "never"
   },
   {
@@ -238,6 +232,12 @@
     "files": 176,
     "gb": 139.7,
     "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/MasterClass",
+    "files": 711,
+    "gb": 138.6,
+    "cls": "never"
   },
   {
     "path": "/TVShows/Caribbean Life",
@@ -3450,12 +3450,6 @@
     "cls": "never"
   },
   {
-    "path": "/TVShows/Gen V",
-    "files": 15,
-    "gb": 10.9,
-    "cls": "never"
-  },
-  {
     "path": "/TVShows/The Flintstones",
     "files": 55,
     "gb": 10.9,
@@ -3488,6 +3482,12 @@
   {
     "path": "/TVShows/Love Bites (2011)",
     "files": 5,
+    "gb": 10.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gen V",
+    "files": 14,
     "gb": 10.5,
     "cls": "never"
   },
@@ -6505,8 +6505,8 @@
   },
   {
     "path": "/TVShows/Ted Lasso",
-    "files": 44,
-    "gb": 33.9,
+    "files": 45,
+    "gb": 34.5,
     "cls": "recent"
   },
   {

@@ -1,7 +1,7 @@
 # tdarr-config
 
 Tdarr keeps its flows, libraries and worker limits in its own database, so this app makes them
-declarative. A CronJob (`*/10`) runs [`app/config/sync.js`](app/config/sync.js) against the Tdarr API
+declarative. A CronJob (`*/5`) runs [`app/config/sync.js`](app/config/sync.js) against the Tdarr API
 and brings the live state in line with the files in [`app/config/`](app/config). It is idempotent: UI
 edits to managed objects are reverted on the next run.
 
@@ -38,7 +38,10 @@ goes to Tdarr's review queue with the original untouched. Radarr/Sonarr are told
 - **Start the backlog:** set `"enabled": true` in `feed.json` and merge. The job then feeds the queue in
   `priority-*.json` order (largest convertible titles first, titles watched in the last 90 days last),
   keeping about `QUEUE_BUDGET` files queued. Set it back to `false` to stop feeding; work already
-  queued still runs.
+  queued still runs. Feeding pauses on its own while a library has more than 25 files in error (see
+  `ERROR_BREAKER`), so a systematic failure cannot burn through the backlog. The job remembers which
+  folders it has fed in `/temp/hc/fed-<library>.json`; after an outage that lost queued files, delete
+  those files to re-feed from the top of the (regenerated) priority lists.
 - **Change policy:** edit `scripts/tdarr-flow.py`, run it, commit the regenerated flows.
 - **Refresh priorities** (new downloads, watch history): run `scripts/tdarr-priority.py` (needs
   `kubectl` access; reads Sonarr/Radarr and the Tautulli history, which covers Plex plays only) and
