@@ -36,6 +36,10 @@ spec:
                 value: ".${SECRET_DOMAIN}"
               - name: OAUTH2_PROXY_COOKIE_SECURE
                 value: "true"
+              # Must match the Pocket ID client's accessTokenDurationMinutes and
+              # Ceph's dashboard jwt-token-ttl (8h each) - see oidc-client.yaml.
+              - name: OAUTH2_PROXY_COOKIE_EXPIRE
+                value: "8h"
               - name: OAUTH2_PROXY_EMAIL_DOMAINS
                 value: "*"
               - name: OAUTH2_PROXY_SKIP_PROVIDER_BUTTON

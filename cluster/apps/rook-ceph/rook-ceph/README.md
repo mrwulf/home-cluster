@@ -35,6 +35,18 @@ claim mapping). On a mgr that has not yet loaded the SSO DB as OAuth2, the first
 `ceph dashboard sso enable oauth2 groups` only sets `roles_path` in memory, so a
 mgr restart drops it; a second run persists it. The Job retries for this reason.
 
+## Session lifetimes (keep equal)
+
+Three timeouts are deliberately all 8h so the layers expire together instead of
+leaving a live cookie beside a dead token (which produced a redirect loop that
+only clearing cookies fixed):
+
+- Ceph dashboard session: `ceph dashboard set-jwt-token-ttl 28800` (the Job)
+- oauth2-proxy session: `OAUTH2_PROXY_COOKIE_EXPIRE` (`cluster/apps/auth/oauth2-proxy/app/helm-release.yaml`)
+- Pocket ID id_token: `accessTokenDurationMinutes: 480` (`cluster/apps/auth/oauth2-proxy/app/oidc-client.yaml`)
+
+Change all three together. Expect a silent re-login about every 8h.
+
 ## Local admin login (last resort)
 
 Enabling SSO makes Ceph's frontend hard-redirect to the OAuth2 flow - there is no
