@@ -15,7 +15,7 @@ vectorAggregatorAddr: 10.0.10.15
 promVersion: v0.94.1
 
 # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
-gatewayApiVersion: v1.6.2
+gatewayApiVersion: v1.6.3
 
 # renovate: datasource=github-releases depName=kubernetes-sigs/external-dns
 externalDNSVersion: v0.23.0
