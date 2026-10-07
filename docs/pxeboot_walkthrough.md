@@ -5,12 +5,25 @@ This walkthrough summarizes the actions taken to set up PXE booting for your Tal
 We have prepared all the necessary files in your local workspace: `./pxe-files/`
 This includes:
 
-- `vmlinuz-v1.12.4` and `initramfs-v1.12.4.xz` for Talos Linux `v1.12.4`
+- `vmlinuz-<version>` and `initramfs-<version>.xz` for each Talos version in the boot menu (currently `v1.12.4` and `v1.14.2`).
+  These are gitignored; download them (see below) rather than committing them.
 - Standard `ipxe.efi` binary
 - `boot.ipxe` network boot script
 - `boot.conf` ISC DHCP snippet
 
 ## Step-by-Step Execution Guide
+
+### 0. Download the Talos boot images
+
+Vanilla (no extensions) images from Image Factory, using the default schematic ID.
+The `initramfs` is zstd-compressed despite the `.xz` name; the name just has to match `boot.ipxe`.
+
+```bash
+V=v1.14.2
+ID=376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba
+curl -fLo pxe-files/vmlinuz-$V https://factory.talos.dev/image/$ID/$V/kernel-amd64
+curl -fLo pxe-files/initramfs-$V.xz https://factory.talos.dev/image/$ID/$V/initramfs-amd64.xz
+```
 
 ### 1. Copy the prepared files to OPNsense
 
@@ -23,8 +36,7 @@ ssh root@<OPNsense-IP> "mkdir -p /usr/local/tftp/talos /usr/local/etc/dhcpd.opns
 # Copy the TFTP files
 scp pxe-files/ipxe.efi root@<OPNsense-IP>:/usr/local/tftp/
 scp pxe-files/boot.ipxe root@<OPNsense-IP>:/usr/local/tftp/
-scp pxe-files/vmlinuz-v1.12.4 root@<OPNsense-IP>:/usr/local/tftp/talos/
-scp pxe-files/initramfs-v1.12.4.xz root@<OPNsense-IP>:/usr/local/tftp/talos/
+scp pxe-files/vmlinuz-* pxe-files/initramfs-* root@<OPNsense-IP>:/usr/local/tftp/talos/
 
 # Copy the DHCP custom configuration
 scp pxe-files/boot.conf root@<OPNsense-IP>:/usr/local/etc/dhcpd.opnsense.d/

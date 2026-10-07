@@ -28,3 +28,7 @@ image_list.txt
 bootstrap/
 cluster/core/kube-system/kubelet-csr-approver/charts/
 talos/clusterconfig/
+
+# PXE boot images (large; download per docs/pxeboot_walkthrough.md)
+pxe-files/vmlinuz-*
+pxe-files/initramfs-*
