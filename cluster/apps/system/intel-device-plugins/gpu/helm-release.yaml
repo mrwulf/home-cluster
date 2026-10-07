@@ -26,5 +26,8 @@ spec:
     keepHistory: false
   values:
     name: intel-gpu-plugin
-    sharedDevNum: 4
+    # How many pods may claim each node's iGPU at once. This is a scheduling quota, not hardware
+    # capacity: all claimants time-share the same GPU. 6 leaves room for one Tdarr node per
+    # node alongside Plex, Jellyfin, immich, ollama and stash.
+    sharedDevNum: 6
     nodeFeatureRule: false
