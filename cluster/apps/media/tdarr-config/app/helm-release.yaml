@@ -25,7 +25,7 @@ spec:
         cronjob:
           # Idempotent: applies flows/libraries/worker limits, refreshes the favourites and
           # foreign-original lists, and (only when feed.json enables it) feeds the queue.
-          schedule: "*/10 * * * *"
+          schedule: "*/5 * * * *"
           concurrencyPolicy: Forbid
           successfulJobsHistory: 1
           failedJobsHistory: 3
@@ -53,6 +53,8 @@ spec:
               CACHE_DIR: /temp
               WORKDIR_STALE_HOURS: "6"
               QUEUE_BUDGET: "400"
+              # Movie folders hold one file each, so this caps files added per run (~1.5 s per scan)
+              MAX_SCANS_PER_RUN: "150"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true

@@ -1,11 +1,5 @@
 [
   {
-    "path": "/Movies/Zack Snyder's Justice League (2021)",
-    "files": 1,
-    "gb": 9.97,
-    "cls": "never"
-  },
-  {
     "path": "/Movies/La Dolce Vita (1960)",
     "files": 1,
     "gb": 6.08,
@@ -39,12 +33,6 @@
     "path": "/Movies/King Richard (2021)",
     "files": 1,
     "gb": 5.3,
-    "cls": "never"
-  },
-  {
-    "path": "/Movies/Wonder Woman (2017)",
-    "files": 1,
-    "gb": 5.06,
     "cls": "never"
   },
   {
@@ -6114,12 +6102,6 @@
     "cls": "never"
   },
   {
-    "path": "/Movies/Death of Robin Hood (2026)",
-    "files": 1,
-    "gb": 1.17,
-    "cls": "never"
-  },
-  {
     "path": "/Movies/A Guy Named Joe (1943)",
     "files": 1,
     "gb": 1.16,
@@ -8628,12 +8610,6 @@
     "cls": "never"
   },
   {
-    "path": "/Movies/Puppy Love (2023)",
-    "files": 1,
-    "gb": 1.03,
-    "cls": "never"
-  },
-  {
     "path": "/Movies/Garage Sale Mystery Murder By Text (2017)",
     "files": 1,
     "gb": 1.03,
@@ -8992,12 +8968,6 @@
     "files": 1,
     "gb": 1.01,
     "cls": "never"
-  },
-  {
-    "path": "/Movies/Breakfast at Tiffany's (1961)",
-    "files": 1,
-    "gb": 1.01,
-    "cls": "3-12m"
   },
   {
     "path": "/Movies/City Slickers (1991)",
@@ -24186,12 +24156,6 @@
     "cls": "never"
   },
   {
-    "path": "/Movies/The Hound of the Baskervilles (2002)",
-    "files": 1,
-    "gb": 0.73,
-    "cls": "never"
-  },
-  {
     "path": "/Movies/Catherine the Great (1996)",
     "files": 1,
     "gb": 0.73,
@@ -25279,12 +25243,6 @@
   },
   {
     "path": "/Movies/Scream 4 (2011)",
-    "files": 1,
-    "gb": 0.68,
-    "cls": "never"
-  },
-  {
-    "path": "/Movies/Trainspotting (1996)",
     "files": 1,
     "gb": 0.68,
     "cls": "never"
@@ -26683,12 +26641,6 @@
   },
   {
     "path": "/Movies/Elf Buddy's Musical Christmas (2014)",
-    "files": 1,
-    "gb": 0.42,
-    "cls": "never"
-  },
-  {
-    "path": "/Movies/The Wonderful Story of Henry Sugar (2023)",
     "files": 1,
     "gb": 0.42,
     "cls": "never"

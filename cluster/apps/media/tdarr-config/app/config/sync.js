@@ -24,6 +24,9 @@ const ARR = {
 }
 const QUEUE_BUDGET = Number(process.env.QUEUE_BUDGET || 400)
 const MAX_SCANS_PER_RUN = Number(process.env.MAX_SCANS_PER_RUN || 60)
+// Stop feeding a library once this many files sit in error: a few corrupt files are normal, a pile
+// means something systematic (dead cache mount, bad flow) and feeding more only burns the backlog.
+const ERROR_BREAKER = Number(process.env.ERROR_BREAKER || 25)
 // DRY_RUN=1: read everything, log every write instead of performing it
 const DRY = process.env.DRY_RUN === "1"
 const CACHE_DIR = process.env.CACHE_DIR || "/temp"
@@ -336,6 +339,26 @@ async function feed(libraries, favourites) {
     )
       .filter((s) => s.name === "Queued")
       .reduce((n, s) => n + s.value, 0)
+    const errored = (
+      (pies.pieStats &&
+        pies.pieStats.status &&
+        pies.pieStats.status.transcode) ||
+      []
+    )
+      .filter((s) => /error/i.test(s.name))
+      .reduce((n, s) => n + s.value, 0)
+    if (errored > ERROR_BREAKER) {
+      log(
+        "feeder " +
+          lib.name +
+          ": PAUSED, " +
+          errored +
+          " files in error (limit " +
+          ERROR_BREAKER +
+          "); review with scripts/tdarr-requeue.py"
+      )
+      continue
+    }
     let budget = QUEUE_BUDGET - queued
     const stateFile = path.join(STATE, "fed-" + lib.id + ".json")
     const fed = new Set(
