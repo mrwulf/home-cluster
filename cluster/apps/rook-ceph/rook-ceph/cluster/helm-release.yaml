@@ -198,6 +198,7 @@ spec:
             csi.storage.k8s.io/controller-expand-secret-namespace: "{{ .Release.Namespace }}"
             csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
             csi.storage.k8s.io/node-stage-secret-namespace: "{{ .Release.Namespace }}"
-            # Talos does not ship the ceph kernel module; use FUSE client instead
-            mounter: fuse
+            # Talos kernel has CephFS built in (CONFIG_CEPH_FS=y); kernel client is faster and
+            # reconnects on its own, unlike ceph-fuse. Mount options: csi-drivers kernelMountOptions.
+            mounter: kernel
     cephObjectStores: []
