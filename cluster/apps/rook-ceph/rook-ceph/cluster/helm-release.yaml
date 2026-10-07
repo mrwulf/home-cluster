@@ -113,26 +113,26 @@ spec:
         useAllDevices: false
         # Use the following command to get the device name by-id:
         #   talosctl ls /dev/disk/by-id -n <node-ip>
-        #   talosctl -n <node-ip> get volumestatus r-rook-vol -oyaml
+        # Each node boots Talos from its own small OS disk (install disk is pinned by model in
+        # talos/patches/nodes/); the disks listed here are Ceph-only. See docs/storage.md.
         nodes:
-          # node1 (10.0.1.51) — Kingston NVMe is the OS disk; r-rook-vol is 644 GB raw
+          # node1 (10.0.1.51) — OS disk: Samsung 970 EVO 250GB
           - name: "node1"
             devices:
-              # - name: "/dev/disk/by-partlabel/r-rook-vol" # Disabled to prevent etcd I/O contention (see docs/storage.md)
               # - name: "/dev/disk/by-id/nvme-Samsung_SSD_970_EVO_Plus_1TB_S6S1NJ0TB02681R"
               # Using this one since the samsung is crap:
               - name: "/dev/disk/by-id/nvme-KINGSTON_OM8PGP41024N-A0_50026B7383950522"
-              - name: "/dev/disk/by-id/nvme-Micron_MTFDHBA512TDV_21222F83A25B"
-          # node2 (10.0.1.52) — Kingston NVMe is the OS disk; r-rook-vol is 644 GB raw
+              # Replaces the Micron 512GB OSD (osd.5), which becomes node3's OS disk.
+              # Procedure and ordering: docs/ceph-node1-osd-swap.md
+              - name: "/dev/disk/by-id/nvme-PNY_CS2241_1TB_SSD_PNY25412510070100159"
+          # node2 (10.0.1.52) — OS disk: Samsung MZVLB256HBHQ 256GB
           - name: "node2"
             devices:
-              # - name: "/dev/disk/by-partlabel/r-rook-vol" # Disabled to prevent etcd I/O contention (see docs/storage.md)
               - name: "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5P2NL0W811711P"
               - name: "/dev/disk/by-id/nvme-KINGSTON_OM8PGP41024N-A0_50026B7383950858"
-          # node3 (10.0.1.53) — Kingston NVMe is the OS disk; r-rook-vol is 644 GB raw
+          # node3 (10.0.1.53) — OS disk: PNY CS2241 1TB until the swap, then Micron 512GB
           - name: "node3"
             devices:
-              # - name: "/dev/disk/by-partlabel/r-rook-vol" # Disabled to prevent etcd I/O contention (see docs/storage.md)
               - name: "/dev/disk/by-id/nvme-T-FORCE_TM8FP7001T_TPBF2404260090101808"
               - name: "/dev/disk/by-id/nvme-KINGSTON_OM8PGP41024N-A0_50026B7383951956"
     cephBlockPools:

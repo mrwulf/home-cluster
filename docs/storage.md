@@ -1,28 +1,41 @@
 # Storage Operations & Emergency Runbook
 
-This document details the configuration of the Rook-Ceph storage cluster, the
-rationale behind the disablement of OS disk storage partitions, and instructions
-on how to re-enable them during an emergency (e.g. if one of the primary
-Samsung/T-Force SSDs fails).
+This document describes the Rook-Ceph disk layout and keeps the procedures used
+to get here. For the planned node1/node3 disk swap see
+[ceph-node1-osd-swap.md](ceph-node1-osd-swap.md).
 
-## Overview
+## Current layout (verified 2026-10-07)
 
-The cluster utilizes two storage tiers:
+Every node boots Talos from a small dedicated OS disk. All Ceph OSDs are whole
+NVMe drives, separate from the OS disk.
 
-1. **Primary Tier (High Performance)**:
-   - Dedicated 1TB NVMe SSDs (Samsung 970 EVO Plus, Samsung 980 PRO, T-FORCE
-     TM8FP7001T) attached as OSDs `1`, `2`, and `3`.
-   - These host all primary storage traffic.
-2. **Secondary Tier (OS Disk Partitions - Disabled by Default)**:
-   - 600 GiB raw partitions (`r-rook-vol`) provisioned on the Kingston
-     OM8PGP41024N-A0 NVMe drives which host Talos Linux (the OS disks) on
-     `node1`, `node2`, and `node3`.
-   - Previously mapped to OSDs `0`, `4`, and `5`.
+| Node  | OS disk                    | OSDs                                                                     |
+| ----- | -------------------------- | ------------------------------------------------------------------------ |
+| node1 | Samsung 970 EVO 250GB      | `osd.4` Kingston OM8PGP41024N-A0 1TB, `osd.5` Micron MTFDHBA512TDV 512GB |
+| node2 | Samsung MZVLB256HBHQ 256GB | `osd.0` Kingston OM8PGP41024N-A0 1TB, `osd.1` Samsung 980 PRO 1TB        |
+| node3 | PNY CS2241 1TB             | `osd.2` T-FORCE TM8FP7001T 1TB, `osd.3` Kingston OM8PGP41024N-A0 1TB     |
+
+The repo already describes the post-swap layout (node1 gets the PNY instead of
+the Micron, node3 boots from the Micron). The hardware matches the table above
+until the swap runbook has been carried out.
+
+The Talos install disk of each node is pinned by model in
+[talos/patches/nodes/](../talos/patches/nodes/). The OSD devices are listed by
+`/dev/disk/by-id` in `storage.nodes` of the
+[rook-ceph-cluster HelmRelease](../cluster/apps/rook-ceph/rook-ceph/cluster/helm-release.yaml).
+
+## Historical: OS-disk partitions as OSDs
+
+Everything below this heading describes an earlier layout in which `r-rook-vol`
+partitions on the Kingston OS disks served as OSDs `0`, `4` and `5`. They were
+retired on July 5, 2026, and the OS disks no longer have an `r-rook-vol`
+partition, so the re-enable procedure below can no longer be followed as
+written. It is kept as a record.
 
 ### Talos Disk Layout (Kingston NVMe — OS Disks)
 
-The Kingston OS disks on each node host multiple Talos system partitions plus
-the two user volumes. The Talos volume provisioner lays them out in this order:
+The Kingston OS disks on each node hosted multiple Talos system partitions plus
+the two user volumes. The Talos volume provisioner laid them out in this order:
 
 | Partition    | Size        | Description                      |
 | ------------ | ----------- | -------------------------------- |
@@ -30,16 +43,15 @@ the two user volumes. The Talos volume provisioner lays them out in this order:
 | `EPHEMERAL`  | 100–250 GiB | `/var` — kubelet, container data |
 | `r-rook-vol` | 600 GiB     | Raw Ceph OSD partition           |
 
-**Important**: The `EPHEMERAL` volume in the Talos machine configuration is configured
-with `grow: true` **and** `maxSize: 250GiB`. The `maxSize` is mandatory — without
-it, `EPHEMERAL` would greedily consume all remaining disk space before
-`r-rook-vol` can be allocated, causing the 600 GiB partition to never be
-created. `grow: true` allows `EPHEMERAL` to expand up to 250 GiB, filling
-space not reserved for `r-rook-vol`.
+**Important**: The `EPHEMERAL` volume in the Talos machine configuration was
+configured with `grow: true` **and** `maxSize: 250GiB`. The `maxSize` was
+mandatory — without it, `EPHEMERAL` would greedily consume all remaining disk
+space before `r-rook-vol` could be allocated, causing the 600 GiB partition to
+never be created.
 
 ### Rationale for Disabling OS Disk Partitions
 
-The `r-rook-vol` partitions reside on the same physical disks as the Talos
+The `r-rook-vol` partitions resided on the same physical disks as the Talos
 Linux operating system and the **etcd** control plane data store.
 
 Under sustained writes or Ceph recovery operations, I/O contention on these
@@ -47,9 +59,8 @@ Kingston NVMe drives caused write latency spikes. Since etcd is highly
 sensitive to disk write latency, this contention led to etcd warning/error logs
 and cluster control-plane instability.
 
-To eliminate this contention, the 600G partitions are disabled from Rook-Ceph
-usage. However, they remain partitioned by Talos Linux and can be re-enabled if
-capacity is critically needed or if a primary SSD fails.
+To eliminate this contention, the 600G partitions were disabled from Rook-Ceph
+usage.
 
 ---
 
