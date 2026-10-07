@@ -7,7 +7,7 @@ set timeout 15000
 menu PXE Boot Options
 item --key l local         [l] Boot from Local Disk (Default)
 item --key 2 talos1_12_4   [2] Boot Talos Linux v1.12.4
-item --key t talos1_13_5   [t] Boot Talos Linux v1.13.5
+item --key 4 talos1_14_2   [4] Boot Talos Linux v1.14.2
 # item --key u ubuntu        [u] Boot Ubuntu Live CD
 choose --timeout ${timeout} --default local target && goto ${target} || goto local
 
@@ -21,10 +21,10 @@ kernel /talos/vmlinuz-v1.12.4 initrd=initramfs-v1.12.4.xz talos.platform=metal c
 initrd /talos/initramfs-v1.12.4.xz
 boot
 
-:talos1_13_5
-echo Booting Talos Linux v1.13.5...
-kernel /talos/vmlinuz-v1.13.5 initrd=initramfs-v1.13.5.xz talos.platform=metal console=tty0 console=ttyS0,115200n8 slab_nomerge pti=on
-initrd /talos/initramfs-v1.13.5.xz
+:talos1_14_2
+echo Booting Talos Linux v1.14.2...
+kernel /talos/vmlinuz-v1.14.2 initrd=initramfs-v1.14.2.xz talos.platform=metal console=tty0 console=ttyS0,115200n8 slab_nomerge pti=on
+initrd /talos/initramfs-v1.14.2.xz
 boot
 
 :talos_latest
