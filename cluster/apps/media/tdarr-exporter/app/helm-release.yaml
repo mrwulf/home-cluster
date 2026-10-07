@@ -1,0 +1,88 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tdarr-exporter
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 568
+        runAsGroup: 568
+        seccompProfile:
+          type: RuntimeDefault
+    controllers:
+      main:
+        containers:
+          main:
+            image:
+              repository: docker.io/homeylab/tdarr-exporter
+              tag: 3.1.0@sha256:c72fd0ecf4aa5207d4f609d09fbb6470bac9e4dc5d9524303cd7169f5751bf62
+            env:
+              TDARR_URL: http://tdarr-server.media.svc.cluster.local:8265
+              PROMETHEUS_PORT: &port "9090"
+              # Stable instance label so dashboards keep history across pod restarts
+              INSTANCE_NAME: tdarr
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /metrics
+                    port: *port
+                  initialDelaySeconds: 5
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: *port
+    serviceMonitor:
+      main:
+        endpoints:
+          - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 30s
+            # Single replica: pin instance so a pod restart does not mint a new series
+            relabelings:
+              - targetLabel: instance
+                replacement: tdarr-exporter
+            # Keep series identity stable so stats combine across pod restarts and nodes.
+            # Lifetime/library stats carry no pod or node identity and are already stable.
+            # Node metrics also carry labels that change on every restart (node_id is assigned
+            # at registration, node_pid is the process id); node_name (the Kubernetes node
+            # name) already identifies a node, so drop the volatile ones.
+            # The per-worker info metric labels every series with the file being processed
+            # (a new series per file); worker_id on the remaining per-worker gauges is random,
+            # so aggregate those in queries: sum by (node_name, worker_type) (...).
+            metricRelabelings:
+              - action: labeldrop
+                regex: (pod|node_id|node_pid)
+              - action: drop
+                sourceLabels: [__name__]
+                regex: tdarr_node_worker_info

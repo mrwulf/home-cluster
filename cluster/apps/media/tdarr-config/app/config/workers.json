@@ -1,0 +1,6 @@
+{
+  "transcodecpu": 0,
+  "transcodegpu": 2,
+  "healthcheckcpu": 0,
+  "healthcheckgpu": 0
+}

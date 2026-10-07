@@ -1,0 +1,18 @@
+[
+  {
+    "id": "hcTv",
+    "name": "TV",
+    "folder": "/TVShows",
+    "flow": "hcTv",
+    "priority": 2,
+    "priorityFile": "priority-tv.json"
+  },
+  {
+    "id": "hcMovies",
+    "name": "Movies",
+    "folder": "/Movies",
+    "flow": "hcMovies",
+    "priority": 1,
+    "priorityFile": "priority-movies.json"
+  }
+]

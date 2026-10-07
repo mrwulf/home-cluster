@@ -17,5 +17,7 @@ resources:
   - scrob/ks.yaml
   - sonarr/ks.yaml
   - tautulli/ks.yaml
+  - tdarr-config/ks.yaml
+  - tdarr-exporter/ks.yaml
   - tdarr-node/ks.yaml
   - tdarr-server/ks.yaml
