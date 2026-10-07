@@ -1,0 +1,6608 @@
+[
+  {
+    "path": "/TVShows/Love Island",
+    "files": 445,
+    "gb": 873.1,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Gardeners' World",
+    "files": 275,
+    "gb": 522.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Chopped",
+    "files": 346,
+    "gb": 446.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/America's Got Talent",
+    "files": 203,
+    "gb": 441.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/American Ninja Warrior",
+    "files": 127,
+    "gb": 330.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Married at First Sight",
+    "files": 194,
+    "gb": 313.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Project Runway",
+    "files": 252,
+    "gb": 309.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Love Island (US)",
+    "files": 169,
+    "gb": 284.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Battlestar Galactica (2003)",
+    "files": 74,
+    "gb": 266.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Catfish- The TV Show",
+    "files": 240,
+    "gb": 257.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Desperate Housewives",
+    "files": 180,
+    "gb": 247.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Simpsons",
+    "files": 788,
+    "gb": 241.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bones",
+    "files": 246,
+    "gb": 240.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gardening Australia",
+    "files": 159,
+    "gb": 233.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/MasterClass",
+    "files": 1196,
+    "gb": 231.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ink Master",
+    "files": 207,
+    "gb": 227.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Murdoch Mysteries",
+    "files": 302,
+    "gb": 224.4,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Property Brothers",
+    "files": 180,
+    "gb": 212.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Escape to the Chateau- DIY",
+    "files": 163,
+    "gb": 208.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Flash (2014)",
+    "files": 184,
+    "gb": 203.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Great British Bake Off",
+    "files": 158,
+    "gb": 196.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Penn & Teller- Fool Us",
+    "files": 160,
+    "gb": 192.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Impractical Jokers",
+    "files": 285,
+    "gb": 188.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Grimm",
+    "files": 101,
+    "gb": 185.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Death in Paradise",
+    "files": 120,
+    "gb": 184.4,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Outlander",
+    "files": 95,
+    "gb": 178.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Worst Cooks in America",
+    "files": 112,
+    "gb": 175.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Glee",
+    "files": 108,
+    "gb": 174.0,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Doctor Who (2005)",
+    "files": 164,
+    "gb": 166.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Circle (US)",
+    "files": 77,
+    "gb": 164.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Vampire Diaries",
+    "files": 170,
+    "gb": 163.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Supergirl",
+    "files": 126,
+    "gb": 161.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Whose Line Is It Anyway! (US)",
+    "files": 406,
+    "gb": 159.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Horrible Histories (2009)",
+    "files": 96,
+    "gb": 158.0,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Shark Tank",
+    "files": 152,
+    "gb": 155.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/When Calls the Heart",
+    "files": 136,
+    "gb": 148.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Rizzoli & Isles",
+    "files": 105,
+    "gb": 147.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/90210",
+    "files": 68,
+    "gb": 142.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Modern Family",
+    "files": 250,
+    "gb": 141.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/It's Always Sunny in Philadelphia",
+    "files": 176,
+    "gb": 139.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Caribbean Life",
+    "files": 174,
+    "gb": 131.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Elementary",
+    "files": 153,
+    "gb": 127.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Riverdale",
+    "files": 103,
+    "gb": 126.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Eli Stone",
+    "files": 26,
+    "gb": 121.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Great Australian Bake Off",
+    "files": 82,
+    "gb": 118.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Farscape",
+    "files": 90,
+    "gb": 117.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/iZombie",
+    "files": 70,
+    "gb": 116.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Arrow",
+    "files": 171,
+    "gb": 115.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bull (2016)",
+    "files": 125,
+    "gb": 115.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Goldbergs (2013)",
+    "files": 221,
+    "gb": 112.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The West Wing",
+    "files": 154,
+    "gb": 111.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Tudors",
+    "files": 38,
+    "gb": 110.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mutant X",
+    "files": 66,
+    "gb": 110.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Poldark (2015)",
+    "files": 44,
+    "gb": 110.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Gossip Girl",
+    "files": 122,
+    "gb": 109.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/One Tree Hill",
+    "files": 187,
+    "gb": 109.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Office (US)",
+    "files": 188,
+    "gb": 106.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Hannah Montana",
+    "files": 98,
+    "gb": 104.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Good Doctor",
+    "files": 124,
+    "gb": 104.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/RuPaul's Drag Race",
+    "files": 123,
+    "gb": 103.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Once Upon a Time (2011)",
+    "files": 153,
+    "gb": 103.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Red Dwarf",
+    "files": 73,
+    "gb": 102.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Andromeda",
+    "files": 110,
+    "gb": 100.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Agents of SHIELD",
+    "files": 112,
+    "gb": 100.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Scorpion",
+    "files": 92,
+    "gb": 99.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Big Bang Theory",
+    "files": 280,
+    "gb": 99.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Lucifer",
+    "files": 93,
+    "gb": 99.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Halloween Baking Championship",
+    "files": 53,
+    "gb": 98.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Reign (2013)",
+    "files": 77,
+    "gb": 97.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Star Trek- Discovery",
+    "files": 64,
+    "gb": 97.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/This Is Us",
+    "files": 88,
+    "gb": 95.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gotham",
+    "files": 99,
+    "gb": 94.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Girls",
+    "files": 62,
+    "gb": 93.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Holiday Baking Championship",
+    "files": 55,
+    "gb": 93.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ugly Betty",
+    "files": 85,
+    "gb": 91.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Doctor Doctor (2016)",
+    "files": 35,
+    "gb": 91.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Switched at Birth",
+    "files": 103,
+    "gb": 91.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Mom",
+    "files": 166,
+    "gb": 88.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Grace and Frankie",
+    "files": 85,
+    "gb": 87.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Community",
+    "files": 110,
+    "gb": 86.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Neighborhood",
+    "files": 133,
+    "gb": 84.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Face Off",
+    "files": 162,
+    "gb": 83.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Fringe",
+    "files": 80,
+    "gb": 82.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Charmed",
+    "files": 173,
+    "gb": 82.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/House Hunters Renovation",
+    "files": 56,
+    "gb": 81.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Crown",
+    "files": 60,
+    "gb": 81.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Hot in Cleveland",
+    "files": 127,
+    "gb": 81.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Halloween Wars",
+    "files": 54,
+    "gb": 81.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/3rd Rock from The Sun",
+    "files": 139,
+    "gb": 80.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Van Helsing",
+    "files": 65,
+    "gb": 80.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Suits",
+    "files": 134,
+    "gb": 79.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Charmed (2018)",
+    "files": 72,
+    "gb": 79.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bake Off - The Professionals",
+    "files": 74,
+    "gb": 79.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Young Sheldon",
+    "files": 139,
+    "gb": 78.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Northern Exposure",
+    "files": 110,
+    "gb": 78.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Somebody Feed Phil",
+    "files": 46,
+    "gb": 77.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Flip or Flop",
+    "files": 110,
+    "gb": 77.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Little House on the Prairie",
+    "files": 203,
+    "gb": 76.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Teen Wolf",
+    "files": 100,
+    "gb": 76.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Game Changer",
+    "files": 78,
+    "gb": 76.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Castle (2009)",
+    "files": 150,
+    "gb": 75.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Alias",
+    "files": 105,
+    "gb": 75.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Parks and Recreation",
+    "files": 122,
+    "gb": 74.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Magicians (2015)",
+    "files": 65,
+    "gb": 72.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Masked Singer",
+    "files": 54,
+    "gb": 72.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cutthroat Kitchen",
+    "files": 150,
+    "gb": 72.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Rake",
+    "files": 40,
+    "gb": 71.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Great Canadian Baking Show",
+    "files": 59,
+    "gb": 71.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Game of Thrones",
+    "files": 77,
+    "gb": 70.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Project Runway All Stars",
+    "files": 84,
+    "gb": 70.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Almighty Johnsons",
+    "files": 36,
+    "gb": 70.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Veep",
+    "files": 64,
+    "gb": 69.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Rookie",
+    "files": 129,
+    "gb": 68.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Skins",
+    "files": 61,
+    "gb": 68.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Haven",
+    "files": 78,
+    "gb": 68.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Will & Grace",
+    "files": 243,
+    "gb": 68.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/How to Get Away with Murder",
+    "files": 53,
+    "gb": 67.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Shield",
+    "files": 89,
+    "gb": 66.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Love Your Weekend with Alan Titchmarsh",
+    "files": 23,
+    "gb": 66.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/True Blood Season 1-7",
+    "files": 80,
+    "gb": 66.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/New Girl",
+    "files": 144,
+    "gb": 64.2,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Running Wild with Bear Grylls",
+    "files": 51,
+    "gb": 63.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Boys",
+    "files": 37,
+    "gb": 62.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Escape to the Chateau",
+    "files": 50,
+    "gb": 61.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/King of the Hill",
+    "files": 254,
+    "gb": 61.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Victoria",
+    "files": 24,
+    "gb": 61.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Foundation (2021)",
+    "files": 30,
+    "gb": 60.8,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/The Bold Type",
+    "files": 51,
+    "gb": 60.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Unforgettable",
+    "files": 61,
+    "gb": 60.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/2 Broke Girls",
+    "files": 135,
+    "gb": 59.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Charlie's Angels",
+    "files": 108,
+    "gb": 59.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Being Human (US)",
+    "files": 26,
+    "gb": 58.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Vikings",
+    "files": 58,
+    "gb": 57.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bewitched",
+    "files": 254,
+    "gb": 57.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Doom Patrol",
+    "files": 46,
+    "gb": 57.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Crazy Ex-Girlfriend",
+    "files": 62,
+    "gb": 57.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Sopranos",
+    "files": 86,
+    "gb": 57.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Black Sails",
+    "files": 20,
+    "gb": 57.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Great Celebrity Bake Off",
+    "files": 39,
+    "gb": 56.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/American Ninja Warrior Junior",
+    "files": 32,
+    "gb": 56.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Home Improvement",
+    "files": 203,
+    "gb": 56.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Chosen",
+    "files": 37,
+    "gb": 55.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Magnum P.I",
+    "files": 94,
+    "gb": 55.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bizarre Foods",
+    "files": 17,
+    "gb": 55.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bridgerton",
+    "files": 30,
+    "gb": 55.1,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Sweet Home",
+    "files": 24,
+    "gb": 55.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/I love Lucy",
+    "files": 194,
+    "gb": 54.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Frasier",
+    "files": 257,
+    "gb": 54.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Mentalist S01-07 COMPLETE 720p x264 PAHE.in",
+    "files": 149,
+    "gb": 54.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Great Performances",
+    "files": 20,
+    "gb": 54.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Younger",
+    "files": 84,
+    "gb": 53.8,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Halt and Catch Fire",
+    "files": 40,
+    "gb": 53.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Fuller House",
+    "files": 75,
+    "gb": 53.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Wynonna Earp",
+    "files": 48,
+    "gb": 53.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Glow Up - Britain's Next Make-Up Star",
+    "files": 42,
+    "gb": 52.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Comedians in Cars Getting Coffee",
+    "files": 84,
+    "gb": 52.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Roswell, New Mexico",
+    "files": 52,
+    "gb": 51.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/American Housewife",
+    "files": 98,
+    "gb": 51.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Stranger Things",
+    "files": 35,
+    "gb": 50.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Drop Dead Diva",
+    "files": 75,
+    "gb": 50.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Secret Life of the American Teenager",
+    "files": 116,
+    "gb": 50.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/American Gods",
+    "files": 26,
+    "gb": 49.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Parenthood (2010)",
+    "files": 67,
+    "gb": 49.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Good Eats",
+    "files": 318,
+    "gb": 49.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Love Island All Stars",
+    "files": 34,
+    "gb": 49.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Justified",
+    "files": 78,
+    "gb": 49.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Legacies",
+    "files": 68,
+    "gb": 49.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sweet Magnolias",
+    "files": 46,
+    "gb": 48.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Brooklyn Nine-Nine",
+    "files": 59,
+    "gb": 47.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Seinfeld",
+    "files": 170,
+    "gb": 47.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Originals",
+    "files": 66,
+    "gb": 47.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Rules of Engagement",
+    "files": 100,
+    "gb": 47.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Black Mirror",
+    "files": 31,
+    "gb": 46.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sanctuary",
+    "files": 13,
+    "gb": 46.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dawson's Creek",
+    "files": 127,
+    "gb": 46.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Liv and Maddie",
+    "files": 60,
+    "gb": 46.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Resident Alien",
+    "files": 37,
+    "gb": 46.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Morning Show",
+    "files": 31,
+    "gb": 46.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dead Like Me",
+    "files": 27,
+    "gb": 46.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Pushing Daisies",
+    "files": 22,
+    "gb": 45.9,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/The Orville",
+    "files": 36,
+    "gb": 45.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Silicon Valley",
+    "files": 53,
+    "gb": 45.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Middle",
+    "files": 79,
+    "gb": 45.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/House of the Dragon",
+    "files": 25,
+    "gb": 45.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Leverage",
+    "files": 77,
+    "gb": 45.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Expanse",
+    "files": 52,
+    "gb": 45.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Monk",
+    "files": 124,
+    "gb": 45.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lost",
+    "files": 118,
+    "gb": 45.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Wheel of Time",
+    "files": 21,
+    "gb": 44.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Salem",
+    "files": 36,
+    "gb": 44.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Beat Bobby Flay",
+    "files": 92,
+    "gb": 44.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/TURN- Washington's Spies",
+    "files": 32,
+    "gb": 44.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Archer (2009)",
+    "files": 140,
+    "gb": 43.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Physical - 100",
+    "files": 18,
+    "gb": 43.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Junior Bake Off",
+    "files": 47,
+    "gb": 43.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Angel",
+    "files": 110,
+    "gb": 42.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Iron Chef America",
+    "files": 27,
+    "gb": 42.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The O.C",
+    "files": 92,
+    "gb": 42.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/House",
+    "files": 178,
+    "gb": 42.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/DC's Legends of Tomorrow",
+    "files": 110,
+    "gb": 42.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ally McBeal",
+    "files": 112,
+    "gb": 41.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Buffy The Vampire Slayer",
+    "files": 144,
+    "gb": 40.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Scrubs",
+    "files": 181,
+    "gb": 40.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Flipping 101 with Tarek El Moussa",
+    "files": 36,
+    "gb": 40.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Star Trek - Strange New Worlds",
+    "files": 35,
+    "gb": 39.9,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Eureka",
+    "files": 13,
+    "gb": 39.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Baby Daddy",
+    "files": 98,
+    "gb": 39.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Batwoman",
+    "files": 48,
+    "gb": 39.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Every Witch Way",
+    "files": 46,
+    "gb": 39.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Drunk History",
+    "files": 70,
+    "gb": 38.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Nashville (2012)",
+    "files": 40,
+    "gb": 38.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/America's Got Talent- The Champions",
+    "files": 13,
+    "gb": 38.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Lincoln Lawyer",
+    "files": 40,
+    "gb": 38.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Young & Hungry",
+    "files": 58,
+    "gb": 38.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Good Luck Charlie",
+    "files": 67,
+    "gb": 37.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/You're the Worst",
+    "files": 62,
+    "gb": 37.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Suburgatory",
+    "files": 57,
+    "gb": 37.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Star Trek - The Next Generation",
+    "files": 128,
+    "gb": 37.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/What I Like About You",
+    "files": 86,
+    "gb": 37.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Green Acres",
+    "files": 170,
+    "gb": 37.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Big Dreams Small Spaces",
+    "files": 17,
+    "gb": 37.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Stargirl",
+    "files": 39,
+    "gb": 37.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Two And A Half Men",
+    "files": 260,
+    "gb": 36.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Fargo",
+    "files": 23,
+    "gb": 36.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Protector (2018)",
+    "files": 32,
+    "gb": 36.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/For All Mankind",
+    "files": 49,
+    "gb": 36.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/What We Do in the Shadows",
+    "files": 55,
+    "gb": 36.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Wanted Down Under",
+    "files": 27,
+    "gb": 36.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Skin Wars",
+    "files": 28,
+    "gb": 36.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Steven Universe",
+    "files": 152,
+    "gb": 36.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gossip Girl (2021)",
+    "files": 21,
+    "gb": 35.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Leverage - Redemption",
+    "files": 32,
+    "gb": 35.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Umbrella Academy",
+    "files": 36,
+    "gb": 35.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Entourage",
+    "files": 57,
+    "gb": 35.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Marvel's Runaways",
+    "files": 33,
+    "gb": 35.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Sons of Anarchy",
+    "files": 41,
+    "gb": 35.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mr Selfridge",
+    "files": 40,
+    "gb": 35.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Saving Hope",
+    "files": 48,
+    "gb": 35.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Blown Away",
+    "files": 40,
+    "gb": 34.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Full House",
+    "files": 193,
+    "gb": 34.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Girl Meets World",
+    "files": 55,
+    "gb": 34.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Samantha Brown's Places to Love",
+    "files": 27,
+    "gb": 34.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Nancy Drew (2019)",
+    "files": 57,
+    "gb": 34.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Veronica Mars",
+    "files": 72,
+    "gb": 34.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Smash (2012)",
+    "files": 32,
+    "gb": 34.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Outrageous Pumpkins",
+    "files": 17,
+    "gb": 34.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Witcher",
+    "files": 29,
+    "gb": 34.3,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Person of Interest",
+    "files": 77,
+    "gb": 34.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Who's the Boss",
+    "files": 168,
+    "gb": 34.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Episodes",
+    "files": 31,
+    "gb": 34.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Happy Endings",
+    "files": 57,
+    "gb": 33.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Covert Affairs",
+    "files": 75,
+    "gb": 33.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Twin Peaks",
+    "files": 47,
+    "gb": 33.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Burn Notice",
+    "files": 45,
+    "gb": 33.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Great American Baking Show (2022)",
+    "files": 23,
+    "gb": 33.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/21 Jump Street",
+    "files": 103,
+    "gb": 32.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ciao House",
+    "files": 11,
+    "gb": 32.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/My Boys",
+    "files": 49,
+    "gb": 32.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/United States of Tara",
+    "files": 36,
+    "gb": 32.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Beechgrove",
+    "files": 32,
+    "gb": 32.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Chuck",
+    "files": 91,
+    "gb": 32.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Jane the Virgin",
+    "files": 77,
+    "gb": 32.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Marvel's Luke Cage",
+    "files": 13,
+    "gb": 32.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Motherland - Fort Salem",
+    "files": 29,
+    "gb": 32.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Gifted",
+    "files": 28,
+    "gb": 31.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Unbreakable Kimmy Schmidt",
+    "files": 51,
+    "gb": 31.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/His Dark Materials",
+    "files": 23,
+    "gb": 31.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Schitt's Creek",
+    "files": 79,
+    "gb": 31.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bitten",
+    "files": 23,
+    "gb": 31.4,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/The Mind of a Chef",
+    "files": 44,
+    "gb": 31.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Guest Book",
+    "files": 20,
+    "gb": 31.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Handmaid's Tale",
+    "files": 47,
+    "gb": 31.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Righteous Gemstones",
+    "files": 31,
+    "gb": 31.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Felicity",
+    "files": 84,
+    "gb": 30.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Caprica",
+    "files": 18,
+    "gb": 30.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Marvel's Daredevil",
+    "files": 39,
+    "gb": 30.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Raising Hope",
+    "files": 88,
+    "gb": 30.8,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Speechless",
+    "files": 63,
+    "gb": 30.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Warehouse 13",
+    "files": 19,
+    "gb": 30.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Odyssey 5",
+    "files": 19,
+    "gb": 30.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sabrina The Teenage Witch",
+    "files": 161,
+    "gb": 30.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/And Just Like That",
+    "files": 31,
+    "gb": 30.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Kim's Convenience",
+    "files": 65,
+    "gb": 30.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Fallout",
+    "files": 14,
+    "gb": 30.4,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Star Trek- Picard",
+    "files": 30,
+    "gb": 30.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Guardian",
+    "files": 67,
+    "gb": 30.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Poker Face (2023)",
+    "files": 19,
+    "gb": 29.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Brother vs. Brother",
+    "files": 39,
+    "gb": 29.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mistresses (US)",
+    "files": 48,
+    "gb": 29.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Plebs",
+    "files": 16,
+    "gb": 29.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/I'm Dying Up Here",
+    "files": 19,
+    "gb": 29.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Last of Us",
+    "files": 13,
+    "gb": 29.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Severance",
+    "files": 18,
+    "gb": 29.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Jack Whitehall - Travels with My Father",
+    "files": 18,
+    "gb": 29.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Shrinking",
+    "files": 31,
+    "gb": 29.2,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Trying",
+    "files": 39,
+    "gb": 29.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Supernatural",
+    "files": 53,
+    "gb": 29.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Travel Man - 48 Hours in",
+    "files": 48,
+    "gb": 29.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Mindy Project",
+    "files": 68,
+    "gb": 28.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gordon Ramsay - Uncharted",
+    "files": 23,
+    "gb": 28.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Misfits",
+    "files": 24,
+    "gb": 28.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Awkward",
+    "files": 90,
+    "gb": 28.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Undateable (2014)",
+    "files": 32,
+    "gb": 28.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/White Collar",
+    "files": 81,
+    "gb": 28.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/House of Lies",
+    "files": 58,
+    "gb": 28.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/RuPaul's Drag Race- Untucked!",
+    "files": 72,
+    "gb": 28.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Marvel's Agent Carter",
+    "files": 18,
+    "gb": 28.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Long Way Home",
+    "files": 9,
+    "gb": 28.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Only Murders in the Building",
+    "files": 41,
+    "gb": 27.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Cougar Town",
+    "files": 101,
+    "gb": 27.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Interview with the Vampire",
+    "files": 16,
+    "gb": 27.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Man in the High Castle",
+    "files": 40,
+    "gb": 27.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Happy Days",
+    "files": 130,
+    "gb": 27.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Miss Fisher's Murder Mysteries",
+    "files": 34,
+    "gb": 27.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Buccaneers (2023)",
+    "files": 13,
+    "gb": 27.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ripper Street",
+    "files": 36,
+    "gb": 27.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Spin City",
+    "files": 145,
+    "gb": 26.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Schooled",
+    "files": 34,
+    "gb": 26.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mary Makes It Easy",
+    "files": 67,
+    "gb": 26.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sweet Tooth",
+    "files": 24,
+    "gb": 26.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Imposters",
+    "files": 20,
+    "gb": 26.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Watson",
+    "files": 24,
+    "gb": 26.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Beatles - Get Back",
+    "files": 3,
+    "gb": 26.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Andor",
+    "files": 21,
+    "gb": 25.9,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/The Dead Zone",
+    "files": 10,
+    "gb": 25.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/I Dream of Jeannie",
+    "files": 139,
+    "gb": 25.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Whose Line is it Anyway! (UK)",
+    "files": 136,
+    "gb": 25.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ms Fisher's Modern Murder Mysteries",
+    "files": 12,
+    "gb": 25.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Star Trek - Lower Decks",
+    "files": 44,
+    "gb": 25.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/UnREAL",
+    "files": 38,
+    "gb": 25.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Motherland",
+    "files": 17,
+    "gb": 25.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Fresh Prince of Bel-Air",
+    "files": 147,
+    "gb": 25.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Merlin",
+    "files": 67,
+    "gb": 25.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Summer I Turned Pretty",
+    "files": 25,
+    "gb": 25.2,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Titans (2018)",
+    "files": 49,
+    "gb": 25.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Continuum",
+    "files": 23,
+    "gb": 25.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Swedish Dicks",
+    "files": 20,
+    "gb": 24.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Gilded Age",
+    "files": 17,
+    "gb": 24.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Dexter",
+    "files": 96,
+    "gb": 24.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Making It",
+    "files": 22,
+    "gb": 24.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Circle",
+    "files": 32,
+    "gb": 24.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Decameron",
+    "files": 8,
+    "gb": 24.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Downton Abbey",
+    "files": 48,
+    "gb": 24.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/8 Simple Rules",
+    "files": 43,
+    "gb": 24.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/A Series of Unfortunate Events",
+    "files": 25,
+    "gb": 24.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Superman & Lois",
+    "files": 53,
+    "gb": 24.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Mary & George",
+    "files": 8,
+    "gb": 24.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Reacher",
+    "files": 24,
+    "gb": 24.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Carnival Row",
+    "files": 17,
+    "gb": 23.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bizarre Foods America",
+    "files": 9,
+    "gb": 23.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Long Way Round",
+    "files": 7,
+    "gb": 23.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Handmade - Britain's Best Woodworker",
+    "files": 22,
+    "gb": 23.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Beyond Paradise",
+    "files": 20,
+    "gb": 23.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Sex and the City",
+    "files": 95,
+    "gb": 23.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Emerald City",
+    "files": 10,
+    "gb": 23.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/About A Boy",
+    "files": 33,
+    "gb": 23.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Reaper",
+    "files": 31,
+    "gb": 23.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Star Trek",
+    "files": 79,
+    "gb": 23.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mozart in the Jungle",
+    "files": 39,
+    "gb": 23.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Hart of Dixie",
+    "files": 76,
+    "gb": 23.2,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/The Law According to Lidia Po\u00ebt",
+    "files": 17,
+    "gb": 23.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/First Ladies (2021)",
+    "files": 10,
+    "gb": 23.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Royals (2015)",
+    "files": 40,
+    "gb": 23.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Man With a Plan",
+    "files": 69,
+    "gb": 22.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Mandalorian",
+    "files": 24,
+    "gb": 22.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Great Kiwi Bake Off",
+    "files": 23,
+    "gb": 22.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Upload",
+    "files": 23,
+    "gb": 22.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Crime Scene Kitchen",
+    "files": 21,
+    "gb": 22.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Upper Middle Bogan",
+    "files": 24,
+    "gb": 22.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/High Potential",
+    "files": 24,
+    "gb": 22.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bunheads",
+    "files": 18,
+    "gb": 22.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Roswell (1999)TV Series",
+    "files": 61,
+    "gb": 22.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Yes Dear",
+    "files": 122,
+    "gb": 22.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sleepy Hollow",
+    "files": 48,
+    "gb": 22.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Long Way Up",
+    "files": 11,
+    "gb": 22.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Food Unwrapped",
+    "files": 34,
+    "gb": 22.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Roar",
+    "files": 8,
+    "gb": 22.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Marvel's The Punisher",
+    "files": 26,
+    "gb": 22.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Palm Royale",
+    "files": 18,
+    "gb": 22.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Up All Night",
+    "files": 35,
+    "gb": 22.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Better Call Saul",
+    "files": 52,
+    "gb": 21.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Penn & Teller - Bullshit!",
+    "files": 89,
+    "gb": 21.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lipstick Jungle",
+    "files": 9,
+    "gb": 21.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Great American Baking Show",
+    "files": 13,
+    "gb": 21.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/A Gentleman in Moscow",
+    "files": 6,
+    "gb": 21.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/30 Rock",
+    "files": 137,
+    "gb": 21.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Marvelous Mrs. Maisel",
+    "files": 43,
+    "gb": 21.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/America's Hidden Stories",
+    "files": 20,
+    "gb": 21.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Casual",
+    "files": 44,
+    "gb": 21.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Island Hunters",
+    "files": 49,
+    "gb": 21.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Raised by Wolves (2020)",
+    "files": 15,
+    "gb": 21.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Hustler",
+    "files": 18,
+    "gb": 21.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/My Family",
+    "files": 88,
+    "gb": 21.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Modern Love",
+    "files": 16,
+    "gb": 21.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cruel Intentions",
+    "files": 8,
+    "gb": 21.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Marvel's Cloak & Dagger",
+    "files": 20,
+    "gb": 21.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Three-Body",
+    "files": 30,
+    "gb": 20.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Your Friends and Neighbors",
+    "files": 19,
+    "gb": 20.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Fubar",
+    "files": 22,
+    "gb": 20.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dharma & Greg",
+    "files": 119,
+    "gb": 20.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Legend of the Seeker",
+    "files": 22,
+    "gb": 20.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Lord of the Rings - The Rings of Power",
+    "files": 13,
+    "gb": 20.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Good Place",
+    "files": 49,
+    "gb": 20.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/My Lady Jane",
+    "files": 8,
+    "gb": 20.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Friday Night Lights",
+    "files": 13,
+    "gb": 20.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Flight Attendant",
+    "files": 16,
+    "gb": 20.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/At Home with Amy Sedaris",
+    "files": 30,
+    "gb": 20.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Loot",
+    "files": 29,
+    "gb": 20.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Bear",
+    "files": 42,
+    "gb": 20.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Rosehaven",
+    "files": 40,
+    "gb": 19.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Beverly Hillbillies",
+    "files": 169,
+    "gb": 19.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Marvel's Iron Fist",
+    "files": 23,
+    "gb": 19.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Animal Control",
+    "files": 34,
+    "gb": 19.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bajillion Dollar Propertie$",
+    "files": 26,
+    "gb": 19.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Barbie Dreamhouse Challenge",
+    "files": 5,
+    "gb": 19.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/My Life Is Murder",
+    "files": 45,
+    "gb": 19.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dirk Gently's Holistic Detective Agency",
+    "files": 18,
+    "gb": 18.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Playing House",
+    "files": 26,
+    "gb": 18.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Nathan for You",
+    "files": 24,
+    "gb": 18.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/So Help Me Todd",
+    "files": 31,
+    "gb": 18.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cosmos (1980)",
+    "files": 13,
+    "gb": 18.4,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Dexter - Original Sin",
+    "files": 9,
+    "gb": 18.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Down to Earth with Zac Efron",
+    "files": 15,
+    "gb": 18.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Deadwood",
+    "files": 36,
+    "gb": 18.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/How I Met Your Father",
+    "files": 30,
+    "gb": 18.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Party Down",
+    "files": 26,
+    "gb": 18.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/3 Body Problem",
+    "files": 8,
+    "gb": 18.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Moonlighting",
+    "files": 68,
+    "gb": 18.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/My Name is Earl",
+    "files": 90,
+    "gb": 18.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cold Feet",
+    "files": 27,
+    "gb": 18.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Saved by the Bell",
+    "files": 87,
+    "gb": 17.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Devious Maids",
+    "files": 49,
+    "gb": 17.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Doogie Howser, M.D",
+    "files": 97,
+    "gb": 17.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Star-Crossed",
+    "files": 13,
+    "gb": 17.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dark Matter",
+    "files": 27,
+    "gb": 17.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Americas",
+    "files": 7,
+    "gb": 17.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Project Runway Junior",
+    "files": 20,
+    "gb": 17.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Tower Prep",
+    "files": 13,
+    "gb": 17.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Agatha Christie's Marple",
+    "files": 23,
+    "gb": 17.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Iron Chef (1993)",
+    "files": 55,
+    "gb": 17.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Nine Perfect Strangers",
+    "files": 15,
+    "gb": 17.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Counterpart",
+    "files": 20,
+    "gb": 17.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Alex vs. America",
+    "files": 25,
+    "gb": 17.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Men at Work",
+    "files": 30,
+    "gb": 17.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Real O'Neals",
+    "files": 29,
+    "gb": 17.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Good Omens",
+    "files": 12,
+    "gb": 17.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Almost Human",
+    "files": 13,
+    "gb": 17.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/One Strange Rock",
+    "files": 8,
+    "gb": 17.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Running Wild with Bear Grylls - The Challenge",
+    "files": 14,
+    "gb": 17.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Planet Earth II",
+    "files": 6,
+    "gb": 17.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Arrested Development",
+    "files": 65,
+    "gb": 17.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/A Discovery of Witches",
+    "files": 25,
+    "gb": 16.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Curse",
+    "files": 7,
+    "gb": 16.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Bizarre Foods - Delicious Destinations",
+    "files": 32,
+    "gb": 16.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Studio (2025)",
+    "files": 10,
+    "gb": 16.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Vampire Academy (2022)",
+    "files": 10,
+    "gb": 16.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Pie in the Sky",
+    "files": 40,
+    "gb": 16.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/I'm Sorry",
+    "files": 20,
+    "gb": 16.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mussolini - Son of the Century",
+    "files": 8,
+    "gb": 16.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Exes",
+    "files": 56,
+    "gb": 16.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Travelers (2016)",
+    "files": 22,
+    "gb": 16.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Better Off Ted",
+    "files": 26,
+    "gb": 16.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Bob Hearts Abishola",
+    "files": 92,
+    "gb": 16.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Wolf Pack",
+    "files": 6,
+    "gb": 16.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Robin Hood",
+    "files": 39,
+    "gb": 15.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Bastard Executioner",
+    "files": 9,
+    "gb": 15.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Exchange",
+    "files": 12,
+    "gb": 15.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Primeval - New World",
+    "files": 12,
+    "gb": 15.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Penguin",
+    "files": 6,
+    "gb": 15.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Under The Gunn",
+    "files": 11,
+    "gb": 15.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Daredevil - Born Again",
+    "files": 12,
+    "gb": 15.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cosmos (2014)",
+    "files": 26,
+    "gb": 15.6,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Two Guys and a Girl",
+    "files": 81,
+    "gb": 15.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Bad Sisters",
+    "files": 7,
+    "gb": 15.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sherlock",
+    "files": 15,
+    "gb": 15.3,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Return To Paradise",
+    "files": 10,
+    "gb": 15.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Faerie Tale Theatre",
+    "files": 26,
+    "gb": 15.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Escape to the Wild",
+    "files": 7,
+    "gb": 15.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Nobody Wants This",
+    "files": 19,
+    "gb": 15.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Roman Empire",
+    "files": 15,
+    "gb": 14.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Anne Rice's Mayfair Witches",
+    "files": 8,
+    "gb": 14.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Sandman",
+    "files": 17,
+    "gb": 14.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Stanley Tucci- Searching for Italy",
+    "files": 14,
+    "gb": 14.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Escape to the Chateau - Make Do and Mend",
+    "files": 9,
+    "gb": 14.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Smoke (2025)",
+    "files": 9,
+    "gb": 14.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Big Little Lies",
+    "files": 14,
+    "gb": 14.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Review",
+    "files": 22,
+    "gb": 14.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Kids Baking Championship",
+    "files": 9,
+    "gb": 14.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Stitchers",
+    "files": 31,
+    "gb": 14.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Monsieur Spade",
+    "files": 5,
+    "gb": 14.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Austin & Ally",
+    "files": 70,
+    "gb": 14.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sons of Tucson",
+    "files": 13,
+    "gb": 14.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Escape to the Continent",
+    "files": 40,
+    "gb": 14.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Marvel's Inhumans",
+    "files": 8,
+    "gb": 14.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Shakespeare & Hathaway - Private Investigators",
+    "files": 13,
+    "gb": 13.9,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/America's Next Top Model",
+    "files": 32,
+    "gb": 13.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The 10th Kingdom",
+    "files": 5,
+    "gb": 13.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Three-Body Problem (2022)",
+    "files": 7,
+    "gb": 13.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Stick",
+    "files": 10,
+    "gb": 13.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Harlots",
+    "files": 16,
+    "gb": 13.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Friends with Better Lives",
+    "files": 13,
+    "gb": 13.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The D'Amelio Show",
+    "files": 28,
+    "gb": 13.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Georgie & Mandy's First Marriage",
+    "files": 29,
+    "gb": 13.6,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Trial & Error",
+    "files": 23,
+    "gb": 13.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Huff",
+    "files": 25,
+    "gb": 13.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mrs. America",
+    "files": 6,
+    "gb": 13.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Fate- The Winx Saga",
+    "files": 13,
+    "gb": 13.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Physical",
+    "files": 29,
+    "gb": 13.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Young Dracula",
+    "files": 25,
+    "gb": 13.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lois & Clark - The New Adventures of Superman",
+    "files": 87,
+    "gb": 13.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Moonlight",
+    "files": 16,
+    "gb": 13.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sex&Drugs&Rock&Roll",
+    "files": 20,
+    "gb": 13.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Afterparty",
+    "files": 14,
+    "gb": 13.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Leonardo (2021)",
+    "files": 8,
+    "gb": 13.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Frasier (2023)",
+    "files": 9,
+    "gb": 13.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Chance",
+    "files": 20,
+    "gb": 13.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Galavant",
+    "files": 18,
+    "gb": 13.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Baking It",
+    "files": 11,
+    "gb": 13.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Battlestar Galactica",
+    "files": 21,
+    "gb": 13.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Better With You",
+    "files": 22,
+    "gb": 12.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sprung",
+    "files": 5,
+    "gb": 12.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Yonderland",
+    "files": 16,
+    "gb": 12.9,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/La Brea",
+    "files": 21,
+    "gb": 12.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/See",
+    "files": 20,
+    "gb": 12.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Completely Made-Up Adventures of Dick Turpin",
+    "files": 6,
+    "gb": 12.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/First Kill",
+    "files": 8,
+    "gb": 12.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Beatles Anthology",
+    "files": 7,
+    "gb": 12.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Limitless",
+    "files": 22,
+    "gb": 12.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Order",
+    "files": 20,
+    "gb": 12.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Primeval",
+    "files": 13,
+    "gb": 12.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Terminator - The Sarah Connor Chronicles",
+    "files": 31,
+    "gb": 12.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Doc Martin",
+    "files": 8,
+    "gb": 12.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Chopped Sweets",
+    "files": 12,
+    "gb": 12.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Miracle Workers (2019)",
+    "files": 33,
+    "gb": 12.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Glow Up Ireland",
+    "files": 8,
+    "gb": 12.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Cleaner (2021)",
+    "files": 14,
+    "gb": 12.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Humans",
+    "files": 16,
+    "gb": 12.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Acapulco (2021)",
+    "files": 30,
+    "gb": 12.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dinosaurs",
+    "files": 65,
+    "gb": 12.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Stand (2020)",
+    "files": 9,
+    "gb": 12.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Man Who Fell to Earth",
+    "files": 8,
+    "gb": 12.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/SurrealEstate",
+    "files": 27,
+    "gb": 12.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Blunt Talk",
+    "files": 20,
+    "gb": 12.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Guys With Kids",
+    "files": 17,
+    "gb": 12.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/WandaVision",
+    "files": 9,
+    "gb": 12.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Almost Paradise",
+    "files": 20,
+    "gb": 12.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Rosemary & Thyme",
+    "files": 22,
+    "gb": 12.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Running Point",
+    "files": 13,
+    "gb": 12.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Paradise",
+    "files": 16,
+    "gb": 12.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Loki",
+    "files": 10,
+    "gb": 12.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Archie (2023)",
+    "files": 4,
+    "gb": 12.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Hour",
+    "files": 12,
+    "gb": 12.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Con Man",
+    "files": 25,
+    "gb": 11.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Da Vinci's Demons",
+    "files": 20,
+    "gb": 11.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Almost Royal",
+    "files": 15,
+    "gb": 11.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Teenage Bounty Hunters",
+    "files": 10,
+    "gb": 11.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Hacks",
+    "files": 43,
+    "gb": 11.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Emma (2009)",
+    "files": 4,
+    "gb": 11.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Wednesday",
+    "files": 9,
+    "gb": 11.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/All Creatures Great and Small (2020)",
+    "files": 27,
+    "gb": 11.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Nevers",
+    "files": 12,
+    "gb": 11.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Better Things",
+    "files": 52,
+    "gb": 11.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/That '90s Show",
+    "files": 24,
+    "gb": 11.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Terriers",
+    "files": 13,
+    "gb": 11.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Wizards of Waverly Place",
+    "files": 106,
+    "gb": 11.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Alice in Borderland (2020)",
+    "files": 14,
+    "gb": 11.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Vice Principals",
+    "files": 18,
+    "gb": 11.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Son of a Critch",
+    "files": 38,
+    "gb": 11.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Blood of Zeus",
+    "files": 9,
+    "gb": 11.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gilmore Girls - A Year in the Life",
+    "files": 4,
+    "gb": 11.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Toddlers & Tiaras",
+    "files": 32,
+    "gb": 11.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Coast",
+    "files": 6,
+    "gb": 11.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Residence",
+    "files": 5,
+    "gb": 11.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Death Valley (2025)",
+    "files": 12,
+    "gb": 11.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Queens of Mystery",
+    "files": 12,
+    "gb": 10.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gen V",
+    "files": 15,
+    "gb": 10.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Flintstones",
+    "files": 55,
+    "gb": 10.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Shadow and Bone",
+    "files": 16,
+    "gb": 10.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Peacemaker (2022)",
+    "files": 10,
+    "gb": 10.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Punk'd",
+    "files": 62,
+    "gb": 10.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/10 Things I Hate About You",
+    "files": 20,
+    "gb": 10.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Love Bites (2011)",
+    "files": 5,
+    "gb": 10.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Four Seasons",
+    "files": 13,
+    "gb": 10.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Good Eats- Reloaded",
+    "files": 23,
+    "gb": 10.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mr. Mayor",
+    "files": 19,
+    "gb": 10.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Grease - Rise of the Pink Ladies",
+    "files": 5,
+    "gb": 10.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Secret Scotland",
+    "files": 18,
+    "gb": 10.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Unstable",
+    "files": 16,
+    "gb": 10.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Siren (2018)",
+    "files": 36,
+    "gb": 10.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Selena + Chef",
+    "files": 39,
+    "gb": 10.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/XO, Kitty",
+    "files": 21,
+    "gb": 10.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Winter King",
+    "files": 8,
+    "gb": 10.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Extraordinary",
+    "files": 16,
+    "gb": 10.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Five Bedrooms",
+    "files": 32,
+    "gb": 9.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Betas",
+    "files": 11,
+    "gb": 9.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Conan O'Brien Must Go",
+    "files": 7,
+    "gb": 9.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/She-Wolves- England's Early Queens",
+    "files": 3,
+    "gb": 9.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Our Flag Means Death",
+    "files": 11,
+    "gb": 9.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Still Standing (2015)",
+    "files": 13,
+    "gb": 9.6,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Love",
+    "files": 25,
+    "gb": 9.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Powerless",
+    "files": 12,
+    "gb": 9.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dead to Me",
+    "files": 30,
+    "gb": 9.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Celebrity Bear Hunt",
+    "files": 5,
+    "gb": 9.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Tru Calling",
+    "files": 26,
+    "gb": 9.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Spanish Princess",
+    "files": 16,
+    "gb": 9.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Great Train Robbery",
+    "files": 2,
+    "gb": 9.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ancient Apocalypse (2022)",
+    "files": 12,
+    "gb": 9.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/A Man on the Inside",
+    "files": 8,
+    "gb": 9.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Camelot",
+    "files": 10,
+    "gb": 9.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Monty Python's Flying Circus",
+    "files": 45,
+    "gb": 9.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Smallville",
+    "files": 4,
+    "gb": 9.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Jamestown",
+    "files": 16,
+    "gb": 9.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Simple Life",
+    "files": 55,
+    "gb": 9.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gotham Knights",
+    "files": 12,
+    "gb": 9.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Murderbot",
+    "files": 10,
+    "gb": 9.3,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Game of Talents",
+    "files": 10,
+    "gb": 9.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Little Women (2017)",
+    "files": 3,
+    "gb": 9.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Pennyworth - The\u00a0Origin\u00a0of\u00a0Batman's\u00a0Butler",
+    "files": 30,
+    "gb": 9.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Terror",
+    "files": 17,
+    "gb": 9.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Rehearsal",
+    "files": 8,
+    "gb": 9.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Pretty Hard Cases",
+    "files": 31,
+    "gb": 9.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Death and Other Details",
+    "files": 10,
+    "gb": 9.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Celebrity IOU",
+    "files": 8,
+    "gb": 9.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Hollow Crown",
+    "files": 4,
+    "gb": 8.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Not Dead Yet",
+    "files": 18,
+    "gb": 8.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lipstick on Your Collar",
+    "files": 6,
+    "gb": 8.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Animals",
+    "files": 25,
+    "gb": 8.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/BrainDead",
+    "files": 13,
+    "gb": 8.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Men in Kilts - A Roadtrip with Sam and Graham",
+    "files": 12,
+    "gb": 8.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Chickens",
+    "files": 6,
+    "gb": 8.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Morimoto\u2019s Sushi Master",
+    "files": 6,
+    "gb": 8.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/What If\u2026!",
+    "files": 22,
+    "gb": 8.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Iron Chef Gauntlet",
+    "files": 11,
+    "gb": 8.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Moon Knight",
+    "files": 6,
+    "gb": 8.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Secret Invasion",
+    "files": 4,
+    "gb": 8.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Killjoys",
+    "files": 20,
+    "gb": 8.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Deception",
+    "files": 11,
+    "gb": 8.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Shahmaran",
+    "files": 14,
+    "gb": 8.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/St. Denis Medical",
+    "files": 16,
+    "gb": 8.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/One Hundred Years of Solitude",
+    "files": 3,
+    "gb": 8.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Pendragon Cycle - Rise of the Merlin",
+    "files": 7,
+    "gb": 8.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/People of Earth",
+    "files": 20,
+    "gb": 8.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Flash 1990 Complete Series",
+    "files": 22,
+    "gb": 8.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gidget",
+    "files": 32,
+    "gb": 8.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Astrid & Lilly Save the World",
+    "files": 10,
+    "gb": 8.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Ms. Marvel",
+    "files": 6,
+    "gb": 8.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Being Human",
+    "files": 8,
+    "gb": 8.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sanditon",
+    "files": 18,
+    "gb": 8.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Ghosts (2019)",
+    "files": 33,
+    "gb": 8.2,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Ahsoka",
+    "files": 5,
+    "gb": 8.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Angel From Hell",
+    "files": 13,
+    "gb": 8.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Arcane",
+    "files": 13,
+    "gb": 8.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Insatiable",
+    "files": 22,
+    "gb": 8.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Zoey's Extraordinary Playlist",
+    "files": 25,
+    "gb": 8.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Robin of Sherwood",
+    "files": 26,
+    "gb": 8.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gary Unmarried",
+    "files": 37,
+    "gb": 8.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Buffy the Vampire Slayer- The Motion Comic",
+    "files": 19,
+    "gb": 7.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Other Bennet Sister",
+    "files": 9,
+    "gb": 7.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Supersizers",
+    "files": 14,
+    "gb": 7.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Beauty",
+    "files": 11,
+    "gb": 7.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Don't Trust the B- in Apartment 23",
+    "files": 26,
+    "gb": 7.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Birds of Prey",
+    "files": 13,
+    "gb": 7.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Recruit",
+    "files": 13,
+    "gb": 7.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Big Mood",
+    "files": 7,
+    "gb": 7.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Killing Eve",
+    "files": 32,
+    "gb": 7.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Legion",
+    "files": 27,
+    "gb": 7.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Night Manager",
+    "files": 12,
+    "gb": 7.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Maniac (2018)",
+    "files": 10,
+    "gb": 7.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Space Force",
+    "files": 17,
+    "gb": 7.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Avenue 5",
+    "files": 16,
+    "gb": 7.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Krypton",
+    "files": 20,
+    "gb": 7.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ex on the Beach",
+    "files": 13,
+    "gb": 7.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Day of the Jackal",
+    "files": 4,
+    "gb": 7.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Side Quest",
+    "files": 4,
+    "gb": 7.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Government Cheese",
+    "files": 9,
+    "gb": 7.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Death Comes to Pemberley",
+    "files": 3,
+    "gb": 7.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Warrior Nun",
+    "files": 18,
+    "gb": 7.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Obi-Wan Kenobi",
+    "files": 6,
+    "gb": 7.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ren Faire",
+    "files": 3,
+    "gb": 7.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Catastrophe (2015)",
+    "files": 18,
+    "gb": 7.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Locke & Key",
+    "files": 28,
+    "gb": 7.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lanterns",
+    "files": 8,
+    "gb": 7.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Firefly",
+    "files": 15,
+    "gb": 7.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Garfunkel and Oates",
+    "files": 8,
+    "gb": 7.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/A Cook's Tour",
+    "files": 34,
+    "gb": 7.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Witches of East End",
+    "files": 23,
+    "gb": 7.2,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Cassandra",
+    "files": 6,
+    "gb": 7.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Welcome to Earth",
+    "files": 6,
+    "gb": 7.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/World's Most Dangerous Roads",
+    "files": 6,
+    "gb": 7.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Super Pumped",
+    "files": 6,
+    "gb": 7.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/An Idiot Abroad",
+    "files": 19,
+    "gb": 7.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Flack",
+    "files": 9,
+    "gb": 7.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/My So-Called Life",
+    "files": 19,
+    "gb": 7.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Marvel Studios - Legends",
+    "files": 34,
+    "gb": 7.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Like Water for Chocolate",
+    "files": 7,
+    "gb": 7.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cross",
+    "files": 16,
+    "gb": 7.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Atypical",
+    "files": 30,
+    "gb": 7.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Millers",
+    "files": 34,
+    "gb": 6.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/It's Not Easy Being Green",
+    "files": 23,
+    "gb": 6.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dead Still",
+    "files": 6,
+    "gb": 6.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Edible Garden",
+    "files": 6,
+    "gb": 6.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Moone Boy",
+    "files": 18,
+    "gb": 6.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Slow Horses",
+    "files": 15,
+    "gb": 6.8,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Revival (2025)",
+    "files": 7,
+    "gb": 6.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Midnight, Texas",
+    "files": 9,
+    "gb": 6.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/White House Plumbers",
+    "files": 5,
+    "gb": 6.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Staged",
+    "files": 20,
+    "gb": 6.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Rookie - Feds",
+    "files": 22,
+    "gb": 6.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Monty Don's Adriatic Gardens",
+    "files": 3,
+    "gb": 6.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Queen Charlotte - A Bridgerton Story",
+    "files": 6,
+    "gb": 6.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Sticky",
+    "files": 6,
+    "gb": 6.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Doctor Who (2023)",
+    "files": 8,
+    "gb": 6.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Breaking In",
+    "files": 20,
+    "gb": 6.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Candy Land",
+    "files": 6,
+    "gb": 6.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Essex Serpent",
+    "files": 5,
+    "gb": 6.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/A Very English Scandal",
+    "files": 3,
+    "gb": 6.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Reservation Dogs",
+    "files": 22,
+    "gb": 6.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Harry Potter - Wizards of Baking",
+    "files": 6,
+    "gb": 6.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/How to Get to Heaven From Belfast",
+    "files": 8,
+    "gb": 6.5,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Lost in Oz",
+    "files": 12,
+    "gb": 6.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Love Your Garden",
+    "files": 5,
+    "gb": 6.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Pretty Little Liars- The Perfectionists",
+    "files": 6,
+    "gb": 6.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Star Wars - Skeleton Crew",
+    "files": 8,
+    "gb": 6.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/How To Be a Gentleman",
+    "files": 9,
+    "gb": 6.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Star Wars - The Bad Batch",
+    "files": 47,
+    "gb": 6.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Grinder",
+    "files": 22,
+    "gb": 6.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Deadloch",
+    "files": 14,
+    "gb": 6.2,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/The Paper (2025)",
+    "files": 9,
+    "gb": 6.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Wonder Man",
+    "files": 6,
+    "gb": 6.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ringer",
+    "files": 22,
+    "gb": 6.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Derry Girls",
+    "files": 13,
+    "gb": 6.0,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Popular",
+    "files": 21,
+    "gb": 5.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Musketeers",
+    "files": 9,
+    "gb": 5.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The No. 1 Ladies' Detective Agency",
+    "files": 6,
+    "gb": 5.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Shifting Gears",
+    "files": 13,
+    "gb": 5.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Chief of War",
+    "files": 9,
+    "gb": 5.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Long Way Down",
+    "files": 6,
+    "gb": 5.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Movies That Made Us",
+    "files": 5,
+    "gb": 5.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Reluctant Traveler with Eugene Levy",
+    "files": 14,
+    "gb": 5.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Stand (1994)",
+    "files": 4,
+    "gb": 5.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Fleabag",
+    "files": 12,
+    "gb": 5.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Santa Clauses",
+    "files": 7,
+    "gb": 5.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Childrens Hospital",
+    "files": 31,
+    "gb": 5.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Carrie Diaries",
+    "files": 11,
+    "gb": 5.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Secret History of the British Garden",
+    "files": 4,
+    "gb": 5.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Secrets of the Castle with Ruth, Peter and Tom",
+    "files": 4,
+    "gb": 5.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sweetbitter",
+    "files": 14,
+    "gb": 5.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Why Women Kill",
+    "files": 20,
+    "gb": 5.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Mr & Mrs Murder",
+    "files": 13,
+    "gb": 5.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Strays",
+    "files": 20,
+    "gb": 5.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mary Berry - Love to Cook",
+    "files": 6,
+    "gb": 5.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Martha & Snoop's Potluck Dinner Party",
+    "files": 13,
+    "gb": 5.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Shrill",
+    "files": 22,
+    "gb": 5.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/How to Live with Your Parents (For the Rest of Your Life)",
+    "files": 13,
+    "gb": 5.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Girls5eva",
+    "files": 22,
+    "gb": 5.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Outrageous (2025)",
+    "files": 6,
+    "gb": 5.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Office",
+    "files": 14,
+    "gb": 5.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Another Life (2019)",
+    "files": 20,
+    "gb": 5.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Echo",
+    "files": 5,
+    "gb": 5.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Breeders",
+    "files": 34,
+    "gb": 5.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Spider-Noir (2026) [B&W]",
+    "files": 8,
+    "gb": 5.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sons of Liberty",
+    "files": 3,
+    "gb": 5.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/First Ladies",
+    "files": 6,
+    "gb": 5.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Moving (2023)",
+    "files": 20,
+    "gb": 5.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/North of North",
+    "files": 11,
+    "gb": 5.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Spaced",
+    "files": 14,
+    "gb": 5.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mansfield Park",
+    "files": 6,
+    "gb": 5.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Greatest Event in Television History",
+    "files": 4,
+    "gb": 5.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Smack the Pony",
+    "files": 23,
+    "gb": 5.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Holiday Home Makeover with Mr. Christmas",
+    "files": 4,
+    "gb": 5.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Franchise (2024)",
+    "files": 6,
+    "gb": 5.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dark Matter (2024)",
+    "files": 15,
+    "gb": 5.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The IT Crowd",
+    "files": 26,
+    "gb": 5.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Great Gardening Challenge",
+    "files": 2,
+    "gb": 5.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Pan Am",
+    "files": 14,
+    "gb": 4.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Wizard Wars",
+    "files": 12,
+    "gb": 4.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cuckoo",
+    "files": 14,
+    "gb": 4.9,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Tick (2016)",
+    "files": 22,
+    "gb": 4.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Kevin Can F-k Himself",
+    "files": 16,
+    "gb": 4.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Audacity",
+    "files": 8,
+    "gb": 4.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Urban Myths",
+    "files": 25,
+    "gb": 4.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Santa Clarita Diet",
+    "files": 20,
+    "gb": 4.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Unicorn",
+    "files": 31,
+    "gb": 4.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Alien Nation",
+    "files": 28,
+    "gb": 4.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/I'll Have What Phil's Having",
+    "files": 6,
+    "gb": 4.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Monty Don's Japanese Gardens",
+    "files": 2,
+    "gb": 4.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Houdini & Doyle",
+    "files": 8,
+    "gb": 4.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Artful Dodger",
+    "files": 16,
+    "gb": 4.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Last Man on Earth",
+    "files": 16,
+    "gb": 4.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Drops of God (2023)",
+    "files": 16,
+    "gb": 4.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Utopia",
+    "files": 12,
+    "gb": 4.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Pluribus",
+    "files": 8,
+    "gb": 4.7,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/British Gardens in Time",
+    "files": 4,
+    "gb": 4.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Fierce Queens",
+    "files": 15,
+    "gb": 4.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Dark Crystal - Age of Resistance",
+    "files": 10,
+    "gb": 4.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/BEEF",
+    "files": 13,
+    "gb": 4.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sirens (2014)",
+    "files": 23,
+    "gb": 4.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Clarkson's Farm",
+    "files": 8,
+    "gb": 4.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Funboys",
+    "files": 8,
+    "gb": 4.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Monty Don's French Gardens",
+    "files": 3,
+    "gb": 4.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dracula (2020)",
+    "files": 3,
+    "gb": 4.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Martha Knows Best",
+    "files": 10,
+    "gb": 4.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Dresden Files",
+    "files": 12,
+    "gb": 4.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Star City",
+    "files": 6,
+    "gb": 4.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Freaks and Geeks",
+    "files": 27,
+    "gb": 4.4,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Hello Ladies",
+    "files": 8,
+    "gb": 4.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Julia (2022)",
+    "files": 16,
+    "gb": 4.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Iron Chef - Quest for an Iron Legend",
+    "files": 8,
+    "gb": 4.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dune - Prophecy",
+    "files": 6,
+    "gb": 4.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sweetpea",
+    "files": 6,
+    "gb": 4.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Black Doves",
+    "files": 6,
+    "gb": 4.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Murdoch Mysteries (2004)",
+    "files": 3,
+    "gb": 4.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Obituary",
+    "files": 6,
+    "gb": 4.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Whiskey Cavalier",
+    "files": 13,
+    "gb": 4.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cursed (2020)",
+    "files": 10,
+    "gb": 4.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Agatha All Along",
+    "files": 3,
+    "gb": 4.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/UNTAMED",
+    "files": 5,
+    "gb": 4.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Hype House",
+    "files": 8,
+    "gb": 4.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Marvel's The Defenders",
+    "files": 8,
+    "gb": 4.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Knick",
+    "files": 10,
+    "gb": 4.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Fisk",
+    "files": 15,
+    "gb": 4.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Secret Lives of Animals",
+    "files": 10,
+    "gb": 4.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Marlow Murder Club",
+    "files": 6,
+    "gb": 4.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Tommy & Tuppence",
+    "files": 6,
+    "gb": 4.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Hillary (2020)",
+    "files": 4,
+    "gb": 4.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Belgravia",
+    "files": 6,
+    "gb": 4.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gordon Ramsay - Uncharted Showdown",
+    "files": 3,
+    "gb": 4.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Gentlemen",
+    "files": 11,
+    "gb": 4.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Crazy Ones",
+    "files": 22,
+    "gb": 4.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ground Floor",
+    "files": 20,
+    "gb": 4.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dollface",
+    "files": 20,
+    "gb": 4.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mary Berry's Fantastic Feasts",
+    "files": 2,
+    "gb": 4.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Political Animals",
+    "files": 6,
+    "gb": 4.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Star Trek - Starfleet Academy",
+    "files": 5,
+    "gb": 4.0,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Wanted Down Under Revisited",
+    "files": 5,
+    "gb": 3.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Witcher - Blood Origin",
+    "files": 4,
+    "gb": 3.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ink Master - Angels",
+    "files": 6,
+    "gb": 3.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Coupling",
+    "files": 28,
+    "gb": 3.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Fortysomething",
+    "files": 6,
+    "gb": 3.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Orphan Black",
+    "files": 10,
+    "gb": 3.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The G Word with Adam Conover",
+    "files": 6,
+    "gb": 3.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Trinkets",
+    "files": 20,
+    "gb": 3.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Debris",
+    "files": 13,
+    "gb": 3.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Alien - Earth",
+    "files": 4,
+    "gb": 3.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Inbetweeners",
+    "files": 18,
+    "gb": 3.7,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Alan Titchmarsh's Garden Secrets",
+    "files": 2,
+    "gb": 3.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Love Life (2020)",
+    "files": 20,
+    "gb": 3.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Odyssey (1997)",
+    "files": 2,
+    "gb": 3.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Daybreak (2019)",
+    "files": 10,
+    "gb": 3.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Vexed",
+    "files": 9,
+    "gb": 3.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Stuart Fails to Save the Universe",
+    "files": 8,
+    "gb": 3.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Film Club",
+    "files": 6,
+    "gb": 3.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Young Sherlock (2026)",
+    "files": 8,
+    "gb": 3.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Rooster",
+    "files": 10,
+    "gb": 3.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Five-Star Weekend",
+    "files": 8,
+    "gb": 3.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mad Love",
+    "files": 13,
+    "gb": 3.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Once.Upon.a.Time.in.Wonderland.S01.Complete.480p.WEB-DL.x264-Sticky83",
+    "files": 13,
+    "gb": 3.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The White Queen",
+    "files": 10,
+    "gb": 3.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The White Princess",
+    "files": 8,
+    "gb": 3.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Shannara Chronicles",
+    "files": 10,
+    "gb": 3.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ghosted",
+    "files": 16,
+    "gb": 3.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Sirens (2025)",
+    "files": 5,
+    "gb": 3.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Little Big Shots",
+    "files": 6,
+    "gb": 3.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Katy Keene",
+    "files": 13,
+    "gb": 3.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Celebrity Circle for Stand Up To Cancer",
+    "files": 6,
+    "gb": 3.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Love, Death & Robots",
+    "files": 28,
+    "gb": 3.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/On Becoming a God in Central Florida",
+    "files": 10,
+    "gb": 3.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Widow's Bay",
+    "files": 9,
+    "gb": 3.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/GCB",
+    "files": 10,
+    "gb": 3.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Secret Life of the Wombat",
+    "files": 2,
+    "gb": 3.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Winchesters",
+    "files": 13,
+    "gb": 3.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/A Good Girl's Guide to Murder",
+    "files": 9,
+    "gb": 3.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Margo's Got Money Troubles",
+    "files": 7,
+    "gb": 3.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dads (2013)",
+    "files": 18,
+    "gb": 3.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Philip K. Dick's Electric Dreams",
+    "files": 10,
+    "gb": 3.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Marvel's Jessica Jones",
+    "files": 13,
+    "gb": 3.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Loudermilk",
+    "files": 13,
+    "gb": 3.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Around the World in 80 Days (2021)",
+    "files": 8,
+    "gb": 3.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Based On A True Story",
+    "files": 16,
+    "gb": 3.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/After Life",
+    "files": 18,
+    "gb": 3.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Castle Impossible",
+    "files": 6,
+    "gb": 3.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/His & Hers (2026)",
+    "files": 6,
+    "gb": 3.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Great Expectations (2011)",
+    "files": 3,
+    "gb": 3.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Good Girls Revolt",
+    "files": 10,
+    "gb": 3.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Quacks",
+    "files": 6,
+    "gb": 3.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Wild Babies",
+    "files": 8,
+    "gb": 3.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ryan Hansen Solves Crimes on Television",
+    "files": 16,
+    "gb": 3.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lucky (2026)",
+    "files": 6,
+    "gb": 3.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Pachinko",
+    "files": 11,
+    "gb": 3.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/How the States Got Their Shapes",
+    "files": 10,
+    "gb": 3.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Undeclared",
+    "files": 17,
+    "gb": 3.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Mary Berry's Foolproof Cooking",
+    "files": 6,
+    "gb": 3.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Big Flower Fight",
+    "files": 8,
+    "gb": 3.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Great British Gardens - Season by Season with Carol Klein",
+    "files": 3,
+    "gb": 3.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Offer",
+    "files": 10,
+    "gb": 3.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Lowe Files",
+    "files": 9,
+    "gb": 3.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Eternaut",
+    "files": 6,
+    "gb": 3.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Anna Pigeon",
+    "files": 7,
+    "gb": 3.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Hyperdrive",
+    "files": 12,
+    "gb": 3.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Post Mortem - No One Dies in Skarnes",
+    "files": 6,
+    "gb": 3.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gunpowder",
+    "files": 3,
+    "gb": 3.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Citadel",
+    "files": 7,
+    "gb": 3.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Home in a Heartbeat with Galey Alix",
+    "files": 2,
+    "gb": 3.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Utopia Falls",
+    "files": 10,
+    "gb": 3.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Under the Banner of Heaven",
+    "files": 7,
+    "gb": 3.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ghost in the Shell - Stand Alone Complex",
+    "files": 26,
+    "gb": 3.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Robin Hood (2025)",
+    "files": 6,
+    "gb": 3.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Queen's Palaces",
+    "files": 3,
+    "gb": 2.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Still Star-Crossed",
+    "files": 3,
+    "gb": 2.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dune (2000)",
+    "files": 3,
+    "gb": 2.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Spoils of Babylon",
+    "files": 6,
+    "gb": 2.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cranford",
+    "files": 5,
+    "gb": 2.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Power",
+    "files": 9,
+    "gb": 2.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ascension",
+    "files": 3,
+    "gb": 2.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Saved by the Bell- The College Years",
+    "files": 20,
+    "gb": 2.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Spider-Man - The New Animated Series",
+    "files": 13,
+    "gb": 2.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Street Food",
+    "files": 9,
+    "gb": 2.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lupin",
+    "files": 9,
+    "gb": 2.8,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Watership Down (2018)",
+    "files": 2,
+    "gb": 2.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Island",
+    "files": 4,
+    "gb": 2.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Preacher",
+    "files": 10,
+    "gb": 2.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Hex",
+    "files": 6,
+    "gb": 2.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/October Faction",
+    "files": 10,
+    "gb": 2.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Station Eleven",
+    "files": 10,
+    "gb": 2.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Earth Abides",
+    "files": 6,
+    "gb": 2.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Psych",
+    "files": 1,
+    "gb": 2.6,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/The Colour of Magic",
+    "files": 2,
+    "gb": 2.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cowboy Bebop (2021)",
+    "files": 10,
+    "gb": 2.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Interior Chinatown",
+    "files": 10,
+    "gb": 2.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/No Good Deed",
+    "files": 2,
+    "gb": 2.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Secret Level",
+    "files": 15,
+    "gb": 2.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Devs",
+    "files": 8,
+    "gb": 2.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/History of Swear Words",
+    "files": 5,
+    "gb": 2.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gutsy",
+    "files": 8,
+    "gb": 2.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dirk Gently",
+    "files": 3,
+    "gb": 2.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Becoming Elizabeth",
+    "files": 8,
+    "gb": 2.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Selfie",
+    "files": 13,
+    "gb": 2.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Creature Commandos",
+    "files": 4,
+    "gb": 2.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ten Percent",
+    "files": 8,
+    "gb": 2.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Z-Suite",
+    "files": 8,
+    "gb": 2.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ordeal by Innocence",
+    "files": 3,
+    "gb": 2.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Conan Without Borders",
+    "files": 2,
+    "gb": 2.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mrs. Fletcher",
+    "files": 5,
+    "gb": 2.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Irregulars",
+    "files": 8,
+    "gb": 2.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Resident Evil",
+    "files": 8,
+    "gb": 2.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Olive Kitteridge",
+    "files": 4,
+    "gb": 2.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Inventions That Changed History",
+    "files": 6,
+    "gb": 2.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Boroughs",
+    "files": 5,
+    "gb": 2.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ride or Die",
+    "files": 5,
+    "gb": 2.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Schoolhouse Rock!",
+    "files": 52,
+    "gb": 2.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Monty Don's American Gardens",
+    "files": 3,
+    "gb": 2.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/V-Wars",
+    "files": 10,
+    "gb": 2.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Gaslit",
+    "files": 8,
+    "gb": 2.3,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Desperate Romantics",
+    "files": 6,
+    "gb": 2.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Penn & Teller Magic & Mystery Tour",
+    "files": 3,
+    "gb": 2.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Penn & Teller Tell a Lie",
+    "files": 6,
+    "gb": 2.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Sense and Sensibility (2008)",
+    "files": 3,
+    "gb": 2.2,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Elizabeth I",
+    "files": 2,
+    "gb": 2.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Best Home Cook",
+    "files": 1,
+    "gb": 2.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Queen's Gambit",
+    "files": 7,
+    "gb": 2.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/And Then There Were None",
+    "files": 3,
+    "gb": 2.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Star Trek - Short Treks",
+    "files": 10,
+    "gb": 2.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Vanity Fair (2018)",
+    "files": 7,
+    "gb": 2.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Kaos",
+    "files": 8,
+    "gb": 2.2,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Under a Dark Sun",
+    "files": 6,
+    "gb": 2.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Burning Love",
+    "files": 28,
+    "gb": 2.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Skin Wars- Fresh Paint",
+    "files": 7,
+    "gb": 2.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Falcon and the Winter Soldier",
+    "files": 6,
+    "gb": 2.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Imperfects",
+    "files": 10,
+    "gb": 2.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Jupiter's Legacy",
+    "files": 8,
+    "gb": 2.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mr. & Mrs. Smith (2024)",
+    "files": 8,
+    "gb": 2.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Murder in Provence",
+    "files": 3,
+    "gb": 2.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Luminaries",
+    "files": 6,
+    "gb": 2.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Les Mis\u00e9rables (2018)",
+    "files": 5,
+    "gb": 2.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Brothers (2026)",
+    "files": 4,
+    "gb": 2.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Last Man Standing (2011)",
+    "files": 2,
+    "gb": 2.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Great British Baking Show - Holidays",
+    "files": 1,
+    "gb": 2.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Book of Boba Fett",
+    "files": 7,
+    "gb": 2.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Night Sky",
+    "files": 8,
+    "gb": 2.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/American Born Chinese",
+    "files": 8,
+    "gb": 2.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Dead Boy Detectives",
+    "files": 8,
+    "gb": 2.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lady in the Lake",
+    "files": 7,
+    "gb": 2.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Secret Lives of Mormon Wives",
+    "files": 4,
+    "gb": 2.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Funny Woman (2023)",
+    "files": 6,
+    "gb": 2.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/North & South",
+    "files": 4,
+    "gb": 1.9,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/The Great Comic Relief Bake Off",
+    "files": 4,
+    "gb": 1.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The End of the F-ing World",
+    "files": 16,
+    "gb": 1.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Weird City",
+    "files": 6,
+    "gb": 1.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Outmatched",
+    "files": 10,
+    "gb": 1.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Children of Dune",
+    "files": 3,
+    "gb": 1.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Rake (US)",
+    "files": 1,
+    "gb": 1.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Supacell",
+    "files": 6,
+    "gb": 1.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Pretty Smart",
+    "files": 10,
+    "gb": 1.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Little Big Shots (AU)",
+    "files": 5,
+    "gb": 1.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Property Brothers At Home on the Ranch",
+    "files": 4,
+    "gb": 1.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Letter for the King",
+    "files": 6,
+    "gb": 1.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/She-Hulk - Attorney at Law",
+    "files": 9,
+    "gb": 1.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Renegade Nell",
+    "files": 8,
+    "gb": 1.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Alice (2009)",
+    "files": 2,
+    "gb": 1.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Horace and Pete",
+    "files": 2,
+    "gb": 1.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mrs. Brown's Boys",
+    "files": 8,
+    "gb": 1.8,
+    "cls": "3-12m"
+  },
+  {
+    "path": "/TVShows/Population - 11",
+    "files": 12,
+    "gb": 1.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Passport To Europe",
+    "files": 8,
+    "gb": 1.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Hawkeye (2021)",
+    "files": 6,
+    "gb": 1.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lessons in Chemistry",
+    "files": 8,
+    "gb": 1.7,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/American Primeval",
+    "files": 1,
+    "gb": 1.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/12 Monkeys",
+    "files": 1,
+    "gb": 1.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Manhattan Love Story (2014)",
+    "files": 10,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ultraviolet (1998)",
+    "files": 6,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Revolting Rhymes",
+    "files": 2,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lockwood & Co",
+    "files": 8,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Roar (2022)",
+    "files": 8,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Guardians of Justice",
+    "files": 7,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Murder Among the Mormons",
+    "files": 3,
+    "gb": 1.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Class of '07",
+    "files": 8,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Kings of Tupelo - A Southern Crime Saga",
+    "files": 3,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Merry Happy Whatever",
+    "files": 8,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Leanne",
+    "files": 9,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Extras",
+    "files": 6,
+    "gb": 1.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/What Would Diplo Do!",
+    "files": 4,
+    "gb": 1.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The ABC Murders",
+    "files": 3,
+    "gb": 1.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Tenacious D",
+    "files": 3,
+    "gb": 1.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Tom Jones (2023)",
+    "files": 4,
+    "gb": 1.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Alice in Wonderland (1985)",
+    "files": 2,
+    "gb": 1.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Hello Tomorrow!",
+    "files": 10,
+    "gb": 1.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Elle",
+    "files": 3,
+    "gb": 1.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Small Prophets",
+    "files": 6,
+    "gb": 1.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Chad Powers",
+    "files": 6,
+    "gb": 1.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Lost in Austen",
+    "files": 2,
+    "gb": 1.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Catherine the Great (2019)",
+    "files": 4,
+    "gb": 1.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Pepsi, Where's My Jet!",
+    "files": 4,
+    "gb": 1.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Uncoupled",
+    "files": 8,
+    "gb": 1.4,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/The Tick (2001)",
+    "files": 9,
+    "gb": 1.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Scarpetta",
+    "files": 3,
+    "gb": 1.4,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Deal or No Deal",
+    "files": 1,
+    "gb": 1.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Getting On (US)",
+    "files": 3,
+    "gb": 1.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Cursed",
+    "files": 3,
+    "gb": 1.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mary Berry's Country House Secrets",
+    "files": 1,
+    "gb": 1.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Woman in the House Across the Street from the Girl in the Window",
+    "files": 8,
+    "gb": 1.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Weird Loners",
+    "files": 6,
+    "gb": 1.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Working - What We Do All Day",
+    "files": 4,
+    "gb": 1.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Kings of Con",
+    "files": 10,
+    "gb": 1.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Townies",
+    "files": 12,
+    "gb": 1.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mary Berry Cooks",
+    "files": 6,
+    "gb": 1.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Monty Don's Paradise Gardens",
+    "files": 1,
+    "gb": 1.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Halston",
+    "files": 5,
+    "gb": 1.1,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Blown Away - Christmas",
+    "files": 4,
+    "gb": 1.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Zero Day",
+    "files": 2,
+    "gb": 1.0,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Mid-Century Modern",
+    "files": 4,
+    "gb": 1.0,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/This is America, Charlie Brown",
+    "files": 3,
+    "gb": 0.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Great Irish Bake Off",
+    "files": 2,
+    "gb": 0.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Quiz",
+    "files": 3,
+    "gb": 0.9,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Great Minds with Dan Harmon",
+    "files": 3,
+    "gb": 0.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Celebrity Deathmatch",
+    "files": 2,
+    "gb": 0.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Charley Boorman's Extreme Frontiers",
+    "files": 2,
+    "gb": 0.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Resident Evil - Infinite Darkness",
+    "files": 4,
+    "gb": 0.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/American Classic",
+    "files": 2,
+    "gb": 0.8,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Making A Scene With James Franco",
+    "files": 10,
+    "gb": 0.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Elizabeth I (2017)",
+    "files": 1,
+    "gb": 0.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/David Copperfield (1999)",
+    "files": 2,
+    "gb": 0.7,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Martha Stewart's Cooking School",
+    "files": 1,
+    "gb": 0.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Great British Garden Revival",
+    "files": 1,
+    "gb": 0.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Home Movie - The Princess Bride",
+    "files": 10,
+    "gb": 0.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/House Hunters - Comedians on Couches",
+    "files": 4,
+    "gb": 0.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Married at First Sight - Happily Ever After!",
+    "files": 1,
+    "gb": 0.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/House of Hammer",
+    "files": 3,
+    "gb": 0.6,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/'Til Death",
+    "files": 1,
+    "gb": 0.6,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Play It Again, Dick",
+    "files": 7,
+    "gb": 0.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Web Therapy (2011)",
+    "files": 1,
+    "gb": 0.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Coupling (US)",
+    "files": 10,
+    "gb": 0.5,
+    "cls": "12m+"
+  },
+  {
+    "path": "/TVShows/Wonder Woman (2011)",
+    "files": 1,
+    "gb": 0.5,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Friends",
+    "files": 1,
+    "gb": 0.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Paul Hollywood - A Baker's Life",
+    "files": 2,
+    "gb": 0.3,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/The Goode Family",
+    "files": 1,
+    "gb": 0.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Miranda",
+    "files": 1,
+    "gb": 0.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Betty White's Off Their Rockers",
+    "files": 1,
+    "gb": 0.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Ink Master - Redemption",
+    "files": 2,
+    "gb": 0.2,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Hot Properties- San Diego",
+    "files": 1,
+    "gb": 0.1,
+    "cls": "never"
+  },
+  {
+    "path": "/TVShows/Escape to the Country",
+    "files": 465,
+    "gb": 562.3,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/That '70s Show",
+    "files": 200,
+    "gb": 142.8,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Shadowhunters",
+    "files": 55,
+    "gb": 102.1,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/The Great Pottery Throw Down",
+    "files": 82,
+    "gb": 100.9,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Gilmore Girls",
+    "files": 132,
+    "gb": 72.5,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/The Great British Sewing Bee",
+    "files": 51,
+    "gb": 53.7,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Ted Lasso",
+    "files": 44,
+    "gb": 33.9,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Ghosts (US)",
+    "files": 67,
+    "gb": 30.2,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Greek",
+    "files": 74,
+    "gb": 27.2,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Mythic Quest",
+    "files": 39,
+    "gb": 27.2,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Silo",
+    "files": 16,
+    "gb": 21.6,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/The Great",
+    "files": 30,
+    "gb": 19.5,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Our Welsh Chapel Dream",
+    "files": 12,
+    "gb": 16.1,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Sanctuary - A Witch's Tale",
+    "files": 12,
+    "gb": 16.0,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Hamilton's Pharmacopeia",
+    "files": 20,
+    "gb": 14.4,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Pride and Prejudice (1995)",
+    "files": 6,
+    "gb": 14.0,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Chilling Adventures of Sabrina",
+    "files": 36,
+    "gb": 13.8,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/The Great Canadian Pottery Throw Down",
+    "files": 8,
+    "gb": 8.7,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/The Way Home (2023)",
+    "files": 19,
+    "gb": 6.3,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Tony Shalhoub Breaking Bread",
+    "files": 4,
+    "gb": 6.1,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/The Moaning Of Life",
+    "files": 11,
+    "gb": 4.1,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Brave New World (2020)",
+    "files": 9,
+    "gb": 2.6,
+    "cls": "recent"
+  },
+  {
+    "path": "/TVShows/Giles and Sue Live the Good Life",
+    "files": 4,
+    "gb": 1.5,
+    "cls": "recent"
+  }
+]

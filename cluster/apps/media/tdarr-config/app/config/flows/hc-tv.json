@@ -1,0 +1,416 @@
+{
+  "_id": "hcTv",
+  "name": "HC compact HEVC 720p (TV)",
+  "description": "HEVC QSV, 720p cap, language strip, safety checks; notifies sonarr",
+  "tags": "",
+  "flowPlugins": [
+    {
+      "name": "Input",
+      "sourceRepo": "Community",
+      "pluginName": "inputFile",
+      "version": "1.0.0",
+      "id": "in",
+      "position": {
+        "x": 400,
+        "y": 0
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Guard: skip rules + plan",
+      "sourceRepo": "Community",
+      "pluginName": "customFunction",
+      "version": "1.0.0",
+      "id": "guard",
+      "position": {
+        "x": 400,
+        "y": 100
+      },
+      "inputsDB": {
+        "code": "\nmodule.exports = async (args) => {\n  const fs = require('fs');\n  const file = args.inputFileObj._id;\n  const streams = (args.inputFileObj.ffProbeData && args.inputFileObj.ffProbeData.streams) || [];\n  const v = streams.find((s) => s.codec_type === 'video' && !(s.disposition && s.disposition.attached_pic));\n  const skip = (why) => { args.jobLog('HC skip: ' + why); return { outputFileObj: args.inputFileObj, outputNumber: 3, variables: args.variables }; };\n  if (!v) return skip('no video stream');\n  let st = null;\n  try { st = fs.statSync(file); } catch (e) { return skip('cannot stat file'); }\n  if (st.nlink > 1) return skip('hardlinked (' + st.nlink + ')');\n  // replaceOriginalFile will not check for an existing file at the new .mkv name: do it here\n  if (!/\\.mkv$/i.test(file)) {\n    const target = file.replace(/\\.[^./]+$/, '.mkv');\n    if (fs.existsSync(target)) return skip('would overwrite existing ' + target);\n  }\n  // remember the source so we can refuse to replace it if Sonarr/Radarr changed it meanwhile\n  args.variables.user = args.variables.user || {};\n  args.variables.user.hcSize = String(st.size);\n  args.variables.user.hcMtime = String(Math.floor(st.mtimeMs));\n  // Favourites (kept at original quality); list written by the config-sync job\n  try {\n    const fav = fs.readFileSync('/temp/hc/skip-folders.txt', 'utf8').split('\\n').map((x) => x.trim()).filter(Boolean);\n    if (fav.some((p) => file.startsWith(p))) return skip('favourite title');\n  } catch (e) {}\n  if (/remux/i.test(file)) return skip('remux');\n  const hdr = ['smpte2084', 'arib-std-b67'].includes(v.color_transfer) ||\n    (v.side_data_list || []).some((d) => /dovi|dolby|mastering|content light/i.test(d.side_data_type || ''));\n  if (hdr) return skip('HDR/DV');\n  const h = Number(v.height) || 0;\n  const w = Number(v.width) || 0;\n  if (h > 1100 || w > 1930) return skip('above 1080p (' + w + 'x' + h + ')');\n  const codec = v.codec_name;\n  const scale = h > 740 || w > 1300;\n  if (codec === 'hevc' && !scale) return skip('already HEVC <=720p');\n  // GPU can only decode these; anything else (xvid, wmv, ...) decodes in software\n  const hwOk = ['h264', 'hevc', 'mpeg2video', 'vc1', 'vp9'].includes(codec);\n  // Aspect-correct 720p target: width 1280 for >=16:9, height 720 for narrower\n  let tw = w, th = h;\n  if (scale) {\n    if (w / h >= 1280 / 720) { tw = 1280; th = Math.round((1280 * h / w) / 2) * 2; }\n    else { th = 720; tw = Math.round((720 * w / h) / 2) * 2; }\n  }\n  args.variables.user = args.variables.user || {};\n  args.variables.user.hcScale = scale ? '1' : '0';\n  args.variables.user.hcW = String(tw);\n  args.variables.user.hcH = String(th);\n  args.variables.user.hcHw = hwOk ? '1' : '0';\n  args.jobLog('HC plan: ' + codec + ' ' + w + 'x' + h + ' -> ' + (scale ? tw + 'x' + th : 'same res') + ' hwdec=' + hwOk);\n  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n};\n"
+      }
+    },
+    {
+      "name": "Skipped (no change)",
+      "sourceRepo": "Community",
+      "pluginName": "comment",
+      "version": "1.0.0",
+      "id": "skipnote",
+      "position": {
+        "x": 800,
+        "y": 100
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Begin ffmpeg command",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandStart",
+      "version": "1.0.0",
+      "id": "start",
+      "position": {
+        "x": 400,
+        "y": 200
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Language strip",
+      "sourceRepo": "Community",
+      "pluginName": "customFunction",
+      "version": "1.0.0",
+      "id": "lang",
+      "position": {
+        "x": 400,
+        "y": 300
+      },
+      "inputsDB": {
+        "code": "\nmodule.exports = async (args) => {\n  const cmd = args.variables.ffmpegCommand;\n  const file = args.inputFileObj._id;\n  const isEng = (s) => /^en/i.test(((s.tags && s.tags.language) || '').trim());\n  const isUnd = (s) => { const l = ((s.tags && s.tags.language) || '').trim().toLowerCase(); return l === '' || l === 'und' || l === 'unk'; };\n  // Titles whose original language is not English, one path prefix per line.\n  // Written by the config sync job onto the shared cache volume every node mounts.\n  let prefixes = [];\n  try { prefixes = require('fs').readFileSync('/temp/hc/foreign-originals.txt', 'utf8').split('\\n').map((x) => x.trim()).filter(Boolean); } catch (e) {}\n  const foreignOriginal = prefixes.some((p) => file.startsWith(p));\n  const strip = (type, label) => {\n    const set = cmd.streams.filter((s) => s.codec_type === type && !s.removed);\n    if (!set.some(isEng)) return;                       // no English: keep everything\n    let n = 0;\n    for (const s of set) {\n      if (isEng(s) || isUnd(s)) continue;\n      if (type === 'subtitle' && s.disposition && s.disposition.forced) continue;\n      s.removed = true; n += 1;\n    }\n    if (n) { cmd.shouldProcess = true; args.jobLog('HC ' + label + ': removed ' + n + ' non-English stream(s)'); }\n  };\n  if (foreignOriginal) args.jobLog('HC audio: foreign-original title, keeping all audio');\n  else strip('audio', 'audio');\n  strip('subtitle', 'subs');\n  // drop attachments/data (fonts, cover art): tiny, but they bloat track lists\n  for (const s of cmd.streams) {\n    if (s.codec_type === 'attachment' || s.codec_type === 'data') { s.removed = true; cmd.shouldProcess = true; }\n  }\n  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n};\n"
+      }
+    },
+    {
+      "name": "Route hw/sw decode",
+      "sourceRepo": "Community",
+      "pluginName": "customFunction",
+      "version": "1.0.0",
+      "id": "route",
+      "position": {
+        "x": 400,
+        "y": 400
+      },
+      "inputsDB": {
+        "code": "\nmodule.exports = async (args) => ({\n  outputFileObj: args.inputFileObj,\n  outputNumber: ((args.variables.user || {}).hcHw === '1') ? 1 : 2,\n  variables: args.variables,\n});\n"
+      }
+    },
+    {
+      "name": "HEVC QSV (hw decode)",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandSetVideoEncoder",
+      "version": "1.0.0",
+      "id": "enc_hw",
+      "position": {
+        "x": 200,
+        "y": 500
+      },
+      "inputsDB": {
+        "outputCodec": "hevc",
+        "ffmpegPresetEnabled": "true",
+        "ffmpegPreset": "slow",
+        "ffmpegQualityEnabled": "true",
+        "ffmpegQuality": "21",
+        "hardwareEncoding": "true",
+        "hardwareType": "qsv",
+        "hardwareDecoding": "true",
+        "forceEncoding": "true"
+      }
+    },
+    {
+      "name": "HEVC QSV (sw decode)",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandSetVideoEncoder",
+      "version": "1.0.0",
+      "id": "enc_sw",
+      "position": {
+        "x": 600,
+        "y": 500
+      },
+      "inputsDB": {
+        "outputCodec": "hevc",
+        "ffmpegPresetEnabled": "true",
+        "ffmpegPreset": "slow",
+        "ffmpegQualityEnabled": "true",
+        "ffmpegQuality": "21",
+        "hardwareEncoding": "true",
+        "hardwareType": "qsv",
+        "hardwareDecoding": "false",
+        "forceEncoding": "true"
+      }
+    },
+    {
+      "name": "10-bit",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommand10BitVideo",
+      "version": "1.0.0",
+      "id": "ten",
+      "position": {
+        "x": 400,
+        "y": 600
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Aspect-correct 720p scale",
+      "sourceRepo": "Community",
+      "pluginName": "customFunction",
+      "version": "1.0.0",
+      "id": "scale",
+      "position": {
+        "x": 400,
+        "y": 700
+      },
+      "inputsDB": {
+        "code": "\nmodule.exports = async (args) => {\n  const cmd = args.variables.ffmpegCommand;\n  const u = args.variables.user || {};\n  if (u.hcScale !== '1') return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n  const w = u.hcW, h = u.hcH;\n  const hw = u.hcHw === '1';\n  for (const s of cmd.streams) {\n    if (s.codec_type !== 'video' || s.removed) continue;\n    if (s.disposition && s.disposition.attached_pic) continue;\n    // ffmpeg honours only ONE -vf, and the 10-bit step already added its own: merge, don't stack\n    const i = s.outputArgs.indexOf('-vf');\n    const prev = i >= 0 ? String(s.outputArgs[i + 1]) : '';\n    if (hw) {\n      const m = /format=([a-z0-9]+)/.exec(prev);\n      if (i >= 0) s.outputArgs.splice(i, 2);\n      s.outputArgs.push('-vf', 'vpp_qsv=w=' + w + ':h=' + h + (m ? ':format=' + m[1] : ''));\n    } else if (i >= 0) {\n      s.outputArgs[i + 1] = 'scale=' + w + ':' + h + ':flags=lanczos,' + prev;\n    } else {\n      s.outputArgs.push('-vf', 'scale=' + w + ':' + h + ':flags=lanczos');\n    }\n  }\n  cmd.shouldProcess = true;\n  args.jobLog('HC scale ' + (hw ? 'vpp_qsv' : 'sw') + ' ' + w + 'x' + h);\n  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n};\n"
+      }
+    },
+    {
+      "name": "MKV",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandSetContainer",
+      "version": "1.0.0",
+      "id": "cont",
+      "position": {
+        "x": 400,
+        "y": 800
+      },
+      "inputsDB": {
+        "container": "mkv",
+        "forceConform": "false"
+      }
+    },
+    {
+      "name": "Run ffmpeg",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandExecute",
+      "version": "1.0.0",
+      "id": "exec",
+      "position": {
+        "x": 400,
+        "y": 900
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Duration within 1%",
+      "sourceRepo": "Community",
+      "pluginName": "compareFileDurationRatio",
+      "version": "1.0.0",
+      "id": "dur",
+      "position": {
+        "x": 400,
+        "y": 1000
+      },
+      "inputsDB": {
+        "greaterThan": "99",
+        "lessThan": "101"
+      }
+    },
+    {
+      "name": "Size 10-100% of original",
+      "sourceRepo": "Community",
+      "pluginName": "compareFileSizeRatio",
+      "version": "1.0.0",
+      "id": "size",
+      "position": {
+        "x": 400,
+        "y": 1100
+      },
+      "inputsDB": {
+        "greaterThan": "10",
+        "lessThan": "100"
+      }
+    },
+    {
+      "name": "Needs review (original untouched)",
+      "sourceRepo": "Community",
+      "pluginName": "requireReview",
+      "version": "1.0.0",
+      "id": "review",
+      "position": {
+        "x": 800,
+        "y": 1050
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Source unchanged since start?",
+      "sourceRepo": "Community",
+      "pluginName": "customFunction",
+      "version": "1.0.0",
+      "id": "unchanged",
+      "position": {
+        "x": 400,
+        "y": 1150
+      },
+      "inputsDB": {
+        "code": "\nmodule.exports = async (args) => {\n  const fs = require('fs');\n  const u = args.variables.user || {};\n  let ok = false;\n  try {\n    const st = fs.statSync(args.originalLibraryFile._id);\n    ok = String(st.size) === u.hcSize && String(Math.floor(st.mtimeMs)) === u.hcMtime;\n  } catch (e) {}\n  args.jobLog(ok ? 'HC source unchanged, safe to replace' : 'HC source changed or missing since the encode started: not replacing');\n  return { outputFileObj: args.inputFileObj, outputNumber: ok ? 1 : 2, variables: args.variables };\n};\n"
+      }
+    },
+    {
+      "name": "Replace original",
+      "sourceRepo": "Community",
+      "pluginName": "replaceOriginalFile",
+      "version": "1.0.0",
+      "id": "replace",
+      "position": {
+        "x": 400,
+        "y": 1200
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Notify sonarr",
+      "sourceRepo": "Community",
+      "pluginName": "notifyRadarrOrSonarr",
+      "version": "1.0.0",
+      "id": "notify",
+      "position": {
+        "x": 400,
+        "y": 1300
+      },
+      "inputsDB": {
+        "arr": "sonarr",
+        "arr_api_key": "@@ARR_API_KEY@@",
+        "arr_host": "@@ARR_HOST@@"
+      }
+    }
+  ],
+  "flowEdges": [
+    {
+      "source": "in",
+      "sourceHandle": "1",
+      "target": "guard",
+      "targetHandle": null,
+      "id": "e1"
+    },
+    {
+      "source": "guard",
+      "sourceHandle": "1",
+      "target": "start",
+      "targetHandle": null,
+      "id": "e2"
+    },
+    {
+      "source": "guard",
+      "sourceHandle": "3",
+      "target": "skipnote",
+      "targetHandle": null,
+      "id": "e3"
+    },
+    {
+      "source": "start",
+      "sourceHandle": "1",
+      "target": "lang",
+      "targetHandle": null,
+      "id": "e4"
+    },
+    {
+      "source": "lang",
+      "sourceHandle": "1",
+      "target": "route",
+      "targetHandle": null,
+      "id": "e5"
+    },
+    {
+      "source": "route",
+      "sourceHandle": "1",
+      "target": "enc_hw",
+      "targetHandle": null,
+      "id": "e6"
+    },
+    {
+      "source": "route",
+      "sourceHandle": "2",
+      "target": "enc_sw",
+      "targetHandle": null,
+      "id": "e7"
+    },
+    {
+      "source": "enc_hw",
+      "sourceHandle": "1",
+      "target": "ten",
+      "targetHandle": null,
+      "id": "e8"
+    },
+    {
+      "source": "enc_sw",
+      "sourceHandle": "1",
+      "target": "ten",
+      "targetHandle": null,
+      "id": "e9"
+    },
+    {
+      "source": "ten",
+      "sourceHandle": "1",
+      "target": "scale",
+      "targetHandle": null,
+      "id": "e10"
+    },
+    {
+      "source": "scale",
+      "sourceHandle": "1",
+      "target": "cont",
+      "targetHandle": null,
+      "id": "e11"
+    },
+    {
+      "source": "cont",
+      "sourceHandle": "1",
+      "target": "exec",
+      "targetHandle": null,
+      "id": "e12"
+    },
+    {
+      "source": "exec",
+      "sourceHandle": "1",
+      "target": "dur",
+      "targetHandle": null,
+      "id": "e13"
+    },
+    {
+      "source": "dur",
+      "sourceHandle": "1",
+      "target": "size",
+      "targetHandle": null,
+      "id": "e14"
+    },
+    {
+      "source": "dur",
+      "sourceHandle": "2",
+      "target": "review",
+      "targetHandle": null,
+      "id": "e15"
+    },
+    {
+      "source": "dur",
+      "sourceHandle": "3",
+      "target": "review",
+      "targetHandle": null,
+      "id": "e16"
+    },
+    {
+      "source": "size",
+      "sourceHandle": "1",
+      "target": "unchanged",
+      "targetHandle": null,
+      "id": "e17"
+    },
+    {
+      "source": "size",
+      "sourceHandle": "2",
+      "target": "review",
+      "targetHandle": null,
+      "id": "e18"
+    },
+    {
+      "source": "unchanged",
+      "sourceHandle": "1",
+      "target": "replace",
+      "targetHandle": null,
+      "id": "e19"
+    },
+    {
+      "source": "unchanged",
+      "sourceHandle": "2",
+      "target": "review",
+      "targetHandle": null,
+      "id": "e20"
+    },
+    {
+      "source": "replace",
+      "sourceHandle": "1",
+      "target": "notify",
+      "targetHandle": null,
+      "id": "e21"
+    }
+  ]
+}

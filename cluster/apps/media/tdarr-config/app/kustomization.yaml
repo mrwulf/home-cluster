@@ -1,0 +1,22 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - helm-release.yaml
+configMapGenerator:
+  - name: tdarr-config
+    files:
+      - sync.js=config/sync.js
+      - flow-hc-tv.json=config/flows/hc-tv.json
+      - flow-hc-movies.json=config/flows/hc-movies.json
+      - libraries.json=config/libraries.json
+      - workers.json=config/workers.json
+      - lists.json=config/lists.json
+      - retire.json=config/retire.json
+      - feed.json=config/feed.json
+      - priority-tv.json=config/priority-tv.json
+      - priority-movies.json=config/priority-movies.json
+generatorOptions:
+  # The CronJob re-reads the mounted files on every run, so no restart is needed
+  # and a stable name keeps the HelmRelease reference simple.
+  disableNameSuffixHash: true
