@@ -2,7 +2,7 @@ apiVersion: v1alpha1
 kind: KubeletConfig
 extraArgs:
   rotate-server-certificates: true
-  max-pods: 150
+  max-pods: 200
 config:
   imageGCLowThresholdPercent: 60
   imageGCHighThresholdPercent: 70
