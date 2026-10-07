@@ -28,8 +28,8 @@ Skip: HDR/Dolby Vision, above 1080p, remux, hardlinked files, favourites, anythi
 720p or below, and any file whose `.mkv` name would collide with an existing file. Otherwise encode to
 HEVC 10-bit (global quality 21, preset slow), scale anything above 720p to 720p keeping the aspect
 ratio, strip non-English audio and subtitles only when an English track exists, then verify duration
-(within 1%) and size (10 to 100% of the original). ffmpeg stops on the first decode error, so a file
-corrupted mid-stream fails instead of being re-encoded with glitches. Immediately before replacing the original it checks
+(within 1%) and size (10 to 100% of the original). If the first attempt fails (filter or decode errors),
+the flow retries once with software decode and scaling before giving up. Immediately before replacing the original it checks
 the source is unchanged, so an arr upgrade mid-encode is never overwritten. Anything failing a check
 goes to Tdarr's review queue with the original untouched. Radarr/Sonarr are told to rescan afterwards.
 
@@ -52,14 +52,14 @@ goes to Tdarr's review queue with the original untouched. Radarr/Sonarr are told
 Tested on synthetic files with the real flow (original files are only ever replaced by a fully verified
 output, so a failed job never damages the original):
 
-| Situation                                    | What happens                                                                                                                                                               |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Corrupt in the middle                        | ffmpeg stops at the decode error; the file shows `Transcode error`; original untouched.                                                                                    |
-| Truncated file                               | The duration check fails (output about half the length); `Transcode error`; original untouched.                                                                            |
-| Node pod/node shut down mid-encode           | Tdarr restarts the job from scratch on another worker after roughly 5 to 8 minutes (it does not resume). The original is untouched until the final replace step.           |
-| Pod killed, leftover partial output          | A `tdarr-workDir*` folder can stay behind on the cache volume (one per interrupted job, up to a few GB). The sync job removes any that nothing has written to for 6 hours. |
-| Source changed (an arr upgrade) mid-job      | The "source unchanged" check fails and the file goes to `Transcode error` instead of being overwritten with a stale transcode.                                             |
-| Folder not writable by the workers (UID 568) | The final move fails (`EACCES`); `Transcode error`; original untouched.                                                                                                    |
+| Situation                                    | What happens                                                                                                                                                                   |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Corrupt in the middle                        | Minor glitches are skipped (`-xerror` aborted healthy rips). Truncation fails the duration check; failures retry once in software, then `Transcode error`; original untouched. |
+| Truncated file                               | The duration check fails (output about half the length); `Transcode error`; original untouched.                                                                                |
+| Node pod/node shut down mid-encode           | Tdarr restarts the job from scratch on another worker after roughly 5 to 8 minutes (it does not resume). The original is untouched until the final replace step.               |
+| Pod killed, leftover partial output          | A `tdarr-workDir*` folder can stay behind on the cache volume (one per interrupted job, up to a few GB). The sync job removes any that nothing has written to for 6 hours.     |
+| Source changed (an arr upgrade) mid-job      | The "source unchanged" check fails and the file goes to `Transcode error` instead of being overwritten with a stale transcode.                                                 |
+| Folder not writable by the workers (UID 568) | The final move fails (`EACCES`); `Transcode error`; original untouched.                                                                                                        |
 
 How to know: failed files show as `Transcode error` in the Tdarr UI (open the job report for the reason).
 The exporter exposes the same counts as `tdarr_library_transcodes{status="error"}`, and

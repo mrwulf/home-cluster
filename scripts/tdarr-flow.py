@@ -74,10 +74,8 @@ module.exports = async (args) => {
 LANG = r"""
 module.exports = async (args) => {
   const cmd = args.variables.ffmpegCommand;
-  // Stop on the first decode error so a file corrupted mid-stream fails loudly (original
-  // untouched, status "error") instead of being re-encoded with glitches and replacing the original
-  cmd.overallInputArguments = cmd.overallInputArguments || [];
-  if (!cmd.overallInputArguments.includes('-xerror')) cmd.overallInputArguments.push('-xerror');
+  // No -xerror: it aborts on harmless source glitches (a Bluray rip failed with a mux error under it
+  // but encodes cleanly without). The duration and size checks still catch truncated output.
   const file = args.inputFileObj._id;
   const isEng = (s) => /^en/i.test(((s.tags && s.tags.language) || '').trim());
   const isUnd = (s) => { const l = ((s.tags && s.tags.language) || '').trim().toLowerCase(); return l === '' || l === 'und' || l === 'unk'; };
@@ -149,7 +147,9 @@ module.exports = async (args) => {
 UNCHANGED = r"""
 module.exports = async (args) => {
   const fs = require('fs');
-  const u = args.variables.user || {};
+  const u = (args.variables.user = args.variables.user || {});
+  // from here on the original may be replaced, so an error handler must never re-encode
+  u.hcPast = '1';
   let ok = false;
   try {
     const st = fs.statSync(args.originalLibraryFile._id);
@@ -157,6 +157,23 @@ module.exports = async (args) => {
   } catch (e) {}
   args.jobLog(ok ? 'HC source unchanged, safe to replace' : 'HC source changed or missing since the encode started: not replacing');
   return { outputFileObj: args.inputFileObj, outputNumber: ok ? 1 : 2, variables: args.variables };
+};
+"""
+
+
+# Error handler gate. 1: encode failed before the replace step and has not been retried: retry
+# once in software (decode + scale on the CPU, encode still on the GPU). 2: the failure came after
+# the replace step (for example the arr notify): the file is already converted, so just clear
+# the error. 3: the retry also failed: fail for real (original untouched).
+RETRY = r"""
+module.exports = async (args) => {
+  const u = (args.variables.user = args.variables.user || {});
+  let out = 1;
+  if (u.hcPast === '1') out = 2;
+  else if (u.hcRetried === '1') out = 3;
+  else { u.hcRetried = '1'; u.hcHw = '0'; }
+  args.jobLog(['HC first attempt failed: retrying once with software decode and scaling', 'HC failure after the replace step: clearing the error (file already converted)', 'HC retry also failed: giving up, original untouched'][out - 1]);
+  return { outputFileObj: args.inputFileObj, outputNumber: out, variables: args.variables };
 };
 """
 
@@ -195,6 +212,33 @@ def build(flow_id, name, arr):
     node("replace", "replaceOriginalFile", "Replace original", x=400, y=1200)
     node("notify", "notifyRadarrOrSonarr", "Notify " + arr,
          {"arr": arr, "arr_api_key": "@@ARR_API_KEY@@", "arr_host": "@@ARR_HOST@@"}, 400, 1300)
+
+    # Error branch: second attempt entirely in software decode/scale, rejoining at the checks
+    node("onerr", "onFlowError", "On error", {}, 1200, 100)
+    node("gate", "customFunction", "Retry gate", {"code": RETRY}, 1200, 200)
+    node("reset1", "resetFlowError", "Clear error (retrying)", {}, 1100, 300)
+    node("reset2", "resetFlowError", "Clear error (already converted)", {}, 1400, 300)
+    node("giveup", "failFlow", "Give up", {}, 1700, 300)
+    node("start2", "ffmpegCommandStart", "Begin ffmpeg command (retry)", x=1100, y=400)
+    node("lang2", "customFunction", "Language strip (retry)", {"code": LANG}, 1100, 500)
+    node("enc2", "ffmpegCommandSetVideoEncoder", "HEVC QSV (sw decode, retry)", enc("false"), 1100, 600)
+    node("ten2", "ffmpegCommand10BitVideo", "10-bit (retry)", x=1100, y=700)
+    node("scale2", "customFunction", "Aspect-correct 720p scale (retry)", {"code": SCALE}, 1100, 800)
+    node("cont2", "ffmpegCommandSetContainer", "MKV (retry)", {"container": "mkv", "forceConform": "false"}, 1100, 900)
+    node("exec2", "ffmpegCommandExecute", "Run ffmpeg (retry)", x=1100, y=1000)
+
+    edge("onerr", "gate")
+    edge("gate", "reset1", "1")
+    edge("gate", "reset2", "2")
+    edge("gate", "giveup", "3")
+    edge("reset1", "start2")
+    edge("start2", "lang2")
+    edge("lang2", "enc2")
+    edge("enc2", "ten2")
+    edge("ten2", "scale2")
+    edge("scale2", "cont2")
+    edge("cont2", "exec2")
+    edge("exec2", "dur")
 
     edge("in", "guard")
     edge("guard", "start", "1")

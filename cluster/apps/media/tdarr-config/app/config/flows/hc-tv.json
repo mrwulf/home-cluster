@@ -65,7 +65,7 @@
         "y": 300
       },
       "inputsDB": {
-        "code": "\nmodule.exports = async (args) => {\n  const cmd = args.variables.ffmpegCommand;\n  // Stop on the first decode error so a file corrupted mid-stream fails loudly (original\n  // untouched, status \"error\") instead of being re-encoded with glitches and replacing the original\n  cmd.overallInputArguments = cmd.overallInputArguments || [];\n  if (!cmd.overallInputArguments.includes('-xerror')) cmd.overallInputArguments.push('-xerror');\n  const file = args.inputFileObj._id;\n  const isEng = (s) => /^en/i.test(((s.tags && s.tags.language) || '').trim());\n  const isUnd = (s) => { const l = ((s.tags && s.tags.language) || '').trim().toLowerCase(); return l === '' || l === 'und' || l === 'unk'; };\n  // Titles whose original language is not English, one path prefix per line.\n  // Written by the config sync job onto the shared cache volume every node mounts.\n  let prefixes = [];\n  try { prefixes = require('fs').readFileSync('/temp/hc/foreign-originals.txt', 'utf8').split('\\n').map((x) => x.trim()).filter(Boolean); } catch (e) {}\n  const foreignOriginal = prefixes.some((p) => file.startsWith(p));\n  const strip = (type, label) => {\n    const set = cmd.streams.filter((s) => s.codec_type === type && !s.removed);\n    if (!set.some(isEng)) return;                       // no English: keep everything\n    let n = 0;\n    for (const s of set) {\n      if (isEng(s) || isUnd(s)) continue;\n      if (type === 'subtitle' && s.disposition && s.disposition.forced) continue;\n      s.removed = true; n += 1;\n    }\n    if (n) { cmd.shouldProcess = true; args.jobLog('HC ' + label + ': removed ' + n + ' non-English stream(s)'); }\n  };\n  if (foreignOriginal) args.jobLog('HC audio: foreign-original title, keeping all audio');\n  else strip('audio', 'audio');\n  strip('subtitle', 'subs');\n  // drop attachments/data (fonts, cover art): tiny, but they bloat track lists\n  for (const s of cmd.streams) {\n    if (s.codec_type === 'attachment' || s.codec_type === 'data') { s.removed = true; cmd.shouldProcess = true; }\n  }\n  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n};\n"
+        "code": "\nmodule.exports = async (args) => {\n  const cmd = args.variables.ffmpegCommand;\n  // No -xerror: it aborts on harmless source glitches (a Bluray rip failed with a mux error under it\n  // but encodes cleanly without). The duration and size checks still catch truncated output.\n  const file = args.inputFileObj._id;\n  const isEng = (s) => /^en/i.test(((s.tags && s.tags.language) || '').trim());\n  const isUnd = (s) => { const l = ((s.tags && s.tags.language) || '').trim().toLowerCase(); return l === '' || l === 'und' || l === 'unk'; };\n  // Titles whose original language is not English, one path prefix per line.\n  // Written by the config sync job onto the shared cache volume every node mounts.\n  let prefixes = [];\n  try { prefixes = require('fs').readFileSync('/temp/hc/foreign-originals.txt', 'utf8').split('\\n').map((x) => x.trim()).filter(Boolean); } catch (e) {}\n  const foreignOriginal = prefixes.some((p) => file.startsWith(p));\n  const strip = (type, label) => {\n    const set = cmd.streams.filter((s) => s.codec_type === type && !s.removed);\n    if (!set.some(isEng)) return;                       // no English: keep everything\n    let n = 0;\n    for (const s of set) {\n      if (isEng(s) || isUnd(s)) continue;\n      if (type === 'subtitle' && s.disposition && s.disposition.forced) continue;\n      s.removed = true; n += 1;\n    }\n    if (n) { cmd.shouldProcess = true; args.jobLog('HC ' + label + ': removed ' + n + ' non-English stream(s)'); }\n  };\n  if (foreignOriginal) args.jobLog('HC audio: foreign-original title, keeping all audio');\n  else strip('audio', 'audio');\n  strip('subtitle', 'subs');\n  // drop attachments/data (fonts, cover art): tiny, but they bloat track lists\n  for (const s of cmd.streams) {\n    if (s.codec_type === 'attachment' || s.codec_type === 'data') { s.removed = true; cmd.shouldProcess = true; }\n  }\n  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n};\n"
       }
     },
     {
@@ -232,7 +232,7 @@
         "y": 1150
       },
       "inputsDB": {
-        "code": "\nmodule.exports = async (args) => {\n  const fs = require('fs');\n  const u = args.variables.user || {};\n  let ok = false;\n  try {\n    const st = fs.statSync(args.originalLibraryFile._id);\n    ok = String(st.size) === u.hcSize && String(Math.floor(st.mtimeMs)) === u.hcMtime;\n  } catch (e) {}\n  args.jobLog(ok ? 'HC source unchanged, safe to replace' : 'HC source changed or missing since the encode started: not replacing');\n  return { outputFileObj: args.inputFileObj, outputNumber: ok ? 1 : 2, variables: args.variables };\n};\n"
+        "code": "\nmodule.exports = async (args) => {\n  const fs = require('fs');\n  const u = (args.variables.user = args.variables.user || {});\n  // from here on the original may be replaced, so an error handler must never re-encode\n  u.hcPast = '1';\n  let ok = false;\n  try {\n    const st = fs.statSync(args.originalLibraryFile._id);\n    ok = String(st.size) === u.hcSize && String(Math.floor(st.mtimeMs)) === u.hcMtime;\n  } catch (e) {}\n  args.jobLog(ok ? 'HC source unchanged, safe to replace' : 'HC source changed or missing since the encode started: not replacing');\n  return { outputFileObj: args.inputFileObj, outputNumber: ok ? 1 : 2, variables: args.variables };\n};\n"
       }
     },
     {
@@ -262,155 +262,402 @@
         "arr_api_key": "@@ARR_API_KEY@@",
         "arr_host": "@@ARR_HOST@@"
       }
+    },
+    {
+      "name": "On error",
+      "sourceRepo": "Community",
+      "pluginName": "onFlowError",
+      "version": "1.0.0",
+      "id": "onerr",
+      "position": {
+        "x": 1200,
+        "y": 100
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Retry gate",
+      "sourceRepo": "Community",
+      "pluginName": "customFunction",
+      "version": "1.0.0",
+      "id": "gate",
+      "position": {
+        "x": 1200,
+        "y": 200
+      },
+      "inputsDB": {
+        "code": "\nmodule.exports = async (args) => {\n  const u = (args.variables.user = args.variables.user || {});\n  let out = 1;\n  if (u.hcPast === '1') out = 2;\n  else if (u.hcRetried === '1') out = 3;\n  else { u.hcRetried = '1'; u.hcHw = '0'; }\n  args.jobLog(['HC first attempt failed: retrying once with software decode and scaling', 'HC failure after the replace step: clearing the error (file already converted)', 'HC retry also failed: giving up, original untouched'][out - 1]);\n  return { outputFileObj: args.inputFileObj, outputNumber: out, variables: args.variables };\n};\n"
+      }
+    },
+    {
+      "name": "Clear error (retrying)",
+      "sourceRepo": "Community",
+      "pluginName": "resetFlowError",
+      "version": "1.0.0",
+      "id": "reset1",
+      "position": {
+        "x": 1100,
+        "y": 300
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Clear error (already converted)",
+      "sourceRepo": "Community",
+      "pluginName": "resetFlowError",
+      "version": "1.0.0",
+      "id": "reset2",
+      "position": {
+        "x": 1400,
+        "y": 300
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Give up",
+      "sourceRepo": "Community",
+      "pluginName": "failFlow",
+      "version": "1.0.0",
+      "id": "giveup",
+      "position": {
+        "x": 1700,
+        "y": 300
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Begin ffmpeg command (retry)",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandStart",
+      "version": "1.0.0",
+      "id": "start2",
+      "position": {
+        "x": 1100,
+        "y": 400
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Language strip (retry)",
+      "sourceRepo": "Community",
+      "pluginName": "customFunction",
+      "version": "1.0.0",
+      "id": "lang2",
+      "position": {
+        "x": 1100,
+        "y": 500
+      },
+      "inputsDB": {
+        "code": "\nmodule.exports = async (args) => {\n  const cmd = args.variables.ffmpegCommand;\n  // No -xerror: it aborts on harmless source glitches (a Bluray rip failed with a mux error under it\n  // but encodes cleanly without). The duration and size checks still catch truncated output.\n  const file = args.inputFileObj._id;\n  const isEng = (s) => /^en/i.test(((s.tags && s.tags.language) || '').trim());\n  const isUnd = (s) => { const l = ((s.tags && s.tags.language) || '').trim().toLowerCase(); return l === '' || l === 'und' || l === 'unk'; };\n  // Titles whose original language is not English, one path prefix per line.\n  // Written by the config sync job onto the shared cache volume every node mounts.\n  let prefixes = [];\n  try { prefixes = require('fs').readFileSync('/temp/hc/foreign-originals.txt', 'utf8').split('\\n').map((x) => x.trim()).filter(Boolean); } catch (e) {}\n  const foreignOriginal = prefixes.some((p) => file.startsWith(p));\n  const strip = (type, label) => {\n    const set = cmd.streams.filter((s) => s.codec_type === type && !s.removed);\n    if (!set.some(isEng)) return;                       // no English: keep everything\n    let n = 0;\n    for (const s of set) {\n      if (isEng(s) || isUnd(s)) continue;\n      if (type === 'subtitle' && s.disposition && s.disposition.forced) continue;\n      s.removed = true; n += 1;\n    }\n    if (n) { cmd.shouldProcess = true; args.jobLog('HC ' + label + ': removed ' + n + ' non-English stream(s)'); }\n  };\n  if (foreignOriginal) args.jobLog('HC audio: foreign-original title, keeping all audio');\n  else strip('audio', 'audio');\n  strip('subtitle', 'subs');\n  // drop attachments/data (fonts, cover art): tiny, but they bloat track lists\n  for (const s of cmd.streams) {\n    if (s.codec_type === 'attachment' || s.codec_type === 'data') { s.removed = true; cmd.shouldProcess = true; }\n  }\n  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n};\n"
+      }
+    },
+    {
+      "name": "HEVC QSV (sw decode, retry)",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandSetVideoEncoder",
+      "version": "1.0.0",
+      "id": "enc2",
+      "position": {
+        "x": 1100,
+        "y": 600
+      },
+      "inputsDB": {
+        "outputCodec": "hevc",
+        "ffmpegPresetEnabled": "true",
+        "ffmpegPreset": "slow",
+        "ffmpegQualityEnabled": "true",
+        "ffmpegQuality": "21",
+        "hardwareEncoding": "true",
+        "hardwareType": "qsv",
+        "hardwareDecoding": "false",
+        "forceEncoding": "true"
+      }
+    },
+    {
+      "name": "10-bit (retry)",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommand10BitVideo",
+      "version": "1.0.0",
+      "id": "ten2",
+      "position": {
+        "x": 1100,
+        "y": 700
+      },
+      "inputsDB": {}
+    },
+    {
+      "name": "Aspect-correct 720p scale (retry)",
+      "sourceRepo": "Community",
+      "pluginName": "customFunction",
+      "version": "1.0.0",
+      "id": "scale2",
+      "position": {
+        "x": 1100,
+        "y": 800
+      },
+      "inputsDB": {
+        "code": "\nmodule.exports = async (args) => {\n  const cmd = args.variables.ffmpegCommand;\n  const u = args.variables.user || {};\n  if (u.hcScale !== '1') return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n  const w = u.hcW, h = u.hcH;\n  const hw = u.hcHw === '1';\n  for (const s of cmd.streams) {\n    if (s.codec_type !== 'video' || s.removed) continue;\n    if (s.disposition && s.disposition.attached_pic) continue;\n    // ffmpeg honours only ONE -vf, and the 10-bit step already added its own: merge, don't stack\n    const i = s.outputArgs.indexOf('-vf');\n    const prev = i >= 0 ? String(s.outputArgs[i + 1]) : '';\n    if (hw) {\n      const m = /format=([a-z0-9]+)/.exec(prev);\n      if (i >= 0) s.outputArgs.splice(i, 2);\n      s.outputArgs.push('-vf', 'vpp_qsv=w=' + w + ':h=' + h + (m ? ':format=' + m[1] : ''));\n    } else if (i >= 0) {\n      s.outputArgs[i + 1] = 'scale=' + w + ':' + h + ':flags=lanczos,' + prev;\n    } else {\n      s.outputArgs.push('-vf', 'scale=' + w + ':' + h + ':flags=lanczos');\n    }\n  }\n  cmd.shouldProcess = true;\n  args.jobLog('HC scale ' + (hw ? 'vpp_qsv' : 'sw') + ' ' + w + 'x' + h);\n  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n};\n"
+      }
+    },
+    {
+      "name": "MKV (retry)",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandSetContainer",
+      "version": "1.0.0",
+      "id": "cont2",
+      "position": {
+        "x": 1100,
+        "y": 900
+      },
+      "inputsDB": {
+        "container": "mkv",
+        "forceConform": "false"
+      }
+    },
+    {
+      "name": "Run ffmpeg (retry)",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandExecute",
+      "version": "1.0.0",
+      "id": "exec2",
+      "position": {
+        "x": 1100,
+        "y": 1000
+      },
+      "inputsDB": {}
     }
   ],
   "flowEdges": [
+    {
+      "source": "onerr",
+      "sourceHandle": "1",
+      "target": "gate",
+      "targetHandle": null,
+      "id": "e1"
+    },
+    {
+      "source": "gate",
+      "sourceHandle": "1",
+      "target": "reset1",
+      "targetHandle": null,
+      "id": "e2"
+    },
+    {
+      "source": "gate",
+      "sourceHandle": "2",
+      "target": "reset2",
+      "targetHandle": null,
+      "id": "e3"
+    },
+    {
+      "source": "gate",
+      "sourceHandle": "3",
+      "target": "giveup",
+      "targetHandle": null,
+      "id": "e4"
+    },
+    {
+      "source": "reset1",
+      "sourceHandle": "1",
+      "target": "start2",
+      "targetHandle": null,
+      "id": "e5"
+    },
+    {
+      "source": "start2",
+      "sourceHandle": "1",
+      "target": "lang2",
+      "targetHandle": null,
+      "id": "e6"
+    },
+    {
+      "source": "lang2",
+      "sourceHandle": "1",
+      "target": "enc2",
+      "targetHandle": null,
+      "id": "e7"
+    },
+    {
+      "source": "enc2",
+      "sourceHandle": "1",
+      "target": "ten2",
+      "targetHandle": null,
+      "id": "e8"
+    },
+    {
+      "source": "ten2",
+      "sourceHandle": "1",
+      "target": "scale2",
+      "targetHandle": null,
+      "id": "e9"
+    },
+    {
+      "source": "scale2",
+      "sourceHandle": "1",
+      "target": "cont2",
+      "targetHandle": null,
+      "id": "e10"
+    },
+    {
+      "source": "cont2",
+      "sourceHandle": "1",
+      "target": "exec2",
+      "targetHandle": null,
+      "id": "e11"
+    },
+    {
+      "source": "exec2",
+      "sourceHandle": "1",
+      "target": "dur",
+      "targetHandle": null,
+      "id": "e12"
+    },
     {
       "source": "in",
       "sourceHandle": "1",
       "target": "guard",
       "targetHandle": null,
-      "id": "e1"
+      "id": "e13"
     },
     {
       "source": "guard",
       "sourceHandle": "1",
       "target": "start",
       "targetHandle": null,
-      "id": "e2"
+      "id": "e14"
     },
     {
       "source": "guard",
       "sourceHandle": "3",
       "target": "skipnote",
       "targetHandle": null,
-      "id": "e3"
+      "id": "e15"
     },
     {
       "source": "start",
       "sourceHandle": "1",
       "target": "lang",
       "targetHandle": null,
-      "id": "e4"
+      "id": "e16"
     },
     {
       "source": "lang",
       "sourceHandle": "1",
       "target": "route",
       "targetHandle": null,
-      "id": "e5"
+      "id": "e17"
     },
     {
       "source": "route",
       "sourceHandle": "1",
       "target": "enc_hw",
       "targetHandle": null,
-      "id": "e6"
+      "id": "e18"
     },
     {
       "source": "route",
       "sourceHandle": "2",
       "target": "enc_sw",
       "targetHandle": null,
-      "id": "e7"
+      "id": "e19"
     },
     {
       "source": "enc_hw",
       "sourceHandle": "1",
       "target": "ten",
       "targetHandle": null,
-      "id": "e8"
+      "id": "e20"
     },
     {
       "source": "enc_sw",
       "sourceHandle": "1",
       "target": "ten",
       "targetHandle": null,
-      "id": "e9"
+      "id": "e21"
     },
     {
       "source": "ten",
       "sourceHandle": "1",
       "target": "scale",
       "targetHandle": null,
-      "id": "e10"
+      "id": "e22"
     },
     {
       "source": "scale",
       "sourceHandle": "1",
       "target": "cont",
       "targetHandle": null,
-      "id": "e11"
+      "id": "e23"
     },
     {
       "source": "cont",
       "sourceHandle": "1",
       "target": "exec",
       "targetHandle": null,
-      "id": "e12"
+      "id": "e24"
     },
     {
       "source": "exec",
       "sourceHandle": "1",
       "target": "dur",
       "targetHandle": null,
-      "id": "e13"
+      "id": "e25"
     },
     {
       "source": "dur",
       "sourceHandle": "1",
       "target": "size",
       "targetHandle": null,
-      "id": "e14"
+      "id": "e26"
     },
     {
       "source": "dur",
       "sourceHandle": "2",
       "target": "review",
       "targetHandle": null,
-      "id": "e15"
+      "id": "e27"
     },
     {
       "source": "dur",
       "sourceHandle": "3",
       "target": "review",
       "targetHandle": null,
-      "id": "e16"
+      "id": "e28"
     },
     {
       "source": "size",
       "sourceHandle": "1",
       "target": "unchanged",
       "targetHandle": null,
-      "id": "e17"
+      "id": "e29"
     },
     {
       "source": "size",
       "sourceHandle": "2",
       "target": "review",
       "targetHandle": null,
-      "id": "e18"
+      "id": "e30"
     },
     {
       "source": "unchanged",
       "sourceHandle": "1",
       "target": "replace",
       "targetHandle": null,
-      "id": "e19"
+      "id": "e31"
     },
     {
       "source": "unchanged",
       "sourceHandle": "2",
       "target": "review",
       "targetHandle": null,
-      "id": "e20"
+      "id": "e32"
     },
     {
       "source": "replace",
       "sourceHandle": "1",
       "target": "notify",
       "targetHandle": null,
-      "id": "e21"
+      "id": "e33"
     }
   ]
 }
