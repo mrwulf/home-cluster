@@ -6,6 +6,7 @@ metadata:
 data:
   DB_PORT: "5432"
   IMMICH_MACHINE_LEARNING_URL: http://immich-machine-learning.household.svc.cluster.local:3003
+  MACHINE_LEARNING_MODEL_REVISION: v2
   IMMICH_SERVER_URL: http://immich-server.household.svc.cluster.local:3001
   IMMICH_WEB_URL: http://immich-web.household.svc.cluster.local:3000
   LOG_LEVEL: verbose
