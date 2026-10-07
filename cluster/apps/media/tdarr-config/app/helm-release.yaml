@@ -49,6 +49,9 @@ spec:
               RADARR_APIKEY: "${RADARR_APIKEY}"
               CONFIG_DIR: /config
               STATE_DIR: /temp/hc
+              # Work folders left by killed/failed jobs are removed after this many idle hours
+              CACHE_DIR: /temp
+              WORKDIR_STALE_HOURS: "6"
               QUEUE_BUDGET: "400"
             securityContext:
               allowPrivilegeEscalation: false

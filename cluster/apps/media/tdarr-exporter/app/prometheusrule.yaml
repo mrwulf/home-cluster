@@ -1,0 +1,59 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: &app tdarr-exporter
+  labels:
+    app.kubernetes.io/instance: *app
+    app.kubernetes.io/name: *app
+spec:
+  groups:
+    - name: tdarr
+      rules:
+        # A few failures are normal over a large backlog (corrupt source files). A burst
+        # means something systematic: permissions, a full cache volume, a bad flow change.
+        - alert: TdarrTranscodeFailuresSpiking
+          annotations:
+            description: >-
+              {{ $value }} new failed transcodes in library {{ $labels.library_name }} over the last hour.
+              Check a job report in the Tdarr UI before requeueing.
+            summary: Tdarr transcodes are failing
+          expr: |
+            delta(tdarr_library_transcodes{status="error"}[1h])
+              * on (library_id, tdarr_instance) group_left (library_name) tdarr_library_info > 5
+          for: 10m
+          labels:
+            severity: warning
+        # Failures are never retried automatically. Anything still failed a day later has not
+        # been looked at: list with scripts/tdarr-requeue.py, requeue or leave if truly corrupt.
+        - alert: TdarrFailedFilesUnreviewed
+          annotations:
+            description: >-
+              {{ $value }} failed files in library {{ $labels.library_name }} for over 24h.
+              Review with scripts/tdarr-requeue.py.
+            summary: Tdarr has failed files waiting for review
+          expr: |
+            tdarr_library_transcodes{status="error"}
+              * on (library_id, tdarr_instance) group_left (library_name) tdarr_library_info > 0
+          for: 24h
+          labels:
+            severity: info
+        # One Tdarr node per cluster node, each with its own iGPU
+        - alert: TdarrNodeMissing
+          annotations:
+            description: Only {{ $value }} of 3 Tdarr nodes are connected, so transcoding throughput is reduced.
+            summary: A Tdarr node is not connected
+          expr: |
+            count(tdarr_node_info) < 3
+          for: 15m
+          labels:
+            severity: warning
+        - alert: TdarrExporterAbsent
+          annotations:
+            description: The Tdarr exporter has disappeared from Prometheus target discovery.
+            summary: Tdarr exporter is down.
+          expr: |
+            absent(up{job=~".*tdarr-exporter.*"} == 1)
+          for: 15m
+          labels:
+            severity: warning

@@ -25,6 +25,8 @@ const ARR = {
 const QUEUE_BUDGET = Number(process.env.QUEUE_BUDGET || 400)
 // DRY_RUN=1: read everything, log every write instead of performing it
 const DRY = process.env.DRY_RUN === "1"
+const CACHE_DIR = process.env.CACHE_DIR || "/temp"
+const WORKDIR_STALE_HOURS = Number(process.env.WORKDIR_STALE_HOURS || 6)
 const WRITE_ENDPOINTS = new Set(["alter-worker-limit", "scan-files"])
 const WRITE_MODES = new Set(["insert", "update", "removeOne"])
 
@@ -389,6 +391,44 @@ async function feed(libraries, favourites) {
   }
 }
 
+// Tdarr deletes its own work folders when a job ends, but a killed pod leaves one behind
+// (partial output, up to a few GB) and a failed job may too. A folder that nothing has written
+// to for several hours cannot belong to a running encode, so it is safe to remove.
+function newestMtime(dir, depth) {
+  let newest = fs.statSync(dir).mtimeMs
+  if (depth === 0) return newest
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, e.name)
+    try {
+      const m = e.isDirectory()
+        ? newestMtime(p, depth - 1)
+        : fs.statSync(p).mtimeMs
+      if (m > newest) newest = m
+    } catch (err) {
+      // file vanished while scanning: ignore
+    }
+  }
+  return newest
+}
+
+function sweepWorkdirs() {
+  const cutoff = Date.now() - WORKDIR_STALE_HOURS * 3600 * 1000
+  let removed = 0
+  for (const e of fs.readdirSync(CACHE_DIR, { withFileTypes: true })) {
+    if (!e.isDirectory() || !e.name.startsWith("tdarr-workDir")) continue
+    const dir = path.join(CACHE_DIR, e.name)
+    if (newestMtime(dir, 3) >= cutoff) continue
+    if (DRY) {
+      log("DRY_RUN would remove stale work folder " + dir)
+    } else {
+      fs.rmSync(dir, { recursive: true, force: true })
+      log("removed stale work folder " + dir)
+    }
+    removed += 1
+  }
+  log("work folder sweep: " + removed + " stale folder(s)")
+}
+
 ;(async () => {
   await waitForTdarr()
   await syncSettings()
@@ -397,6 +437,11 @@ async function feed(libraries, favourites) {
   await syncWorkers()
   const favourites = await syncLists()
   await retire()
+  try {
+    sweepWorkdirs()
+  } catch (e) {
+    log("work folder sweep failed (continuing): " + e.message)
+  }
   await feed(libraries, favourites)
   log("done")
 })().catch((e) => {

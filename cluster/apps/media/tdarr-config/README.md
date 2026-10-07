@@ -52,18 +52,20 @@ goes to Tdarr's review queue with the original untouched. Radarr/Sonarr are told
 Tested on synthetic files with the real flow (original files are only ever replaced by a fully verified
 output, so a failed job never damages the original):
 
-| Situation                                    | What happens                                                                                                                                                     |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Corrupt in the middle                        | ffmpeg stops at the decode error; the file shows `Transcode error`; original untouched.                                                                          |
-| Truncated file                               | The duration check fails (output about half the length); `Transcode error`; original untouched.                                                                  |
-| Node pod/node shut down mid-encode           | Tdarr restarts the job from scratch on another worker after roughly 5 to 8 minutes (it does not resume). The original is untouched until the final replace step. |
-| Pod killed, leftover partial output          | A `tdarr-workDir*` folder can stay behind on the cache volume (one per interrupted job, up to a few GB). Delete folders there that no running job uses.          |
-| Source changed (an arr upgrade) mid-job      | The "source unchanged" check fails and the file goes to `Transcode error` instead of being overwritten with a stale transcode.                                   |
-| Folder not writable by the workers (UID 568) | The final move fails (`EACCES`); `Transcode error`; original untouched.                                                                                          |
+| Situation                                    | What happens                                                                                                                                                               |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Corrupt in the middle                        | ffmpeg stops at the decode error; the file shows `Transcode error`; original untouched.                                                                                    |
+| Truncated file                               | The duration check fails (output about half the length); `Transcode error`; original untouched.                                                                            |
+| Node pod/node shut down mid-encode           | Tdarr restarts the job from scratch on another worker after roughly 5 to 8 minutes (it does not resume). The original is untouched until the final replace step.           |
+| Pod killed, leftover partial output          | A `tdarr-workDir*` folder can stay behind on the cache volume (one per interrupted job, up to a few GB). The sync job removes any that nothing has written to for 6 hours. |
+| Source changed (an arr upgrade) mid-job      | The "source unchanged" check fails and the file goes to `Transcode error` instead of being overwritten with a stale transcode.                                             |
+| Folder not writable by the workers (UID 568) | The final move fails (`EACCES`); `Transcode error`; original untouched.                                                                                                    |
 
 How to know: failed files show as `Transcode error` in the Tdarr UI (open the job report for the reason).
-The exporter exposes the same counts as `tdarr_library_transcodes{status="Transcode error"}`, and its
-`examples/alerts.yaml` has a `TdarrTranscodeFailed` rule that can be copied into a `PrometheusRule`.
+The exporter exposes the same counts as `tdarr_library_transcodes{status="error"}`, and
+[`tdarr-exporter/app/prometheusrule.yaml`](../tdarr-exporter/app/prometheusrule.yaml) alerts on a burst
+of new failures, on failed files left unreviewed for 24 hours, on a missing node, and on the exporter
+disappearing.
 
 To requeue: `scripts/tdarr-requeue.py` lists errored files (add `--library TV` to narrow, `--requeue` to
 queue them again). A genuinely corrupt file will fail again each time; check its report first.
