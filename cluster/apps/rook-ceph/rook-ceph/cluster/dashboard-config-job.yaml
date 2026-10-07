@@ -68,6 +68,12 @@ spec:
                 echo "Enabling Ceph Dashboard OAuth2 SSO (attempt $attempt)..."
                 ceph dashboard sso enable oauth2 groups
               done
+              # --- Dashboard session lifetime ---
+              # Must match oauth2-proxy's cookie-expire and the Pocket ID client's
+              # accessTokenDurationMinutes (8h each) - see ../README.md.
+              if [[ "$(ceph dashboard get-jwt-token-ttl)" != "28800" ]]; then
+                ceph dashboard set-jwt-token-ttl 28800
+              fi
               echo "Done!"
           env:
             - name: ROOK_CEPH_USERNAME
