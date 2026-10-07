@@ -26,7 +26,7 @@ spec:
               tag: 3.1.0@sha256:c72fd0ecf4aa5207d4f609d09fbb6470bac9e4dc5d9524303cd7169f5751bf62
             env:
               TDARR_URL: http://tdarr-server.media.svc.cluster.local:8265
-              PROMETHEUS_PORT: &port "9090"
+              PROMETHEUS_PORT: "9090"
               # Stable instance label so dashboards keep history across pod restarts
               INSTANCE_NAME: tdarr
             probes:
@@ -36,7 +36,7 @@ spec:
                 spec:
                   httpGet:
                     path: /metrics
-                    port: *port
+                    port: 9090
                   initialDelaySeconds: 5
                   periodSeconds: 30
                   timeoutSeconds: 10
@@ -59,7 +59,7 @@ spec:
         controller: main
         ports:
           http:
-            port: *port
+            port: 9090
     serviceMonitor:
       main:
         endpoints:
