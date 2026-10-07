@@ -11,6 +11,7 @@ configMapGenerator:
       - flow-hc-movies.json=config/flows/hc-movies.json
       - libraries.json=config/libraries.json
       - workers.json=config/workers.json
+      - settings.json=config/settings.json
       - lists.json=config/lists.json
       - retire.json=config/retire.json
       - feed.json=config/feed.json

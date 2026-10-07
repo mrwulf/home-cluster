@@ -74,6 +74,10 @@ module.exports = async (args) => {
 LANG = r"""
 module.exports = async (args) => {
   const cmd = args.variables.ffmpegCommand;
+  // Stop on the first decode error so a file corrupted mid-stream fails loudly (original
+  // untouched, status "error") instead of being re-encoded with glitches and replacing the original
+  cmd.overallInputArguments = cmd.overallInputArguments || [];
+  if (!cmd.overallInputArguments.includes('-xerror')) cmd.overallInputArguments.push('-xerror');
   const file = args.inputFileObj._id;
   const isEng = (s) => /^en/i.test(((s.tags && s.tags.language) || '').trim());
   const isUnd = (s) => { const l = ((s.tags && s.tags.language) || '').trim().toLowerCase(); return l === '' || l === 'und' || l === 'unk'; };

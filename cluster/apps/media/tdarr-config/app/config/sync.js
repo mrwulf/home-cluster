@@ -96,6 +96,25 @@ async function waitForTdarr() {
   throw new Error("Tdarr API not reachable at " + TDARR)
 }
 
+// Global Tdarr settings (single document). runMkvpropedit=false matters: with it on, Tdarr
+// edits original .mkv files in place (statistics tags), which changes size/mtime and would
+// trip the flow's "source unchanged" check on most of the library.
+async function syncSettings() {
+  const want = readJson("settings.json")
+  const docs = await db("SettingsGlobalJSONDB", "getAll")
+  const have = docs[0]
+  const diff = Object.entries(want).filter(([k, v]) => !same(have[k], v))
+  if (diff.length === 0) {
+    log("global settings: unchanged")
+    return
+  }
+  await db("SettingsGlobalJSONDB", "update", {
+    docID: have._id,
+    obj: Object.fromEntries(diff),
+  })
+  log("global settings: updated " + diff.map(([k]) => k).join(", "))
+}
+
 async function syncFlows() {
   const existing = new Map(
     (await db("FlowsJSONDB", "getAll")).map((f) => [f._id, f])
@@ -372,6 +391,7 @@ async function feed(libraries, favourites) {
 
 ;(async () => {
   await waitForTdarr()
+  await syncSettings()
   await syncFlows()
   const libraries = await syncLibraries()
   await syncWorkers()
