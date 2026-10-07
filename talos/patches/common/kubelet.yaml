@@ -1,17 +1,3 @@
-machine:
-  kubelet:
-    # No multi-doc equivalent for extraMounts as of Talos v1.14 (KubeletConfig has no
-    # mount-related field) — everything else below lives in the KubeletConfig document.
-    extraMounts:
-      # Mount openebs-hostpath in kubelet
-      - destination: /var/mnt/extra
-        type: bind
-        source: /var/mnt/extra
-        options:
-          - rbind
-          - rshared
-          - rw
----
 apiVersion: v1alpha1
 kind: KubeletConfig
 extraArgs:

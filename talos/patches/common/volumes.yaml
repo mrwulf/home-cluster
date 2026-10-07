@@ -1,0 +1,7 @@
+# Mounted at /var/mnt/extra; replaces the removed .machine.kubelet.extraMounts bind mount
+# used by openebs-hostpath (siderolabs/talos#13716). A `directory` volume is a plain host
+# directory on EPHEMERAL: no partition, no provisioning, so no free disk space is needed.
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: extra
+volumeType: directory
