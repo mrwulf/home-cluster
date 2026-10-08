@@ -27,6 +27,8 @@ const MAX_SCANS_PER_RUN = Number(process.env.MAX_SCANS_PER_RUN || 60)
 // Stop feeding a library once this many files sit in error: a few corrupt files are normal, a pile
 // means something systematic (dead cache mount, bad flow) and feeding more only burns the backlog.
 const ERROR_BREAKER = Number(process.env.ERROR_BREAKER || 25)
+// Seconds of scanning per run, split across libraries; the next run (CronJob) carries on
+const FEED_SECONDS = Number(process.env.FEED_SECONDS || 240)
 // DRY_RUN=1: read everything, log every write instead of performing it
 const DRY = process.env.DRY_RUN === "1"
 const CACHE_DIR = process.env.CACHE_DIR || "/temp"
@@ -322,12 +324,84 @@ async function retire() {
   }
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
+// Mirrors the flow's guard: skip HDR/DV, above 1080p, and anything already HEVC at 720p or below
+function convertible(m) {
+  m = m || {}
+  if (m.videoDynamicRange) return false
+  const [w, h] = (m.resolution || "0x0").split("x").map((n) => Number(n) || 0)
+  if (h > 1100 || w > 1930) return false
+  const codec = (m.videoCodec || "").toLowerCase()
+  if (
+    (codec.includes("265") || codec.includes("hevc")) &&
+    h <= 740 &&
+    w <= 1300
+  )
+    return false
+  return true
+}
+
+// Files to feed for one priority-list folder, from Sonarr/Radarr (same paths Tdarr sees).
+// Folder scans (scan-files with scanFindNew) cannot be used to feed: each one REPLACES the
+// library's queued set, so feeding folder after folder keeps only the last one. Adding files
+// by path (scanFolderWatcher, what Tdarr's own Sonarr/Radarr hooks use) accumulates.
+async function folderFiles(kind, folder, cache) {
+  if (kind === "radarr") {
+    if (!cache.radarr) {
+      cache.radarr = new Map()
+      for (const mv of await arr("radarr", "movie")) {
+        const f = mv.movieFile
+        if (!f || !convertible(f.mediaInfo)) continue
+        const dir = mv.path.replace(/\/$/, "")
+        if (!cache.radarr.has(dir)) cache.radarr.set(dir, [])
+        cache.radarr.get(dir).push(f.path)
+      }
+    }
+    return cache.radarr.get(folder) || []
+  }
+  if (!cache.series) {
+    cache.series = new Map(
+      (await arr("sonarr", "series")).map((x) => [
+        x.path.replace(/\/$/, ""),
+        x.id,
+      ])
+    )
+  }
+  const id = cache.series.get(folder)
+  if (id === undefined) return []
+  return (await arr("sonarr", "episodefile?seriesId=" + id))
+    .filter((f) => convertible(f.mediaInfo))
+    .map((f) => f.path)
+}
+
+// scan-files answers "OK" even when the server drops the request ("Scan is already running on
+// library" in its log), so a folder fed while another scan runs is silently lost. Wait for the
+// scanner first. Its status reads "Files found:N", then "Extracting info:i/N", and keeps the
+// last value when done: finished means i == N and nothing changing.
+async function scanSettled(libId, timeoutMs) {
+  const t0 = Date.now()
+  let last = ""
+  while (Date.now() - t0 < timeoutMs) {
+    const st = String(await tdarr("get-filescanner-status", { dbID: libId }))
+      .replace(/Scanner mem:.*$/, "")
+      .trim()
+    const m = st.match(/Extracting info:(\d+)\/(\d+)/)
+    const finished = m ? m[1] === m[2] : true
+    if (finished && st === last) return true
+    last = st
+    await sleep(1000)
+  }
+  return false
+}
+
 async function feed(libraries, favourites) {
   const cfg = readJson("feed.json")
   if (!cfg.enabled) {
     log("feeder: disabled (feed.json enabled=false)")
     return
   }
+  const cache = {}
   for (const lib of libraries) {
     if (!lib.priorityFile) continue
     const pies = await tdarr("stats/get-pies", { libraryId: lib.id })
@@ -377,38 +451,67 @@ async function feed(libraries, favourites) {
         fed.size
     )
     let added = 0
+    const deadline = Date.now() + (FEED_SECONDS * 1000) / libraries.length
+    let batch = []
+    let pending = 0
+    // One scan call per ~100 files (movie folders hold a single file each). A title only
+    // counts as fed once its files were handed to a scan the scanner was free to take.
+    const flush = async () => {
+      const all = batch.flatMap((b) => b.files)
+      for (let i = 0; i < all.length; i += 100) {
+        if (!(await scanSettled(lib.id, 600000))) {
+          log(
+            "feeder " + lib.name + ": scanner still busy after 10 min, stopping"
+          )
+          return false
+        }
+        await tdarr("scan-files", {
+          scanConfig: {
+            dbID: lib.id,
+            arrayOrPath: all.slice(i, i + 100),
+            mode: "scanFolderWatcher",
+          },
+        })
+        await sleep(1500) // let the server start the scan before the next status check
+      }
+      for (const b of batch) {
+        fed.add(b.item.path)
+        log(
+          "feeder " +
+            lib.name +
+            ": fed " +
+            b.item.path +
+            " (" +
+            b.files.length +
+            " files, " +
+            b.item.gb +
+            " GB, " +
+            b.item.cls +
+            ")"
+        )
+      }
+      batch = []
+      pending = 0
+      return true
+    }
+    let ok = true
     for (const item of readJson(lib.priorityFile)) {
       if (fed.has(item.path)) continue
       if (favourites.has(item.path + "/")) continue
       if (budget <= 0 || (added > 0 && item.files > budget)) break
-      // Per-run cap: the library's queue count can lag a scan, so never trust it for a big batch
-      if (added >= MAX_SCANS_PER_RUN) break
-      await tdarr("scan-files", {
-        scanConfig: {
-          dbID: lib.id,
-          arrayOrPath: item.path,
-          mode: "scanFindNew",
-        },
-      })
-      fed.add(item.path)
-      budget -= item.files
+      if (added >= MAX_SCANS_PER_RUN || Date.now() > deadline) break
+      const files = await folderFiles(lib.arr, item.path, cache)
+      if (files.length === 0) {
+        fed.add(item.path) // nothing left to convert in this title
+        continue
+      }
+      batch.push({ item, files })
+      pending += files.length
+      budget -= files.length
       added += 1
-      log(
-        "feeder " +
-          lib.name +
-          ": scanning " +
-          item.path +
-          " (" +
-          item.files +
-          " eligible files, " +
-          item.gb +
-          " GB, " +
-          item.cls +
-          ")"
-      )
-      // a one-folder scan finishes in about a second; scans fired this close together all land
-      await new Promise((r) => setTimeout(r, 1500))
+      if (pending >= 100 && !(ok = await flush())) break
     }
+    if (ok && batch.length > 0) await flush()
     writeAtomic(stateFile, JSON.stringify([...fed]))
   }
 }
