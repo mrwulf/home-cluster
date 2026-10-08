@@ -5,7 +5,8 @@
     "folder": "/TVShows",
     "flow": "hcTv",
     "priority": 2,
-    "priorityFile": "priority-tv.json"
+    "priorityFile": "priority-tv.json",
+    "arr": "sonarr"
   },
   {
     "id": "hcMovies",
@@ -13,6 +14,7 @@
     "folder": "/Movies",
     "flow": "hcMovies",
     "priority": 1,
-    "priorityFile": "priority-movies.json"
+    "priorityFile": "priority-movies.json",
+    "arr": "radarr"
   }
 ]

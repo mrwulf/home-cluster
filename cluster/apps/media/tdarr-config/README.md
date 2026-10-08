@@ -42,6 +42,12 @@ goes to Tdarr's review queue with the original untouched. Radarr/Sonarr are told
   `ERROR_BREAKER`), so a systematic failure cannot burn through the backlog. The job remembers which
   folders it has fed in `/temp/hc/fed-<library>.json`; after an outage that lost queued files, delete
   those files to re-feed from the top of the (regenerated) priority lists.
+- **How feeding works, and why:** the job asks Sonarr/Radarr for each title's convertible files and adds
+  them to Tdarr by path in batches of up to 100 (`scanFolderWatcher`, the call Tdarr's own Sonarr/Radarr
+  hooks use). It must not use folder scans: a folder scan (`scanFindNew`) replaces the library's whole
+  queued set with that folder's files, so each one silently drops everything fed before it. It also waits
+  for the scanner to go idle first, because the API answers `OK` to a scan it then ignores
+  (`Scan is already running on library` in the server log).
 - **Change policy:** edit `scripts/tdarr-flow.py`, run it, commit the regenerated flows.
 - **Refresh priorities** (new downloads, watch history): run `scripts/tdarr-priority.py` (needs
   `kubectl` access; reads Sonarr/Radarr and the Tautulli history, which covers Plex plays only) and
