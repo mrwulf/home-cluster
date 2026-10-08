@@ -69,10 +69,10 @@ spec:
                 ceph dashboard sso enable oauth2 groups
               done
               # --- Dashboard session lifetime ---
-              # Must match oauth2-proxy's cookie-expire and the Pocket ID client's
-              # accessTokenDurationMinutes (8h each) - see ../README.md.
-              if [[ "$(ceph dashboard get-jwt-token-ttl)" != "28800" ]]; then
-                ceph dashboard set-jwt-token-ttl 28800
+              # Must stay below oauth2-proxy's cookie-expire (50m) and Pocket ID's
+              # fixed 1h id_token - see ../README.md.
+              if [[ "$(ceph dashboard get-jwt-token-ttl)" != "2700" ]]; then
+                ceph dashboard set-jwt-token-ttl 2700
               fi
               echo "Done!"
           env:

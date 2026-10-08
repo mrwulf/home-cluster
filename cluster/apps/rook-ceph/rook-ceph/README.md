@@ -35,17 +35,21 @@ claim mapping). On a mgr that has not yet loaded the SSO DB as OAuth2, the first
 `ceph dashboard sso enable oauth2 groups` only sets `roles_path` in memory, so a
 mgr restart drops it; a second run persists it. The Job retries for this reason.
 
-## Session lifetimes (keep equal)
+## Session lifetimes (keep ordered)
 
-Three timeouts are deliberately all 8h so the layers expire together instead of
-leaving a live cookie beside a dead token (which produced a redirect loop that
-only clearing cookies fixed):
+Pocket ID's id_token lives a fixed 1h (no setting; the per-client durations
+only cover access/refresh tokens). oauth2-proxy relays that id_token to Ceph,
+which checks its `exp` in the browser and never receives a fresh one, so a
+proxy session outliving the id_token gives a blank `/#/login?access_token=...`
+redirect loop that only clearing cookies fixed. Keep this order:
 
-- Ceph dashboard session: `ceph dashboard set-jwt-token-ttl 28800` (the Job)
-- oauth2-proxy session: `OAUTH2_PROXY_COOKIE_EXPIRE` (`cluster/apps/auth/oauth2-proxy/app/helm-release.yaml`)
-- Pocket ID id_token: `accessTokenDurationMinutes: 480` (`cluster/apps/auth/oauth2-proxy/app/oidc-client.yaml`)
+- Ceph dashboard session 45m: `ceph dashboard set-jwt-token-ttl 2700` (the Job)
+- oauth2-proxy session 50m: `OAUTH2_PROXY_COOKIE_EXPIRE` (`cluster/apps/auth/oauth2-proxy/app/helm-release.yaml`)
+- Pocket ID client `accessTokenDurationMinutes: 50` (`cluster/apps/auth/oauth2-proxy/app/oidc-client.yaml`)
+- Pocket ID id_token 60m (fixed)
 
-Change all three together. Expect a silent re-login about every 8h.
+Ceph expires first and logs out through `/oauth2/sign_out`, then the proxy
+re-authenticates silently. Expect a re-login about hourly.
 
 ## Local admin login (last resort)
 

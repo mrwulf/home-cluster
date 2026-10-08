@@ -6,15 +6,14 @@ metadata:
 spec:
   name: OAuth2 Proxy
   clientID: c6c0b4d2-7e1a-4c9f-8d2b-6f8a3c9e1b7d
-  # Kept equal to oauth2-proxy's --cookie-expire and Ceph's dashboard
-  # jwt-token-ttl (all 8h, see rook-ceph/rook-ceph/README.md) so the three
-  # layers expire together. oauth2-proxy never gets a fresh id_token on
-  # refresh (refresh_token grant only returns a new access_token), and Ceph's
-  # dashboard enforces the id_token's own exp client-side, so a token
-  # outliving or undercutting the others leaves a stale session -> auto-logout
-  # -> re-login -> same stale token redirect loop. Shorter is fine: Pocket ID's
-  # own session makes the re-login silent.
-  accessTokenDurationMinutes: 480
+  # Pocket ID's id_token lifetime is fixed at 1h and has no setting (the
+  # per-client durations only cover access/refresh tokens). oauth2-proxy
+  # relays the id_token it holds to Ceph's dashboard, which enforces its exp
+  # client-side and never gets a fresh one on refresh, so the proxy session
+  # must end before the id_token does or the dashboard loops on an expired
+  # token. Ordered Ceph 45m < proxy cookie/this 50m < id_token 60m - see
+  # rook-ceph/rook-ceph/README.md. Re-login is silent via Pocket ID's session.
+  accessTokenDurationMinutes: 50
   callbackUrls:
     - https://oauth.${SECRET_DOMAIN}/oauth2/callback
   logoutCallbackUrls:
