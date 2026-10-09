@@ -296,7 +296,8 @@ data:
         usedMfa: false,
       };
 
-      return jwtService.sign(payload, { expiresIn: '7d' });
+      // n8n >= 2.43 binds tokens to a purpose (audience): sign(purpose, payload, options)
+      return jwtService.sign('session', payload, { expiresIn: '7d' });
     }
 
     /**
