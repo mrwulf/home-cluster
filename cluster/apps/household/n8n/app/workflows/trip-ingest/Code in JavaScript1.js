@@ -159,6 +159,9 @@ async function callOllamaExtract(promptEmailText) {
               { role: "user", content: promptEmailText },
             ],
             stream: false,
+            // qwen3.5 thinks by default; with a 240s timeout that runs out before
+            // the answer arrives (~10 tok/s). Extraction needs no reasoning trace.
+            think: false,
             format: schema,
           },
           json: true,

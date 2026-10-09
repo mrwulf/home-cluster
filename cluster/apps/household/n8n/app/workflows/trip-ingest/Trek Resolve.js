@@ -204,6 +204,7 @@ async function suggestTrip(note, trips) {
               { role: "user", content: note },
             ],
             stream: false,
+            think: false,
             format: TRIP_SUGGEST_SCHEMA,
           },
           json: true,
