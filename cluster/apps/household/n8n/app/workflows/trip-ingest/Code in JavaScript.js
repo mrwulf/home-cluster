@@ -18,12 +18,43 @@ const topContentTypeMatch = rawBody.match(
   /^Content-Type:\s*([^\r\n]+(?:\r?\n[ \t][^\r\n]+)*)/im
 )
 
-function decodeQuotedPrintable(str) {
-  return str
-    .replace(/=\r?\n/g, "")
-    .replace(/=([0-9A-Fa-f]{2})/g, function (_, hex) {
-      return String.fromCharCode(parseInt(hex, 16))
-    })
+// Decode raw bytes using the part's declared charset (default utf-8). Quoted-
+// printable and base64 both yield BYTES, not characters - turning each byte
+// into a char directly (String.fromCharCode) mangled every multi-byte
+// sequence into latin-1 mojibake (e.g. a zero-width non-joiner became
+// "\u00e2\u0080\u008c"), which then slipped past stripZeroWidthJunk below and
+// ate the LLM's whole text budget.
+function decodeBytes(bytes, charset) {
+  try {
+    return new TextDecoder((charset || "utf-8").toLowerCase()).decode(bytes)
+  } catch (e) {
+    return new TextDecoder("utf-8").decode(bytes)
+  }
+}
+
+function getCharset(contentType) {
+  const m = contentType && contentType.match(/charset="?([^";\s]+)"?/i)
+  return m ? m[1] : "utf-8"
+}
+
+function decodeQuotedPrintable(str, charset) {
+  const joined = str.replace(/=\r?\n/g, "")
+  const bytes = []
+  for (let i = 0; i < joined.length;) {
+    const hex = /^=([0-9A-Fa-f]{2})/.exec(joined.slice(i, i + 3))
+    if (hex) {
+      bytes.push(parseInt(hex[1], 16))
+      i += 3
+    } else {
+      // rawBody was already utf-8 decoded as a whole, so a literal char here
+      // may be non-ASCII - re-encode it rather than truncating to one byte.
+      const cp = joined.codePointAt(i)
+      for (const b of Buffer.from(String.fromCodePoint(cp), "utf8"))
+        bytes.push(b)
+      i += cp > 0xffff ? 2 : 1
+    }
+  }
+  return decodeBytes(Buffer.from(bytes), charset)
 }
 
 function parseHeaders(block) {
@@ -106,10 +137,11 @@ function walkMime(headerBlock, bodyBlock, collector) {
   }
   let decoded = bodyBlock
   if (encoding === "quoted-printable") {
-    decoded = decodeQuotedPrintable(bodyBlock)
+    decoded = decodeQuotedPrintable(bodyBlock, getCharset(contentType))
   } else if (encoding === "base64") {
-    decoded = Buffer.from(bodyBlock.replace(/\r?\n/g, ""), "base64").toString(
-      "utf-8"
+    decoded = decodeBytes(
+      Buffer.from(bodyBlock.replace(/\r?\n/g, ""), "base64"),
+      getCharset(contentType)
     )
   }
   if (/^text\/plain/i.test(contentType)) {
@@ -145,12 +177,21 @@ const pdfAttachments = collector.attachments.filter(function (a) {
 // real fields (e.g. a "Total paid" line) past the cutoff entirely - strip both the
 // literal HTML-entity and actual unicode forms, and collapse the whitespace runs
 // the stripped entities leave behind, before truncating.
+//
+// The same applies to tracking links: a text/plain part rendered from HTML (every
+// Gmail forward) interleaves a "<https://click.example.com/?qs=...>" reference
+// after nearly every line, each several hundred chars of opaque token. In a real
+// airline confirmation they ate ~3000 of the 6000-char budget before the flight
+// table, so strip them too - the LLM never needs a tracking URL.
 function stripZeroWidthJunk(text) {
   return text
     .replace(/&(?:zwnj|zwj|#8203|#8204|#8205|#65279|#x200[BCD]|#xFEFF);/gi, "")
-    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/[\u200B-\u200D\u2060\u034F\u00AD\uFEFF]/g, "")
+    .replace(/<https?:\/\/[^>\s]*>/g, "")
+    .replace(/https?:\/\/\S{60,}/g, "")
+    .replace(/\[image:[^\]]*\]/gi, "")
     .replace(/[ \t]{2,}/g, " ")
-    .replace(/\n{3,}/g, "\n\n")
+    .replace(/(?:[ \t]*\r?\n){3,}/g, "\n\n")
 }
 const cleanedBodyText = stripZeroWidthJunk(bodyText)
 
