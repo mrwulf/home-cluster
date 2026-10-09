@@ -40,7 +40,7 @@ const systemPrompt =
 // real forward (SAN-JFK out, JFK-SAN back) lost its return flight, every arrival
 // time, and both seat assignments.
 const flightPrompt =
-  '\n\nFor flight bookings, flight_legs lists EVERY individual flight in the source - one entry per flight number, in chronological order, INCLUDING the return flight of a round trip. Never merge an outbound and a return flight, and never merge a connection into one entry. Each entry: airline, flight_number (e.g. "AS 24"), from_code/to_code (IATA), from_name/to_name (city), dep_datetime and arr_datetime (ISO-8601, local time at that airport, using the date printed for THAT flight), and notes (that flight\'s seat assignments with traveler names, fare class, aircraft, and ticket numbers if shown - null if none). Set start_datetime/origin_* from the first leg and end_datetime/destination_* from the last leg. total_amount is the grand total for the whole confirmation (all flights and travelers together), not a per-person or per-leg figure. For non-flight bookings flight_legs is an empty array.'
+  '\n\nFor flight bookings, flight_legs lists EVERY individual flight in the source - one entry per flight number, in chronological order, INCLUDING the return flight of a round trip. Never merge an outbound and a return flight, and never merge a connection into one entry. Each entry: airline, flight_number (e.g. "AS 24"), from_code/to_code (IATA), from_name/to_name (city), dep_datetime and arr_datetime (ISO-8601, local time at that airport, using the date printed for THAT flight), aircraft (the aircraft type exactly as printed for that flight, e.g. "Boeing 737 MAX 9", without trailing words like "Passenger" - null if not shown), seats (one {traveler, seat, fare_class} per traveler on THAT flight, e.g. {"traveler": "Pat Lee", "seat": "12C", "fare_class": "Y COACH"} - an empty array if no seats are shown), and notes (anything else worth keeping about that flight - null if none). tickets lists every e-ticket number in the source as {traveler, number}, using the traveler name printed next to the ticket - an empty array if none is shown. Set start_datetime/origin_* from the first leg and end_datetime/destination_* from the last leg. total_amount is the grand total for the whole confirmation (all flights and travelers together), not a per-person or per-leg figure. For non-flight bookings flight_legs is an empty array.'
 const fullSystemPrompt = systemPrompt + flightPrompt
 const schema = {
   type: "object",
@@ -82,6 +82,17 @@ const schema = {
     currency: { type: ["string", "null"] },
     passenger_names: { type: "array", items: { type: "string" } },
     flight_number: { type: ["string", "null"] },
+    tickets: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          traveler: { type: "string" },
+          number: { type: "string" },
+        },
+        required: ["traveler", "number"],
+      },
+    },
     flight_legs: {
       type: "array",
       items: {
@@ -95,6 +106,19 @@ const schema = {
           to_name: { type: ["string", "null"] },
           dep_datetime: { type: ["string", "null"] },
           arr_datetime: { type: ["string", "null"] },
+          aircraft: { type: ["string", "null"] },
+          seats: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                traveler: { type: "string" },
+                seat: { type: "string" },
+                fare_class: { type: ["string", "null"] },
+              },
+              required: ["traveler", "seat"],
+            },
+          },
           notes: { type: ["string", "null"] },
         },
         required: [
@@ -156,7 +180,7 @@ const cruiseAnswer = JSON.stringify({
   flight_legs: [],
 })
 const flightExample =
-  "From: sam@example.com\nSubject: Fwd: Your trip is confirmed - ZX81QP\n\nConfirmation code: ZX81QP\nFlight 1 - Mon Mar 2\nSkyJet SJ 410\nAUS  DEN\nAustin  Denver\n8:15 AM  9:50 AM\nTraveler: Pat Lee - Seat 12C - Class: Y\nFlight 2 - Fri Mar 6\nSkyJet SJ 733\nDEN  AUS\nDenver  Austin\n2:05 PM  5:40 PM\nTraveler: Pat Lee - Seat 9A - Class: Y\nTotal charges for air travel $512.30"
+  "From: sam@example.com\nSubject: Fwd: Your trip is confirmed - ZX81QP\n\nConfirmation code: ZX81QP\nFlight 1 - Mon Mar 2\nSkyJet SJ 410 - Airbus A320\nAUS  DEN\nAustin  Denver\n8:15 AM  9:50 AM\nTraveler: Pat Lee - Seat 12C - Class: Y\nFlight 2 - Fri Mar 6\nSkyJet SJ 733 - Boeing 737-800\nDEN  AUS\nDenver  Austin\n2:05 PM  5:40 PM\nTraveler: Pat Lee - Seat 9A - Class: Y\nPat Lee - Ticket 0011234567890\nTotal charges for air travel $512.30"
 const flightAnswer = JSON.stringify({
   booking_type: "flight",
   confirmation_code: "ZX81QP",
@@ -173,6 +197,7 @@ const flightAnswer = JSON.stringify({
   currency: "USD",
   passenger_names: ["Pat Lee"],
   flight_number: "SJ 410 / SJ 733",
+  tickets: [{ traveler: "Pat Lee", number: "0011234567890" }],
   flight_legs: [
     {
       airline: "SkyJet",
@@ -183,7 +208,9 @@ const flightAnswer = JSON.stringify({
       to_name: "Denver",
       dep_datetime: "2027-03-02T08:15:00",
       arr_datetime: "2027-03-02T09:50:00",
-      notes: "Pat Lee seat 12C, class Y",
+      aircraft: "Airbus A320",
+      seats: [{ traveler: "Pat Lee", seat: "12C", fare_class: "Y" }],
+      notes: null,
     },
     {
       airline: "SkyJet",
@@ -194,7 +221,9 @@ const flightAnswer = JSON.stringify({
       to_name: "Austin",
       dep_datetime: "2027-03-06T14:05:00",
       arr_datetime: "2027-03-06T17:40:00",
-      notes: "Pat Lee seat 9A, class Y",
+      aircraft: "Boeing 737-800",
+      seats: [{ traveler: "Pat Lee", seat: "9A", fare_class: "Y" }],
+      notes: null,
     },
   ],
 })
@@ -433,10 +462,41 @@ function expandFlightLegs(ex) {
     }
     const noteParts = []
     for (const l of group) {
-      if (l.notes)
-        noteParts.push(
-          (l.flight_number ? l.flight_number + ": " : "") + l.notes
-        )
+      // "AS 24 (Boeing 737 MAX 9): <seats, fare class>" - aircraft is its own
+      // schema field so it is composed here rather than left to the model's prose.
+      const label =
+        (l.flight_number || "") + (l.aircraft ? " (" + l.aircraft + ")" : "")
+      const seatText = (l.seats || [])
+        .filter(function (x) {
+          return x && x.seat
+        })
+        .map(function (x) {
+          return (
+            x.traveler +
+            " " +
+            x.seat +
+            (x.fare_class ? " (" + x.fare_class + ")" : "")
+          )
+        })
+        .join(", ")
+      const detail = [seatText, l.notes].filter(Boolean).join("; ")
+      if (label && detail) noteParts.push(label + ": " + detail)
+      else if (label || detail) noteParts.push(label || detail)
+    }
+    // E-ticket numbers belong to the traveler, not a flight, so every booking on
+    // the confirmation carries the full list (needed at check-in either way).
+    const tickets = (ex.tickets || []).filter(function (t) {
+      return t && /^[0-9A-Za-z-]{6,}$/.test(String(t.number || "").trim())
+    })
+    if (tickets.length) {
+      noteParts.push(
+        "Tickets: " +
+          tickets
+            .map(function (t) {
+              return (t.traveler ? t.traveler + " " : "") + t.number.trim()
+            })
+            .join("; ")
+      )
     }
     if (gi > 0 && ex.total_amount != null) {
       noteParts.push(
@@ -481,6 +541,7 @@ function expandFlightLegs(ex) {
       total_amount: gi === 0 ? ex.total_amount : null,
       currency: gi === 0 ? ex.currency : null,
       flight_legs: undefined,
+      tickets: undefined,
     })
   })
 }
