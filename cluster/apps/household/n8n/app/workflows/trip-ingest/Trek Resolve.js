@@ -858,8 +858,8 @@ if (!extractionError) {
           ]
             .concat(
               stops.map(function (s) {
-                // A bare 3-letter uppercase stop name ("SAN") is an IATA code the
-                // extractor left in name; geocoding it as free text put SAN in Poland.
+                // A bare 3-letter uppercase stop name ("ABC") is an IATA code the
+                // extractor left in name; geocoding it as free text resolves to an unrelated place.
                 return {
                   name: s.name,
                   code:
