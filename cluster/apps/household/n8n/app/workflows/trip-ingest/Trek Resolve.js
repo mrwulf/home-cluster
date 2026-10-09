@@ -558,12 +558,30 @@ if (!extractionError) {
               member = added.member || added
               tripMembers.push(member)
             } catch (e) {
-              travelerWarning =
-                (travelerWarning ? travelerWarning + "; " : "") +
-                'Could not add known family member "' +
-                name +
-                '": ' +
-                (e.message || String(e))
+              // Already on the trip (e.g. she forwarded the email, so the
+              // sender step above just added her and our roster snapshot predates
+              // that): not a failure - refresh the roster and use her.
+              if (/already has access/i.test(e.message || "")) {
+                const fresh = await mcpTool(sessionId, "get_trip_summary", {
+                  tripId: tripId,
+                })
+                const freshRoster = fresh.members || {}
+                tripMembers = [freshRoster.owner]
+                  .concat(freshRoster.collaborators || [])
+                  .filter(Boolean)
+                member = tripMembers.find(function (m) {
+                  const uname = (m.username || "").trim().toLowerCase()
+                  return uname === lowerName || uname === firstName
+                })
+              }
+              if (!member) {
+                travelerWarning =
+                  (travelerWarning ? travelerWarning + "; " : "") +
+                  'Could not add known family member "' +
+                  name +
+                  '": ' +
+                  (e.message || String(e))
+              }
             }
           }
         }
@@ -613,7 +631,30 @@ if (!extractionError) {
             )
           })
         : existingReservations.find(function (r) {
-            return r.confirmation_number === ex.confirmation_code
+            if (r.confirmation_number !== ex.confirmation_code) return false
+            // A round trip shares ONE confirmation number across its outbound and
+            // return flights (and a train/flight itinerary across legs), so for
+            // those the number alone would swallow the second booking as a
+            // "duplicate" of the first (the return flight vanished this way). A real
+            // resend carries the same times, so also require the time windows to
+            // overlap; with no stored time, fall back to the number alone.
+            if (
+              (ex.booking_type === "flight" || ex.booking_type === "transit") &&
+              r.type === expectedTransportType &&
+              startDt
+            ) {
+              const rStart = toDate(r.reservation_time)
+              if (rStart) {
+                const rEnd = toDate(r.reservation_end_time) || rStart
+                return overlaps(
+                  startDt.getTime(),
+                  (endDt || startDt).getTime(),
+                  rStart.getTime(),
+                  rEnd.getTime()
+                )
+              }
+            }
+            return true
           })
       if (duplicateMatch) duplicateMatchReason = "matching confirmation number"
     }
