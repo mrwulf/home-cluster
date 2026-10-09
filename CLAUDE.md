@@ -39,6 +39,11 @@ These apply to **every** change. Do not check anything in that violates them.
 
 7. **Protect PII and local paths.** Never commit local filesystem paths, personal usernames, or any Personally Identifiable Information (PII).
    Since this repository is public, all local paths and personal metadata must be kept strictly out of committed code and documentation.
+   This covers **everything that becomes public, not only files**: commit messages, PR titles and bodies, issue and review comments, code comments, and doc examples.
+   The pre-commit PII hook only scans files, so it never sees PR text or commit messages — the check there is yours.
+   - Counts as PII: full names, a household member's first name tied to a real trip or record, email addresses, confirmation/ticket/account numbers, real itineraries (airline, route, dates), and internal record ids (trip, member, execution) taken from live data.
+   - When a real event is the repro (a forwarded booking, a live record), describe the failure generically ("an airline round trip", "a family member") and use placeholders in examples: `Jane Doe`, `ABC`, `example.com`.
+   - Before `git commit`, `gh pr create`, and `gh pr edit`, reread the text you are about to publish for the above. If the real detail is needed to debug, keep it in the session, not in the repo.
 
 8. **Strictly adhere to the DRY (Don't Repeat Yourself) principle.** Never duplicate configurations, secrets, credentials, or code patterns across the cluster unless explicitly allowed to deviate.
    Any intentional deviation must be documented with a clear comment explaining why.
