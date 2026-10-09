@@ -486,15 +486,31 @@ if (!extractionError) {
       item.envelopeFrom &&
       item.envelopeFrom.indexOf("@") !== -1
     ) {
+      // The forwarding address (e.g. a personal gmail) is usually not the Trek
+      // login, so add_trip_member by it fails with "User not found". Inbound mail
+      // is already gated to household members, so resolve the sender through the
+      // same first-name -> Trek account map used for passengers (display name of
+      // the From header), then by the raw address, and only then try the raw
+      // address as-is.
+      const senderFirstName = (item.mimeFrom || "")
+        .replace(/<[^>]*>/g, "")
+        .trim()
+        .split(/\s+/)[0]
+        .toLowerCase()
+        .replace(/[^a-z]/g, "")
+      const senderIdentifier =
+        FAMILY_MEMBER_EMAILS[senderFirstName] ||
+        FAMILY_MEMBER_EMAILS[item.envelopeFrom.toLowerCase()] ||
+        item.envelopeFrom
       try {
         await mcpTool(sessionId, "add_trip_member", {
           tripId: tripId,
-          identifier: item.envelopeFrom,
+          identifier: senderIdentifier,
         })
       } catch (e) {
         memberAddWarning =
           "Could not add " +
-          item.envelopeFrom +
+          senderIdentifier +
           " as a trip member: " +
           (e.message || String(e))
       }
