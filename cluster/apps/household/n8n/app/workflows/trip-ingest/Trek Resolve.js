@@ -293,6 +293,18 @@ if (!extractionError) {
     const endDt = toDate(ex.end_datetime) || startDt
     const startDateOnly = startDt ? startDt.toISOString().slice(0, 10) : null
     const endDateOnly = endDt ? endDt.toISOString().slice(0, 10) : startDateOnly
+    // All items from one email share a trip; the upstream node passes the span of
+    // the whole email so a round trip's return flight attaches to the trip the
+    // outbound created (or widens the matched one) instead of starting a second.
+    const tripStartDate =
+      item.tripSpanStart &&
+      (!startDateOnly || item.tripSpanStart < startDateOnly)
+        ? item.tripSpanStart
+        : startDateOnly
+    const tripEndDate =
+      item.tripSpanEnd && (!endDateOnly || item.tripSpanEnd > endDateOnly)
+        ? item.tripSpanEnd
+        : endDateOnly
 
     let matchedTrip = null
 
@@ -369,11 +381,11 @@ if (!extractionError) {
       const curStart = matchedTrip.start_date
       const curEnd = matchedTrip.end_date
       const newStart =
-        startDateOnly && (!curStart || startDateOnly < curStart)
-          ? startDateOnly
+        tripStartDate && (!curStart || tripStartDate < curStart)
+          ? tripStartDate
           : curStart
       const newEnd =
-        endDateOnly && (!curEnd || endDateOnly > curEnd) ? endDateOnly : curEnd
+        tripEndDate && (!curEnd || tripEndDate > curEnd) ? tripEndDate : curEnd
       if (newStart !== curStart || newEnd !== curEnd) {
         await mcpTool(sessionId, "update_trip", {
           tripId: tripId,
@@ -385,8 +397,8 @@ if (!extractionError) {
       const destName =
         ex.destination_name || ex.destination_code || ex.provider_name || "Trip"
       const createArgs = { title: "Trip to " + destName, currency: "USD" }
-      if (startDateOnly) createArgs.start_date = startDateOnly
-      if (endDateOnly) createArgs.end_date = endDateOnly
+      if (tripStartDate) createArgs.start_date = tripStartDate
+      if (tripEndDate) createArgs.end_date = tripEndDate
       const created = await mcpTool(sessionId, "create_trip", createArgs)
       tripId = created.trip ? created.trip.id : created.id
       tripTitle = created.trip ? created.trip.title : createArgs.title
@@ -474,15 +486,31 @@ if (!extractionError) {
       item.envelopeFrom &&
       item.envelopeFrom.indexOf("@") !== -1
     ) {
+      // The forwarding address (e.g. a personal gmail) is usually not the Trek
+      // login, so add_trip_member by it fails with "User not found". Inbound mail
+      // is already gated to household members, so resolve the sender through the
+      // same first-name -> Trek account map used for passengers (display name of
+      // the From header), then by the raw address, and only then try the raw
+      // address as-is.
+      const senderFirstName = (item.mimeFrom || "")
+        .replace(/<[^>]*>/g, "")
+        .trim()
+        .split(/\s+/)[0]
+        .toLowerCase()
+        .replace(/[^a-z]/g, "")
+      const senderIdentifier =
+        FAMILY_MEMBER_EMAILS[senderFirstName] ||
+        FAMILY_MEMBER_EMAILS[item.envelopeFrom.toLowerCase()] ||
+        item.envelopeFrom
       try {
         await mcpTool(sessionId, "add_trip_member", {
           tripId: tripId,
-          identifier: item.envelopeFrom,
+          identifier: senderIdentifier,
         })
       } catch (e) {
         memberAddWarning =
           "Could not add " +
-          item.envelopeFrom +
+          senderIdentifier +
           " as a trip member: " +
           (e.message || String(e))
       }
@@ -761,6 +789,8 @@ if (!extractionError) {
         if (ex.end_datetime) args.reservation_end_time = ex.end_datetime
         if (ex.confirmation_code)
           args.confirmation_number = ex.confirmation_code
+        // Seats, fare class, aircraft, tickets - previously dropped for transport.
+        if (ex.notes) args.notes = ex.notes
         if (costPlan && costPlan.linked) {
           args.price = costPlan.amount
           args.budget_category = costPlan.category
@@ -787,7 +817,14 @@ if (!extractionError) {
           ]
             .concat(
               stops.map(function (s) {
-                return { name: s.name, code: s.code, date: s.date }
+                // A bare 3-letter uppercase stop name ("SAN") is an IATA code the
+                // extractor left in name; geocoding it as free text put SAN in Poland.
+                return {
+                  name: s.name,
+                  code:
+                    s.code || (/^[A-Z]{3}$/.test(s.name) ? s.name : undefined),
+                  date: s.date,
+                }
               })
             )
             .concat([
