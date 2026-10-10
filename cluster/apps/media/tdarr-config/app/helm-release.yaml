@@ -36,7 +36,7 @@ spec:
             image:
               # Same image as tdarr-server: it already ships node, which is all the script needs.
               repository: ghcr.io/haveagitgat/tdarr
-              tag: 2.94.02
+              tag: 2.96.01
             command:
               - node
               - /config/sync.js
