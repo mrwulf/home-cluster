@@ -31,7 +31,7 @@ spec:
           doctor:
             image: &migrate-image
               repository: ghcr.io/openclaw/openclaw
-              tag: 2026.9.8
+              tag: 2026.10.1
             command:
               - sh
               - -c
@@ -120,7 +120,7 @@ spec:
           app:
             image:
               repository: ghcr.io/openclaw/openclaw
-              tag: 2026.9.8
+              tag: 2026.10.1
             command:
               - node
               - dist/index.js
