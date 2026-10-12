@@ -27,7 +27,7 @@
         "y": 100
       },
       "inputsDB": {
-        "code": "\nmodule.exports = async (args) => {\n  const fs = require('fs');\n  const file = args.inputFileObj._id;\n  const streams = (args.inputFileObj.ffProbeData && args.inputFileObj.ffProbeData.streams) || [];\n  const v = streams.find((s) => s.codec_type === 'video' && !(s.disposition && s.disposition.attached_pic));\n  const skip = (why) => { args.jobLog('HC skip: ' + why); return { outputFileObj: args.inputFileObj, outputNumber: 3, variables: args.variables }; };\n  if (!v) return skip('no video stream');\n  let st = null;\n  try { st = fs.statSync(file); } catch (e) { return skip('cannot stat file'); }\n  if (st.nlink > 1) return skip('hardlinked (' + st.nlink + ')');\n  // replaceOriginalFile will not check for an existing file at the new .mkv name: do it here\n  if (!/\\.mkv$/i.test(file)) {\n    const target = file.replace(/\\.[^./]+$/, '.mkv');\n    if (fs.existsSync(target)) return skip('would overwrite existing ' + target);\n  }\n  // remember the source so we can refuse to replace it if Sonarr/Radarr changed it meanwhile\n  args.variables.user = args.variables.user || {};\n  args.variables.user.hcSize = String(st.size);\n  args.variables.user.hcMtime = String(Math.floor(st.mtimeMs));\n  // Favourites (kept at original quality); list written by the config-sync job\n  try {\n    const fav = fs.readFileSync('/temp/hc/skip-folders.txt', 'utf8').split('\\n').map((x) => x.trim()).filter(Boolean);\n    if (fav.some((p) => file.startsWith(p))) return skip('favourite title');\n  } catch (e) {}\n  if (/remux/i.test(file)) return skip('remux');\n  const hdr = ['smpte2084', 'arib-std-b67'].includes(v.color_transfer) ||\n    (v.side_data_list || []).some((d) => /dovi|dolby|mastering|content light/i.test(d.side_data_type || ''));\n  if (hdr) return skip('HDR/DV');\n  const h = Number(v.height) || 0;\n  const w = Number(v.width) || 0;\n  if (h > 1100 || w > 1930) return skip('above 1080p (' + w + 'x' + h + ')');\n  const codec = v.codec_name;\n  const scale = h > 740 || w > 1300;\n  if (codec === 'hevc' && !scale) return skip('already HEVC <=720p');\n  // GPU can only decode these; anything else (xvid, wmv, ...) decodes in software\n  const hwOk = ['h264', 'hevc', 'mpeg2video', 'vc1', 'vp9'].includes(codec);\n  // Aspect-correct 720p target: width 1280 for >=16:9, height 720 for narrower\n  let tw = w, th = h;\n  if (scale) {\n    if (w / h >= 1280 / 720) { tw = 1280; th = Math.round((1280 * h / w) / 2) * 2; }\n    else { th = 720; tw = Math.round((720 * w / h) / 2) * 2; }\n  }\n  args.variables.user = args.variables.user || {};\n  args.variables.user.hcScale = scale ? '1' : '0';\n  args.variables.user.hcW = String(tw);\n  args.variables.user.hcH = String(th);\n  args.variables.user.hcHw = hwOk ? '1' : '0';\n  // Keyframe every ~5 s (hevc_qsv defaults to 250 frames: 10 s at 24 fps, which slows seeking and resume)\n  const fr = String(v.avg_frame_rate || v.r_frame_rate || '').split('/');\n  const fps = Number(fr[0]) / (Number(fr[1]) || 1);\n  args.variables.user.hcGop = String(Math.round((fps > 0 && fps < 121 ? fps : 24) * 5));\n  args.jobLog('HC plan: ' + codec + ' ' + w + 'x' + h + ' -> ' + (scale ? tw + 'x' + th : 'same res') + ' hwdec=' + hwOk + ' gop=' + args.variables.user.hcGop);\n  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n};\n"
+        "code": "\nmodule.exports = async (args) => {\n  const fs = require('fs');\n  const file = args.inputFileObj._id;\n  const streams = (args.inputFileObj.ffProbeData && args.inputFileObj.ffProbeData.streams) || [];\n  const v = streams.find((s) => s.codec_type === 'video' && !(s.disposition && s.disposition.attached_pic));\n  const skip = (why) => { args.jobLog('HC skip: ' + why); return { outputFileObj: args.inputFileObj, outputNumber: 3, variables: args.variables }; };\n  if (!v) return skip('no video stream');\n  let st = null;\n  try { st = fs.statSync(file); } catch (e) { return skip('cannot stat file'); }\n  if (st.nlink > 1) return skip('hardlinked (' + st.nlink + ')');\n  // replaceOriginalFile will not check for an existing file at the new .mkv name: do it here\n  if (!/\\.mkv$/i.test(file)) {\n    const target = file.replace(/\\.[^./]+$/, '.mkv');\n    if (fs.existsSync(target)) return skip('would overwrite existing ' + target);\n  }\n  // remember the source so we can refuse to replace it if Sonarr/Radarr changed it meanwhile\n  args.variables.user = args.variables.user || {};\n  args.variables.user.hcSize = String(st.size);\n  args.variables.user.hcMtime = String(Math.floor(st.mtimeMs));\n  // Favourites (kept at original quality); list written by the config-sync job\n  try {\n    const fav = fs.readFileSync('/temp/hc/skip-folders.txt', 'utf8').split('\\n').map((x) => x.trim()).filter(Boolean);\n    if (fav.some((p) => file.startsWith(p))) return skip('favourite title');\n  } catch (e) {}\n  // Files an earlier attempt could not make smaller (written by the size check)\n  try {\n    if (fs.readFileSync('/temp/hc/no-savings.txt', 'utf8').split('\\n').includes(file)) return skip('no savings on an earlier attempt');\n  } catch (e) {}\n  if (/remux/i.test(file)) return skip('remux');\n  const hdr = ['smpte2084', 'arib-std-b67'].includes(v.color_transfer) ||\n    (v.side_data_list || []).some((d) => /dovi|dolby|mastering|content light/i.test(d.side_data_type || ''));\n  if (hdr) return skip('HDR/DV');\n  const h = Number(v.height) || 0;\n  const w = Number(v.width) || 0;\n  if (h > 1100 || w > 1930) return skip('above 1080p (' + w + 'x' + h + ')');\n  const codec = v.codec_name;\n  const scale = h > 740 || w > 1300;\n  if (codec === 'hevc' && !scale) return skip('already HEVC <=720p');\n  // GPU can only decode these; anything else (xvid, wmv, ...) decodes in software\n  const hwOk = ['h264', 'hevc', 'mpeg2video', 'vc1', 'vp9'].includes(codec);\n  // Aspect-correct 720p target: width 1280 for >=16:9, height 720 for narrower\n  let tw = w, th = h;\n  if (scale) {\n    if (w / h >= 1280 / 720) { tw = 1280; th = Math.round((1280 * h / w) / 2) * 2; }\n    else { th = 720; tw = Math.round((720 * w / h) / 2) * 2; }\n  }\n  args.variables.user = args.variables.user || {};\n  args.variables.user.hcScale = scale ? '1' : '0';\n  args.variables.user.hcW = String(tw);\n  args.variables.user.hcH = String(th);\n  args.variables.user.hcHw = hwOk ? '1' : '0';\n  // Keyframe every ~5 s (hevc_qsv defaults to 250 frames: 10 s at 24 fps, which slows seeking and resume)\n  const fr = String(v.avg_frame_rate || v.r_frame_rate || '').split('/');\n  const fps = Number(fr[0]) / (Number(fr[1]) || 1);\n  args.variables.user.hcGop = String(Math.round((fps > 0 && fps < 121 ? fps : 24) * 5));\n  args.jobLog('HC plan: ' + codec + ' ' + w + 'x' + h + ' -> ' + (scale ? tw + 'x' + th : 'same res') + ' hwdec=' + hwOk + ' gop=' + args.variables.user.hcGop);\n  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n};\n"
       }
     },
     {
@@ -195,9 +195,9 @@
       }
     },
     {
-      "name": "Size 10-100% of original",
+      "name": "Size check (at least 5% smaller)",
       "sourceRepo": "Community",
-      "pluginName": "compareFileSizeRatio",
+      "pluginName": "customFunction",
       "version": "1.0.0",
       "id": "size",
       "position": {
@@ -205,9 +205,20 @@
         "y": 1100
       },
       "inputsDB": {
-        "greaterThan": "10",
-        "lessThan": "100"
+        "code": "\nmodule.exports = async (args) => {\n  const out = Number(args.inputFileObj.file_size) || 0;\n  const orig = Number((args.originalLibraryFile || {}).file_size) || 0;\n  const pct = orig ? (out / orig) * 100 : 0;\n  args.jobLog('HC size: ' + out.toFixed(1) + ' MB vs original ' + orig.toFixed(1) + ' MB (' + pct.toFixed(0) + '%)');\n  if (pct >= 95) {\n    // Already compact (low-bitrate sources can grow): not worth a generation loss. Keep the original,\n    // finish without an error, and remember the path so it is never encoded or fed again.\n    try { require('fs').appendFileSync('/temp/hc/no-savings.txt', args.originalLibraryFile._id + '\\n'); } catch (e) {}\n    args.jobLog('HC: output is not at least 5% smaller, keeping the original');\n    return { outputFileObj: args.originalLibraryFile, outputNumber: 3, variables: args.variables };\n  }\n  // below 10% means something went wrong (truncated output): needs review\n  return { outputFileObj: args.inputFileObj, outputNumber: pct < 10 ? 2 : 1, variables: args.variables };\n};\n"
       }
+    },
+    {
+      "name": "Not smaller: original kept",
+      "sourceRepo": "Community",
+      "pluginName": "comment",
+      "version": "1.0.0",
+      "id": "nosavings",
+      "position": {
+        "x": 800,
+        "y": 1100
+      },
+      "inputsDB": {}
     },
     {
       "name": "Needs review (original untouched)",
@@ -639,25 +650,32 @@
       "id": "e30"
     },
     {
+      "source": "size",
+      "sourceHandle": "3",
+      "target": "nosavings",
+      "targetHandle": null,
+      "id": "e31"
+    },
+    {
       "source": "unchanged",
       "sourceHandle": "1",
       "target": "replace",
       "targetHandle": null,
-      "id": "e31"
+      "id": "e32"
     },
     {
       "source": "unchanged",
       "sourceHandle": "2",
       "target": "review",
       "targetHandle": null,
-      "id": "e32"
+      "id": "e33"
     },
     {
       "source": "replace",
       "sourceHandle": "1",
       "target": "notify",
       "targetHandle": null,
-      "id": "e33"
+      "id": "e34"
     }
   ]
 }

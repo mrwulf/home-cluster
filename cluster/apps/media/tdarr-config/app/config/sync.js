@@ -326,6 +326,20 @@ async function retire() {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
+// Paths the flow's size check found it cannot shrink; never feed them again
+function noSavings() {
+  try {
+    return new Set(
+      fs
+        .readFileSync(path.join(STATE, "no-savings.txt"), "utf8")
+        .split("\n")
+        .filter(Boolean)
+    )
+  } catch (e) {
+    return new Set()
+  }
+}
+
 // Mirrors the flow's guard: skip HDR/DV, above 1080p, and anything already HEVC at 720p or below
 function convertible(m) {
   m = m || {}
@@ -402,6 +416,7 @@ async function feed(libraries, favourites) {
     return
   }
   const cache = {}
+  const skipSet = noSavings()
   for (const lib of libraries) {
     if (!lib.priorityFile) continue
     const pies = await tdarr("stats/get-pies", { libraryId: lib.id })
@@ -500,7 +515,9 @@ async function feed(libraries, favourites) {
       if (favourites.has(item.path + "/")) continue
       if (budget <= 0 || (added > 0 && item.files > budget)) break
       if (added >= MAX_SCANS_PER_RUN || Date.now() > deadline) break
-      const files = await folderFiles(lib.arr, item.path, cache)
+      const files = (await folderFiles(lib.arr, item.path, cache)).filter(
+        (f) => !skipSet.has(f)
+      )
       if (files.length === 0) {
         fed.add(item.path) // nothing left to convert in this title
         continue
