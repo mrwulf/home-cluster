@@ -106,6 +106,15 @@ module.exports = async (args) => {
   for (const s of cmd.streams) {
     if (s.codec_type === 'attachment' || s.codec_type === 'data') { s.removed = true; cmd.shouldProcess = true; }
   }
+  // mov_text (MP4 text subtitles) cannot be stream-copied into Matroska: ffmpeg fails writing the header
+  // ("Function not implemented", reported against the video filter). Convert them to SRT instead.
+  for (const s of cmd.streams) {
+    if (s.codec_type === 'subtitle' && !s.removed && String(s.codec_name).toLowerCase() === 'mov_text') {
+      if (!s.outputArgs.includes('-c:{outputIndex}')) s.outputArgs.push('-c:{outputIndex}', 'srt');
+      cmd.shouldProcess = true;
+      args.jobLog('HC subs: converting mov_text to srt');
+    }
+  }
   return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
 };
 """
