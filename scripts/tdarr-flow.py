@@ -66,7 +66,11 @@ module.exports = async (args) => {
   args.variables.user.hcW = String(tw);
   args.variables.user.hcH = String(th);
   args.variables.user.hcHw = hwOk ? '1' : '0';
-  args.jobLog('HC plan: ' + codec + ' ' + w + 'x' + h + ' -> ' + (scale ? tw + 'x' + th : 'same res') + ' hwdec=' + hwOk);
+  // Keyframe every ~5 s (hevc_qsv defaults to 250 frames: 10 s at 24 fps, which slows seeking and resume)
+  const fr = String(v.avg_frame_rate || v.r_frame_rate || '').split('/');
+  const fps = Number(fr[0]) / (Number(fr[1]) || 1);
+  args.variables.user.hcGop = String(Math.round((fps > 0 && fps < 121 ? fps : 24) * 5));
+  args.jobLog('HC plan: ' + codec + ' ' + w + 'x' + h + ' -> ' + (scale ? tw + 'x' + th : 'same res') + ' hwdec=' + hwOk + ' gop=' + args.variables.user.hcGop);
   return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
 };
 """
@@ -118,6 +122,13 @@ SCALE = r"""
 module.exports = async (args) => {
   const cmd = args.variables.ffmpegCommand;
   const u = args.variables.user || {};
+  const gop = String(Number(u.hcGop) || 120);
+  for (const s of cmd.streams) {
+    if (s.codec_type !== 'video' || s.removed) continue;
+    if (s.disposition && s.disposition.attached_pic) continue;
+    if (!s.outputArgs.includes('-g')) s.outputArgs.push('-g', gop);
+  }
+  cmd.shouldProcess = true;
   if (u.hcScale !== '1') return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
   const w = u.hcW, h = u.hcH;
   const hw = u.hcHw === '1';
@@ -202,7 +213,7 @@ def build(flow_id, name, arr):
     node("enc_hw", "ffmpegCommandSetVideoEncoder", "HEVC QSV (hw decode)", enc("true"), 200, 500)
     node("enc_sw", "ffmpegCommandSetVideoEncoder", "HEVC QSV (sw decode)", enc("false"), 600, 500)
     node("ten", "ffmpegCommand10BitVideo", "10-bit", x=400, y=600)
-    node("scale", "customFunction", "Aspect-correct 720p scale", {"code": SCALE}, 400, 700)
+    node("scale", "customFunction", "Scale to 720p + keyframe interval", {"code": SCALE}, 400, 700)
     node("cont", "ffmpegCommandSetContainer", "MKV", {"container": "mkv", "forceConform": "false"}, 400, 800)
     node("exec", "ffmpegCommandExecute", "Run ffmpeg", x=400, y=900)
     node("dur", "compareFileDurationRatio", "Duration within 1%", {"greaterThan": "99", "lessThan": "101"}, 400, 1000)
@@ -223,7 +234,7 @@ def build(flow_id, name, arr):
     node("lang2", "customFunction", "Language strip (retry)", {"code": LANG}, 1100, 500)
     node("enc2", "ffmpegCommandSetVideoEncoder", "HEVC QSV (sw decode, retry)", enc("false"), 1100, 600)
     node("ten2", "ffmpegCommand10BitVideo", "10-bit (retry)", x=1100, y=700)
-    node("scale2", "customFunction", "Aspect-correct 720p scale (retry)", {"code": SCALE}, 1100, 800)
+    node("scale2", "customFunction", "Scale to 720p + keyframe interval (retry)", {"code": SCALE}, 1100, 800)
     node("cont2", "ffmpegCommandSetContainer", "MKV (retry)", {"container": "mkv", "forceConform": "false"}, 1100, 900)
     node("exec2", "ffmpegCommandExecute", "Run ffmpeg (retry)", x=1100, y=1000)
 
