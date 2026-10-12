@@ -11,7 +11,7 @@ spec:
       serviceAccountName: rook-ceph-default
       containers:
         - name: config
-          image: quay.io/ceph/ceph:v21.1.1
+          image: quay.io/ceph/ceph:v21.1.2
           command:
             - /bin/bash
             - -c
