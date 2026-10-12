@@ -5,8 +5,9 @@ metadata:
   name: tofu-controller-recovery
 ---
 # Terraform CRs live in several namespaces, so this has to be cluster-scoped: read them,
-# patch only their status (to clear a stale lock record), and read the lock Leases to
-# confirm a lock is really free first
+# read and patch only their status (to clear a stale lock record; the recovery script
+# reads the status subresource first, so patch alone is Forbidden), and read the lock
+# Leases to confirm a lock is really free first
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -17,7 +18,7 @@ rules:
     verbs: ["get", "list"]
   - apiGroups: ["infra.contrib.fluxcd.io"]
     resources: ["terraforms/status"]
-    verbs: ["patch"]
+    verbs: ["get", "patch"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
     verbs: ["get"]

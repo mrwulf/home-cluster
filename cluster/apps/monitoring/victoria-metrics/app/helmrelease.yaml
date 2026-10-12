@@ -232,8 +232,13 @@ spec:
       # doubling storage until the old copies age out of retention. Narrow the
       # labelmap to the few labels that are actually stable and useful to have on
       # every series.
+      #
+      # node1's /metrics/cadvisor response exceeds vmagent's 16MiB default
+      # max_scrape_size (the metricRelabelConfigs drops run after that check), which
+      # marks the target down and fires TooManyScrapeErrors. Raise the cap here.
       vmScrape:
         spec:
+          max_scrape_size: 64MiB
           relabelConfigs:
             - action: labelmap
               regex: __meta_kubernetes_node_label_(kubernetes_io_hostname|node_role_kubernetes_io_control_plane|node_home_arpa_physical)
