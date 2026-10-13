@@ -27,11 +27,15 @@ English, so their audio is never stripped).
 Skip: HDR/Dolby Vision, above 1080p, remux, hardlinked files, favourites, anything already HEVC at
 720p or below, and any file whose `.mkv` name would collide with an existing file. Otherwise encode to
 HEVC 10-bit (global quality 21, preset slow, a keyframe every 5 s), scale anything above 720p to 720p keeping the aspect
-ratio, strip non-English audio and subtitles only when an English track exists (MP4 text subtitles are converted to SRT, since they cannot be copied into MKV), then verify duration
-(within 1%) and size (10 to 100% of the original). If the first attempt fails (filter or decode errors),
-the flow retries once with software decode and scaling before giving up. Immediately before replacing the original it checks
-the source is unchanged, so an arr upgrade mid-encode is never overwritten. Anything failing a check
-goes to Tdarr's review queue with the original untouched. Radarr/Sonarr are told to rescan afterwards.
+ratio, strip non-English audio and subtitles only when an English track exists (MP4 text subtitles are
+converted to SRT, since they cannot be copied into MKV), then verify duration (within 1%) and size.
+Output under 10% of the original goes to review. Output that is not at least 5% smaller (already-compact
+sources can grow) keeps the original quietly, with no error, and the path is remembered in
+`/temp/hc/no-savings.txt` so it is never encoded or fed again. If the first attempt fails (filter or
+decode errors), the flow retries once with software decode and scaling before giving up. Immediately
+before replacing the original it checks the source is unchanged, so an arr upgrade mid-encode is never
+overwritten. Any other failed check goes to Tdarr's review queue with the original untouched.
+Radarr/Sonarr are told to rescan afterwards.
 
 ## Operating it
 

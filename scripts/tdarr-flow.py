@@ -43,6 +43,10 @@ module.exports = async (args) => {
     const fav = fs.readFileSync('/temp/hc/skip-folders.txt', 'utf8').split('\n').map((x) => x.trim()).filter(Boolean);
     if (fav.some((p) => file.startsWith(p))) return skip('favourite title');
   } catch (e) {}
+  // Files an earlier attempt could not make smaller (written by the size check)
+  try {
+    if (fs.readFileSync('/temp/hc/no-savings.txt', 'utf8').split('\n').includes(file)) return skip('no savings on an earlier attempt');
+  } catch (e) {}
   if (/remux/i.test(file)) return skip('remux');
   const hdr = ['smpte2084', 'arib-std-b67'].includes(v.color_transfer) ||
     (v.side_data_list || []).some((d) => /dovi|dolby|mastering|content light/i.test(d.side_data_type || ''));
@@ -198,6 +202,25 @@ module.exports = async (args) => {
 """
 
 
+SIZE = r"""
+module.exports = async (args) => {
+  const out = Number(args.inputFileObj.file_size) || 0;
+  const orig = Number((args.originalLibraryFile || {}).file_size) || 0;
+  const pct = orig ? (out / orig) * 100 : 0;
+  args.jobLog('HC size: ' + out.toFixed(1) + ' MB vs original ' + orig.toFixed(1) + ' MB (' + pct.toFixed(0) + '%)');
+  if (pct >= 95) {
+    // Already compact (low-bitrate sources can grow): not worth a generation loss. Keep the original,
+    // finish without an error, and remember the path so it is never encoded or fed again.
+    try { require('fs').appendFileSync('/temp/hc/no-savings.txt', args.originalLibraryFile._id + '\n'); } catch (e) {}
+    args.jobLog('HC: output is not at least 5% smaller, keeping the original');
+    return { outputFileObj: args.originalLibraryFile, outputNumber: 3, variables: args.variables };
+  }
+  // below 10% means something went wrong (truncated output): needs review
+  return { outputFileObj: args.inputFileObj, outputNumber: pct < 10 ? 2 : 1, variables: args.variables };
+};
+"""
+
+
 def build(flow_id, name, arr):
     nodes, edges = [], []
 
@@ -226,7 +249,8 @@ def build(flow_id, name, arr):
     node("cont", "ffmpegCommandSetContainer", "MKV", {"container": "mkv", "forceConform": "false"}, 400, 800)
     node("exec", "ffmpegCommandExecute", "Run ffmpeg", x=400, y=900)
     node("dur", "compareFileDurationRatio", "Duration within 1%", {"greaterThan": "99", "lessThan": "101"}, 400, 1000)
-    node("size", "compareFileSizeRatio", "Size 10-100% of original", {"greaterThan": "10", "lessThan": "100"}, 400, 1100)
+    node("size", "customFunction", "Size check (at least 5% smaller)", {"code": SIZE}, 400, 1100)
+    node("nosavings", "comment", "Not smaller: original kept", {}, 800, 1100)
     node("review", "requireReview", "Needs review (original untouched)", {}, 800, 1050)
     node("unchanged", "customFunction", "Source unchanged since start?", {"code": UNCHANGED}, 400, 1150)
     node("replace", "replaceOriginalFile", "Replace original", x=400, y=1200)
@@ -278,6 +302,7 @@ def build(flow_id, name, arr):
     edge("dur", "review", "3")
     edge("size", "unchanged", "1")
     edge("size", "review", "2")
+    edge("size", "nosavings", "3")
     edge("unchanged", "replace", "1")
     edge("unchanged", "review", "2")
     edge("replace", "notify")
