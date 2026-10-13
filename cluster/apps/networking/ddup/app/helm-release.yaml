@@ -29,10 +29,10 @@ spec:
         containers:
           main:
             image:
-              # Fork of github.com/ItalyPaleAle/ddup (adds !env/!file tags and the env template func)
+              # Fork of github.com/ItalyPaleAle/ddup (reads secrets with upstream's !file tag, plus webhook vars)
               repository: ghcr.io/mrwulf/ddup
-              # fork.1 predates !env/!file support and must not be used; priorities and CNAME/proxied targets need fork.5 or later, IP lookup (dynamic DNS) fork.6, fork.7 for the shared-address and log-redaction fixes, fork.9 for the status tags used by the ntfy webhook, fork.19 for leader election (replicas: 2), fork.20 for standbys forwarding API requests to the leader
-              tag: 0.6.0-fork.20
+              # fork.1 predates !env/!file support and must not be used; priorities and CNAME/proxied targets need fork.5 or later, IP lookup (dynamic DNS) fork.6, fork.7 for the shared-address and log-redaction fixes, fork.9 for the status tags used by the ntfy webhook, fork.19 for leader election (replicas: 2), fork.20 for standbys forwarding API requests to the leader, fork.21 for webhook vars and file-based secrets (!env is gone)
+              tag: 0.6.0-fork.21
             env:
               DDUP_CONFIG: /etc/ddup/config.yaml
               # Prometheus pull via the OTel autoexport library (defaults to "none" and to localhost)
@@ -49,9 +49,6 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: metadata.name
-            envFrom:
-              - secretRef:
-                  name: ddup
             probes:
               liveness:
                 enabled: true
@@ -98,6 +95,8 @@ spec:
         runAsNonRoot: true
         runAsUser: 65532
         runAsGroup: 65532
+        # Group of the secret files mounted at /etc/ddup/secrets (mode 0440)
+        fsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
 
@@ -173,4 +172,12 @@ spec:
         globalMounts:
           - path: /etc/ddup/config.yaml
             subPath: config.yaml
+            readOnly: true
+      # One file per key of the `ddup` ExternalSecret, read by the !file tags in the config
+      secrets:
+        type: secret
+        name: ddup
+        defaultMode: 0440
+        globalMounts:
+          - path: /etc/ddup/secrets
             readOnly: true

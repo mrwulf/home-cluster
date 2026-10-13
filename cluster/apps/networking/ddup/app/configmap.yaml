@@ -1,7 +1,8 @@
 ---
 # ddup config. Loaded once at startup (no hot reload); reloader restarts the pod on change.
-# ${VAR} values are substituted by Flux at build time (not secret). Runtime secrets use the
-# ddup `!env` tag / `{{ env "X" }}` template func, fed from the `ddup` ExternalSecret.
+# ${VAR} values are substituted by Flux at build time (not secret). Runtime secrets are read from files
+# (the `ddup` ExternalSecret mounted at /etc/ddup/secrets): `!file` for settings, and the webhook `vars`
+# for secrets used inside a template.
 # ddup owns every record below (the failover Workers it replaced were removed on 2026-10-03): don't also
 # manage them from the ingress-vps tofu stacks or anywhere else, or the two will fight over the record.
 apiVersion: v1
@@ -67,8 +68,8 @@ data:
 
       # Dynamic DNS for the home network, replacing the cloudflare-ddns CronJob: the record follows
       # the public IPv4 address this cluster reaches the internet from. The name is not in git
-      # (DDNS_RECORD_NAME). No URL, so it's not health-checked: it's healthy while the lookup works.
-      - recordName: !env DDNS_RECORD_NAME
+      # (the DDNS_RECORD_NAME secret). No URL, so it's not health-checked: it's healthy while the lookup works.
+      - recordName: !file /etc/ddup/secrets/DDNS_RECORD_NAME
         provider: cloudflare-ddns
         # Automatic TTL, like the old script's records
         ttl: 1
@@ -87,21 +88,23 @@ data:
     providers:
       cloudflare:
         cloudflare:
-          apiToken: !env CLOUDFLARE_API_TOKEN
-          zoneId: !env CLOUDFLARE_ZONE_ID
+          apiToken: !file /etc/ddup/secrets/CLOUDFLARE_API_TOKEN
+          zoneId: !file /etc/ddup/secrets/CLOUDFLARE_ZONE_ID
       # The dynamic DNS record lives in a different Cloudflare zone, with its own token
       cloudflare-ddns:
         cloudflare:
-          apiToken: !env DDNS_CLOUDFLARE_API_TOKEN
-          zoneId: !env DDNS_CLOUDFLARE_ZONE_ID
+          apiToken: !file /etc/ddup/secrets/DDNS_CLOUDFLARE_API_TOKEN
+          zoneId: !file /etc/ddup/secrets/DDNS_CLOUDFLARE_ZONE_ID
 
     webhooks:
       - name: "ntfy"
         # In-cluster ntfy; default access is deny-all, so a token is required
         url: "http://ntfy.system.svc.cluster.local:80/ddup"
         events: ["dns_updated", "dns_update_failed", "all_unhealthy"]
+        vars:
+          token: !file /etc/ddup/secrets/NTFY_TOKEN
         headers:
-          Authorization: 'Bearer {{ env "NTFY_TOKEN" }}'
+          Authorization: 'Bearer {{ .Vars.token }}'
           Title: "ddup: {{ .Subject }}"
           # Green, yellow or red circle for the health of the domain (healthy, warning when some endpoints
           # are down, unhealthy), like Gatus; urgent when nothing is healthy
@@ -114,10 +117,14 @@ data:
       - name: "email"
         url: "https://api.resend.com/emails"
         events: ["dns_updated", "dns_update_failed", "all_unhealthy"]
+        vars:
+          apiKey: !file /etc/ddup/secrets/EMAIL_API_KEY
+          from: !file /etc/ddup/secrets/EMAIL_FROM
+          to: !file /etc/ddup/secrets/EMAIL_TO
         headers:
-          Authorization: 'Bearer {{ env "EMAIL_API_KEY" }}'
+          Authorization: 'Bearer {{ .Vars.apiKey }}'
           Content-Type: "application/json"
-        body: '{"from": {{ json (env "EMAIL_FROM") }}, "to": [{{ json (env "EMAIL_TO") }}], "subject": {{ json (printf "[ddup] %s" .Subject) }}, "text": {{ json .Text }}}'
+        body: '{"from": {{ json .Vars.from }}, "to": [{{ json .Vars.to }}], "subject": {{ json (printf "[ddup] %s" .Subject) }}, "text": {{ json .Text }}}'
 
     server:
       enabled: true
