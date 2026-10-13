@@ -159,5 +159,12 @@
       matchPackageNames: ["cloudflare/cloudflare"],
       allowedVersions: "< 5.26.0",
     },
+    {
+      // Sonarr v5 migration 233 aborts on a malformed History.Quality JSON row
+      // ("SQL logic error: malformed JSON") and the pod crash-loops. See TODO.md before lifting.
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/home-operations/sonarr"],
+      allowedVersions: "< 5",
+    },
   ],
 }

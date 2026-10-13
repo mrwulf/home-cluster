@@ -8,6 +8,16 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
 
 ## Blocked on upstream
 
+- **Sonarr pinned at `4.0.20.3012`** (`cluster/apps/media/sonarr/app/helm-release.yaml`).
+  `5.0.0.2569` (Renovate #5541) crash-loops on startup: migration 233
+  (`quality_profile_quality_ranks`) runs `CREATE INDEX ... json_extract("Quality", '$.quality')` on
+  `History` and fails with `SQL logic error: malformed JSON`, because at least one `History.Quality`
+  row isn't valid JSON. The migration rolls back, so the DB stays at the v4 schema.
+  Renovate is blocked from proposing `>= 5` via `allowedVersions` in `.github/renovate.json5`.
+  To retry v5: find the bad rows in a copy of `sonarr.db`
+  (`SELECT Id FROM History WHERE NOT json_valid(Quality)`), repair or delete them, take a VolSync
+  snapshot first, then lift the rule.
+
 - **Cloudflare Terraform provider pinned at `5.25.0`** (`cluster/apps/networking/ingress-vps/{eu,us}/.terraform.lock.hcl`).
   `5.26.0` regresses `modified_on` planning on `cloudflare_dns_record` updates, causing
   `Provider produced inconsistent result after apply` (other projects report it failing _every_
