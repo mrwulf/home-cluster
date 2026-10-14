@@ -7,7 +7,7 @@ spec:
   groupRef:
     name: toolhive-servers
   # renovate: depName=docker.io/isokoliuk/mcp-searxng datasource=docker
-  image: docker.io/isokoliuk/mcp-searxng:2.5.1@sha256:47c2c520c06b396b89d34bda8a4cd5961e04e4d35c59b931f63d617be45245b5
+  image: docker.io/isokoliuk/mcp-searxng:2.6.0@sha256:9389eed474a62bc35aafbf4d819b77ee54ecc25b5a1d1310ad0d45db2a056e0f
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
