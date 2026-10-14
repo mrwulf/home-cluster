@@ -14,7 +14,7 @@ spec:
     controllers:
       ddup:
         # Two replicas for HA: all instances check health, only the Lease holder updates DNS and sends
-        # webhooks (leaderElection in the ConfigMap). Rolling updates never drop below one ready replica.
+        # notifications (leaderElection in the ConfigMap). Rolling updates never drop below one ready replica.
         replicas: 2
         strategy: RollingUpdate
         rollingUpdate:
