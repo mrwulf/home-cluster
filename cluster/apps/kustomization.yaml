@@ -16,6 +16,7 @@ resources:
   - networking
   - other
   - rook-ceph
+  - services
   - system
   - system-upgrade
   - vaultwarden
