@@ -41,3 +41,13 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   `ingress-vps/app/tofu.yaml`, move the ExternalSecret next to them, delete the directory and the
   `cloudflare-ddns` dependency in `cloudflare-tunnel/ks.yaml`. That token (`api-token-external-dns`) is
   also broader than the tofu stacks need.
+
+- **Gatus reports 335 ms for `fast-lb`, but direct timings disagree.** Since 2026-10-09 the Gatus check
+  "Fast Ingress via ddup" has been flat at about 335 ms (the same as the EU VPS path), and on 2026-10-14
+  "Cloudflare Tunnel Direct" jumped from about 45 ms to about 650 ms with no change in the repo. From
+  inside the cluster (a curl pod and a Go client, both fresh connections, IPv4) `fast-lb` and `external`
+  both answer in 60 to 90 ms, ddup publishes the proxied tunnel CNAME for `fast-lb`, and IPv6 fails
+  instantly here (not the cause). Ruled out: post-quantum TLS (`GODEBUG=tlsmlkem=0` makes no difference).
+  Not checked: whether Gatus reuses connections, and the Gatus egress gateway policy. Until this is
+  explained, do not read the Gatus latency of the Cloudflare-routed checks as user-facing latency.
+  Found: 2026-10-14.
