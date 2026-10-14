@@ -1,8 +1,7 @@
 ---
 # ddup config. Loaded once at startup (no hot reload); reloader restarts the pod on change.
 # ${VAR} values are substituted by Flux at build time (not secret). Runtime secrets are read from files
-# (the `ddup` ExternalSecret mounted at /etc/ddup/secrets): `!file` for settings, and the webhook `vars`
-# for secrets used inside a template.
+# (the `ddup` ExternalSecret mounted at /etc/ddup/secrets) with `!file`.
 # ddup owns every record below (the failover Workers it replaced were removed on 2026-10-03): don't also
 # manage them from the ingress-vps tofu stacks or anywhere else, or the two will fight over the record.
 apiVersion: v1
@@ -13,7 +12,7 @@ data:
   config.yaml: |
     interval: 30s
 
-    # Two replicas: only the Lease holder updates DNS and sends webhooks. Namespace and identity come from the pod.
+    # Two replicas: only the Lease holder updates DNS and sends notifications. Namespace and identity come from the pod.
     leaderElection:
       enabled: true
 
@@ -30,7 +29,7 @@ data:
           recoverAfter: 3
           # Same probe as the failover Workers: the health responder answers 418
           method: "HEAD"
-          expectStatus: ["418"]
+          expectStatus: "418"
         endpoints:
           # Probe by hostname (valid wildcard cert, resolves to the same single IP);
           # publish the IP from the tofu output
@@ -49,7 +48,9 @@ data:
             name: "tunnel"
             url: "https://external.${SECRET_DOMAIN}"
             cname: "${SECRET_CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"
-            proxied: true
+            providerOptions:
+              cloudflare:
+                proxied: true
             priority: 1
 
       # Replaces the tunnel-primary `fast.` record: the Cloudflare Tunnel while it's healthy,
@@ -78,12 +79,12 @@ data:
           attempts: 3
         endpoints:
           - name: "home"
-            ipLookup:
-              # Tried in order; the same services the old script used
-              urls:
-                - "https://ipv4.icanhazip.com"
-                - "https://api.ipify.org"
-              family: 4
+            ipLookupFamily: 4
+            # Asked at the same time (not in order): the first valid answer wins, and a warning is logged if they differ
+            # https only, redirects are not followed, and the lookup ignores HTTP_PROXY
+            ipLookupURLs:
+              - url: "https://ipv4.icanhazip.com"
+              - url: "https://api.ipify.org"
 
     providers:
       cloudflare:
@@ -96,35 +97,27 @@ data:
           apiToken: !file /etc/ddup/secrets/DDNS_CLOUDFLARE_API_TOKEN
           zoneId: !file /etc/ddup/secrets/DDNS_CLOUDFLARE_ZONE_ID
 
-    webhooks:
-      - name: "ntfy"
-        # In-cluster ntfy; default access is deny-all, so a token is required
-        url: "http://ntfy.system.svc.cluster.local:80/ddup"
-        events: ["dns_updated", "dns_update_failed", "all_unhealthy"]
-        vars:
+    notifications:
+      ntfy:
+        - name: "ntfy"
+          # In-cluster ntfy; default access is deny-all, so a token is required
+          url: "http://ntfy.system.svc.cluster.local:80/ddup"
+          # The bare token: ddup adds "Bearer "
           token: !file /etc/ddup/secrets/NTFY_TOKEN
-        headers:
-          Authorization: 'Bearer {{ .Vars.token }}'
-          Title: "ddup: {{ .Subject }}"
-          # Green, yellow or red circle for the health of the domain (healthy, warning when some endpoints
-          # are down, unhealthy), like Gatus; urgent when nothing is healthy
-          Tags: "{{ .StatusTag }}"
-          Priority: '{{ if eq .Status "unhealthy" }}high{{ else }}default{{ end }}'
-        body: '{{ .Text }}'
-        attempts: 5
-        timeout: "10s"
-      # Resend HTTP email API (https://resend.com/docs/api-reference/emails/send-email)
-      - name: "email"
-        url: "https://api.resend.com/emails"
-        events: ["dns_updated", "dns_update_failed", "all_unhealthy"]
-        vars:
-          apiKey: !file /etc/ddup/secrets/EMAIL_API_KEY
-          from: !file /etc/ddup/secrets/EMAIL_FROM
-          to: !file /etc/ddup/secrets/EMAIL_TO
-        headers:
-          Authorization: 'Bearer {{ .Vars.apiKey }}'
-          Content-Type: "application/json"
-        body: '{"from": {{ json .Vars.from }}, "to": [{{ json .Vars.to }}], "subject": {{ json (printf "[ddup] %s" .Subject) }}, "text": {{ json .Text }}}'
+          # Required: the destination is a private (in-cluster) address, which is blocked by default
+          allowPrivateDestinations: true
+          events: ["dns_updated", "dns_update_failed", "all_unhealthy"]
+          # Same delivery window as the webhook had (fixed interval instead of a backoff)
+          timeout: "10s"
+          maxAttempts: 5
+          retryInterval: "2s"
+      email:
+        # Through the in-cluster relay (maddy: tls off, no authentication): the sender must be on a domain the relay allows
+        - name: "email"
+          connectionString: !file /etc/ddup/secrets/EMAIL_CONNECTION_STRING
+          to:
+            - !file /etc/ddup/secrets/EMAIL_TO
+          events: ["dns_updated", "dns_update_failed", "all_unhealthy"]
 
     server:
       enabled: true
