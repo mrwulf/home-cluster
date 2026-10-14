@@ -42,12 +42,17 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   `cloudflare-ddns` dependency in `cloudflare-tunnel/ks.yaml`. That token (`api-token-external-dns`) is
   also broader than the tofu stacks need.
 
-- **Gatus reports 335 ms for `fast-lb`, but direct timings disagree.** Since 2026-10-09 the Gatus check
-  "Fast Ingress via ddup" has been flat at about 335 ms (the same as the EU VPS path), and on 2026-10-14
-  "Cloudflare Tunnel Direct" jumped from about 45 ms to about 650 ms with no change in the repo. From
-  inside the cluster (a curl pod and a Go client, both fresh connections, IPv4) `fast-lb` and `external`
-  both answer in 60 to 90 ms, ddup publishes the proxied tunnel CNAME for `fast-lb`, and IPv6 fails
-  instantly here (not the cause). Ruled out: post-quantum TLS (`GODEBUG=tlsmlkem=0` makes no difference).
-  Not checked: whether Gatus reuses connections, and the Gatus egress gateway policy. Until this is
-  explained, do not read the Gatus latency of the Cloudflare-routed checks as user-facing latency.
+- **Gatus keeps connections open forever, so its external checks stop following DNS.** Gatus v5.37.0
+  builds its shared HTTP transport with `MaxIdleConns: 100` and no `IdleConnTimeout`, so every
+  connection it opens is reused indefinitely and a hostname is only resolved when a new connection is
+  needed. A check therefore keeps talking to whichever address it first got, and its duration is the
+  request time on that warm connection, not a fresh one. Seen 2026-10-14: "Fast Ingress via ddup" sat at
+  a flat 335 ms (the EU VPS path) and "Cloudflare Tunnel Direct" at 650 ms, while a fresh connection
+  from inside the cluster took 55 ms and 45 ms; after restarting the Gatus pod they read 50 to 58 ms and
+  42 to 52 ms. "VPS-Primary Ingress via ddup" showed 128 ms (the US VPS) for days and, after the
+  restart, 333 ms (the EU VPS), because `ingress-lb` publishes both addresses. Consequence: these checks
+  do not verify what ddup currently publishes, so a failover that ddup performs is invisible to Gatus
+  until its connection drops. Options: a periodic restart of the Gatus pod, or an upstream change to
+  Gatus (a client option for idle timeout or disabling keep-alives). A per-endpoint `Connection: close`
+  header is untested and probably does not help on HTTP/2 (the Cloudflare edge).
   Found: 2026-10-14.

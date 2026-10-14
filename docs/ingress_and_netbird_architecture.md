@@ -83,12 +83,14 @@ is identified by its pod IP, and the standby forwards dashboard API requests
 | `ingress-lb.${SECRET_DOMAIN}` | US + EU VPS A records (round-robin)   | CNAME to the tunnel (`proxied: true`) | `ingress.` |
 | `fast-lb.${SECRET_DOMAIN}`    | CNAME to the tunnel (`proxied: true`) | US + EU VPS A records (round-robin)   | `fast.`    |
 
-Measured latency (Gatus, from inside the cluster, October 2026): a request through the US VPS
-takes about 130 ms and through the EU VPS about 335 ms, while the Cloudflare Tunnel is about 25 to
-60 ms. `ingress-lb` publishes both VPS addresses (round-robin), so a client gets either path, and a
-single Gatus check of it shows whichever address the resolver returns first. To make the US VPS the
-preferred path, give it a lower `priority` than the EU VPS in the ddup ConfigMap, at the cost of
-losing the load spread while it is healthy.
+Measured latency (from inside the cluster, October 2026, on warm connections): a request through
+the US VPS takes about 130 ms and through the EU VPS about 335 ms, while the Cloudflare Tunnel is about
+45 to 60 ms. A fresh connection adds the TCP and TLS setup, so the VPS paths take about 260 ms (US) and
+670 ms (EU) the first time. `ingress-lb` publishes both VPS addresses (round-robin), so a client gets
+either path. Gatus keeps its connections open and does not re-resolve DNS, so its numbers for the
+checks that go through `ingress-lb` and `fast-lb` show one pinned connection, not the published records
+(see TODO.md). To make the US VPS the preferred path, give it a lower `priority` than the EU VPS in the
+ddup ConfigMap, at the cost of losing the load spread while it is healthy.
 
 When the record type changes, ddup overwrites the existing record in place, so
 the name never has no records. ddup never deletes records, so a domain removed
