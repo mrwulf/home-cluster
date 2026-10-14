@@ -5,12 +5,12 @@ metadata:
   name: postiz
 spec:
   name: Postiz
-  launchUrl: https://postiz.home.${SECRET_DOMAIN}/
+  launchUrl: https://social.${SECRET_DOMAIN}/
   callbackUrls:
     # Postiz's generic OAuth provider uses ${FRONTEND_URL}/settings as the redirect URI
-    - https://postiz.home.${SECRET_DOMAIN}/settings
+    - https://social.${SECRET_DOMAIN}/settings
   logoutCallbackUrls:
-    - https://postiz.home.${SECRET_DOMAIN}/
+    - https://social.${SECRET_DOMAIN}/
   allowedUserGroups:
     - name: users
       namespace: auth

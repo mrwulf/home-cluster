@@ -61,9 +61,9 @@ spec:
                   name: postiz-oidc-credentials
             env:
               # URLs. The container serves frontend + backend behind its own nginx on :5000.
-              MAIN_URL: https://postiz.home.${SECRET_DOMAIN}
-              FRONTEND_URL: https://postiz.home.${SECRET_DOMAIN}
-              NEXT_PUBLIC_BACKEND_URL: https://postiz.home.${SECRET_DOMAIN}/api
+              MAIN_URL: https://social.${SECRET_DOMAIN}
+              FRONTEND_URL: https://social.${SECRET_DOMAIN}
+              NEXT_PUBLIC_BACKEND_URL: https://social.${SECRET_DOMAIN}/api
               BACKEND_INTERNAL_URL: http://localhost:3000
               IS_GENERAL: "true"
               # Flip to "true" once the first (admin) user has signed in via OIDC.
@@ -124,19 +124,14 @@ spec:
         enabled: true
         annotations:
           gatus.io/enabled: "true"
+        # Public: social platforms call back to this host during account linking.
         parentRefs:
-          - name: internal-gateway
+          - name: external-gateway
             namespace: networking
         hostnames:
-          - "postiz.home.${SECRET_DOMAIN}"
+          - "social.${SECRET_DOMAIN}"
         rules:
-          - filters:
-              - type: ExtensionRef
-                extensionRef:
-                  group: traefik.io
-                  kind: Middleware
-                  name: rfc1918-ips
-            backendRefs:
+          - backendRefs:
               - identifier: main
                 port: http
 

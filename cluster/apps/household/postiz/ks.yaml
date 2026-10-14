@@ -29,7 +29,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: postiz.home
+      GATUS_SUBDOMAIN: social
       VOLSYNC_CLAIM: postiz-data
       VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_NFS_START_MINUTE: "53"
