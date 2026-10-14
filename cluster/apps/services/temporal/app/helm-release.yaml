@@ -190,6 +190,9 @@ spec:
 
     serviceMonitor:
       main:
+        # Two services exist (main + ui), so the target can't be auto-detected.
+        service:
+          identifier: main
         endpoints:
           - port: metrics
             scheme: http
