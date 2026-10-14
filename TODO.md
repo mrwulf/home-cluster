@@ -52,7 +52,8 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   42 to 52 ms. "VPS-Primary Ingress via ddup" showed 128 ms (the US VPS) for days and, after the
   restart, 333 ms (the EU VPS), because `ingress-lb` publishes both addresses. Consequence: these checks
   do not verify what ddup currently publishes, so a failover that ddup performs is invisible to Gatus
-  until its connection drops. Options: a periodic restart of the Gatus pod, or an upstream change to
-  Gatus (a client option for idle timeout or disabling keep-alives). A per-endpoint `Connection: close`
-  header is untested and probably does not help on HTTP/2 (the Cloudflare edge).
+  until its connection drops. Options: a `Connection: close` header on each affected check (reported to work in the
+  upstream Gatus issues TwiN/gatus#1824 and #1539, not yet tried here), a periodic restart of the Gatus
+  pod, or an upstream change to Gatus (a client option for idle timeout or disabling keep-alives).
+  Related upstream issues with the same cause: #1824 and #856 (certificate checks showing an old cert).
   Found: 2026-10-14.
