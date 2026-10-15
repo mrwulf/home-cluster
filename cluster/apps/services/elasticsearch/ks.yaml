@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app elasticsearch
+  namespace: flux-system
+spec:
+  targetNamespace: services
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: volsync
+  path: ./cluster/apps/services/elasticsearch/app
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      # The image runs as the elasticsearch user, so the VolSync mover must match it.
+      APP_UID: "1000"
+      APP_GID: "1000"
+      VOLSYNC_CLAIM: elasticsearch-data
+      VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_NFS_START_MINUTE: "58"
+      VOLSYNC_B2_START_MINUTE: "30"

@@ -101,8 +101,13 @@ spec:
               VISIBILITY_DBNAME: temporal_visibility
               # The init containers above already created both databases.
               SKIP_DB_CREATE: "true"
-              # SQL visibility, no Elasticsearch: plenty for a single-app homelab load.
-              ENABLE_ES: "false"
+              # Advanced visibility on Elasticsearch: SQL visibility caps custom Text search
+              # attributes at 3, and the two Temporal defaults plus Postiz's two exceed that.
+              ENABLE_ES: "true"
+              ES_SEEDS: elasticsearch.services.svc.cluster.local
+              ES_PORT: "9200"
+              ES_SCHEME: http
+              ES_VERSION: v7
               DEFAULT_NAMESPACE: default
               PROMETHEUS_ENDPOINT: 0.0.0.0:9090
             probes:
