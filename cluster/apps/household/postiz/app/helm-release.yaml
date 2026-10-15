@@ -1,0 +1,147 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app postiz
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 18.6
+            env:
+              - name: INIT_POSTGRES_HOST
+                value: postgres17-rw.databases.svc.cluster.local
+              - name: INIT_POSTGRES_DBNAME
+                value: postiz
+              - name: INIT_POSTGRES_SUPER_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: postgres-superuser
+                    key: username
+              - name: INIT_POSTGRES_SUPER_PASS
+                valueFrom:
+                  secretKeyRef:
+                    name: postgres-superuser
+                    key: password
+              - name: INIT_POSTGRES_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: *app
+                    key: POSTGRES_USER
+              - name: INIT_POSTGRES_PASS
+                valueFrom:
+                  secretKeyRef:
+                    name: *app
+                    key: POSTGRES_PWD
+        containers:
+          main:
+            image:
+              repository: ghcr.io/gitroomhq/postiz-app
+              tag: v2.25.1
+            envFrom:
+              - secretRef:
+                  name: *app
+              - secretRef:
+                  name: postiz-oidc-credentials
+            env:
+              # URLs. The container serves frontend + backend behind its own nginx on :5000.
+              MAIN_URL: https://social.${SECRET_DOMAIN}
+              FRONTEND_URL: https://social.${SECRET_DOMAIN}
+              NEXT_PUBLIC_BACKEND_URL: https://social.${SECRET_DOMAIN}/api
+              BACKEND_INTERNAL_URL: http://localhost:3000
+              IS_GENERAL: "true"
+              # Flip to "true" once the first (admin) user has signed in via OIDC.
+              DISABLE_REGISTRATION: "false"
+              # Redis (BullMQ) on the shared Dragonfly, logical DB 7.
+              REDIS_URL: redis://dragonfly.databases.svc.cluster.local:6379/7
+              # Temporal (shared, services namespace).
+              TEMPORAL_ADDRESS: temporal.services.svc.cluster.local:7233
+              # Uploads + config on the VolSync-backed PVC.
+              STORAGE_PROVIDER: local
+              UPLOAD_DIRECTORY: /uploads
+              NEXT_PUBLIC_UPLOAD_DIRECTORY: /uploads
+              # Pocket ID via Postiz's generic OAuth provider.
+              POSTIZ_GENERIC_OAUTH: "true"
+              NEXT_PUBLIC_POSTIZ_OAUTH_DISPLAY_NAME: Home PocketID
+              POSTIZ_OAUTH_URL: https://id.${SECRET_DOMAIN}
+              POSTIZ_OAUTH_AUTH_URL: https://id.${SECRET_DOMAIN}/authorize
+              POSTIZ_OAUTH_TOKEN_URL: https://id.${SECRET_DOMAIN}/api/oidc/token
+              POSTIZ_OAUTH_USERINFO_URL: https://id.${SECRET_DOMAIN}/api/oidc/userinfo
+              # Outbound mail through the in-cluster relay (no auth).
+              EMAIL_PROVIDER: nodemailer
+              EMAIL_HOST: smtp-relay.system.svc.cluster.local.
+              EMAIL_PORT: "2525"
+              EMAIL_SECURE: "false"
+              EMAIL_USER: ""
+              EMAIL_PASS: ""
+              EMAIL_FROM_NAME: Postiz
+              EMAIL_FROM_ADDRESS: postiz@${SECRET_DOMAIN}
+              NX_ADD_PLUGINS: "false"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 5000
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 6
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: 5000
+
+    route:
+      main:
+        enabled: true
+        annotations:
+          gatus.io/enabled: "true"
+        # Public: social platforms call back to this host during account linking.
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "social.${SECRET_DOMAIN}"
+        rules:
+          - backendRefs:
+              - identifier: main
+                port: http
+
+    persistence:
+      data:
+        existingClaim: "${VOLSYNC_CLAIM}"
+        advancedMounts:
+          main:
+            main:
+              - path: /uploads
+                subPath: uploads
+              - path: /config
+                subPath: config

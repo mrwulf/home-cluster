@@ -1,0 +1,21 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: postiz
+spec:
+  name: Postiz
+  launchUrl: https://social.${SECRET_DOMAIN}/
+  callbackUrls:
+    # Postiz's generic OAuth provider uses ${FRONTEND_URL}/settings as the redirect URI
+    - https://social.${SECRET_DOMAIN}/settings
+  logoutCallbackUrls:
+    - https://social.${SECRET_DOMAIN}/
+  allowedUserGroups:
+    - name: users
+      namespace: auth
+  secret:
+    name: postiz-oidc-credentials
+    keys:
+      clientID: POSTIZ_OAUTH_CLIENT_ID
+      clientSecret: POSTIZ_OAUTH_CLIENT_SECRET

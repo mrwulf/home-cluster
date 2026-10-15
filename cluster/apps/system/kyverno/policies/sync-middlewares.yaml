@@ -187,6 +187,43 @@ spec:
         clone:
           namespace: networking
           name: traefik-middleware-chain-pocket-id
+    # New namespaces get their own rules: Kyverno rejects edits to existing generate rules.
+    - name: sync-rfc1918-ips-services
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - services
+      generate:
+        generateExisting: true
+        apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        name: rfc1918-ips
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: rfc1918-ips
+    - name: sync-chain-pocket-id-services
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - services
+      generate:
+        generateExisting: true
+        apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        name: traefik-middleware-chain-pocket-id
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: traefik-middleware-chain-pocket-id
     - name: sync-chain-pocket-id-rook-ceph
       match:
         any:
