@@ -59,4 +59,5 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   `ingress-lb` check now alternates between about 280 ms and 690 ms as DNS round-robins the two VPSs), a periodic restart of the Gatus
   pod, or an upstream change to Gatus (a client option for idle timeout or disabling keep-alives).
   Related upstream issues with the same cause: #1824 and #856 (certificate checks showing an old cert).
+  Filed upstream to close connections by default, with an explicit option to reuse them: TwiN/gatus#1857.
   Found: 2026-10-14.
