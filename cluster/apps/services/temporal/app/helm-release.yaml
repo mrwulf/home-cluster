@@ -82,7 +82,7 @@ spec:
           main:
             image:
               repository: docker.io/temporalio/auto-setup
-              tag: 1.28.1
+              tag: 1.29.7
             envFrom:
               - secretRef:
                   name: *app
