@@ -51,6 +51,12 @@ spec:
                   secretKeyRef:
                     name: *app
                     key: POSTGRES_PWD
+            resources: &init-resources
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
           init-db-visibility:
             image: *init-image
             env:
@@ -78,6 +84,7 @@ spec:
                   secretKeyRef:
                     name: *app
                     key: POSTGRES_PWD
+            resources: *init-resources
         containers:
           main:
             image:
@@ -126,7 +133,8 @@ spec:
               repository: docker.io/temporalio/ui
               tag: 2.56.0
             env:
-              TEMPORAL_ADDRESS: temporal.services.svc.cluster.local:7233
+              # app-template suffixes the Service name with its identifier when a release has several.
+              TEMPORAL_ADDRESS: temporal-main.services.svc.cluster.local:7233
               TEMPORAL_UI_PORT: "8080"
             probes:
               liveness: &uiprobes
