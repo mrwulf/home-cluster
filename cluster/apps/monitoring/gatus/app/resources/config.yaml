@@ -56,6 +56,11 @@ endpoints:
   - name: certificate-external
     group: external
     url: "https://flux-receiver.${SECRET_DOMAIN}"
+    # Close the connection after each check. Gatus reuses connections forever and only resolves a name
+    # when it opens one, so a long-lived connection keeps probing an address DNS no longer returns (and
+    # keeps an old certificate). External names are the ones whose records change (ddup, Cloudflare).
+    headers: &close-connection
+      Connection: close
     interval: 1h
     conditions:
       - "[CERTIFICATE_EXPIRATION] > 240h"
@@ -135,6 +140,7 @@ endpoints:
   - name: US VPS Endpoint (OVH)
     group: external
     url: "https://vps-us.${SECRET_DOMAIN}"
+    headers: *close-connection
     interval: 1m
     conditions:
       - "[STATUS] == 418"
@@ -145,6 +151,7 @@ endpoints:
   - name: EU VPS Endpoint (Hetzner)
     group: external
     url: "https://vps-eu.${SECRET_DOMAIN}"
+    headers: *close-connection
     interval: 1m
     conditions:
       - "[STATUS] == 418"
@@ -155,6 +162,7 @@ endpoints:
   - name: VPS-Primary Ingress via ddup (excluded apps)
     group: external
     url: "https://ingress-lb.${SECRET_DOMAIN}"
+    headers: *close-connection
     interval: 2m
     conditions:
       - "[STATUS] == 418"
@@ -165,6 +173,7 @@ endpoints:
   - name: Fast Ingress via ddup (Cloudflare Tunnel primary)
     group: external
     url: "https://fast-lb.${SECRET_DOMAIN}"
+    headers: *close-connection
     interval: 2m
     conditions:
       - "[STATUS] == 418"
@@ -182,6 +191,7 @@ endpoints:
     # all - the fast-failover worker's own tunnel-health probe can't see that, since it
     # only tests a hostname (external.${SECRET_DOMAIN}) that's always explicitly proxied.
     url: "https://flux-receiver.${SECRET_DOMAIN}"
+    headers: *close-connection
     interval: 2m
     conditions:
       - "[STATUS] == 404"
@@ -192,6 +202,7 @@ endpoints:
   - name: Cloudflare Tunnel Direct
     group: external
     url: "https://external.${SECRET_DOMAIN}"
+    headers: *close-connection
     interval: 2m
     conditions:
       - "[STATUS] == 418"

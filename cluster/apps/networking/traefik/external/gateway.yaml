@@ -16,8 +16,12 @@ metadata:
     external-dns.kubernetes.io/target: "fast-lb.${SECRET_DOMAIN}"
     # Probe attached routes via public DNS (egress -> 1.1.1.1) so Gatus tests the
     # real external path. Inherited by all routes; per-route config wins on conflicts.
+    # Connection: close because Gatus reuses connections forever and only resolves a name when it
+    # opens one, so a kept-open connection would keep probing an address DNS no longer returns.
     gatus.io/endpoint: |
       group: external
+      headers:
+        Connection: close
       client:
         dns-resolver: "udp://1.1.1.1:53"
       alerts:
