@@ -33,7 +33,7 @@ spec:
             image:
               # Pinned to 7.x: Temporal is configured for ES_VERSION=v7 (see Renovate rule).
               repository: docker.io/library/elasticsearch
-              tag: 7.17.27
+              tag: 7.17.28
             env:
               discovery.type: single-node
               # Cluster-internal and only reached by Temporal.
