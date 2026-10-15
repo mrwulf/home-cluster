@@ -72,8 +72,9 @@ spec:
               NEXT_PUBLIC_BACKEND_URL: https://social.${SECRET_DOMAIN}/api
               BACKEND_INTERNAL_URL: http://localhost:3000
               IS_GENERAL: "true"
-              # Flip to "true" once the first (admin) user has signed in via OIDC.
-              DISABLE_REGISTRATION: "false"
+              # Public host: no self-service signups. The first user was created via OIDC;
+              # set to "false" temporarily to onboard another person.
+              DISABLE_REGISTRATION: "true"
               # Redis (BullMQ) on the shared Dragonfly, logical DB 7.
               REDIS_URL: redis://dragonfly.databases.svc.cluster.local:6379/7
               # Temporal (shared, services namespace).
