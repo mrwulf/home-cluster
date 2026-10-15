@@ -49,6 +49,12 @@ spec:
                   secretKeyRef:
                     name: *app
                     key: POSTGRES_PWD
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
         containers:
           main:
             image:
@@ -71,7 +77,7 @@ spec:
               # Redis (BullMQ) on the shared Dragonfly, logical DB 7.
               REDIS_URL: redis://dragonfly.databases.svc.cluster.local:6379/7
               # Temporal (shared, services namespace).
-              TEMPORAL_ADDRESS: temporal.services.svc.cluster.local:7233
+              TEMPORAL_ADDRESS: temporal-main.services.svc.cluster.local:7233
               # Uploads + config on the VolSync-backed PVC.
               STORAGE_PROVIDER: local
               UPLOAD_DIRECTORY: /uploads
