@@ -73,7 +73,7 @@ in priority tiers: only the healthy endpoints with the lowest priority are
 published.
 
 It runs two replicas. Both health-check, and a Kubernetes Lease named `ddup`
-(leader election) decides which one updates DNS and sends webhooks. If the
+(leader election) decides which one updates DNS and sends notifications. If the
 leader goes away, the other takes over within about 15 seconds. The Lease holder
 is identified by its pod IP, and the standby forwards dashboard API requests
 (status and "check now") to it, so the dashboard always shows the leader's view.
@@ -83,6 +83,17 @@ is identified by its pod IP, and the standby forwards dashboard API requests
 | `ingress-lb.${SECRET_DOMAIN}` | US + EU VPS A records (round-robin)   | CNAME to the tunnel (`proxied: true`) | `ingress.` |
 | `fast-lb.${SECRET_DOMAIN}`    | CNAME to the tunnel (`proxied: true`) | US + EU VPS A records (round-robin)   | `fast.`    |
 
+Measured latency (from inside the cluster, October 2026, on warm connections): a request through
+the US VPS takes about 130 ms and through the EU VPS about 335 ms, while the Cloudflare Tunnel is about
+45 to 60 ms. A fresh connection adds the TCP and TLS setup, so the VPS paths take about 260 ms (US) and
+670 ms (EU) the first time. `ingress-lb` publishes both VPS addresses (round-robin), so a client gets
+either path. Gatus reuses connections and only resolves a name when it opens one, so the external
+checks send `Connection: close` (Gatus annotation on the external Gateways and the static external
+checks); without it their numbers showed one pinned connection and not the published records (see TODO.md).
+The measurements above are warm; on fresh connections, as Gatus now measures, `ingress-lb` alternates
+between about 280 ms and 690 ms. To make the US VPS the preferred path, give it a lower `priority` than the EU VPS in the
+ddup ConfigMap, at the cost of losing the load spread while it is healthy.
+
 When the record type changes, ddup overwrites the existing record in place, so
 the name never has no records. ddup never deletes records, so a domain removed
 from its config leaves its records in Cloudflare until they are deleted by hand.
@@ -90,17 +101,19 @@ Its status dashboard is at `ddup.home.${SECRET_DOMAIN}` (LAN/VPN only).
 
 ddup also keeps the home network's dynamic DNS record up to date (it replaced the
 `cloudflare-ddns` CronJob): the endpoint has no health check URL and finds its
-address with `ipLookup`, calling `icanhazip.com` and then `ipify.org` for the
+address with `ipLookupFamily` and `ipLookupURLs`, asking `icanhazip.com` and `ipify.org` at the same time (the first valid answer wins, over https only) for the
 public IPv4 address the cluster reaches the internet from. The record is in a
 different Cloudflare zone, so it has its own provider with its own token and zone
 ID, and its name stays out of git (`DDNS_RECORD_NAME`, from Bitwarden).
 
-Alerts go to in-cluster ntfy and to email through the Resend HTTP API
-(webhooks in the ddup ConfigMap). Credentials come from the Bitwarden item
-`ddup Service Credentials` through the `ddup` ExternalSecret: a dedicated
+Alerts (a DNS update, a failed update, no healthy endpoints) go to in-cluster ntfy and to
+email, configured under `notifications` in the ddup ConfigMap. Email goes through the
+in-cluster `smtp-relay` (no TLS, no authentication), which forwards it to Mailgun, so the
+sender must be on a domain the relay accepts. Only the Lease holder sends. Credentials come
+from the Bitwarden item `ddup Service Credentials` through the `ddup` ExternalSecret: a dedicated
 Cloudflare API token (`cloudflare_api_token`, **Zone → DNS → Edit** on the one
-zone), the Resend `email_api_key`, and the `email_from` / `email_to` addresses
-(`email_from` must be on a domain verified in Resend).
+zone), the publish-only `ntfy_token`, and the `email_from` / `email_to` addresses
+(`email_from` becomes the connection string for the relay).
 
 ---
 

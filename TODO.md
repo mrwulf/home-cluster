@@ -41,3 +41,23 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   `ingress-vps/app/tofu.yaml`, move the ExternalSecret next to them, delete the directory and the
   `cloudflare-ddns` dependency in `cloudflare-tunnel/ks.yaml`. That token (`api-token-external-dns`) is
   also broader than the tofu stacks need.
+
+- **Gatus keeps connections open forever, so its external checks stop following DNS.** Gatus v5.37.0
+  builds its shared HTTP transport with `MaxIdleConns: 100` and no `IdleConnTimeout`, so every
+  connection it opens is reused indefinitely and a hostname is only resolved when a new connection is
+  needed. A check therefore keeps talking to whichever address it first got, and its duration is the
+  request time on that warm connection, not a fresh one. Seen 2026-10-14: "Fast Ingress via ddup" sat at
+  a flat 335 ms (the EU VPS path) and "Cloudflare Tunnel Direct" at 650 ms, while a fresh connection
+  from inside the cluster took 55 ms and 45 ms; after restarting the Gatus pod they read 50 to 58 ms and
+  42 to 52 ms. "VPS-Primary Ingress via ddup" showed 128 ms (the US VPS) for days and, after the
+  restart, 333 ms (the EU VPS), because `ingress-lb` publishes both addresses. Consequence: these checks
+  do not verify what ddup currently publishes, so a failover that ddup performs is invisible to Gatus
+  until its connection drops. Options: a `Connection: close` header on each affected check (reported to work in the
+  upstream Gatus issues TwiN/gatus#1824 and #1539; applied to the external checks in PR #5567 and
+  confirmed on the live cluster on 2026-10-14: no connections to the Cloudflare edge or the VPSs stay
+  open, `fast-lb` reads 115 to 126 ms and the tunnel 61 to 147 ms on fresh connections, and the
+  `ingress-lb` check now alternates between about 280 ms and 690 ms as DNS round-robins the two VPSs), a periodic restart of the Gatus
+  pod, or an upstream change to Gatus (a client option for idle timeout or disabling keep-alives).
+  Related upstream issues with the same cause: #1824 and #856 (certificate checks showing an old cert).
+  Filed upstream to close connections by default, with an explicit option to reuse them: TwiN/gatus#1857.
+  Found: 2026-10-14.
