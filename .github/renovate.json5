@@ -150,6 +150,13 @@
       allowedVersions: "/^(?:20|22|24|26|28|30)\\b.*-alpine$/",
     },
     {
+      // Temporal's visibility store is configured for ES_VERSION=v7 (cluster/apps/services/temporal).
+      // Moving to 8.x means changing that setting and the index, so stay on 7.x until then.
+      matchDatasources: ["docker"],
+      matchPackageNames: ["docker.io/library/elasticsearch", "elasticsearch"],
+      allowedVersions: "< 8",
+    },
+    {
       // v5.26.0 regresses `modified_on` planning on cloudflare_dns_record updates,
       // breaking apply with "Provider produced inconsistent result after apply"
       // (reported to fail every DNS record apply, not only out-of-band changes).
