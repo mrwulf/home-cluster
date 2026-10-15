@@ -125,7 +125,7 @@ spec:
           main:
             image:
               repository: docker.io/temporalio/ui
-              tag: 2.34.0
+              tag: 2.56.0
             env:
               TEMPORAL_ADDRESS: temporal.services.svc.cluster.local:7233
               TEMPORAL_UI_PORT: "8080"
