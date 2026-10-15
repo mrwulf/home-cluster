@@ -97,7 +97,6 @@ spec:
               # SQL visibility, no Elasticsearch: plenty for a single-app homelab load.
               ENABLE_ES: "false"
               DEFAULT_NAMESPACE: default
-              DYNAMIC_CONFIG_FILE_PATH: config/dynamicconfig/development-sql.yaml
               PROMETHEUS_ENDPOINT: 0.0.0.0:9090
             probes:
               liveness: &probes
