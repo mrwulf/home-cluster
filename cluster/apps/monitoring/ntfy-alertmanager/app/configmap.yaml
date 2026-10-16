@@ -46,13 +46,17 @@ data:
     }
   # The default body lists every label and annotation of every alert in the group.
   # A big group exceeds ntfy's 4096-byte message limit, and ntfy then rejects it as an attachment.
-  # One truncated line per alert, capped at 5, keeps the body well under the limit.
+  # One truncated line per alert, capped at 10 lines of 200 characters, keeps the body around 3 KB at most,
+  # including the logs link.
+  # The line is the description, because it names the node, mountpoint, pod and so on (the summary is often
+  # generic, for example "Host filesystem free space is getting low"). Summary and alertname are fallbacks.
+  # An alert that resolved while its group is still firing is marked.
   # A severity line leads firing notifications only, so resolved ones show just the check mark tag.
   # A logs_url annotation shared by the whole group becomes a trailing link on firing notifications.
   body.tmpl: |
     {{ if eq .Status "firing" }}{{ if eq .CommonLabels.severity "critical" }}🚨 critical
     {{ else if eq .CommonLabels.severity "warning" }}⚠️ warning
-    {{ end }}{{ end }}{{ range $i, $a := .Alerts }}{{ if lt $i 5 }}- {{ printf "%.160s" (or $a.Annotations.summary $a.Annotations.description $a.Labels.alertname) }}
-    {{ end }}{{ end }}{{ if gt (len .Alerts) 5 }}({{ len .Alerts }} alerts in group, first 5 shown)
+    {{ end }}{{ end }}{{ range $i, $a := .Alerts }}{{ if lt $i 10 }}- {{ if eq $a.Status "resolved" }}(resolved) {{ end }}{{ printf "%.200s" (or $a.Annotations.description $a.Annotations.summary $a.Labels.alertname) }}
+    {{ end }}{{ end }}{{ if gt (len .Alerts) 10 }}({{ len .Alerts }} alerts in group, first 10 shown)
     {{ end }}{{ if eq .Status "firing" }}{{ with .CommonAnnotations.logs_url }}[Logs]({{ . }})
     {{ end }}{{ end }}
