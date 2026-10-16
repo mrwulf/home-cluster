@@ -107,9 +107,16 @@ spec:
                 evictFailedBarePods: true
                 evictLocalStoragePods: true
                 evictSystemCriticalPods: true
+            # Pods labeled descheduler.home-cluster.io/exempt are skipped by both plugins.
+            # VolSync movers set it (moverPodLabels) because they sit Pending/PodInitializing
+            # while the snapshot clone attaches, and reaping them restarts the backup.
             - name: PodLifeTime
               args:
                 maxPodLifeTimeSeconds: 300
+                labelSelector:
+                  matchExpressions:
+                    - key: descheduler.home-cluster.io/exempt
+                      operator: DoesNotExist
                 states:
                   - ContainerCannotRun
                   - CrashLoopBackOff
@@ -126,6 +133,10 @@ spec:
               args:
                 includingInitContainers: true
                 minPodLifetimeSeconds: 300
+                labelSelector:
+                  matchExpressions:
+                    - key: descheduler.home-cluster.io/exempt
+                      operator: DoesNotExist
           plugins:
             deschedule:
               enabled:
