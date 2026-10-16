@@ -107,9 +107,16 @@ spec:
                 evictFailedBarePods: true
                 evictLocalStoragePods: true
                 evictSystemCriticalPods: true
+            # VolSync mover pods sit Pending/PodInitializing while the snapshot clone
+            # attaches; reaping them restarts the backup. Exempt them from both plugins.
             - name: PodLifeTime
               args:
                 maxPodLifeTimeSeconds: 300
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/created-by
+                      operator: NotIn
+                      values: [volsync]
                 states:
                   - ContainerCannotRun
                   - CrashLoopBackOff
@@ -126,6 +133,11 @@ spec:
               args:
                 includingInitContainers: true
                 minPodLifetimeSeconds: 300
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/created-by
+                      operator: NotIn
+                      values: [volsync]
           plugins:
             deschedule:
               enabled:
