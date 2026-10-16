@@ -98,8 +98,10 @@ data:
           zoneId: !file /etc/ddup/secrets/DDNS_CLOUDFLARE_ZONE_ID
 
     notifications:
-      ntfy:
+      webhooks:
         - name: "ntfy"
+          # ntfy is a webhook format: the URL includes the topic
+          format: "ntfy"
           # In-cluster ntfy; default access is deny-all, so a token is required
           url: "http://ntfy.system.svc.cluster.local:80/ddup"
           # The bare token: ddup adds "Bearer "

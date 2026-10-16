@@ -31,8 +31,8 @@ spec:
             image:
               # Fork of github.com/ItalyPaleAle/ddup (reads secrets with upstream's !file tag)
               repository: ghcr.io/mrwulf/ddup
-              # fork.1 predates !env/!file support and must not be used; priorities and CNAME/proxied targets need fork.5 or later, IP lookup (dynamic DNS) fork.6, fork.7 for the shared-address and log-redaction fixes, fork.9 for the status tags used by the ntfy webhook, fork.19 for leader election (replicas: 2), fork.20 for standbys forwarding API requests to the leader, fork.22 for the since tooltip, the status shapes in the icon and the segmented health bar, fork.24 for the typed config (providerOptions, ipLookupFamily, notifications) built from the open upstream PRs; fork.22 and earlier refuse that config
-              tag: 0.6.0-fork.24
+              # fork.1 predates !env/!file support and must not be used; priorities and CNAME/proxied targets need fork.5 or later, IP lookup (dynamic DNS) fork.6, fork.7 for the shared-address and log-redaction fixes, fork.9 for the status tags used by the ntfy webhook, fork.19 for leader election (replicas: 2), fork.20 for standbys forwarding API requests to the leader, fork.22 for the since tooltip, the status shapes in the icon and the segmented health bar, fork.24 for the typed config (providerOptions, ipLookupFamily, notifications) built from the open upstream PRs; fork.22 and earlier refuse that config; fork.25 for ntfy as a webhook with format ntfy (notifications.ntfy is gone), the failed checks in the history popover and the reviewed IP lookup; fork.24 and earlier refuse the new notifications config
+              tag: 0.6.0-fork.25
             env:
               DDUP_CONFIG: /etc/ddup/config.yaml
               # Prometheus pull via the OTel autoexport library (defaults to "none" and to localhost)
