@@ -20,8 +20,14 @@ spec:
             # The link goes through /login?redirectTo= on purpose. Grafana allows anonymous Viewer access, and a
             # logged-out visitor sent straight to /explore landed on the home page (likely no Explore access as
             # a Viewer). /login starts the Pocket ID login and carries the target through it.
-            # The Loki query uses backtick strings so the JSON needs no escaping (no backslash in the URL).
+            # LogQL, written with backtick strings so the JSON needs no escaping (no backslash in the URL):
+            #   {job=`kubernetes`} |= `Evicted pod` |= `strategy=`
+            #     | json | line_format `{{.message}}`
+            #     | regexp `pod=.(?P<pod>[^ ]+). reason.*strategy=.(?P<strategy>[^ ]+). node=.(?P<node>[^ ]+). `
+            #     | line_format `{{.pod}}  ({{.strategy}}, {{.node}})`
+            # Vector stores each line as a JSON event, so json + line_format unwrap .message before the regexp.
+            # The selector is job only: {k8s_app=`descheduler`} matched nothing, the line filters are distinctive enough.
             logs_url: >-
-              https://grafana.home.${SECRET_DOMAIN}/login?redirectTo=%2Fexplore%3Fleft%3D%257B%2522datasource%2522%253A%2522Loki%2522%252C%2522queries%2522%253A%255B%257B%2522refId%2522%253A%2522A%2522%252C%2522expr%2522%253A%2522%257Bjob%253D%2560kubernetes%2560%252Ck8s_app%253D%2560descheduler%2560%257D%2520%257C%253D%2520%2560Evicted%2520pod%2560%2522%257D%255D%252C%2522range%2522%253A%257B%2522from%2522%253A%2522now-6h%2522%252C%2522to%2522%253A%2522now%2522%257D%257D
+              https://grafana.home.${SECRET_DOMAIN}/login?redirectTo=%2Fexplore%3Fleft%3D%257B%2522datasource%2522%253A%2522Loki%2522%252C%2522queries%2522%253A%255B%257B%2522refId%2522%253A%2522A%2522%252C%2522expr%2522%253A%2522%257Bjob%253D%2560kubernetes%2560%257D%2520%257C%253D%2520%2560Evicted%2520pod%2560%2520%257C%253D%2520%2560strategy%253D%2560%2520%257C%2520json%2520%257C%2520line_format%2520%2560%257B%257B.message%257D%257D%2560%2520%257C%2520regexp%2520%2560pod%253D.%2528%253FP%253Cpod%253E%255B%255E%2520%255D%252B%2529.%2520reason.%252Astrategy%253D.%2528%253FP%253Cstrategy%253E%255B%255E%2520%255D%252B%2529.%2520node%253D.%2528%253FP%253Cnode%253E%255B%255E%2520%255D%252B%2529.%2520%2560%2520%257C%2520line_format%2520%2560%257B%257B.pod%257D%257D%2520%2520%2528%257B%257B.strategy%257D%257D%252C%2520%257B%257B.node%257D%257D%2529%2560%2522%257D%255D%252C%2522range%2522%253A%257B%2522from%2522%253A%2522now-6h%2522%252C%2522to%2522%253A%2522now%2522%257D%257D
           labels:
             severity: warning
