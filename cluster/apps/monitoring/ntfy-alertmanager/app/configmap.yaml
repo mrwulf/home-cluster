@@ -50,13 +50,20 @@ data:
   # including the logs link.
   # The line is the description, because it names the node, mountpoint, pod and so on (the summary is often
   # generic, for example "Host filesystem free space is getting low"). Summary and alertname are fallbacks.
-  # An alert that resolved while its group is still firing is marked.
-  # A severity line leads firing notifications only, so resolved ones show just the check mark tag.
-  # A logs_url annotation shared by the whole group becomes a trailing link on firing notifications.
+  # Alertmanager keeps a resolved alert in its group's next notification, so one notification can hold both
+  # firing and resolved alerts. When it does, the body splits into a Firing and a Resolved section.
+  # A group that is all firing or all resolved is a plain list. $f and $r are "has a firing alert" and
+  # "has a resolved alert". The 10 line cap is over the whole group, in alert order.
+  # A severity line leads notifications that have a firing alert, so resolved ones show just the check mark tag.
+  # A logs_url annotation shared by the whole group becomes a trailing link on those notifications.
   body.tmpl: |
-    {{ if eq .Status "firing" }}{{ if eq .CommonLabels.severity "critical" }}🚨 critical
+    {{ $f := false }}{{ $r := false }}{{ range .Alerts }}{{ if eq .Status "firing" }}{{ $f = true }}{{ else }}{{ $r = true }}{{ end }}{{ end }}{{ if $f }}{{ if eq .CommonLabels.severity "critical" }}🚨 critical
     {{ else if eq .CommonLabels.severity "warning" }}⚠️ warning
-    {{ end }}{{ end }}{{ range $i, $a := .Alerts }}{{ if lt $i 10 }}- {{ if eq $a.Status "resolved" }}(resolved) {{ end }}{{ printf "%.200s" (or $a.Annotations.description $a.Annotations.summary $a.Labels.alertname) }}
-    {{ end }}{{ end }}{{ if gt (len .Alerts) 10 }}({{ len .Alerts }} alerts in group, first 10 shown)
-    {{ end }}{{ if eq .Status "firing" }}{{ with .CommonAnnotations.logs_url }}[Logs]({{ . }})
+    {{ end }}{{ end }}{{ if and $f $r }}**Firing**
+    {{ end }}{{ range $i, $a := .Alerts }}{{ if and (lt $i 10) (or (ne $a.Status "resolved") (not $f)) }}- {{ printf "%.200s" (or $a.Annotations.description $a.Annotations.summary $a.Labels.alertname) }}
+    {{ end }}{{ end }}{{ if and $f $r }}
+    **Resolved**
+    {{ range $i, $a := .Alerts }}{{ if and (lt $i 10) (eq $a.Status "resolved") }}- {{ printf "%.200s" (or $a.Annotations.description $a.Annotations.summary $a.Labels.alertname) }}
+    {{ end }}{{ end }}{{ end }}{{ if gt (len .Alerts) 10 }}({{ len .Alerts }} alerts in group, first 10 shown)
+    {{ end }}{{ if $f }}{{ with .CommonAnnotations.logs_url }}[Logs]({{ . }})
     {{ end }}{{ end }}
