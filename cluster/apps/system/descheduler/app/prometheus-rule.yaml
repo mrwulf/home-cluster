@@ -17,17 +17,19 @@ spec:
             # Metrics carry no pod names; the descheduler logs one "Evicted pod" line per eviction.
             # Grafana Explore on Loki, last 6 hours (evictions are sporadic and alerts get read late).
             # ntfy-alertmanager prints this link in the notification body.
-            # The link goes through /login?redirectTo= on purpose. Grafana allows anonymous Viewer access, and a
-            # logged-out visitor sent straight to /explore landed on the home page (likely no Explore access as
-            # a Viewer). /login starts the Pocket ID login and carries the target through it.
+            # A direct /explore link works for a logged-in viewer. A /login?redirectTo= link does not: a
+            # logged-in viewer is sent to the home page. A logged-out viewer lands on the home page either way
+            # (Grafana allows anonymous Viewer access, which cannot use Explore) and has to sign in first.
             # LogQL, written with backtick strings so the JSON needs no escaping (no backslash in the URL):
-            #   {job=`kubernetes`} |= `Evicted pod` |= `strategy=`
-            #     | json | line_format `{{.message}}`
+            #   {job=`kubernetes`} |~ `Evicted po[d]` |~ `strateg[y]=`
+            #     | json | kubernetes_container_name=`descheduler`
+            #     | line_format `{{.message}}`
             #     | regexp `pod=.(?P<pod>[^ ]+). reason.*strategy=.(?P<strategy>[^ ]+). node=.(?P<node>[^ ]+). `
             #     | line_format `{{.pod}}  ({{.strategy}}, {{.node}})`
             # Vector stores each line as a JSON event, so json + line_format unwrap .message before the regexp.
-            # The selector is job only: {k8s_app=`descheduler`} matched nothing, the line filters are distinctive enough.
+            # The k8s_* stream labels set in the Vector sink do not exist in Loki, so the container is matched after
+            # json. [d] and [y] keep the query's own text, which Loki and Grafana log, from matching its filters.
             logs_url: >-
-              https://grafana.home.${SECRET_DOMAIN}/login?redirectTo=%2Fexplore%3Fleft%3D%257B%2522datasource%2522%253A%2522Loki%2522%252C%2522queries%2522%253A%255B%257B%2522refId%2522%253A%2522A%2522%252C%2522expr%2522%253A%2522%257Bjob%253D%2560kubernetes%2560%257D%2520%257C%253D%2520%2560Evicted%2520pod%2560%2520%257C%253D%2520%2560strategy%253D%2560%2520%257C%2520json%2520%257C%2520line_format%2520%2560%257B%257B.message%257D%257D%2560%2520%257C%2520regexp%2520%2560pod%253D.%2528%253FP%253Cpod%253E%255B%255E%2520%255D%252B%2529.%2520reason.%252Astrategy%253D.%2528%253FP%253Cstrategy%253E%255B%255E%2520%255D%252B%2529.%2520node%253D.%2528%253FP%253Cnode%253E%255B%255E%2520%255D%252B%2529.%2520%2560%2520%257C%2520line_format%2520%2560%257B%257B.pod%257D%257D%2520%2520%2528%257B%257B.strategy%257D%257D%252C%2520%257B%257B.node%257D%257D%2529%2560%2522%257D%255D%252C%2522range%2522%253A%257B%2522from%2522%253A%2522now-6h%2522%252C%2522to%2522%253A%2522now%2522%257D%257D
+              https://grafana.home.${SECRET_DOMAIN}/explore?left=%7B%22datasource%22%3A%22Loki%22%2C%22queries%22%3A%5B%7B%22refId%22%3A%22A%22%2C%22expr%22%3A%22%7Bjob%3D%60kubernetes%60%7D%20%7C~%20%60Evicted%20po%5Bd%5D%60%20%7C~%20%60strateg%5By%5D%3D%60%20%7C%20json%20%7C%20kubernetes_container_name%3D%60descheduler%60%20%7C%20line_format%20%60%7B%7B.message%7D%7D%60%20%7C%20regexp%20%60pod%3D.%28%3FP%3Cpod%3E%5B%5E%20%5D%2B%29.%20reason.%2Astrategy%3D.%28%3FP%3Cstrategy%3E%5B%5E%20%5D%2B%29.%20node%3D.%28%3FP%3Cnode%3E%5B%5E%20%5D%2B%29.%20%60%20%7C%20line_format%20%60%7B%7B.pod%7D%7D%20%20%28%7B%7B.strategy%7D%7D%2C%20%7B%7B.node%7D%7D%29%60%22%7D%5D%2C%22range%22%3A%7B%22from%22%3A%22now-6h%22%2C%22to%22%3A%22now%22%7D%7D
           labels:
             severity: warning
