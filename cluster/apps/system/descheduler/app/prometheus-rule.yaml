@@ -15,10 +15,13 @@ spec:
             summary: >-
               Descheduler evicted pod(s) on node {{ $labels.node }} in namespace {{ $labels.namespace }} via strategy {{ $labels.strategy }} within the last 5 minutes
             # Metrics carry no pod names; the descheduler logs one "Evicted pod" line per eviction.
-            # Grafana Explore on Loki, last 6 hours (evictions are sporadic and alerts get read late). ntfy-alertmanager prints this link in the notification body.
-            # The query uses backtick strings so the URL has no backslash (%5C); with one, the post-login
-            # redirect landed on the Grafana home page instead of Explore.
+            # Grafana Explore on Loki, last 6 hours (evictions are sporadic and alerts get read late).
+            # ntfy-alertmanager prints this link in the notification body.
+            # The link goes through /login?redirectTo= on purpose. Grafana allows anonymous Viewer access, and a
+            # logged-out visitor sent straight to /explore landed on the home page (likely no Explore access as
+            # a Viewer). /login starts the Pocket ID login and carries the target through it.
+            # The Loki query uses backtick strings so the JSON needs no escaping (no backslash in the URL).
             logs_url: >-
-              https://grafana.home.${SECRET_DOMAIN}/explore?left=%7B%22datasource%22%3A%22Loki%22%2C%22queries%22%3A%5B%7B%22refId%22%3A%22A%22%2C%22expr%22%3A%22%7Bjob%3D%60kubernetes%60%2Ck8s_app%3D%60descheduler%60%7D%20%7C%3D%20%60Evicted%20pod%60%22%7D%5D%2C%22range%22%3A%7B%22from%22%3A%22now-6h%22%2C%22to%22%3A%22now%22%7D%7D
+              https://grafana.home.${SECRET_DOMAIN}/login?redirectTo=%2Fexplore%3Fleft%3D%257B%2522datasource%2522%253A%2522Loki%2522%252C%2522queries%2522%253A%255B%257B%2522refId%2522%253A%2522A%2522%252C%2522expr%2522%253A%2522%257Bjob%253D%2560kubernetes%2560%252Ck8s_app%253D%2560descheduler%2560%257D%2520%257C%253D%2520%2560Evicted%2520pod%2560%2522%257D%255D%252C%2522range%2522%253A%257B%2522from%2522%253A%2522now-6h%2522%252C%2522to%2522%253A%2522now%2522%257D%257D
           labels:
             severity: warning
