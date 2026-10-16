@@ -97,7 +97,12 @@
         "/siderolabs\\/installer/",
         "/siderolabs\\/talosctl/",
       ],
-      matchDatasources: ["custom.talos-factory", "docker", "github-releases"],
+      matchDatasources: [
+        "custom.talos-factory",
+        "docker",
+        "github-releases",
+        "github-tags",
+      ],
       group: { commitMessageTopic: "{{{groupName}}} group" },
       separateMinorPatch: true,
     },
