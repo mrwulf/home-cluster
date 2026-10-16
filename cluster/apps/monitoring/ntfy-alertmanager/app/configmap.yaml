@@ -41,4 +41,12 @@ data:
         access-token NTFY_ALERTMANAGER_ACCESS_TOKEN_PLACEHOLDER
         markdown true
         generator-url-label source
+        template-path /etc/ntfy-alertmanager/body.tmpl
     }
+  # The default body lists every label and annotation of every alert in the group.
+  # A big group exceeds ntfy's 4096-byte message limit, and ntfy then rejects it as an attachment.
+  # One truncated line per alert, capped at 5, keeps the body well under the limit.
+  body.tmpl: |
+    {{ range $i, $a := .Alerts }}{{ if lt $i 5 }}- {{ printf "%.160s" (or $a.Annotations.summary $a.Annotations.description $a.Labels.alertname) }}
+    {{ end }}{{ end }}{{ if gt (len .Alerts) 5 }}({{ len .Alerts }} alerts in group, first 5 shown)
+    {{ end }}

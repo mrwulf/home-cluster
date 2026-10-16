@@ -67,6 +67,9 @@ spec:
             init-config:
               - path: /etc/ntfy-alertmanager-template/config.scfg
                 subPath: config.scfg
+            main:
+              - path: /etc/ntfy-alertmanager/body.tmpl
+                subPath: body.tmpl
       config:
         type: emptyDir
         advancedMounts:
