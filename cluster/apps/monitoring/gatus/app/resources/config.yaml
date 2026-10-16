@@ -13,15 +13,6 @@ ui:
   title: Status | Gatus
   header: Status
 alerting:
-  pushover:
-    application-token: $${PUSHOVER_TOKEN}
-    user-key: $${PUSHOVER_USER_KEY}
-    priority: 0
-    default-alert:
-      description: health-check failed
-      send-on-resolved: true
-      failure-threshold: 3
-      success-threshold: 3
   ntfy:
     url: "https://ntfy.${SECRET_DOMAIN}"
     topic: gatus-alerts
@@ -48,7 +39,6 @@ endpoints:
       - "[BODY] == 10.0.10.30"
       - "[DNS_RCODE] == NOERROR"
     alerts: &alerts
-      - type: pushover
       - type: ntfy
     ui:
       hide-hostname: true
