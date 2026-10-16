@@ -20,13 +20,6 @@ spec:
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
       registryFilters:
         - :latest$
-    grafanaDashboard:
-      enabled: true
-      labels:
-        grafana_dashboard: "1"
-    service:
-      registry:
-        hostPort: 29999
     serviceMonitor:
       enabled: true
     securityContext:
