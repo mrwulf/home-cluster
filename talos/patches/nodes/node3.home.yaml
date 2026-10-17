@@ -5,7 +5,8 @@ apiVersion: v1alpha1
 kind: UnattendedInstallConfig
 provisioning:
   diskSelector:
-    match: disk.model == "PNY CS2241 1TB SSD"
+    # Applies on reinstall only; see docs/ceph-node1-osd-swap.md (the PNY moves to node1 as a Ceph OSD).
+    match: disk.model == "Micron MTFDHBA512TDV"
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig
