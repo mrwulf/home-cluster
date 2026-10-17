@@ -28,7 +28,7 @@ spec:
           main:
             image:
               repository: ghcr.io/home-operations/sonarr
-              tag: "5.0.0.2635"
+              tag: "5.0.0.2668"
             env:
               TZ: "${TIMEZONE}"
               SONARR__INSTANCE_NAME: Sonarr
