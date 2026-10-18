@@ -100,18 +100,27 @@ spec:
               EMAIL_FROM_NAME: Postiz
               EMAIL_FROM_ADDRESS: postiz@${SECRET_DOMAIN}
               NX_ADD_PLUGINS: "false"
+            # Probe the backend (:3000), not nginx (:5000): nginx is up even when the
+            # backend is stuck, which left the pod Ready with every /api call failing.
             probes:
               liveness: &probes
                 enabled: true
                 custom: true
                 spec:
                   tcpSocket:
-                    port: 5000
-                  initialDelaySeconds: 30
+                    port: 3000
                   periodSeconds: 10
                   timeoutSeconds: 3
                   failureThreshold: 6
               readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 3000
+                  periodSeconds: 10
+                  failureThreshold: 30
             resources:
               requests:
                 cpu: 100m
