@@ -33,7 +33,9 @@ Before the real encode, a sample probe encodes two 30-second slices with the flo
 arguments, compares them with the same slices stream-copied, and projects the whole file (about 15
 seconds). If the projection is not at least 10% smaller, the file is skipped and recorded in
 `no-savings.txt` without a full encode. The probe only runs on the hardware-decode path, and any trouble
-running it falls through to the real encode. Output under 5% of the original goes to review. Output
+running it falls through to the real encode. Files whose container reports a bogus frame rate above 120
+fps (a 240 fps timebase next to a 24 fps average) are encoded with the output rate pinned to the
+average, since `hevc_qsv` refuses to open at 240 fps. Output under 5% of the original goes to review. Output
 that is not at least 5% smaller (already-compact sources can grow) keeps the original quietly, with no
 error, and the path is remembered in `/temp/hc/no-savings.txt` so it is never encoded or fed again. If the first attempt fails (filter or
 decode errors), the flow retries once with software decode and scaling before giving up. Immediately
