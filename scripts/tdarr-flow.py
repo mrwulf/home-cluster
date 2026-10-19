@@ -74,6 +74,15 @@ module.exports = async (args) => {
   const fr = String(v.avg_frame_rate || v.r_frame_rate || '').split('/');
   const fps = Number(fr[0]) / (Number(fr[1]) || 1);
   args.variables.user.hcGop = String(Math.round((fps > 0 && fps < 121 ? fps : 24) * 5));
+  // Some MP4s report a bogus container rate (240 fps) next to a sane average (23.97). hevc_qsv refuses
+  // to open at 240 fps, so pin the output to the average rate (the usual NTSC fractions kept exact).
+  const rr = String(v.r_frame_rate || '').split('/');
+  const rfps = Number(rr[0]) / (Number(rr[1]) || 1);
+  if (rfps > 120 && fps > 0 && fps < 121) {
+    const ntsc = [24000, 30000, 60000].find((n) => Math.abs(fps - n / 1001) < 0.02);
+    args.variables.user.hcRate = ntsc ? ntsc + '/1001' : String(Math.round(fps * 1000) / 1000);
+    args.jobLog('HC rate: container reports ' + rfps + ' fps, encoding at ' + args.variables.user.hcRate);
+  }
   args.jobLog('HC plan: ' + codec + ' ' + w + 'x' + h + ' -> ' + (scale ? tw + 'x' + th : 'same res') + ' hwdec=' + hwOk + ' gop=' + args.variables.user.hcGop);
   return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
 };
@@ -140,6 +149,7 @@ module.exports = async (args) => {
     if (s.codec_type !== 'video' || s.removed) continue;
     if (s.disposition && s.disposition.attached_pic) continue;
     if (!s.outputArgs.includes('-g')) s.outputArgs.push('-g', gop);
+    if (u.hcRate && !s.outputArgs.includes('-r')) s.outputArgs.push('-r', u.hcRate);
   }
   cmd.shouldProcess = true;
   if (u.hcScale !== '1') return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
