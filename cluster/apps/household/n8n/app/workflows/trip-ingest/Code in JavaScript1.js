@@ -132,7 +132,28 @@ const schema = {
       },
     },
   },
-  required: ["booking_type"],
+  // Every key is required (nullable ones may be null) so the grammar forces the
+  // model to emit the whole shape. With only booking_type required, execution 116
+  // answered an Expedia flight forward with just {"booking_type": "cruise"}.
+  required: [
+    "booking_type",
+    "confirmation_code",
+    "provider_name",
+    "start_datetime",
+    "end_datetime",
+    "origin_name",
+    "origin_code",
+    "destination_name",
+    "destination_code",
+    "stops",
+    "notes",
+    "total_amount",
+    "currency",
+    "passenger_names",
+    "flight_number",
+    "tickets",
+    "flight_legs",
+  ],
 }
 const exampleEmail =
   "From: jane@example.com\nSubject: Your Hilton Reservation - Confirmation HH1234\n\nThank you for booking the Hilton Garden Inn Austin Downtown.\n\nConfirmation Number: HH1234\nCheck-in: June 3, 2027\nCheck-out: June 5, 2027\nTotal Charged: $450.50"
@@ -333,6 +354,19 @@ async function callOllamaExtract(promptEmailText) {
       validationError =
         "Ollama returned an unparseable end_datetime: " +
         JSON.stringify(extracted.end_datetime)
+    }
+    // A schema-valid shell with nothing in it must not become a Trek booking.
+    if (
+      !validationError &&
+      extracted.booking_type !== "general" &&
+      !extracted.start_datetime &&
+      !(extracted.flight_legs || []).length &&
+      !(extracted.stops || []).length
+    ) {
+      validationError =
+        "Ollama returned a " +
+        extracted.booking_type +
+        " booking with no dates, legs or stops"
     }
     if (!validationError && extracted.total_amount != null) {
       if (
@@ -582,7 +616,164 @@ function withTripSpan(items) {
   return { tripSpanStart: spanStart, tripSpanEnd: spanEnd }
 }
 
-const result = await callOllamaExtract(emailText)
+// Expedia's flight-purchase-confirmation template carries no schema.org markup, so
+// kitinerary never matches it, and a 4B model on the shared iGPU needs minutes (and
+// once answered with an empty shell). The layout is regular, so parse it directly;
+// anything that does not match returns null and falls through to Ollama.
+const AIRLINE_CODES = {
+  "alaska airlines": "AS",
+  "american airlines": "AA",
+  "delta air lines": "DL",
+  delta: "DL",
+  "united airlines": "UA",
+  united: "UA",
+  "southwest airlines": "WN",
+  jetblue: "B6",
+  "spirit airlines": "NK",
+  "frontier airlines": "F9",
+}
+const MONTHS = {
+  jan: 1,
+  feb: 2,
+  mar: 3,
+  apr: 4,
+  may: 5,
+  jun: 6,
+  jul: 7,
+  aug: 8,
+  sep: 9,
+  oct: 10,
+  nov: 11,
+  dec: 12,
+}
+function pad2(n) {
+  return (n < 10 ? "0" : "") + n
+}
+function to24h(clock) {
+  const m = /^(\d{1,2}):(\d{2})\s*([ap])m$/i.exec(clock.trim())
+  if (!m) return null
+  let h = Number(m[1]) % 12
+  if (m[3].toLowerCase() === "p") h += 12
+  return pad2(h) + ":" + m[2] + ":00"
+}
+function parseExpediaFlights(body) {
+  if (!/expedia/i.test(body)) return null
+  const lines = body
+    .split("\n")
+    .map(function (l) {
+      return l.trim()
+    })
+    .filter(Boolean)
+  // Year is never printed on a leg, so take it from the booking email's own
+  // "Date:" header (the last one is the original, the first the forward).
+  const dateHeaders = body.match(/^Date:.*\b(20\d\d)\b/gm) || []
+  const bookedYear = dateHeaders.length
+    ? Number(/\b(20\d\d)\b/.exec(dateHeaders[dateHeaders.length - 1])[1])
+    : null
+  if (!bookedYear) return null
+  const bookedMatch = /Date:\s*\w{3},\s*(\w{3})\s+(\d{1,2})/.exec(
+    dateHeaders[dateHeaders.length - 1]
+  )
+  const bookedOrdinal = bookedMatch
+    ? (MONTHS[bookedMatch[1].toLowerCase()] || 0) * 100 + Number(bookedMatch[2])
+    : 0
+  function isoFor(clock, mon, day) {
+    const month = MONTHS[String(mon).toLowerCase()]
+    const time = to24h(clock)
+    if (!month || !time) return null
+    // A leg cannot precede the booking, so a month/day earlier in the calendar
+    // than the booking date belongs to the next year.
+    const year =
+      month * 100 + Number(day) < bookedOrdinal ? bookedYear + 1 : bookedYear
+    return year + "-" + pad2(month) + "-" + pad2(Number(day)) + "T" + time
+  }
+  const timeRe = /^(\d{1,2}:\d{2}\s*[ap]m)\s+\w{3},\s*(\w{3})\s+(\d{1,2})$/i
+  const legs = []
+  const passengers = []
+  const tickets = []
+  for (let i = 0; i + 4 < lines.length; i++) {
+    const head = /^(.+?)\s+(\d{1,4}):\s*(.+)$/.exec(lines[i])
+    const dep = timeRe.exec(lines[i + 2])
+    const arr = timeRe.exec(lines[i + 4])
+    if (
+      !head ||
+      !dep ||
+      !arr ||
+      !/^[A-Z]{3}$/.test(lines[i + 1]) ||
+      !/^[A-Z]{3}$/.test(lines[i + 3])
+    )
+      continue
+    // The line above each leg names the cities ("San Diego to New York").
+    const route = i > 0 ? /^(.+?) to (.+)$/.exec(lines[i - 1]) : null
+    const airline = head[1].trim()
+    const code = AIRLINE_CODES[airline.toLowerCase()]
+    const traveler =
+      lines[i + 5] && !/ to /.test(lines[i + 5]) ? lines[i + 5] : null
+    if (traveler && passengers.indexOf(traveler) === -1)
+      passengers.push(traveler)
+    legs.push({
+      airline: airline,
+      flight_number: (code || airline) + " " + String(Number(head[2])),
+      from_code: lines[i + 1],
+      from_name: route ? route[1] : lines[i + 1],
+      to_code: lines[i + 3],
+      to_name: route ? route[2] : lines[i + 3],
+      dep_datetime: isoFor(dep[1], dep[2], dep[3]),
+      arr_datetime: isoFor(arr[1], arr[2], arr[3]),
+      aircraft: null,
+      seats: [],
+      notes: head[3].trim(),
+    })
+    for (let k = i + 5; k < Math.min(i + 12, lines.length); k++) {
+      const t = /^Ticket:\s*(\d{10,14})$/.exec(lines[k])
+      if (
+        t &&
+        !tickets.some(function (x) {
+          return x.number === t[1]
+        })
+      )
+        tickets.push({ traveler: traveler || "", number: t[1] })
+    }
+  }
+  if (
+    legs.length === 0 ||
+    legs.some(function (l) {
+      return !l.dep_datetime || !l.arr_datetime
+    })
+  )
+    return null
+  const conf = /^(.+?)\s+Confirmation:\s*([A-Z0-9]{5,8})$/m.exec(body)
+  const itin = /Expedia itinerary:\s*(\d+)/i.exec(body)
+  const total = /Total paid\s*\n+\s*\$([\d,]+\.\d{2})/i.exec(body)
+  return {
+    booking_type: "flight",
+    confirmation_code: conf ? conf[2] : null,
+    provider_name: legs[0].airline,
+    start_datetime: legs[0].dep_datetime,
+    end_datetime: legs[legs.length - 1].arr_datetime,
+    origin_name: legs[0].from_code,
+    origin_code: legs[0].from_code,
+    destination_name: legs[0].to_code,
+    destination_code: legs[0].to_code,
+    stops: [],
+    notes: itin ? "Expedia itinerary " + itin[1] : null,
+    total_amount: total ? Number(total[1].replace(/,/g, "")) : null,
+    currency: total ? "USD" : null,
+    passenger_names: passengers,
+    flight_number: legs
+      .map(function (l) {
+        return l.flight_number
+      })
+      .join(" / "),
+    tickets: tickets,
+    flight_legs: legs,
+  }
+}
+
+const parsed = parseExpediaFlights(item.bodyPreview || "")
+const result = parsed
+  ? { extracted: parsed, extractionError: null }
+  : await callOllamaExtract(emailText)
 const expanded =
   !result.extractionError &&
   result.extracted &&

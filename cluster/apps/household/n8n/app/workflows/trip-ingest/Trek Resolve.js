@@ -395,8 +395,11 @@ if (!extractionError) {
       }
     } else {
       const destName =
-        ex.destination_name || ex.destination_code || ex.provider_name || "Trip"
-      const createArgs = { title: "Trip to " + destName, currency: "USD" }
+        ex.destination_name || ex.destination_code || ex.provider_name || null
+      const createArgs = {
+        title: destName ? "Trip to " + destName : "New trip",
+        currency: "USD",
+      }
       if (tripStartDate) createArgs.start_date = tripStartDate
       if (tripEndDate) createArgs.end_date = tripEndDate
       const created = await mcpTool(sessionId, "create_trip", createArgs)
