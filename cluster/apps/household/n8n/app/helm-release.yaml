@@ -39,6 +39,8 @@ spec:
               N8N_LOG_LEVEL: info
               N8N_LOG_OUTPUT: console
               N8N_BLOCK_ENV_ACCESS_IN_NODE: false
+              # Code nodes call a slow iGPU Ollama; the 300s default killed execution 115
+              N8N_RUNNERS_TASK_TIMEOUT: "600"
               N8N_ENCRYPTION_KEY:
                 valueFrom:
                   secretKeyRef:
