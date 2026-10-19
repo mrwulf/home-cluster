@@ -229,6 +229,19 @@ const flightAnswer = JSON.stringify({
 })
 const helpers = this.helpers
 
+// n8n kills a Code node at N8N_RUNNERS_TASK_TIMEOUT (600s, helm-release.yaml) with
+// no catchable error, so every Ollama call shares one deadline below that and a
+// slow model surfaces as a handled extractionError instead (execution 115: three
+// 240s attempts ran into the old 300s kill and the booking was lost silently).
+const TASK_DEADLINE_MS = Date.now() + 570000
+const MIN_ATTEMPT_MS = 60000
+
+function isTimeout(e) {
+  return /time.?d? ?out|ETIMEDOUT|ESOCKETTIMEDOUT/i.test(
+    String((e && (e.code || e.message)) || e)
+  )
+}
+
 async function withRetry(fn, attempts, baseDelayMs) {
   let lastErr
   for (let i = 0; i < attempts; i++) {
@@ -236,11 +249,14 @@ async function withRetry(fn, attempts, baseDelayMs) {
       return await fn()
     } catch (e) {
       lastErr = e
-      if (i < attempts - 1) {
-        await new Promise(function (resolve) {
-          setTimeout(resolve, baseDelayMs * Math.pow(2, i))
-        })
-      }
+      // A timeout means the model is too slow right now; repeating the same call
+      // only burns the deadline.
+      if (isTimeout(e) || i === attempts - 1) break
+      const delay = baseDelayMs * Math.pow(2, i)
+      if (TASK_DEADLINE_MS - Date.now() - delay < MIN_ATTEMPT_MS) break
+      await new Promise(function (resolve) {
+        setTimeout(resolve, delay)
+      })
     }
   }
   throw lastErr
@@ -276,7 +292,10 @@ async function callOllamaExtract(promptEmailText) {
             format: schema,
           },
           json: true,
-          timeout: 240000,
+          timeout: Math.max(
+            1000,
+            Math.min(240000, TASK_DEADLINE_MS - Date.now())
+          ),
         })
       },
       3,
