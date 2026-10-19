@@ -168,6 +168,75 @@ module.exports = async (args) => {
 """
 
 
+# Sample probe, after the encoder args are built and before the real encode. Encodes two short
+# slices with exactly the video args the flow will use, measures the same slices stream-copied, and
+# projects the whole-file result. Compact sources (the encoder would not make them 10% smaller) are
+# skipped here in about 15 seconds instead of after a full encode. Output 1: encode for real. Output 3: skip.
+# Any trouble running the probe falls through to the real encode, so it can only save work.
+PROBE = r"""
+module.exports = async (args) => {
+  const fs = require('fs');
+  const path = require('path');
+  const { spawnSync } = require('child_process');
+  const go = (why) => { args.jobLog('HC probe: ' + why); return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables }; };
+  const u = args.variables.user || {};
+  const cmd = args.variables.ffmpegCommand;
+  const file = args.inputFileObj._id;
+  const fmt = (args.inputFileObj.ffProbeData && args.inputFileObj.ffProbeData.format) || {};
+  const dur = Number(fmt.duration) || Number(args.inputFileObj.meta && args.inputFileObj.meta.Duration) || 0;
+  const size = Number(u.hcSize) || 0;
+  const SAMPLE = 30;
+  if (u.hcHw !== '1') return go('software decode path, encoding without a sample');
+  if (dur < 300 || !size) return go('too short to sample, encoding');
+  const vs = cmd && cmd.streams.find((s) => s.codec_type === 'video' && !s.removed && !(s.disposition && s.disposition.attached_pic));
+  if (!vs || !Array.isArray(vs.outputArgs)) return go('no video args to sample, encoding');
+  const vargs = vs.outputArgs.map((a) => String(a).replace(/\{outputIndex\}/g, '0').replace(/\{outputTypeIndex\}/g, '0'));
+  const ffmpeg = args.ffmpegPath || 'tdarr-ffmpeg';
+  const tmp = path.join(args.workDir || '/temp', 'hcprobe-' + Date.now());
+  // run one slice; returns { bytes, secs } or null on any failure
+  const run = (start, pre, post, name) => {
+    const out = path.join(tmp, name + '.mkv');
+    const r = spawnSync(ffmpeg, ['-y', '-nostdin', '-hide_banner', ...pre, '-ss', String(Math.round(start)), '-t', String(SAMPLE),
+      '-i', file, '-map', '0:' + vs.index, ...post, '-f', 'matroska', out], { encoding: 'utf8', timeout: 240000, maxBuffer: 64 * 1024 * 1024 });
+    if (r.error || r.status !== 0) return null;
+    const t = [...String(r.stderr).matchAll(/time=(\d+):(\d+):(\d+(?:\.\d+)?)/g)].pop();
+    if (!t) return null;
+    const secs = Number(t[1]) * 3600 + Number(t[2]) * 60 + Number(t[3]);
+    let bytes = 0;
+    try { bytes = fs.statSync(out).size; } catch (e) { return null; }
+    return secs >= 10 && bytes > 0 ? { bytes, secs } : null;
+  };
+  let src = 0, srcS = 0, enc = 0, encS = 0;
+  try {
+    fs.mkdirSync(tmp, { recursive: true });
+    for (const p of [0.35, 0.7]) {
+      const start = Math.max(0, dur * p - SAMPLE / 2);
+      const c = run(start, [], ['-c', 'copy'], 'copy');
+      const e = c && run(start, ['-hwaccel', 'qsv', '-hwaccel_output_format', 'qsv'], vargs, 'enc');
+      if (!c || !e) return go('sample failed, encoding');
+      src += c.bytes; srcS += c.secs; enc += e.bytes; encS += e.secs;
+    }
+  } catch (e) {
+    return go('sample error (' + e.message + '), encoding');
+  } finally {
+    try { fs.rmSync(tmp, { recursive: true, force: true }); } catch (e) {}
+  }
+  const srcBps = src * 8 / srcS, encBps = enc * 8 / encS;
+  // whole-file projection: audio and subtitles are copied, only the video stream changes
+  const projected = (size - (srcBps - encBps) * dur / 8) / size;
+  args.jobLog('HC probe: video ' + Math.round(srcBps / 1000) + ' -> ' + Math.round(encBps / 1000) + ' kbps, projected file ' + (projected * 100).toFixed(0) + '% of original');
+  // Skip unless at least 10% is expected: the final check only needs 5%, but a sample is good to about
+  // +-3%, and a 5 to 9% saving is not worth the generation loss and GPU time
+  if (projected >= 0.9) {
+    try { fs.appendFileSync('/temp/hc/no-savings.txt', file + '\n'); } catch (e) {}
+    args.jobLog('HC skip: sample says this would not be at least 10% smaller');
+    return { outputFileObj: args.inputFileObj, outputNumber: 3, variables: args.variables };
+  }
+  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
+};
+"""
+
+
 UNCHANGED = r"""
 module.exports = async (args) => {
   const fs = require('fs');
@@ -215,8 +284,9 @@ module.exports = async (args) => {
     args.jobLog('HC: output is not at least 5% smaller, keeping the original');
     return { outputFileObj: args.originalLibraryFile, outputNumber: 3, variables: args.variables };
   }
-  // below 10% means something went wrong (truncated output): needs review
-  return { outputFileObj: args.inputFileObj, outputNumber: pct < 10 ? 2 : 1, variables: args.variables };
+  // below 5% means something went wrong (the duration check already catches truncation): needs review.
+  // 10% was too high: a 4.6 GB WEB-DL legitimately encodes to under 10%.
+  return { outputFileObj: args.inputFileObj, outputNumber: pct < 5 ? 2 : 1, variables: args.variables };
 };
 """
 
@@ -246,6 +316,7 @@ def build(flow_id, name, arr):
     node("enc_sw", "ffmpegCommandSetVideoEncoder", "HEVC QSV (sw decode)", enc("false"), 600, 500)
     node("ten", "ffmpegCommand10BitVideo", "10-bit", x=400, y=600)
     node("scale", "customFunction", "Scale to 720p + keyframe interval", {"code": SCALE}, 400, 700)
+    node("probe", "customFunction", "Sample probe: would it shrink?", {"code": PROBE}, 400, 750)
     node("cont", "ffmpegCommandSetContainer", "MKV", {"container": "mkv", "forceConform": "false"}, 400, 800)
     node("exec", "ffmpegCommandExecute", "Run ffmpeg", x=400, y=900)
     node("dur", "compareFileDurationRatio", "Duration within 1%", {"greaterThan": "99", "lessThan": "101"}, 400, 1000)
@@ -294,7 +365,9 @@ def build(flow_id, name, arr):
     edge("enc_hw", "ten")
     edge("enc_sw", "ten")
     edge("ten", "scale")
-    edge("scale", "cont")
+    edge("scale", "probe")
+    edge("probe", "cont", "1")
+    edge("probe", "skipnote", "3")
     edge("cont", "exec")
     edge("exec", "dur")
     edge("dur", "size", "1")
@@ -315,5 +388,7 @@ if __name__ == "__main__":
     for flow_id, name, arr, fname in (("hcTv", "HC compact HEVC 720p (TV)", "sonarr", "hc-tv.json"),
                                       ("hcMovies", "HC compact HEVC 720p (Movies)", "radarr", "hc-movies.json")):
         path = OUT_DIR / fname
-        json.dump(build(flow_id, name, arr), open(path, "w"), indent=2)
+        with open(path, "w") as out:
+            json.dump(build(flow_id, name, arr), out, indent=2)
+            out.write("\n")
         print("wrote", path.relative_to(OUT_DIR.parent.parent.parent.parent.parent.parent))

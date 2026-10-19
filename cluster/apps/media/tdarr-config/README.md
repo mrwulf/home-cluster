@@ -29,9 +29,13 @@ Skip: HDR/Dolby Vision, above 1080p, remux, hardlinked files, favourites, anythi
 HEVC 10-bit (global quality 21, preset slow, a keyframe every 5 s), scale anything above 720p to 720p keeping the aspect
 ratio, strip non-English audio and subtitles only when an English track exists (MP4 text subtitles are
 converted to SRT, since they cannot be copied into MKV), then verify duration (within 1%) and size.
-Output under 10% of the original goes to review. Output that is not at least 5% smaller (already-compact
-sources can grow) keeps the original quietly, with no error, and the path is remembered in
-`/temp/hc/no-savings.txt` so it is never encoded or fed again. If the first attempt fails (filter or
+Before the real encode, a sample probe encodes two 30-second slices with the flow's exact video
+arguments, compares them with the same slices stream-copied, and projects the whole file (about 15
+seconds). If the projection is not at least 10% smaller, the file is skipped and recorded in
+`no-savings.txt` without a full encode. The probe only runs on the hardware-decode path, and any trouble
+running it falls through to the real encode. Output under 5% of the original goes to review. Output
+that is not at least 5% smaller (already-compact sources can grow) keeps the original quietly, with no
+error, and the path is remembered in `/temp/hc/no-savings.txt` so it is never encoded or fed again. If the first attempt fails (filter or
 decode errors), the flow retries once with software decode and scaling before giving up. Immediately
 before replacing the original it checks the source is unchanged, so an arr upgrade mid-encode is never
 overwritten. Any other failed check goes to Tdarr's review queue with the original untouched.

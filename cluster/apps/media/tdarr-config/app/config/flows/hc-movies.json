@@ -153,6 +153,20 @@
       }
     },
     {
+      "name": "Sample probe: would it shrink?",
+      "sourceRepo": "Community",
+      "pluginName": "customFunction",
+      "version": "1.0.0",
+      "id": "probe",
+      "position": {
+        "x": 400,
+        "y": 750
+      },
+      "inputsDB": {
+        "code": "\nmodule.exports = async (args) => {\n  const fs = require('fs');\n  const path = require('path');\n  const { spawnSync } = require('child_process');\n  const go = (why) => { args.jobLog('HC probe: ' + why); return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables }; };\n  const u = args.variables.user || {};\n  const cmd = args.variables.ffmpegCommand;\n  const file = args.inputFileObj._id;\n  const fmt = (args.inputFileObj.ffProbeData && args.inputFileObj.ffProbeData.format) || {};\n  const dur = Number(fmt.duration) || Number(args.inputFileObj.meta && args.inputFileObj.meta.Duration) || 0;\n  const size = Number(u.hcSize) || 0;\n  const SAMPLE = 30;\n  if (u.hcHw !== '1') return go('software decode path, encoding without a sample');\n  if (dur < 300 || !size) return go('too short to sample, encoding');\n  const vs = cmd && cmd.streams.find((s) => s.codec_type === 'video' && !s.removed && !(s.disposition && s.disposition.attached_pic));\n  if (!vs || !Array.isArray(vs.outputArgs)) return go('no video args to sample, encoding');\n  const vargs = vs.outputArgs.map((a) => String(a).replace(/\\{outputIndex\\}/g, '0').replace(/\\{outputTypeIndex\\}/g, '0'));\n  const ffmpeg = args.ffmpegPath || 'tdarr-ffmpeg';\n  const tmp = path.join(args.workDir || '/temp', 'hcprobe-' + Date.now());\n  // run one slice; returns { bytes, secs } or null on any failure\n  const run = (start, pre, post, name) => {\n    const out = path.join(tmp, name + '.mkv');\n    const r = spawnSync(ffmpeg, ['-y', '-nostdin', '-hide_banner', ...pre, '-ss', String(Math.round(start)), '-t', String(SAMPLE),\n      '-i', file, '-map', '0:' + vs.index, ...post, '-f', 'matroska', out], { encoding: 'utf8', timeout: 240000, maxBuffer: 64 * 1024 * 1024 });\n    if (r.error || r.status !== 0) return null;\n    const t = [...String(r.stderr).matchAll(/time=(\\d+):(\\d+):(\\d+(?:\\.\\d+)?)/g)].pop();\n    if (!t) return null;\n    const secs = Number(t[1]) * 3600 + Number(t[2]) * 60 + Number(t[3]);\n    let bytes = 0;\n    try { bytes = fs.statSync(out).size; } catch (e) { return null; }\n    return secs >= 10 && bytes > 0 ? { bytes, secs } : null;\n  };\n  let src = 0, srcS = 0, enc = 0, encS = 0;\n  try {\n    fs.mkdirSync(tmp, { recursive: true });\n    for (const p of [0.35, 0.7]) {\n      const start = Math.max(0, dur * p - SAMPLE / 2);\n      const c = run(start, [], ['-c', 'copy'], 'copy');\n      const e = c && run(start, ['-hwaccel', 'qsv', '-hwaccel_output_format', 'qsv'], vargs, 'enc');\n      if (!c || !e) return go('sample failed, encoding');\n      src += c.bytes; srcS += c.secs; enc += e.bytes; encS += e.secs;\n    }\n  } catch (e) {\n    return go('sample error (' + e.message + '), encoding');\n  } finally {\n    try { fs.rmSync(tmp, { recursive: true, force: true }); } catch (e) {}\n  }\n  const srcBps = src * 8 / srcS, encBps = enc * 8 / encS;\n  // whole-file projection: audio and subtitles are copied, only the video stream changes\n  const projected = (size - (srcBps - encBps) * dur / 8) / size;\n  args.jobLog('HC probe: video ' + Math.round(srcBps / 1000) + ' -> ' + Math.round(encBps / 1000) + ' kbps, projected file ' + (projected * 100).toFixed(0) + '% of original');\n  // Skip unless at least 10% is expected: the final check only needs 5%, but a sample is good to about\n  // +-3%, and a 5 to 9% saving is not worth the generation loss and GPU time\n  if (projected >= 0.9) {\n    try { fs.appendFileSync('/temp/hc/no-savings.txt', file + '\\n'); } catch (e) {}\n    args.jobLog('HC skip: sample says this would not be at least 10% smaller');\n    return { outputFileObj: args.inputFileObj, outputNumber: 3, variables: args.variables };\n  }\n  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };\n};\n"
+      }
+    },
+    {
       "name": "MKV",
       "sourceRepo": "Community",
       "pluginName": "ffmpegCommandSetContainer",
@@ -205,7 +219,7 @@
         "y": 1100
       },
       "inputsDB": {
-        "code": "\nmodule.exports = async (args) => {\n  const out = Number(args.inputFileObj.file_size) || 0;\n  const orig = Number((args.originalLibraryFile || {}).file_size) || 0;\n  const pct = orig ? (out / orig) * 100 : 0;\n  args.jobLog('HC size: ' + out.toFixed(1) + ' MB vs original ' + orig.toFixed(1) + ' MB (' + pct.toFixed(0) + '%)');\n  if (pct >= 95) {\n    // Already compact (low-bitrate sources can grow): not worth a generation loss. Keep the original,\n    // finish without an error, and remember the path so it is never encoded or fed again.\n    try { require('fs').appendFileSync('/temp/hc/no-savings.txt', args.originalLibraryFile._id + '\\n'); } catch (e) {}\n    args.jobLog('HC: output is not at least 5% smaller, keeping the original');\n    return { outputFileObj: args.originalLibraryFile, outputNumber: 3, variables: args.variables };\n  }\n  // below 10% means something went wrong (truncated output): needs review\n  return { outputFileObj: args.inputFileObj, outputNumber: pct < 10 ? 2 : 1, variables: args.variables };\n};\n"
+        "code": "\nmodule.exports = async (args) => {\n  const out = Number(args.inputFileObj.file_size) || 0;\n  const orig = Number((args.originalLibraryFile || {}).file_size) || 0;\n  const pct = orig ? (out / orig) * 100 : 0;\n  args.jobLog('HC size: ' + out.toFixed(1) + ' MB vs original ' + orig.toFixed(1) + ' MB (' + pct.toFixed(0) + '%)');\n  if (pct >= 95) {\n    // Already compact (low-bitrate sources can grow): not worth a generation loss. Keep the original,\n    // finish without an error, and remember the path so it is never encoded or fed again.\n    try { require('fs').appendFileSync('/temp/hc/no-savings.txt', args.originalLibraryFile._id + '\\n'); } catch (e) {}\n    args.jobLog('HC: output is not at least 5% smaller, keeping the original');\n    return { outputFileObj: args.originalLibraryFile, outputNumber: 3, variables: args.variables };\n  }\n  // below 5% means something went wrong (the duration check already catches truncation): needs review.\n  // 10% was too high: a 4.6 GB WEB-DL legitimately encodes to under 10%.\n  return { outputFileObj: args.inputFileObj, outputNumber: pct < 5 ? 2 : 1, variables: args.variables };\n};\n"
       }
     },
     {
@@ -596,86 +610,100 @@
     {
       "source": "scale",
       "sourceHandle": "1",
-      "target": "cont",
+      "target": "probe",
       "targetHandle": null,
       "id": "e23"
+    },
+    {
+      "source": "probe",
+      "sourceHandle": "1",
+      "target": "cont",
+      "targetHandle": null,
+      "id": "e24"
+    },
+    {
+      "source": "probe",
+      "sourceHandle": "3",
+      "target": "skipnote",
+      "targetHandle": null,
+      "id": "e25"
     },
     {
       "source": "cont",
       "sourceHandle": "1",
       "target": "exec",
       "targetHandle": null,
-      "id": "e24"
+      "id": "e26"
     },
     {
       "source": "exec",
       "sourceHandle": "1",
       "target": "dur",
       "targetHandle": null,
-      "id": "e25"
+      "id": "e27"
     },
     {
       "source": "dur",
       "sourceHandle": "1",
       "target": "size",
       "targetHandle": null,
-      "id": "e26"
+      "id": "e28"
     },
     {
       "source": "dur",
       "sourceHandle": "2",
       "target": "review",
-      "targetHandle": null,
-      "id": "e27"
-    },
-    {
-      "source": "dur",
-      "sourceHandle": "3",
-      "target": "review",
-      "targetHandle": null,
-      "id": "e28"
-    },
-    {
-      "source": "size",
-      "sourceHandle": "1",
-      "target": "unchanged",
       "targetHandle": null,
       "id": "e29"
     },
     {
-      "source": "size",
-      "sourceHandle": "2",
+      "source": "dur",
+      "sourceHandle": "3",
       "target": "review",
       "targetHandle": null,
       "id": "e30"
     },
     {
       "source": "size",
+      "sourceHandle": "1",
+      "target": "unchanged",
+      "targetHandle": null,
+      "id": "e31"
+    },
+    {
+      "source": "size",
+      "sourceHandle": "2",
+      "target": "review",
+      "targetHandle": null,
+      "id": "e32"
+    },
+    {
+      "source": "size",
       "sourceHandle": "3",
       "target": "nosavings",
       "targetHandle": null,
-      "id": "e31"
+      "id": "e33"
     },
     {
       "source": "unchanged",
       "sourceHandle": "1",
       "target": "replace",
       "targetHandle": null,
-      "id": "e32"
+      "id": "e34"
     },
     {
       "source": "unchanged",
       "sourceHandle": "2",
       "target": "review",
       "targetHandle": null,
-      "id": "e33"
+      "id": "e35"
     },
     {
       "source": "replace",
       "sourceHandle": "1",
       "target": "notify",
       "targetHandle": null,
-      "id": "e34"
+      "id": "e36"
     }
   ]
 }
