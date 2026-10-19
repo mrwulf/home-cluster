@@ -252,12 +252,13 @@ output "VPS_US_PUBLIC_IP" {
 data "http" "vps_us_healthcheck" {
   url      = "https://vps-us.${var.secret_domain}"
   insecure = true
-  # 90 attempts x up to 10s gives cloud-init a ~15m budget to finish (apt/docker pulls,
-  # netbird's own 10x5s connect retry, crowdsec's apt repo setup) before Terraform gives
-  # up; 36 attempts (~6m) was observed to be too tight on a cold boot and made a healthy
-  # rebuild look like a failed apply.
+  # 180 attempts x up to 10s gives cloud-init and the NetBird tunnel a ~30m budget to come up
+  # (apt/docker pulls, netbird's own 10x5s connect retry, crowdsec's apt repo setup) before
+  # Terraform gives up; 36 attempts (~6m) was too tight on a cold boot, and 90 (~15m) failed
+  # an EU rebuild whose NetBird tunnel was still down (502 instead of 418) until after the
+  # window closed. Both made a rebuild that later came up look like a failed apply.
   retry {
-    attempts     = 90
+    attempts     = 180
     min_delay_ms = 5000
     max_delay_ms = 10000
   }
