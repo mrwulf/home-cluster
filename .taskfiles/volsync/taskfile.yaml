@@ -157,10 +157,8 @@ tasks:
     vars:
       STATE: "{{index .MATCH 0}}"
       app: "volsync"
-      app_ks:
-        sh: 'find {{ .CLUSTER_DIR }} -type f -name "*.yaml" -o -name "*.yml" | while read file; do yq ''.metadata.name'' "$file" | grep -qx "{{ .app }}" && echo "$file" && break; done'
       ns:
-        sh: 'yq ''select(.metadata.name == "{{.app}}") | .spec.targetNamespace | explode(.)'' {{ .app_ks }}'
+        sh: kubectl --namespace flux-system get kustomization {{.app}} --output jsonpath='{.spec.targetNamespace}'
     preconditions:
       - '[[ "{{.STATE}}" == "suspend" || "{{.STATE}}" == "resume" ]]'
       - which flux kubectl
