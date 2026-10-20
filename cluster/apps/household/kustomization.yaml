@@ -6,6 +6,7 @@ resources:
   - affine/ks.yaml
   - affine/minio-bucket-ks.yaml
   - box/ks.yaml
+  - ca-dmv/ks.yaml
   - dawarich/ks.yaml
   - karakeep/ks.yaml
   - home-assistant/ks.yaml

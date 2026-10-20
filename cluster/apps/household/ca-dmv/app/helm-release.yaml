@@ -1,0 +1,100 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app ca-dmv
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: ${APP_UID}
+            runAsGroup: ${APP_GID}
+            fsGroup: ${APP_GID}
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        containers:
+          main:
+            image:
+              repository: ghcr.io/mrwulf/ca-dmv
+              tag: 0.1.0
+              pullPolicy: IfNotPresent
+            env:
+              BASE_URL: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
+              DB_PATH: /data/ca-dmv.db
+              OIDC_CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: ca-dmv-oidc-credentials
+                    key: OIDC_CLIENT_ID
+              OIDC_ISSUER_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: ca-dmv-oidc-credentials
+                    key: OIDC_ISSUER_URL
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &port 8080
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: *port
+
+    route:
+      main:
+        enabled: true
+        annotations:
+          gatus.io/enabled: "true"
+        parentRefs:
+          - name: external-gateway
+            namespace: networking
+        hostnames:
+          - "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
+        rules:
+          # The app does its own Pocket ID login, so no forward-auth middleware.
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: traefik-middleware-chain-no-auth
+            backendRefs:
+              - identifier: main
+                port: http
+
+    persistence:
+      data:
+        existingClaim: "${VOLSYNC_CLAIM}"
+        globalMounts:
+          - path: /data
