@@ -666,6 +666,14 @@ if (!extractionError) {
     // agency code vs. the airline/cruise line's own code, especially on TripIt-migrated
     // data) - fall back to type + overlapping date window, which a same-trip sender is
     // very unlikely to hit twice for an unrelated booking.
+    // 5-8 letters/digits with at least one letter, e.g. an airline PNR; agency
+    // itinerary numbers are long and all digits.
+    function isRecordLocator(c) {
+      return (
+        typeof c === "string" &&
+        /^(?=.*[A-Za-z])[A-Za-z0-9]{5,8}$/.test(c.trim())
+      )
+    }
     function normalizeWords(s) {
       return (s || "")
         .toLowerCase()
@@ -752,6 +760,18 @@ if (!extractionError) {
         // duplicate - require a plausible name relation before date overlap counts; an
         // exact confirmation match is already handled by the check above this one.
         if (!providerNamesRelated(ex.provider_name, r.title)) return false
+        // Two different airline record locators are two different bookings, even
+        // when they ride the same flight (a family flying out apart on separate
+        // bookings and home together). Only a locator that is not in airline form
+        // (an agency itinerary number, a TripIt-migrated code) can be the same
+        // booking under another name.
+        if (
+          isRecordLocator(ex.confirmation_code) &&
+          isRecordLocator(r.confirmation_number) &&
+          ex.confirmation_code.trim().toUpperCase() !==
+            r.confirmation_number.trim().toUpperCase()
+        )
+          return false
         const rStart = toDate(r.reservation_time)
         if (!rStart) return false
         const rEnd = toDate(r.reservation_end_time) || rStart
