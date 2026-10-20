@@ -1,0 +1,20 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: ca-dmv
+spec:
+  name: CA DMV Practice
+  isPublic: true
+  pkceEnabled: true
+  launchUrl: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/
+  callbackUrls:
+    - https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/auth/callback
+  allowedUserGroups:
+    - name: users
+      namespace: auth
+  secret:
+    name: ca-dmv-oidc-credentials
+    keys:
+      clientID: OIDC_CLIENT_ID
+      issuerUrl: OIDC_ISSUER_URL

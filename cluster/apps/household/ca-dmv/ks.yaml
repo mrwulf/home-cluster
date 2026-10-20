@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app ca-dmv
+  namespace: flux-system
+spec:
+  targetNamespace: household
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: volsync
+  path: ./cluster/apps/household/ca-dmv/app
+  components:
+    - ../../../../templates/volsync/primary
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 1h
+  retryInterval: 1m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      APP_UID: "65532"
+      APP_GID: "65532"
+      GATUS_SUBDOMAIN: dmv
+      VOLSYNC_CLAIM: ca-dmv-data
+      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_NFS_START_MINUTE: "38"
+      VOLSYNC_B2_START_MINUTE: "03"
