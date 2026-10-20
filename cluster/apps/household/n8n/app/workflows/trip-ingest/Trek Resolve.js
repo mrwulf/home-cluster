@@ -911,6 +911,23 @@ if (!extractionError) {
               name: spec.name,
               local_date: spec.date || undefined,
             }
+            // Departure/arrival times live on the first and last endpoint
+            // (local_date + local_time), not on the booking's reservation_time -
+            // without them Trek shows the route with no flight times at all.
+            // Intermediate stops keep their date and take their times from legs[].
+            const edge =
+              i === 0
+                ? ex.start_datetime
+                : i === endpointSpecs.length - 1
+                  ? ex.end_datetime
+                  : null
+            const edgeMatch =
+              edge && /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(edge)
+            if (edgeMatch) {
+              endpoint.local_date = edgeMatch[1]
+              // T00:00:00 is the extractor's "date only" placeholder, not midnight.
+              if (edgeMatch[2] !== "00:00") endpoint.local_time = edgeMatch[2]
+            }
             // Flights resolve coordinates server-side from the IATA code - more
             // reliable than free-text geocoding and confirmed live; everything else
             // still geocodes by name as before.
