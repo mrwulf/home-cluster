@@ -97,13 +97,16 @@ tasks:
       - kubectl get sts,deploy -A -o=json | jq -r '[.items[] | select(.spec.template.spec.volumes[]?.nfs) |  [(.metadata.namespace|@sh), (.kind + "/" + .metadata.name|@sh) ]] | unique | flatten | .[] ' | xargs -l2 kubectl scale --replicas=1 -n
       - kubectl -n household scale deploy immich-server --replicas 2
       - kubectl -n household scale deploy immich-microservices --replicas 2
+      - kubectl -n media scale deploy tdarr-node --replicas 3
       - task: :volsync:state-resume
+      - task: rebalance
 
   rebalance:
-    desc: Run the descheduler to rebalance pods
+    desc: Restart the descheduler so it runs a pass now instead of waiting for its 5m interval
     silent: true
     cmds:
-      - kubectl -n system create job rebalance-`date '+%H%M%d'` --from=cronjob/descheduler
+      - kubectl -n system rollout restart deployment/descheduler
+      - kubectl -n system rollout status deployment/descheduler --timeout=2m
 
   watch:
     desc: Watch the cluster
