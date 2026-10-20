@@ -325,7 +325,8 @@ data:
 
     // n8n module paths (specific to the Docker image)
     const N8N_DI_PATH = '/usr/local/lib/node_modules/n8n/node_modules/@n8n/di';
-    const N8N_JWT_SERVICE_PATH = '/usr/local/lib/node_modules/n8n/dist/services/jwt.service.js';
+    // JwtService moved from dist/services/jwt.service.js into this package in n8n 2.45
+    const N8N_BACKEND_SERVICES_PATH = '/usr/local/lib/node_modules/n8n/node_modules/@n8n/backend-services';
 
     // Export the hooks
     module.exports = {
@@ -346,7 +347,7 @@ data:
 
             // Get n8n's JwtService from the DI container
             const { Container } = require(N8N_DI_PATH);
-            const { JwtService } = require(N8N_JWT_SERVICE_PATH);
+            const { JwtService } = require(N8N_BACKEND_SERVICES_PATH);
             const jwtService = Container.get(JwtService);
 
             const { app } = server;
