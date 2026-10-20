@@ -10,6 +10,8 @@ spec:
   launchUrl: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/
   callbackUrls:
     - https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/auth/callback
+  logoutCallbackUrls:
+    - https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}/
   allowedUserGroups:
     - name: users
       namespace: auth
