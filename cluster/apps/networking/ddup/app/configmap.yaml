@@ -113,7 +113,7 @@ data:
           timeout: "10s"
           maxAttempts: 5
           retryInterval: "2s"
-      email:
+      emails:
         # Through the in-cluster relay (maddy: tls off, no authentication): the sender must be on a domain the relay allows
         - name: "email"
           connectionString: !file /etc/ddup/secrets/EMAIL_CONNECTION_STRING
