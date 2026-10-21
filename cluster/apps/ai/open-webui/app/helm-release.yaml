@@ -54,6 +54,9 @@ spec:
                 value: "true"
               - name: OAUTH_PROVIDER_NAME
                 value: "Home PocketID"
+              # Pocket ID client has pkceEnabled: true; Open WebUI only sends a code_challenge when this is set
+              - name: OAUTH_CODE_CHALLENGE_METHOD
+                value: "S256"
               - name: OAUTH_SCOPES
                 value: "openid profile email groups"
               - name: ENABLE_OAUTH_ROLE_MANAGEMENT
