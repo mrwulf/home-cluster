@@ -26,7 +26,7 @@ spec:
           main:
             image:
               repository: ghcr.io/mrwulf/ca-dmv
-              tag: v0.1.9
+              tag: v0.1.10
               pullPolicy: IfNotPresent
             env:
               BASE_URL: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
