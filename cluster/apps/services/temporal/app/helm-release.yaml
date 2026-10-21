@@ -136,7 +136,7 @@ spec:
           main:
             image:
               repository: docker.io/temporalio/ui
-              tag: 2.56.0
+              tag: 2.57.0
             env:
               # app-template suffixes the Service name with its identifier when a release has several.
               TEMPORAL_ADDRESS: temporal-main.services.svc.cluster.local:7233
