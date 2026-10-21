@@ -20,6 +20,15 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   Upstream: [cloudflare/terraform-provider-cloudflare#7387](https://github.com/cloudflare/terraform-provider-cloudflare/issues/7387) — unpin once it's closed and a release notes the fix, then verify
   with a plan-only run (`approvePlan` manual) and a harmless record update before trusting auto-apply.
 
+- **scrob pinned at `2.31.0`** (`cluster/apps/media/scrob/app/helm-release.yaml`).
+  `2.31.1` moved the image to Alpine, and its entrypoint's `ln -snf ... /etc/localtime` (under `set -e`)
+  fails with `File exists` over the file k8tz mounts there, so the pod exits 1 before the app starts.
+  Reproduced on the cluster 2026-10-20; `2.31.0` runs the same line fine. Renovate is blocked from
+  proposing exactly `2.31.1` via `allowedVersions` in `.github/renovate.json5`; a later release can still
+  be proposed, so check it before merging.
+  Upstream: [ellite/scrob#491](https://github.com/ellite/scrob/issues/491) — drop the Renovate rule once a
+  release notes the fix and a pod with the k8tz mount starts cleanly.
+
 ## Needs a real fix (not upstream-blocked, just not done yet)
 
 - **No BMC/IPMI check yet for node3's 2026-09-24T19:46:41Z reboot.**
