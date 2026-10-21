@@ -27,9 +27,9 @@ provider "minio" {
   minio_ssl      = false
 }
 
-# See cluster/apps/household/affine/minio-bucket/main.tf for the pattern this
-# follows (bucket lives with the app, Kyverno clones the derived secret into
-# household, root credentials never leave databases).
+# Pattern: the bucket lives with the app, the Kyverno policy
+# sync-outline-minio-credentials clones the derived secret into household, and
+# MinIO's root credentials never leave databases.
 #
 # The "outline" bucket already exists (hand-created) with real uploaded files
 # in it - import it rather than creating fresh so Tofu adopts it in place

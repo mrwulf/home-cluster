@@ -25,10 +25,6 @@ spec:
 
     !/cluster/apps/household/
     /cluster/apps/household/*
-    !/cluster/apps/household/affine/
-    /cluster/apps/household/affine/*
-    !/cluster/apps/household/affine/minio-bucket/
-
     !/cluster/apps/household/outline/
     /cluster/apps/household/outline/*
     !/cluster/apps/household/outline/minio-bucket/
