@@ -16,11 +16,11 @@ tasks:
   yaml:
     desc: Lint YAML
     cmds:
-      - yamllint -c '.github/linters/.yamllint.yaml' .
+      - task: :test:lint:yaml
     ignore_errors: true
 
   format:
     desc: Lint general formatting
     cmds:
-      - prettier --ignore-path '.github/linters/.prettierignore' --config '.github/linters/.prettierrc.yaml' --check .
+      - task: :test:lint:format
     ignore_errors: true

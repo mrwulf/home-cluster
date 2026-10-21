@@ -35,9 +35,9 @@ tasks:
     cmds:
       - echo "Linting YAML files..."
       - |
-        find cluster talos .github -name '*.yaml' -o -name '*.yml' | \
-        grep -v '\.sops\.yaml$' | \
-        xargs -P 8 -n 50 yamllint -c '{{.LINTERS_DIR}}/.yamllint.yaml'
+        git ls-files -z 'cluster/*.yaml' 'cluster/*.yml' 'talos/*.yaml' 'talos/*.yml' '.github/*.yaml' '.github/*.yml' | \
+        grep -zv '\.sops\.yaml$' | \
+        xargs -0 -P 8 -n 50 yamllint -c '{{.LINTERS_DIR}}/.yamllint.yaml'
     ignore_error: false
 
   lint:kubernetes:
@@ -68,12 +68,19 @@ tasks:
 
   lint:tofu:
     desc: Statically validate OpenTofu manifests
+    env:
+      TF_PLUGIN_CACHE_DIR: "{{.HOME}}/.cache/opentofu-plugins"
     cmds:
       - |
+        mkdir -p "$TF_PLUGIN_CACHE_DIR"
+        pids=""
         for dir in cluster/apps/networking/ingress-vps/us cluster/apps/networking/ingress-vps/eu cluster/apps/household/outline/minio-bucket cluster/apps/databases/postgres/minio-bucket; do
-          echo "Validating OpenTofu module in $dir..."
-          (cd "{{.PROJECT_DIR}}/$dir" && rm -rf .terraform && tofu init -backend=false -lockfile=readonly && tofu validate && rm -rf .terraform) || exit 1
+          (cd "{{.PROJECT_DIR}}/$dir" && rm -rf .terraform && tofu init -backend=false -lockfile=readonly -input=false >/dev/null && tofu validate && rm -rf .terraform) &
+          pids="$pids $!"
         done
+        rc=0
+        for pid in $pids; do wait "$pid" || rc=1; done
+        exit $rc
 
   lint:format:
     desc: Check code formatting with prettier
