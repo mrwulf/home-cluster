@@ -12,7 +12,7 @@ tasks:
       - |
         export KUBECONFIG="$HOME/.kube/config"
         export KUBE_CONFIG_PATH="$HOME/.kube/config"
-        export TF_VAR_CLOUDFLARE_APIKEY="$(kubectl get secret -n networking cloudflare-ddns -o jsonpath='{.data.CLOUDFLARE_APIKEY}' | base64 -d)"
+        export TF_VAR_CLOUDFLARE_APIKEY="$(kubectl get secret -n networking ingress-tunnel-secrets -o jsonpath='{.data.CLOUDFLARE_APIKEY}' | base64 -d)"
         export TF_VAR_hcloud_token="$(kubectl get secret -n networking ingress-tunnel-secrets -o jsonpath='{.data.hcloud_token}' | base64 -d)"
         export TF_VAR_ovh_endpoint="$(kubectl get secret -n networking ingress-tunnel-secrets -o jsonpath='{.data.ovh_endpoint}' | base64 -d)"
         export TF_VAR_ovh_application_key="$(kubectl get secret -n networking ingress-tunnel-secrets -o jsonpath='{.data.ovh_application_key}' | base64 -d)"

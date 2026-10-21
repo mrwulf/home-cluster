@@ -22,8 +22,6 @@ spec:
       value: "${SECRET_DOMAIN}"
   varsFrom:
     - kind: Secret
-      name: cloudflare-ddns
-    - kind: Secret
       name: ingress-tunnel-secrets
   writeOutputsToSecret:
     name: vps-eu-output
@@ -57,8 +55,6 @@ spec:
     - name: secret_domain
       value: "${SECRET_DOMAIN}"
   varsFrom:
-    - kind: Secret
-      name: cloudflare-ddns
     - kind: Secret
       name: ingress-tunnel-secrets
   writeOutputsToSecret:
