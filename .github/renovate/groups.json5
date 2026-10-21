@@ -28,6 +28,14 @@
       separateMinorPatch: true,
     },
     {
+      description: "Traefik edge image on the VPSes - exact name so traefik/whoami stays out",
+      groupName: "Traefik",
+      matchPackageNames: ["/^(docker\\.io\\/)?traefik$/"],
+      matchDatasources: ["docker"],
+      group: { commitMessageTopic: "{{{groupName}}} group" },
+      separateMinorPatch: true,
+    },
+    {
       matchDatasources: ["helm", "docker"],
       matchPackageNames: [
         "quay.io/cilium/cilium",
