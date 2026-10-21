@@ -43,13 +43,9 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   retained there.
   Found: 2026-09-26.
 
-- **Rename and relocate the `cloudflare-ddns` secret.** The dynamic DNS CronJob is gone (replaced by a
-  ddup domain), but `cluster/apps/networking/cloudflare-ddns/` still exists only because the OpenTofu
-  stacks in `ingress-vps` read the Cloudflare token (`CLOUDFLARE_APIKEY`) from the `cloudflare-ddns`
-  secret via `varsFrom`. Rename it to something accurate, update the four `varsFrom` entries in
-  `ingress-vps/app/tofu.yaml`, move the ExternalSecret next to them, delete the directory and the
-  `cloudflare-ddns` dependency in `cloudflare-tunnel/ks.yaml`. That token (`api-token-external-dns`) is
-  also broader than the tofu stacks need.
+- **Narrow the Cloudflare token the `ingress-vps` Tofu stacks use.** They read `CLOUDFLARE_APIKEY` from
+  `ingress-tunnel-secrets`, which is the Bitwarden `api-token-external-dns` field that external-dns also uses.
+  That token is broader than the stacks need; give them their own token scoped to the records they manage.
 
 - **Gatus keeps connections open forever, so its external checks stop following DNS.** Gatus v5.37.0
   builds its shared HTTP transport with `MaxIdleConns: 100` and no `IdleConnTimeout`, so every
