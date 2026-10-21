@@ -166,5 +166,12 @@
       matchPackageNames: ["cloudflare/cloudflare"],
       allowedVersions: "< 5.26.0",
     },
+    {
+      // v2.31.1 (Alpine base) crashes at startup: its entrypoint's `ln -snf ... /etc/localtime`
+      // fails over the file k8tz mounts there. Stay off that exact version, see TODO.md.
+      matchDatasources: ["docker"],
+      matchPackageNames: ["docker.io/bellamy/scrob"],
+      allowedVersions: "!/^2\\.31\\.1$/",
+    },
   ],
 }
