@@ -43,6 +43,7 @@ spec:
               CRAWLER_STORE_SCREENSHOT: true
               CRAWLER_FULL_PAGE_SCREENSHOT: true
               DATA_DIR: /data
+              DB_WAL_MODE: true
               DISABLE_SIGNUPS: true
               MAX_ASSET_SIZE_MB: 50
               MEILI_ADDR: http://karakeep-meilisearch.household.svc.cluster.local:7700
