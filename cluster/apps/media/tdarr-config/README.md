@@ -62,6 +62,19 @@ Radarr/Sonarr are told to rescan afterwards.
 - **Refresh priorities** (new downloads, watch history): run `scripts/tdarr-priority.py` (needs
   `kubectl` access; reads Sonarr/Radarr and the Tautulli history, which covers Plex plays only) and
   commit. Already-fed titles are tracked on the cache volume and are not re-fed.
+- **Queue or reprioritise one title** (a fresh download you want converted now):
+  [`scripts/tdarr-queue.py`](../../../../scripts/tdarr-queue.py) takes a Sonarr/Radarr title substring,
+  case-insensitive, with or without the year (`"discovery of witches"` or `"A Discovery of Witches (2018)"`);
+  never a path. If it matches several titles it lists them and stops (`--all` acts on all, `--library`
+  narrows).
+  `add` queues the title's convertible files by path (same rules as the feeder: no favourites, nothing in
+  `no-savings.txt`, nothing Tdarr already has) and `--bump` moves them to the front. `bump`,
+  `deprioritize` and `reset` set Tdarr's per-file `bumped` field on the title's still-Queued files (the
+  UI's Bump / Deprioritize / Reset), and `status [TITLE]` shows counts. It needs "Enable bumped files"
+  on in the Tdarr queue options (the live setting). Bumps are Tdarr state, not repo state: they survive
+  the sync job but not a restore of an older Tdarr database. The order among several bumped titles is
+  Tdarr's and has not been verified. Never read the whole file table in one API call: it is about 45k
+  rows and OOM-killed the 2Gi server container once.
 - **One-time:** the job runs as UID 568 and writes `/temp/hc` on the shared cache volume; if that
   directory was created by root, `chown 568:568` it once.
 - **Metrics:** `tdarr-exporter` serves Tdarr's statistics to VictoriaMetrics, with Grafana dashboard 20388.
@@ -87,7 +100,9 @@ of new failures, on failed files left unreviewed for 24 hours, on a missing node
 disappearing.
 
 To requeue: `scripts/tdarr-requeue.py` lists errored files (add `--library TV` to narrow, `--requeue` to
-queue them again). A genuinely corrupt file will fail again each time; check its report first.
+queue them again). It reads the error table a page at a time, since a full read of Tdarr's file table
+(about 45k rows) OOM-kills the server. A genuinely corrupt file will fail again each time; check its
+report first.
 
 The transcoder shares each node's iGPU with Plex and Jellyfin transcoding. If playback ever stutters
 while Tdarr is busy, lower `transcodegpu` in `workers.json`.
