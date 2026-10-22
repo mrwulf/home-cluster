@@ -24,7 +24,7 @@ spec:
           main:
             image:
               repository: stirlingtools/stirling-pdf
-              tag: 3.2.0
+              tag: 3.2.1
             env:
               PUID: 568
               PGID: 568
