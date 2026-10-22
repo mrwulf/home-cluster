@@ -8,6 +8,9 @@
 // and refreshes, on the shared cache volume read by every node:
 //   foreign-originals.txt  titles whose original language is not English (keep their audio)
 //   skip-folders.txt       favourite titles (never transcoded)
+//   priority-<library>.json  the feed order, rebuilt from Sonarr/Radarr and Tautulli at most once
+//                          per PRIORITY_TTL_HOURS. Title lists and watch history are personal, so
+//                          they live only on the cache volume and never in the repo.
 // then (only when feed.json says enabled) feeds the Tdarr queue in priority order.
 //
 // NOTE: no template literals here. Flux substitutes dollar-brace text in ConfigMaps.
@@ -31,6 +34,14 @@ const ERROR_BREAKER = Number(process.env.ERROR_BREAKER || 25)
 const FEED_SECONDS = Number(process.env.FEED_SECONDS || 240)
 // DRY_RUN=1: read everything, log every write instead of performing it
 const DRY = process.env.DRY_RUN === "1"
+const TAUTULLI = {
+  url: process.env.TAUTULLI_URL,
+  key: process.env.TAUTULLI_APIKEY,
+}
+// Rebuild a library's priority list when it is older than this
+const PRIORITY_TTL_HOURS = Number(process.env.PRIORITY_TTL_HOURS || 24)
+// Titles played in the last N days go last, so a file is never swapped under an active viewer
+const RECENT_DAYS = Number(process.env.RECENT_DAYS || 90)
 const CACHE_DIR = process.env.CACHE_DIR || "/temp"
 const WORKDIR_STALE_HOURS = Number(process.env.WORKDIR_STALE_HOURS || 6)
 const WRITE_ENDPOINTS = new Set(["alter-worker-limit", "scan-files"])
@@ -409,6 +420,115 @@ async function scanSettled(libId, timeoutMs) {
   return false
 }
 
+const normTitle = (t) =>
+  t
+    .toLowerCase()
+    .replace(/\(\d{4}\)|\[.*?\]/g, "")
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+
+// Normalised titles played in the last RECENT_DAYS, from Tautulli's history (Plex plays only)
+async function recentlyPlayed() {
+  const after = new Date(Date.now() - RECENT_DAYS * 86400000)
+    .toISOString()
+    .slice(0, 10)
+  const tv = new Set()
+  const movies = new Set()
+  let start = 0
+  for (;;) {
+    const params = new URLSearchParams({
+      apikey: TAUTULLI.key,
+      cmd: "get_history",
+      after,
+      grouping: "0",
+      start: String(start),
+      length: "1000",
+    })
+    const res = await fetch(TAUTULLI.url + "/api/v2?" + params, {
+      signal: AbortSignal.timeout(120000),
+    })
+    if (!res.ok) throw new Error("tautulli get_history HTTP " + res.status)
+    const body = (await res.json()).response
+    if (body.result !== "success") throw new Error("tautulli: " + body.message)
+    const rows = body.data.data
+    for (const r of rows) {
+      if (r.media_type === "episode") tv.add(normTitle(r.grandparent_title || ""))
+      else if (r.media_type === "movie") movies.add(normTitle(r.title || ""))
+    }
+    start += rows.length
+    if (rows.length === 0 || start >= body.data.recordsFiltered) break
+  }
+  return { tv, movies }
+}
+
+// Feed order for one library: most convertible gigabytes first, recently watched titles last.
+// Favourites are left out. Same "convertible" test as the flow's guard.
+async function buildPriority(lib, favourites) {
+  const recent = await recentlyPlayed()
+  const items = []
+  if (lib.arr === "radarr") {
+    for (const mv of await arr("radarr", "movie")) {
+      const f = mv.movieFile
+      const dir = mv.path.replace(/\/+$/, "")
+      if (!f || !convertible(f.mediaInfo) || favourites.has(dir + "/")) continue
+      items.push({
+        path: dir,
+        files: 1,
+        gb: Math.round(f.size / 1e7) / 100,
+        cls: recent.movies.has(normTitle(mv.title)) ? "recent" : "older",
+      })
+    }
+  } else {
+    for (const sr of await arr("sonarr", "series")) {
+      const dir = sr.path.replace(/\/+$/, "")
+      const onDisk = sr.statistics && sr.statistics.sizeOnDisk
+      if (!onDisk || favourites.has(dir + "/")) continue
+      let bytes = 0
+      let files = 0
+      for (const f of await arr("sonarr", "episodefile?seriesId=" + sr.id)) {
+        if (!convertible(f.mediaInfo)) continue
+        bytes += f.size
+        files += 1
+      }
+      if (files > 0)
+        items.push({
+          path: dir,
+          files,
+          gb: Math.round(bytes / 1e8) / 10,
+          cls: recent.tv.has(normTitle(sr.title)) ? "recent" : "older",
+        })
+    }
+  }
+  items.sort(
+    (a, b) => (a.cls === "recent") - (b.cls === "recent") || b.gb - a.gb
+  )
+  return items
+}
+
+// The cached list when it is fresh, else a rebuilt one. If the rebuild fails (Tautulli or an arr
+// down), an old list is better than none, but a missing one means this library is not fed this run.
+async function priorityList(lib, favourites) {
+  const file = path.join(STATE, "priority-" + lib.id + ".json")
+  const ageHours = fs.existsSync(file)
+    ? (Date.now() - fs.statSync(file).mtimeMs) / 3600000
+    : Infinity
+  if (ageHours < PRIORITY_TTL_HOURS) return JSON.parse(fs.readFileSync(file, "utf8"))
+  try {
+    const items = await buildPriority(lib, favourites)
+    writeAtomic(file, JSON.stringify(items))
+    log(
+      "feeder " + lib.name + ": built priority list, " + items.length + " titles, " +
+        items.filter((i) => i.cls === "recent").length + " recently watched placed last"
+    )
+    return items
+  } catch (e) {
+    if (ageHours === Infinity) throw e
+    log("feeder " + lib.name + ": priority rebuild failed (" + e.message + "), using the old list")
+    return JSON.parse(fs.readFileSync(file, "utf8"))
+  }
+}
+
 async function feed(libraries, favourites) {
   const cfg = readJson("feed.json")
   if (!cfg.enabled) {
@@ -418,7 +538,7 @@ async function feed(libraries, favourites) {
   const cache = {}
   const skipSet = noSavings()
   for (const lib of libraries) {
-    if (!lib.priorityFile) continue
+    if (!lib.arr) continue
     const pies = await tdarr("stats/get-pies", { libraryId: lib.id })
     const queued = (
       (pies.pieStats &&
@@ -510,7 +630,14 @@ async function feed(libraries, favourites) {
       return true
     }
     let ok = true
-    for (const item of readJson(lib.priorityFile)) {
+    let priority
+    try {
+      priority = await priorityList(lib, favourites)
+    } catch (e) {
+      log("feeder " + lib.name + ": no priority list (" + e.message + "), skipping")
+      continue
+    }
+    for (const item of priority) {
       if (fed.has(item.path)) continue
       if (favourites.has(item.path + "/")) continue
       if (budget <= 0 || (added > 0 && item.files > budget)) break

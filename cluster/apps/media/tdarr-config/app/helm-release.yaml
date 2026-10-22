@@ -47,6 +47,9 @@ spec:
               # Same Flux substitution the arrs use for their own key; never committed.
               SONARR_APIKEY: "${SONARR_APIKEY}"
               RADARR_APIKEY: "${RADARR_APIKEY}"
+              # Watch history decides which titles are fed last (see README)
+              TAUTULLI_URL: http://tautulli.media.svc.cluster.local
+              TAUTULLI_APIKEY: "${TAUTULLI_APIKEY}"
               CONFIG_DIR: /config
               STATE_DIR: /temp/hc
               # Work folders left by killed/failed jobs are removed after this many idle hours
