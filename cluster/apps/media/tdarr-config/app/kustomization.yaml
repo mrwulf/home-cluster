@@ -15,8 +15,6 @@ configMapGenerator:
       - lists.json=config/lists.json
       - retire.json=config/retire.json
       - feed.json=config/feed.json
-      - priority-tv.json=config/priority-tv.json
-      - priority-movies.json=config/priority-movies.json
 generatorOptions:
   # The CronJob re-reads the mounted files on every run, so no restart is needed
   # and a stable name keeps the HelmRelease reference simple.

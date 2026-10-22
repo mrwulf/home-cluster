@@ -82,7 +82,7 @@ def pod_lines(name):
 
 
 def convertible(m):
-    """Mirrors the flow's guard (and scripts/tdarr-priority.py): not HDR, <=1080p, not HEVC at <=720p."""
+    """Mirrors the flow's guard (and the feeder's `convertible` in sync.js): not HDR, <=1080p, not HEVC at <=720p."""
     m = m or {}
     if m.get("videoDynamicRange"):
         return False
