@@ -11,3 +11,4 @@ gotk-components.yaml
 ../../talos/clusterconfig/
 ../../talos/backups/
 ../../.venv/
+../../.claude/
