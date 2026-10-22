@@ -453,7 +453,8 @@ async function recentlyPlayed() {
     if (body.result !== "success") throw new Error("tautulli: " + body.message)
     const rows = body.data.data
     for (const r of rows) {
-      if (r.media_type === "episode") tv.add(normTitle(r.grandparent_title || ""))
+      if (r.media_type === "episode")
+        tv.add(normTitle(r.grandparent_title || ""))
       else if (r.media_type === "movie") movies.add(normTitle(r.title || ""))
     }
     start += rows.length
@@ -513,18 +514,30 @@ async function priorityList(lib, favourites) {
   const ageHours = fs.existsSync(file)
     ? (Date.now() - fs.statSync(file).mtimeMs) / 3600000
     : Infinity
-  if (ageHours < PRIORITY_TTL_HOURS) return JSON.parse(fs.readFileSync(file, "utf8"))
+  if (ageHours < PRIORITY_TTL_HOURS)
+    return JSON.parse(fs.readFileSync(file, "utf8"))
   try {
     const items = await buildPriority(lib, favourites)
     writeAtomic(file, JSON.stringify(items))
     log(
-      "feeder " + lib.name + ": built priority list, " + items.length + " titles, " +
-        items.filter((i) => i.cls === "recent").length + " recently watched placed last"
+      "feeder " +
+        lib.name +
+        ": built priority list, " +
+        items.length +
+        " titles, " +
+        items.filter((i) => i.cls === "recent").length +
+        " recently watched placed last"
     )
     return items
   } catch (e) {
     if (ageHours === Infinity) throw e
-    log("feeder " + lib.name + ": priority rebuild failed (" + e.message + "), using the old list")
+    log(
+      "feeder " +
+        lib.name +
+        ": priority rebuild failed (" +
+        e.message +
+        "), using the old list"
+    )
     return JSON.parse(fs.readFileSync(file, "utf8"))
   }
 }
@@ -634,7 +647,13 @@ async function feed(libraries, favourites) {
     try {
       priority = await priorityList(lib, favourites)
     } catch (e) {
-      log("feeder " + lib.name + ": no priority list (" + e.message + "), skipping")
+      log(
+        "feeder " +
+          lib.name +
+          ": no priority list (" +
+          e.message +
+          "), skipping"
+      )
       continue
     }
     for (const item of priority) {
