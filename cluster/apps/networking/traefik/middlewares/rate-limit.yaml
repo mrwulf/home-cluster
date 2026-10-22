@@ -6,7 +6,7 @@ metadata:
 spec:
   rateLimit:
     average: 50
-    burst: 100
+    burst: 300
 ---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
