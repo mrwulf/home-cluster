@@ -17,7 +17,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: sync
-              image: alpine:3.24.2
+              image: alpine:3.24.3
               env:
                 - name: WORKFLOW_ID
                   value: VPRsjZRxTBmywAdW
