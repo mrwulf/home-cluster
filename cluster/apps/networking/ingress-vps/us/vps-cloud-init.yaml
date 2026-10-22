@@ -250,12 +250,17 @@ runcmd:
   # 1. Install Docker, WireGuard & systemd-resolved and link stub resolver
   - |
     export DEBIAN_FRONTEND=noninteractive
+    # First boot races unattended-upgrades for the dpkg lock for minutes. A fuser check is
+    # only a point-in-time snapshot and a 5x3s retry loop gave up long before it finished
+    # (leaving netbird uninstalled), so make every apt call - including the one inside
+    # NetBird's install.sh - wait for the lock instead.
+    echo 'DPkg::Lock::Timeout "900";' > /etc/apt/apt.conf.d/99-lock-timeout
     while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 2; done
     for i in $(seq 1 5); do
       if apt-get update && apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker.io systemd-resolved gnupg apt-transport-https wireguard-tools curl openssl; then
         break
       fi
-      sleep 3
+      sleep 15
     done
     apt-get install -y -o Dpkg::Options::="--force-confold" -o Dpkg::Options::="--force-confdef" docker-cli || true
     systemctl enable systemd-resolved --now
@@ -288,7 +293,7 @@ runcmd:
       if curl -fsSL https://pkgs.netbird.io/install.sh | sh; then
         break
       fi
-      sleep 3
+      sleep 15
     done
     netbird service reconfigure --service-env NB_DISABLE_CUSTOM_ROUTING=true || true
 
@@ -326,7 +331,9 @@ runcmd:
     if [ -n "${NETBIRD_SELFHOSTED_SETUP_KEY}" ]; then
       systemctl enable netbird --now
       systemctl enable netbird-relay --now
-      until [ -S /var/run/netbird.sock ]; do sleep 1; done
+      # Bounded: an unbounded wait here hid a failed NetBird install behind a "running" cloud-init.
+      for i in $(seq 1 120); do [ -S /var/run/netbird.sock ] && break; sleep 1; done
+      [ -S /var/run/netbird.sock ] || { echo "netbird.sock never appeared; NetBird is not installed or running" >&2; exit 1; }
       for i in $(seq 1 10); do
         if NB_DISABLE_CUSTOM_ROUTING=true netbird up \
           --management-url "${NETBIRD_SELFHOSTED_MGMT_URL}" \
