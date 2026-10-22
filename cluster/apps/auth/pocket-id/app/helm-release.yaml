@@ -45,7 +45,7 @@ spec:
           ui:
             appName: "Home PocketID"
             homePageUrl: "/settings/apps"
-          image: ghcr.io/pocket-id/pocket-id:v2.19.0
+          image: ghcr.io/pocket-id/pocket-id:v2.19.1
           encryptionKey:
             valueFrom:
               secretKeyRef:
