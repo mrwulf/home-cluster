@@ -285,6 +285,9 @@ data "http" "vps_eu_healthcheck" {
   # Terraform gives up; 36 attempts (~6m) was too tight on a cold Hetzner boot, and 90 (~15m)
   # failed a rebuild whose NetBird tunnel was still down (502 instead of 418) until after the
   # window closed. Both made a rebuild that later came up look like a failed apply.
+  # Without a per-request timeout, a VPS that accepts TCP/TLS but never answers (e.g. its
+  # NetBird tunnel is down) hangs the plan indefinitely instead of failing and retrying.
+  request_timeout_ms = 10000
   retry {
     attempts     = 180
     min_delay_ms = 5000
