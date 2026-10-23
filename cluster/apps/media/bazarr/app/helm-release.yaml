@@ -23,6 +23,26 @@ spec:
           reloader.stakater.com/auto: "true"
           secret.reloader.stakater.com/reload: &secret bazarr-secrets
         initContainers:
+          # git-sync v4.8.0 no longer sets safe.directory=*, so git rejects /add-ons unless the
+          # running uid owns it. An emptyDir is root-owned (fsGroup only changes the group).
+          00-chown-add-ons:
+            image:
+              repository: alpine
+              tag: 3.24.3
+            command: ["chown", "${APP_UID}:${APP_GID}", "/add-ons"]
+            securityContext:
+              # Needs root + CAP_CHOWN, scoped to this one-shot step; the other containers stay non-root.
+              runAsUser: 0
+              runAsGroup: 0
+              runAsNonRoot: false
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"], add: ["CHOWN"] }
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 32Mi
           01-init-db:
             image:
               repository: ghcr.io/home-operations/postgres-init
