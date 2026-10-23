@@ -30,7 +30,7 @@ spec:
           main:
             image:
               repository: docker.io/outlinewiki/outline
-              tag: 1.11.0
+              tag: 1.12.0
             envFrom:
               - secretRef:
                   name: outline-secret
