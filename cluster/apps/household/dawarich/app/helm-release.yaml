@@ -16,6 +16,8 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: "OnRootMismatch"
+      # Let embedded Sidekiq finish or return running jobs on shutdown
+      terminationGracePeriodSeconds: 60
 
     controllers:
       dawarich:
@@ -33,7 +35,7 @@ spec:
           app:
             image:
               repository: freikin/dawarich
-              tag: 1.16.0
+              tag: 1.17.0
             command:
               - web-entrypoint.sh
             args:
@@ -44,9 +46,12 @@ spec:
               - -b
               - "::"
             env:
-              WEB_CONCURRENCY: "1"
+              # Sidekiq runs inside the web process; WEB_CONCURRENCY must be 0 or each web worker starts its own job threads
+              SIDEKIQ_EMBEDDED: "true"
+              WEB_CONCURRENCY: "0"
+              BACKGROUND_PROCESSING_CONCURRENCY: "3"
               PROMETHEUS_EXPORTER_ENABLED: "false"
-            envFrom: &dawarichEnvFrom
+            envFrom:
               - configMapRef:
                   name: dawarich-configmap
               - secretRef:
@@ -82,57 +87,12 @@ spec:
                   periodSeconds: 15
                   timeoutSeconds: 5
                   failureThreshold: 5
-            resources: &dawarichResources
+            resources:
               requests:
                 cpu: 50m
                 memory: 512Mi
               limits:
                 memory: 2Gi
-
-      sidekiq:
-        annotations:
-          reloader.stakater.com/auto: "true"
-        containers:
-          app:
-            image:
-              repository: freikin/dawarich
-              tag: 1.16.0
-            command:
-              - sidekiq-entrypoint.sh
-            args:
-              - sidekiq
-            env:
-              BACKGROUND_PROCESSING_CONCURRENCY: "3"
-              PROMETHEUS_EXPORTER_ENABLED: "false"
-            envFrom: *dawarichEnvFrom
-            probes:
-              liveness:
-                enabled: true
-                custom: true
-                spec:
-                  exec:
-                    command:
-                      - pgrep
-                      - -f
-                      - sidekiq
-                  initialDelaySeconds: 30
-                  periodSeconds: 15
-                  timeoutSeconds: 5
-                  failureThreshold: 5
-              readiness:
-                enabled: true
-                custom: true
-                spec:
-                  exec:
-                    command:
-                      - pgrep
-                      - -f
-                      - sidekiq
-                  initialDelaySeconds: 30
-                  periodSeconds: 15
-                  timeoutSeconds: 5
-                  failureThreshold: 5
-            resources: *dawarichResources
 
     service:
       app:
@@ -166,7 +126,7 @@ spec:
       storage:
         existingClaim: "${VOLSYNC_CLAIM}"
         advancedMounts:
-          dawarich: &storageMounts
+          dawarich:
             app:
               - path: /var/app/storage
                 subPath: storage
@@ -174,4 +134,3 @@ spec:
                 subPath: public
               - path: /var/app/tmp/imports/watched
                 subPath: watched
-          sidekiq: *storageMounts
