@@ -6,7 +6,7 @@
 
 if [ "$(id -u)" = 0 ]; then
   apt update &&
-    apt install -y curl ca-certificates gettext-base bash-completion command-not-found python3-pip vim tmux &&
+    apt install -y curl ca-certificates gettext-base bash-completion command-not-found python3-pip vim &&
     apt update
   exec runuser -u coder -- env HOME=/home/coder bash "$0"
 fi
