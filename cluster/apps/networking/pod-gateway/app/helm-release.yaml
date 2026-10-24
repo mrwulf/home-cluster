@@ -173,7 +173,9 @@ spec:
       # -- If VPN_BLOCK_OTHER_TRAFFIC is true, allow VPN traffic over this port
       VPN_TRAFFIC_PORT: 1197
       # -- Traffic to these IPs will be send through the K8S gateway
-      VPN_LOCAL_CIDRS: "10.0.0.0/8"
+      # Only what the gateway itself needs: nodes, services and pods. All of 10.0.0.0/8 would also capture the
+      # VPN-side 10.x addresses, such as PIA's port forwarding API, and send them to the cluster instead of the tunnel.
+      VPN_LOCAL_CIDRS: "10.0.1.0/24 10.96.0.0/12 10.244.0.0/16"
 
       # -- DNS queries to these domains will be resolved by K8S DNS instead of
       # the default (typcally the VPN client changes it)
