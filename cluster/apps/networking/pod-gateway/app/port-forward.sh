@@ -20,7 +20,9 @@ esac
 VPN_IF=tun0
 # qBittorrent's static address on the gateway's VXLAN network: VXLAN_IP_NETWORK + publicPorts IP in helm-release.yaml.
 QBT_IP=172.16.1.10
-QBT_API=http://qbittorrent.vpn.svc.cluster.local/api/v2/app/setPreferences
+QBT_HOST=qbittorrent.vpn.svc.cluster.local
+# gluetun replaces the pod's resolver with a public one that cannot resolve cluster names, so ask kube-dns directly.
+CLUSTER_DNS=10.96.0.10
 
 ipt() { iptables -w 5 "$@"; }
 
@@ -42,6 +44,17 @@ for proto in tcp udp; do
   ipt -A PF_QBT -p "$proto" -d "$QBT_IP" --dport "$PORT" -j ACCEPT
 done
 
+qbt_ip=
+for _ in 1 2 3 4 5; do
+  qbt_ip=$(nslookup "$QBT_HOST" "$CLUSTER_DNS" 2> /dev/null | awk '/^Address/ { a = $NF } END { print a }')
+  [ -n "$qbt_ip" ] && break
+  sleep 2
+done
+if [ -z "$qbt_ip" ]; then
+  echo "cannot resolve $QBT_HOST via $CLUSTER_DNS" >&2
+  exit 1
+fi
+
 wget -q -O- --tries=10 --waitretry=5 --retry-connrefused \
-  --post-data "json={\"listen_port\":$PORT}" "$QBT_API"
+  --post-data "json={\"listen_port\":$PORT}" "http://$qbt_ip/api/v2/app/setPreferences"
 echo "forwarded port $PORT to qbittorrent"
