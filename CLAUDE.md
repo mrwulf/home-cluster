@@ -21,8 +21,9 @@ These apply to **every** change. Do not check anything in that violates them.
    mise x -- task test:all
    ```
 
-   This is `lint:all` (markdown, yaml, kubeconform, prettier/format) + `flux:validate`, which runs `flux build kustomization --dry-run` over each top-level kustomization (flux-system, crds, core, apps) and then `flux check`.
-   Note: the `flux:*` steps are `ignore_error: true`, so `lint:all` is the hard gate. `flux-local` is only used by the separate `flux:diff:*` tasks (not part of `test:all`). CI runs the same task — keep it green.
+   This is `lint:all` (markdown, yaml, kubeconform, prettier/format) + `flux:validate`, which runs `flux build kustomization --dry-run` over each top-level kustomization (cluster-meta, cluster-apps) and then `flux check`.
+   Note: `flux:check` is `ignore_error: true` (it needs a live cluster), but `flux:build` fails the task, so `lint:all` and `flux:build` are the hard gate.
+   `flux-local` is only used by the separate `flux:diff:*` tasks (not part of `test:all`). CI runs the same task — keep it green.
 
 2. **Every external artifact must be tracked by Renovate.** Charts, container images, GitHub-release tarballs, CRDs — all of it. If you add a dependency Renovate can't see, you've created drift.
    Make it trackable (see the Renovate section) and confirm it shows up on the **Renovate Dashboard** issue after the first run. Pin exact versions; never use `latest` for anything that ships to the cluster.
