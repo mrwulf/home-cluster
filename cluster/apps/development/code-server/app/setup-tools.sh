@@ -53,16 +53,14 @@ if ls /home/coder/.ssh/id_* >/dev/null 2>&1 && [ -s "$DOTFILES_URL_FILE" ]; then
     mkdir -p "$(dirname "$DOTFILES")"
     git clone "$(cat "$DOTFILES_URL_FILE")" "$DOTFILES"
   fi
-  if [ -f "$DOTFILES/mise.agents.toml" ]; then
-    echo "Installing agent CLIs from dotfiles..."
-    # conf.d, not config.toml: `mise use -g` above writes config.toml, and a
-    # symlink there would send those writes into the dotfiles checkout.
-    mkdir -p /home/coder/.config/mise/conf.d
-    ln -sf "$DOTFILES/mise.agents.toml" /home/coder/.config/mise/conf.d/agents.toml
-    mise trust /home/coder/.config/mise/conf.d/agents.toml
-    mise install
+  if [ -x "$DOTFILES/bin/install-agents.sh" ]; then
+    echo "Setting up the agents machine from dotfiles..."
+    # Installs the CLI tools (into mise conf.d, so the `mise use -g` above is not
+    # redirected into the checkout), links the agents git identity and creates its
+    # signing key; the public key is printed to setup.log on first run.
+    "$DOTFILES/bin/install-agents.sh"
   else
-    echo "dotfiles has no mise.agents.toml yet, skipping CLI install"
+    echo "dotfiles has no bin/install-agents.sh yet, skipping"
   fi
 else
   echo "No SSH key in /home/coder/.ssh or no $DOTFILES_URL_FILE, skipping dotfiles"

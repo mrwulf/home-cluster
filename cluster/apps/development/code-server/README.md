@@ -34,13 +34,17 @@ persistent tmux sessions for Claude Code and other agent CLIs, at `https://agent
   It is not declarative; check it after the first start.
 - **Logs:** Codeman runs in the foreground, so `kubectl logs -n development code-server-0 -c codeman` has them.
 - **Tools:** `setup-tools.sh` installs mise, Node, Claude Code and Codeman as the `coder` user on the PVC,
-  then clones the dotfiles repo and links its `mise.agents.toml` (tmux, kubectl, talosctl, sops, age, jq, ...)
-  into `~/.config/mise/conf.d/`. Versions of those tools are owned by the dotfiles repo. The `codeman`
+  then clones the dotfiles repo and runs its `bin/install-agents.sh`, which links `mise.agents.toml` (tmux, kubectl,
+  talosctl, sops, age, jq, ...) into `~/.config/mise/conf.d/`. Versions of those tools are owned by the dotfiles repo. The `codeman`
   container waits (and logs why) until tmux exists, so it stays idle until that clone has happened.
   The clone needs two things kept out of this public repo: on first setup copy an
   SSH key with access to Forgejo into `/home/coder/.ssh` and write the clone URL into
   `/home/coder/.config/dotfiles-repo`. Also put `~/.kube/config`, `~/.talos/config` and the SOPS age key in place,
   then restart the pod.
+- **Git identity:** agents commit as their own identity, separate from the principal's, signed with
+  `~/.ssh/agents_signing` that the same script generates on first start. Its public key is in
+  `/home/coder/setup.log`; register it as a signing key on GitHub once. Pushing uses the separate SSH key you place by hand.
+  Details are in the dotfiles README.
 - **ToolHive:** register the in-cluster gateway once from a Codeman terminal:
   `claude mcp add --transport http -s user toolhive http://vmcp-toolhive-gateway.ai.svc.cluster.local:4483/mcp`.
   Each MCP session costs the gateway about 60Mi that is never reaped, so avoid leaving many agent sessions open.
