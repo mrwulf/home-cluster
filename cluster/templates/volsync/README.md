@@ -55,6 +55,9 @@ For defining a replication source/destination:
 - APP_UID - default: 568; for moverSecurityContext
 - APP_GID - default: 568; for moverSecurityContext
 
+- VOLSYNC_NFS_HOURS / VOLSYNC_B2_HOURS / VOLSYNC_MINIO_HOURS - cron hour field of the backup schedule;
+  defaults: `*` (hourly), `*/4`, `*/2`. The minute comes from `VOLSYNC_*_START_MINUTE` (set by `scripts/stagger-volsync.py`).
+  Example: `VOLSYNC_NFS_HOURS: "0,12"` backs up twice a day.
 - VOLSYNC_COPY_METHOD - 'Snapshot' (rook-ceph) or 'Clone' (local-path)
 - VOLSYNC_CACHE_CAPACITY - default: 1Gi; must be large enough to hold non-pruned repository metadata
 - VOLSYNC_SNAPSHOTCLASS - must be equivalent to source pvc (ceph-block -> csi-ceph-block; ceph-fs -> csi-ceph-fs)

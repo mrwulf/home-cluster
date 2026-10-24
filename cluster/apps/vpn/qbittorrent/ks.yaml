@@ -60,6 +60,7 @@ spec:
       VOLSYNC_CLAIM: qbittorrent-incomplete
       VOLSYNC_CAPACITY: 600Gi
       VOLSYNC_NFS_START_MINUTE: "05"
+      VOLSYNC_NFS_HOURS: "0,12" # scratch downloads; twice daily is enough
       VOLSYNC_B2_START_MINUTE: "35"
       VOLSYNC_CACHE_CAPACITY: "60Gi"
       APP_UID: "985"
