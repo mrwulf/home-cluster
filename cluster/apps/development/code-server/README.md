@@ -45,7 +45,7 @@ persistent tmux sessions for Claude Code and other agent CLIs, at `https://agent
   `~/.ssh/agents_signing` that the same script generates on first start. Its public key is in
   `/home/coder/setup.log`; register it as a signing key on GitHub once. Pushing uses the separate SSH key you place by hand.
   The same script installs a `commit-msg` hook that strips AI attribution from commit messages
-  (`--no-verify` skips it, and it does not cover PR text). Details are in the dotfiles README.
+  (`--no-verify` skips it) and a `gh` wrapper that does the same for PR and issue bodies. Details are in the dotfiles README.
 - **ToolHive:** register the in-cluster gateway once from a Codeman terminal:
   `claude mcp add --transport http -s user toolhive http://vmcp-toolhive-gateway.ai.svc.cluster.local:4483/mcp`.
   Each MCP session costs the gateway about 60Mi that is never reaped, so avoid leaving many agent sessions open.
