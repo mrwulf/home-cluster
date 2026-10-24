@@ -100,18 +100,34 @@ spec:
                 memory: 128M
 
             probes:
+              # Restart only when the tunnel itself is dead. A ping over tun0 needs no DNS or TLS, so
+              # it stays quick under load (the previous HTTPS fetch took ~0.75s against a 1s timeout).
+              # gluetun's own health endpoint isn't usable: the gateway firewall drops loopback traffic.
+              # healthcheck.sh also re-checks the exit city every 5 minutes and on any new exit IP.
               liveness:
                 enabled: true
                 custom: true
                 spec:
                   exec:
                     command:
-                      - sh
-                      - -c
-                      - if [ $(wget -q -O- https://ipinfo.io/city) == 'Montréal' ]; then exit 0; else exit $?; fi
-                  initialDelaySeconds: 30
+                      - /bin/sh
+                      - /scripts/healthcheck.sh
                   periodSeconds: 60
-                  failureThreshold: 3
+                  timeoutSeconds: 20
+                  failureThreshold: 5
+              # Holds off liveness until the tunnel is up and the exit city has been confirmed (strict).
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - /scripts/healthcheck.sh
+                      - strict
+                  periodSeconds: 10
+                  timeoutSeconds: 20
+                  failureThreshold: 30
 
     # -- IP address of the DNS server within the vxlan tunnel.
     # All mutated PODs will get this as their DNS server.
@@ -166,7 +182,7 @@ spec:
     persistence:
       port-forward:
         type: configMap
-        name: pod-gateway-port-forward
+        name: pod-gateway-scripts
         defaultMode: 0755
         advancedMounts:
           main:

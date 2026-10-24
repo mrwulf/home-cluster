@@ -7,9 +7,10 @@ resources:
   - ./helm-release.yaml
   - ./networkpolicy.yaml
 configMapGenerator:
-  - name: pod-gateway-port-forward
+  - name: pod-gateway-scripts
     files:
       - port-forward.sh=port-forward.sh
+      - healthcheck.sh=healthcheck.sh
 generatorOptions:
   disableNameSuffixHash: true
 commonLabels:
