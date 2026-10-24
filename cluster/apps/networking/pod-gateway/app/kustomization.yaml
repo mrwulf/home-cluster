@@ -6,6 +6,13 @@ resources:
   - ./credentials.sops.yaml
   - ./helm-release.yaml
   - ./networkpolicy.yaml
+configMapGenerator:
+  - name: pod-gateway-scripts
+    files:
+      - port-forward.sh=port-forward.sh
+      - healthcheck.sh=healthcheck.sh
+generatorOptions:
+  disableNameSuffixHash: true
 commonLabels:
   app.kubernetes.io/name: pod-gateway
   app.kubernetes.io/instance: vpn-gateway

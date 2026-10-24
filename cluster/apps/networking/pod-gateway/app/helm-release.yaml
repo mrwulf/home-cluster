@@ -66,6 +66,15 @@ spec:
                 value: "off"
               - name: SERVER_REGIONS
                 value: "CA Montreal"
+                # Port forwarding must be set here: the chart's `settings:` block only feeds the gateway
+                # configmap, never gluetun. port-forward.sh opens the assigned port to qBittorrent.
+              - name: VPN_PORT_FORWARDING
+                value: "on"
+              - name: PORT_FORWARD_ONLY
+                value: "on"
+              - name: VPN_PORT_FORWARDING_UP_COMMAND
+                # {{PORTS}} is gluetun's placeholder; escaped because the chart templates env values.
+                value: /bin/sh /scripts/port-forward.sh {{ "{{PORTS}}" }}
               - name: LOG_LEVEL
                 value: debug
               - name: LOG_CONFS
@@ -91,18 +100,34 @@ spec:
                 memory: 128M
 
             probes:
+              # Restart only when the tunnel itself is dead. A ping over tun0 needs no DNS or TLS, so
+              # it stays quick under load (the previous HTTPS fetch took ~0.75s against a 1s timeout).
+              # gluetun's own health endpoint isn't usable: the gateway firewall drops loopback traffic.
+              # healthcheck.sh also re-checks the exit city every 5 minutes and on any new exit IP.
               liveness:
                 enabled: true
                 custom: true
                 spec:
                   exec:
                     command:
-                      - sh
-                      - -c
-                      - if [ $(wget -q -O- https://ipinfo.io/city) == 'Montréal' ]; then exit 0; else exit $?; fi
-                  initialDelaySeconds: 30
+                      - /bin/sh
+                      - /scripts/healthcheck.sh
                   periodSeconds: 60
-                  failureThreshold: 3
+                  timeoutSeconds: 20
+                  failureThreshold: 5
+              # Holds off liveness until the tunnel is up and the exit city has been confirmed (strict).
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - /scripts/healthcheck.sh
+                      - strict
+                  periodSeconds: 10
+                  timeoutSeconds: 20
+                  failureThreshold: 30
 
     # -- IP address of the DNS server within the vxlan tunnel.
     # All mutated PODs will get this as their DNS server.
@@ -150,13 +175,20 @@ spec:
       # -- Traffic to these IPs will be send through the K8S gateway
       VPN_LOCAL_CIDRS: "10.0.0.0/8"
 
-      # VPN Port Forwarding:
-      VPN_PORT_FORWARDING: "on"
-      VPN_PORT_FORWARDING_UP_COMMAND: /bin/sh -c '/usr/bin/wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://qbittorrent.vpn.svc.cluster.local/api/v2/app/setPreferences 2>&1'
-
       # -- DNS queries to these domains will be resolved by K8S DNS instead of
       # the default (typcally the VPN client changes it)
       # DNS_LOCAL_CIDRS: "local"
+
+    persistence:
+      port-forward:
+        type: configMap
+        name: pod-gateway-scripts
+        defaultMode: 0755
+        advancedMounts:
+          main:
+            gluetun:
+              - path: /scripts
+                readOnly: true
 
     # -- settings to expose ports, usually through a VPN provider.
     # NOTE: if you change it you will need to manually restart the gateway POD
