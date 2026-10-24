@@ -66,6 +66,15 @@ spec:
                 value: "off"
               - name: SERVER_REGIONS
                 value: "CA Montreal"
+                # Port forwarding must be set here: the chart's `settings:` block only feeds the gateway
+                # configmap, never gluetun. port-forward.sh opens the assigned port to qBittorrent.
+              - name: VPN_PORT_FORWARDING
+                value: "on"
+              - name: PORT_FORWARD_ONLY
+                value: "on"
+              - name: VPN_PORT_FORWARDING_UP_COMMAND
+                # {{PORTS}} is gluetun's placeholder; escaped because the chart templates env values.
+                value: /bin/sh /scripts/port-forward.sh {{ "{{PORTS}}" }}
               - name: LOG_LEVEL
                 value: debug
               - name: LOG_CONFS
@@ -150,13 +159,20 @@ spec:
       # -- Traffic to these IPs will be send through the K8S gateway
       VPN_LOCAL_CIDRS: "10.0.0.0/8"
 
-      # VPN Port Forwarding:
-      VPN_PORT_FORWARDING: "on"
-      VPN_PORT_FORWARDING_UP_COMMAND: /bin/sh -c '/usr/bin/wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://qbittorrent.vpn.svc.cluster.local/api/v2/app/setPreferences 2>&1'
-
       # -- DNS queries to these domains will be resolved by K8S DNS instead of
       # the default (typcally the VPN client changes it)
       # DNS_LOCAL_CIDRS: "local"
+
+    persistence:
+      port-forward:
+        type: configMap
+        name: pod-gateway-port-forward
+        defaultMode: 0755
+        advancedMounts:
+          main:
+            gluetun:
+              - path: /scripts
+                readOnly: true
 
     # -- settings to expose ports, usually through a VPN provider.
     # NOTE: if you change it you will need to manually restart the gateway POD

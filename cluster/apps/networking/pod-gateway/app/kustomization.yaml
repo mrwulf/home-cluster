@@ -6,6 +6,12 @@ resources:
   - ./credentials.sops.yaml
   - ./helm-release.yaml
   - ./networkpolicy.yaml
+configMapGenerator:
+  - name: pod-gateway-port-forward
+    files:
+      - port-forward.sh=port-forward.sh
+generatorOptions:
+  disableNameSuffixHash: true
 commonLabels:
   app.kubernetes.io/name: pod-gateway
   app.kubernetes.io/instance: vpn-gateway
