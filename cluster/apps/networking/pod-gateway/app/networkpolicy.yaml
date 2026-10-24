@@ -107,3 +107,23 @@ spec:
         - fields:
             - type: 8
               family: IPv4
+---
+# The port-forward script sets qBittorrent's listen port through its API. The selectors above are scoped to this
+# policy's own namespace, so qBittorrent in "vpn" needs an explicit rule, limited to the WebUI port.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: pod-gateway-qbittorrent-api
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: pod-gateway
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": vpn
+            app.kubernetes.io/name: qbittorrent
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
