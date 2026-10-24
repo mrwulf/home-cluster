@@ -177,6 +177,12 @@ spec:
       # VPN-side 10.x addresses, such as PIA's port forwarding API, and send them to the cluster instead of the tunnel.
       VPN_LOCAL_CIDRS: "10.0.1.0/24 10.96.0.0/12 10.244.0.0/16"
 
+      # -- The image (pod-gateway v1.13.0, dnsmasq 2.90) only trusts the 2017 DNS root key, which the root key
+      # rollover retired in October 2026, so with DNSSEC on every lookup is rejected as BOGUS and routed clients
+      # resolve nothing. Queries go through the tunnel to a validating resolver (1.1.1.1), which still rejects
+      # forged answers. Turn it back on once the image ships the 2024 root key.
+      GATEWAY_ENABLE_DNSSEC: false
+
       # -- DNS queries to these domains will be resolved by K8S DNS instead of
       # the default (typcally the VPN client changes it)
       # DNS_LOCAL_CIDRS: "local"
