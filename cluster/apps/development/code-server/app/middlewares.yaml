@@ -5,6 +5,14 @@
 # forwarded: Codeman does not consume them.
 # Lives in this namespace because Traefik resolves ExtensionRef middleware in
 # the route's own namespace.
+#
+# addAuthCookiesToResponse is what makes the refresh work. When the session is
+# renewed, oauth2-proxy answers 202 with a Set-Cookie carrying the new tokens, and
+# Traefik drops auth-response cookies unless they are listed here. Without this the
+# browser keeps the old cookie, every request redeems the same refresh token again,
+# Pocket ID rotates it and answers invalid_grant, and the session dies about a
+# minute after the first refresh (seen at 45m). The session cookie is split into
+# <name>_0, <name>_1, ... when it exceeds the browser cookie size, so list a few.
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
@@ -13,6 +21,12 @@ spec:
   forwardAuth:
     address: http://oauth2-proxy-agents.auth.svc.cluster.local:4180/
     trustForwardHeader: true
+    addAuthCookiesToResponse:
+      - _oauth2_proxy_agents
+      - _oauth2_proxy_agents_0
+      - _oauth2_proxy_agents_1
+      - _oauth2_proxy_agents_2
+      - _oauth2_proxy_agents_3
 ---
 # No rate-limit or compress from the shared chain: Codeman is a long-lived
 # websocket/SSE terminal and both only get in its way.

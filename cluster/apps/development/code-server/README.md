@@ -27,7 +27,9 @@ persistent tmux sessions for Claude Code and other agent CLIs, at `https://agent
   dedicated `oauth2-proxy-agents` ([auth/oauth2-proxy-agents](../../auth/oauth2-proxy-agents/)).
   Its session lasts 30 days and renews with the refresh token every 45 minutes, unlike the shared
   oauth2-proxy (50 minutes, tied to the Ceph dashboard). Codeman has no login of its own and is started
-  with `--allow-unauthenticated-network`, so the route is the only gate.
+  with `--allow-unauthenticated-network`, so the route is the only gate. The renewed cookie only reaches the
+  browser because the forward-auth middleware lists the session cookie names in `addAuthCookiesToResponse`
+  (`middlewares.yaml`); without that the session dies about a minute after the first refresh.
 - **Network:** `networkpolicy.yaml` allows ingress from the internal Traefik only. Egress is unrestricted
   on purpose (Kubernetes API, Talos API, ToolHive, model APIs).
 - **Permission mode:** set to `auto` in Codeman's Settings, which is stored in `~/.codeman` on the PVC.
