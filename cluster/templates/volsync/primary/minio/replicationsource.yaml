@@ -7,7 +7,7 @@ metadata:
 spec:
   sourcePVC: "${VOLSYNC_CLAIM:=${APP}}"
   trigger:
-    schedule: "${VOLSYNC_MINIO_START_MINUTE:=0} */2 * * *"
+    schedule: "${VOLSYNC_MINIO_START_MINUTE:=0} ${VOLSYNC_MINIO_HOURS:=*/2} * * *"
   restic:
     moverResources:
       requests:
