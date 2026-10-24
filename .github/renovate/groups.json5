@@ -164,5 +164,13 @@
       group: { commitMessageTopic: "{{{groupName}}} group" },
       separateMinorPatch: true,
     },
+    {
+      description: "external-dns chart and the Talos-bootstrapped DNSEndpoint CRD version",
+      groupName: "external-dns",
+      matchPackageNames: ["external-dns", "kubernetes-sigs/external-dns"],
+      matchDatasources: ["helm", "github-releases"],
+      group: { commitMessageTopic: "{{{groupName}}} group" },
+      separateMinorPatch: true,
+    },
   ],
 }
