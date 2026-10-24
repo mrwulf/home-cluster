@@ -1,0 +1,27 @@
+---
+# Forward-auth for agents.home.${SECRET_DOMAIN} against the dedicated
+# oauth2-proxy-agents instance (30d session renewed by refresh token), not the
+# shared one (50m, see cluster/apps/auth/oauth2-proxy). No response headers are
+# forwarded: Codeman does not consume them.
+# Lives in this namespace because Traefik resolves ExtensionRef middleware in
+# the route's own namespace.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: agents-pocket-id-forward-auth
+spec:
+  forwardAuth:
+    address: http://oauth2-proxy-agents.auth.svc.cluster.local:4180/
+    trustForwardHeader: true
+---
+# No rate-limit or compress from the shared chain: Codeman is a long-lived
+# websocket/SSE terminal and both only get in its way.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: agents-chain-pocket-id
+spec:
+  chain:
+    middlewares:
+      - name: networking-traefik-middleware-secure-headers@kubernetescrd
+      - name: agents-pocket-id-forward-auth

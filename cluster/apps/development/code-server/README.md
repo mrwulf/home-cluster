@@ -18,6 +18,32 @@ This task dynamically finds the running `code-server-0` pod, copies the local fo
 and rolls over the StatefulSet. Run this command whenever you update the local Antigravity
 IDE application to keep the web-based extensions in sync.
 
+## Agent terminals (Codeman)
+
+A `codeman` sidecar in the same pod runs [Codeman](https://github.com/Ark0N/Codeman), a web UI over
+persistent tmux sessions for Claude Code and other agent CLIs, at `https://agents.home.<domain>`.
+
+- **Auth:** the route is LAN-only (`rfc1918-ips`) and behind Pocket ID forward-auth through a
+  dedicated `oauth2-proxy-agents` ([auth/oauth2-proxy-agents](../../auth/oauth2-proxy-agents/)).
+  Its session lasts 30 days and renews with the refresh token every 45 minutes, unlike the shared
+  oauth2-proxy (50 minutes, tied to the Ceph dashboard). Codeman has no login of its own and is started
+  with `--allow-unauthenticated-network`, so the route is the only gate.
+- **Network:** `networkpolicy.yaml` allows ingress from the internal Traefik only. Egress is unrestricted
+  on purpose (Kubernetes API, Talos API, ToolHive, model APIs).
+- **Permission mode:** set to `auto` in Codeman's Settings, which is stored in `~/.codeman` on the PVC.
+  It is not declarative; check it after the first start.
+- **Logs:** Codeman runs in the foreground, so `kubectl logs -n development code-server-0 -c codeman` has them.
+- **Tools:** `setup-tools.sh` installs mise, Node, Claude Code and Codeman as the `coder` user on the PVC,
+  then clones the dotfiles repo and links its `mise.agents.toml` (kubectl, talosctl, sops, age, jq, ...)
+  into `~/.config/mise/conf.d/`. The clone needs two things kept out of this public repo: on first setup copy an
+  SSH key with access to Forgejo into `/home/coder/.ssh` and write the clone URL into
+  `/home/coder/.config/dotfiles-repo`. Also put `~/.kube/config`, `~/.talos/config` and the SOPS age key in place,
+  then restart the pod.
+- **ToolHive:** register the in-cluster gateway once from a Codeman terminal:
+  `claude mcp add --transport http -s user toolhive http://vmcp-toolhive-gateway.ai.svc.cluster.local:4483/mcp`.
+  Each MCP session costs the gateway about 60Mi that is never reaped, so avoid leaving many agent sessions open.
+- **Service account:** the token is not mounted; the agents use the kubeconfig on the PVC.
+
 ## Troubleshooting & Emergency Recovery
 
 In the unlikely event that a corrupted extension prevents `code-server` from launching,
