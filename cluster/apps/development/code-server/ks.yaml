@@ -25,6 +25,9 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      # Match the pod's runAsUser/fsGroup so the VolSync mover doesn't write files as the 568 default
+      APP_UID: "1000"
+      APP_GID: "1000"
       GATUS_SUBDOMAIN: code
       VOLSYNC_CLAIM: code-server-storage
       VOLSYNC_CAPACITY: 20Gi
