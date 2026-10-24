@@ -59,7 +59,7 @@ spec:
           main:
             image:
               repository: ghcr.io/gitroomhq/postiz-app
-              tag: v2.25.2
+              tag: v2.25.3
             envFrom:
               - secretRef:
                   name: *app
