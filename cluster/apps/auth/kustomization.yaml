@@ -4,4 +4,5 @@ resources:
   - namespace.yaml
   - pocket-id/ks.yaml
   - oauth2-proxy/ks.yaml
+  - oauth2-proxy-agents/ks.yaml
   - whoami/ks.yaml

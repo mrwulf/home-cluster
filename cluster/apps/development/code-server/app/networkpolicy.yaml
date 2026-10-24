@@ -1,0 +1,28 @@
+---
+# code-server runs with --auth none and the pod holds kubeconfig, talosconfig and
+# the SOPS key, so only the internal gateway may reach it. Ingress only: a policy
+# that names egress would switch the pod to default-deny there, and the agents
+# need the Kubernetes API, the Talos API, ToolHive and the model APIs.
+# `host`/`remote-node` keep kubectl port-forward and node-originated traffic working.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: code-server-ingress
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: code-server
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: networking
+            k8s:app.kubernetes.io/instance: traefik-internal-networking
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+            - port: "3000"
+              protocol: TCP
+    - fromEntities:
+        - host
+        - remote-node

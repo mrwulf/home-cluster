@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauth2-proxy-agents-alpha-config
+data:
+  # clientID/issuerURL are duplicated from oidc-client.yaml (spec.clientID) because
+  # oauth2-proxy's alpha config only supports a file source for clientSecret, not
+  # clientID - keep them in sync if the OIDC client is ever recreated.
+  # offline_access is what makes Pocket ID issue the refresh token the long
+  # session depends on. No injectResponseHeaders: nothing behind this proxy
+  # consumes the user's tokens, so none are forwarded.
+  alpha-config.yaml: |
+    server:
+      bindAddress: "0.0.0.0:4180"
+    providers:
+      - id: pocket-id
+        provider: oidc
+        clientID: 77c7ae43-41b8-4cbb-b6e2-2d8d8caf9ff0
+        clientSecretFile: /etc/oauth2-proxy/secrets/client-secret
+        scope: "openid email profile groups offline_access"
+        code_challenge_method: S256
+        oidcConfig:
+          issuerURL: https://id.${SECRET_DOMAIN}
+          emailClaim: email
+          groupsClaim: groups
+    upstreamConfig:
+      upstreams:
+        - id: static-response
+          path: /
+          static: true
+          staticCode: 202

@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/kustomization-kustomize-v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app oauth2-proxy-agents
+  namespace: flux-system
+spec:
+  targetNamespace: auth
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: pocket-id
+  path: ./cluster/apps/auth/oauth2-proxy-agents/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false
+  interval: 1h
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+  retryInterval: 2m

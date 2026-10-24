@@ -28,7 +28,7 @@ spec:
                       "-c",
                       "sudo /tmp/setup-tools.sh > /home/coder/setup.log 2>&1",
                     ]
-            image:
+            image: &image
               repository: ghcr.io/coder/code-server
               tag: 4.143.1
 
@@ -59,7 +59,25 @@ spec:
               limits:
                 memory: 8G
 
+          # Agent terminals (Codeman). Same image so it sees the same PVC and the
+          # same uid; its own container so it gets its own memory limit and a
+          # supervised entrypoint instead of a background process in postStart.
+          codeman:
+            image: *image
+            command: ["/bin/bash", "/tmp/start-codeman.sh"]
+            env:
+              DISABLE_TELEMETRY: "true"
+              CODEMAN_ALLOWED_HOSTS: &agentsHost "agents.home.${SECRET_DOMAIN}"
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256M
+              limits:
+                memory: 6G
+
         pod:
+          # The agents use kubeconfig/talosconfig from the PVC, not the pod's identity.
+          automountServiceAccountToken: false
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
@@ -72,6 +90,11 @@ spec:
         ports:
           http:
             port: &httpPort 8080
+      agents:
+        controller: main
+        ports:
+          http:
+            port: &agentsPort 3000
 
     route:
       main:
@@ -93,6 +116,30 @@ spec:
             backendRefs:
               - identifier: main
                 port: *httpPort
+      agents:
+        enabled: true
+        annotations:
+          gatus.io/enabled: "true"
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - *agentsHost
+        rules:
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: agents-chain-pocket-id
+            backendRefs:
+              - identifier: agents
+                port: *agentsPort
 
     persistence:
       setup-tools:
@@ -102,6 +149,9 @@ spec:
         globalMounts:
           - path: /tmp/setup-tools.sh
             subPath: setup-tools.sh
+            readOnly: true
+          - path: /tmp/start-codeman.sh
+            subPath: start-codeman.sh
             readOnly: true
       config:
         existingClaim: "${VOLSYNC_CLAIM}"

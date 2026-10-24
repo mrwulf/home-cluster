@@ -2,9 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - helm-release.yaml
+  - middlewares.yaml
+  - networkpolicy.yaml
 configMapGenerator:
   - name: code-server-setup-tools
     files:
       - setup-tools.sh=setup-tools.sh
+      - start-codeman.sh=start-codeman.sh
 generatorOptions:
   disableNameSuffixHash: true
