@@ -112,11 +112,8 @@ tasks:
     desc: Build and validate all Flux kustomizations
     cmds:
       - echo "Building Flux kustomizations..."
-      - flux build kustomization flux-system --path {{.PROJECT_DIR}}/cluster/apps/flux-system --dry-run
-      - flux build kustomization crds --path {{.PROJECT_DIR}}/cluster/crds --dry-run
-      - flux build kustomization core --path {{.PROJECT_DIR}}/cluster/core --dry-run
-      - flux build kustomization apps --path {{.PROJECT_DIR}}/cluster/apps --dry-run
-    ignore_error: true
+      - flux build kustomization cluster-meta --path {{.PROJECT_DIR}}/cluster/flux/meta --kustomization-file {{.PROJECT_DIR}}/cluster/flux/cluster/ks.yaml --dry-run > /dev/null
+      - flux build kustomization cluster-apps --path {{.PROJECT_DIR}}/cluster/apps --kustomization-file {{.PROJECT_DIR}}/cluster/flux/cluster/ks.yaml --dry-run > /dev/null
 
   flux:check:
     desc: Check Flux compatibility and requirements
