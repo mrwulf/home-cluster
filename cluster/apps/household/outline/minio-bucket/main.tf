@@ -96,3 +96,7 @@ output "AWS_SECRET_ACCESS_KEY" {
   value     = minio_iam_user.outline_app.secret
   sensitive = true
 }
+
+output "AWS_REGION" {
+  value = "us-east-1"
+}
