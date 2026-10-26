@@ -12,7 +12,7 @@ spec:
     operation: copy
   ref:
     # renovate: depName=ghcr.io/netbirdio/helm-charts/netbird-operator datasource=docker
-    tag: 0.8.0
+    tag: 0.9.0
   url: oci://ghcr.io/netbirdio/helm-charts/netbird-operator
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
