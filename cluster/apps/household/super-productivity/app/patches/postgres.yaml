@@ -19,7 +19,7 @@ spec:
           init-migrations:
             image:
               repository: ghcr.io/warreth/super-sync-server
-              tag: v19.3.0
+              tag: v19.3.1
             command:
               [
                 "/bin/sh",
