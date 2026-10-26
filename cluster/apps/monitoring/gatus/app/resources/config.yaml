@@ -127,6 +127,28 @@ endpoints:
     ui:
       hide-hostname: true
       hide-url: true
+  - name: Firewall - Primary Certificate
+    group: services
+    url: "https://firewall03.${SECRET_DOMAIN}:${FIREWALL_PORT}"
+    headers: *close-connection
+    interval: 1h
+    conditions:
+      - "[CERTIFICATE_EXPIRATION] > 240h"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
+  - name: Firewall - Backup Certificate
+    group: services
+    url: "https://firewall02.${SECRET_DOMAIN}:${FIREWALL_PORT}"
+    headers: *close-connection
+    interval: 1h
+    conditions:
+      - "[CERTIFICATE_EXPIRATION] > 240h"
+    alerts: *alerts
+    ui:
+      hide-hostname: true
+      hide-url: true
   - name: US VPS Endpoint (OVH)
     group: external
     url: "https://vps-us.${SECRET_DOMAIN}"
