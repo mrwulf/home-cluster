@@ -68,6 +68,9 @@ spec:
               limits:
                 memory: 64Mi
         controllerPlugin:
+          # 2 replicas so RBD attach/detach keeps working if one ctrlplugin pod is
+          # saturated or down; a single replica serializes every PVC attach cluster-wide.
+          replicas: 2
           resources:
             attacher:
               requests:
@@ -159,6 +162,9 @@ spec:
               limits:
                 memory: 64Mi
         controllerPlugin:
+          # 2 replicas so CephFS attach/detach keeps working if one ctrlplugin pod is
+          # saturated or down; a single replica serializes every PVC attach cluster-wide.
+          replicas: 2
           resources:
             attacher:
               requests:
