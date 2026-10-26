@@ -6,6 +6,8 @@ metadata:
   namespace: flux-system
 spec:
   targetNamespace: networking
+  dependsOn:
+    - name: netbird-resources
   path: ./cluster/apps/networking/ingress-vps/app
   prune: true
   sourceRef:

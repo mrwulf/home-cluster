@@ -53,6 +53,8 @@ spec:
               - "vps-eu.${SECRET_DOMAIN}"
         containers:
           - name: netbird
+            # renovate: depName=ghcr.io/netbirdio/netbird datasource=docker
+            image: ghcr.io/netbirdio/netbird:0.81.5
             lifecycle:
               preStop:
                 exec:
