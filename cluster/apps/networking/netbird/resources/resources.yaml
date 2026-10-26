@@ -66,6 +66,8 @@ spec:
                 value: "true"
               - name: NB_ROSENPASS_PERMISSIVE
                 value: "true"
+              - name: NB_DISABLE_UPDATE_SETTINGS
+                value: "false"
             resources:
               requests:
                 cpu: 100m
