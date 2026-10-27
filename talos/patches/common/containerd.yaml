@@ -1,9 +1,6 @@
-machine:
-  files:
-    # configure containerd for spegel
-    - content: |
-        [plugins."io.containerd.cri.v1.images"]
-          discard_unpacked_layers = false
-      path: /etc/cri/conf.d/20-customization.part
-      permissions: 0o644
-      op: create
+apiVersion: v1alpha1
+kind: CRICustomizationConfig
+name: spegel
+content: |
+  [plugins."io.containerd.cri.v1.images"]
+    discard_unpacked_layers = false
