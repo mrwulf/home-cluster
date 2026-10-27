@@ -335,7 +335,7 @@ tasks:
     cmds:
       - |
         echo "Target Node: {{.NODE}}"
-        talosctl reboot -n {{.NODE}} --mode=powercycle
+        talosctl reboot -n {{.NODE}} --mode=powercycle --drain
         #
         echo "Waiting for Talos to be healthy on node '{{.NODE}}' ..."
         until talosctl --nodes {{.NODE}} health --wait-timeout=10m --server=false
