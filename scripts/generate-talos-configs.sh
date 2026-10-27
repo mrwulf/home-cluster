@@ -20,15 +20,45 @@ echo "Derived schematic ID: ${schematicId}"
 eval "$(yq -r 'to_entries | .[] | "export " + .key + "=\"" + .value + "\""' "${TALOS_DIR}/talenv.yaml")"
 eval "$(sops -d "${TALOS_DIR}/talenv.sops.yaml" | yq -r 'to_entries | .[] | "export " + .key + "=\"" + .value + "\""')"
 
-# Explicit envsubst variable allowlist, so patch content is never mistaken for a template
+# Explicit substitution allowlist, so patch content is never mistaken for a template
 # variable (e.g. a literal "$patch: delete" strategic-merge directive in a document patch).
-ENVSUBST_VARS="$(
+SUBST_VAR_NAMES_CSV="$(
   {
     yq -r 'keys | .[]' "${TALOS_DIR}/talenv.yaml"
     sops -d "${TALOS_DIR}/talenv.sops.yaml" | yq -r 'keys | .[]'
     echo schematicId
-  } | sed 's/^/$/' | paste -sd, -
+  } | paste -sd, -
 )"
+export SUBST_VAR_NAMES_CSV
+
+# Minimal envsubst replacement: substitutes only ${NAME}/$NAME for names in
+# SUBST_VAR_NAMES_CSV using their current environment value, and leaves every other
+# $-token (e.g. a literal "$patch: delete" strategic-merge directive) untouched.
+# Avoids depending on an external envsubst binary — the Go reimplementations mise can
+# install (a8m/envsubst, via either its aqua or asdf registry entry) don't support GNU
+# envsubst's restrict-to-named-vars mode and instead blank out every unrecognized token,
+# which would silently corrupt "$patch: delete" directives in these patches.
+render_patch() {
+  python3 - "$1" "$2" <<'PYEOF'
+import os, re, sys
+
+src, dst = sys.argv[1], sys.argv[2]
+names = set(os.environ.get("SUBST_VAR_NAMES_CSV", "").split(","))
+names.discard("")
+
+with open(src) as f:
+    text = f.read()
+
+def repl(m):
+    name = m.group(1) or m.group(2)
+    return os.environ.get(name, "") if name in names else m.group(0)
+
+text = re.sub(r"\$\{(\w+)\}|\$(\w+)", repl, text)
+
+with open(dst, "w") as f:
+    f.write(text)
+PYEOF
+}
 
 # Decrypt Talos secrets
 sops -d "${TALOS_DIR}/talsecret.sops.yaml" > "${TMP_DIR}/secrets.yaml"
@@ -56,22 +86,22 @@ if [ ${#CONTROL_IPS[@]} -gt 0 ]; then
   talosctl config node "${CONTROL_IPS[@]}" --talosconfig "${OUTPUT_DIR}/talosconfig"
 fi
 
-# Render patch files with envsubst
+# Render patch files, substituting variables
 mkdir -p "${TMP_DIR}/rendered/common" "${TMP_DIR}/rendered/controlplane" "${TMP_DIR}/rendered/nodes"
 
 for p in "${TALOS_DIR}"/patches/common/*.yaml; do
   [ -f "$p" ] || continue
-  envsubst "${ENVSUBST_VARS}" < "$p" > "${TMP_DIR}/rendered/common/$(basename "$p")"
+  render_patch "$p" "${TMP_DIR}/rendered/common/$(basename "$p")"
 done
 
 for p in "${TALOS_DIR}"/patches/controlplane/*.yaml; do
   [ -f "$p" ] || continue
-  envsubst "${ENVSUBST_VARS}" < "$p" > "${TMP_DIR}/rendered/controlplane/$(basename "$p")"
+  render_patch "$p" "${TMP_DIR}/rendered/controlplane/$(basename "$p")"
 done
 
 for p in "${TALOS_DIR}"/patches/nodes/*.yaml; do
   [ -f "$p" ] || continue
-  envsubst "${ENVSUBST_VARS}" < "$p" > "${TMP_DIR}/rendered/nodes/$(basename "$p")"
+  render_patch "$p" "${TMP_DIR}/rendered/nodes/$(basename "$p")"
 done
 
 # Prepare patch arguments (sorted order for deterministic generation)
