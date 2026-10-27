@@ -12,3 +12,6 @@ machine:
         rsize=131072
         wsize=131072
         nconnect=16
+        vers=4.2
+        timeo=600
+        retrans=2
