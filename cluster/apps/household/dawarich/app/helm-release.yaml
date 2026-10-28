@@ -35,7 +35,7 @@ spec:
           app:
             image:
               repository: freikin/dawarich
-              tag: 1.18.1
+              tag: 1.19.0
             command:
               - web-entrypoint.sh
             args:
