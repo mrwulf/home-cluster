@@ -7,7 +7,7 @@ spec:
   groupRef:
     name: toolhive-servers
   # renovate: depName=docker.io/node datasource=docker
-  image: docker.io/node:24-alpine
+  image: docker.io/node:26-alpine
   transport: stdio
   proxyMode: streamable-http
   proxyPort: 8080
@@ -42,7 +42,7 @@ spec:
       containers:
         - name: mcp
           # renovate: depName=docker.io/node datasource=docker
-          image: docker.io/node:24-alpine
+          image: docker.io/node:26-alpine
           command:
             - npx
           args:
