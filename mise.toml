@@ -13,7 +13,7 @@ talosctl = "1.14.5"
 # Testing tools
 flux2 = "2.10.0"
 kubeconform = "0.8.0"
-uv = "0.13.5"
+uv = "0.13.6"
 yamllint = "1.38.0"
 "npm:markdownlint-cli" = "0.50.0"
 "npm:prettier" = "3.9.10"
