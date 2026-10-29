@@ -257,10 +257,17 @@ const helpers = this.helpers
 const TASK_DEADLINE_MS = Date.now() + 570000
 const MIN_ATTEMPT_MS = 60000
 
+// axios surfaces a client-side request timeout as code "ECONNABORTED" with
+// the descriptive text only in .message ("timeout of Nms exceeded") - testing
+// `e.code || e.message` let ECONNABORTED mask that message, so isTimeout()
+// always returned false for the one error it exists to catch, defeating the
+// "don't retry a timeout" rule below and letting 3 full retries burn the
+// whole TASK_DEADLINE_MS against (likely cold) Ollama replicas instead of
+// failing fast after one.
 function isTimeout(e) {
-  return /time.?d? ?out|ETIMEDOUT|ESOCKETTIMEDOUT/i.test(
-    String((e && (e.code || e.message)) || e)
-  )
+  const text =
+    [e && e.code, e && e.message].filter(Boolean).join(" ") || String(e)
+  return /time.?d? ?out|ETIMEDOUT|ESOCKETTIMEDOUT/i.test(text)
 }
 
 async function withRetry(fn, attempts, baseDelayMs) {
