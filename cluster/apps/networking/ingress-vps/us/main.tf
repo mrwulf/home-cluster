@@ -213,6 +213,11 @@ resource "ovh_cloud_project_instance" "us_vps" {
 
   user_data = terraform_data.cloud_init_us.output.user_data
 
+  # Fail a stuck OVH provisioning instead of hanging the whole stack's reconcile.
+  timeouts {
+    create = "20m"
+  }
+
   lifecycle {
     replace_triggered_by = [
       terraform_data.cloud_init_us
