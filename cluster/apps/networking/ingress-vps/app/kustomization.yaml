@@ -8,3 +8,4 @@ resources:
   - vps-direct-route.yaml
   - health-responder.yaml
   - dashboard.yaml
+  - dashboard-watchdog.yaml

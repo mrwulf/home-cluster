@@ -83,6 +83,8 @@ data "http" "home_ip" {
 locals {
   home_ip      = chomp(data.http.home_ip.response_body)
   home_ip_cidr = "${local.home_ip}/32"
+  # Same probe hostname the cloud-init and the healthcheck below use; the watchdog hits it locally.
+  watchdog_env = "PROBE_HOST=vps-eu.${var.secret_domain}\n"
   # renovate: datasource=docker depName=debian
   debian_version = "13.7"
 }
@@ -434,4 +436,64 @@ resource "null_resource" "home_ip_whitelist_sync" {
   depends_on = [
     data.http.vps_eu_healthcheck
   ]
+}
+
+# Install the ingress self-heal watchdog (shared script + units in ../watchdog/). Pushed here, not
+# via cloud-init, because editing user_data would replace the instance; deliberately not gated on
+# the healthcheck so it also lands on a box whose NetBird tunnel is already stale. install.sh also
+# turns on node-exporter's textfile collector so the watchdog's counters reach the cluster scrape.
+# Mirrors us/main.tf; the shared pieces live in ../watchdog/.
+resource "null_resource" "ingress_watchdog" {
+  triggers = {
+    watchdog_hash = sha256(join("", [
+      file("${path.module}/../watchdog/ingress-watchdog.sh"),
+      file("${path.module}/../watchdog/ingress-watchdog.service"),
+      file("${path.module}/../watchdog/ingress-watchdog.timer"),
+      file("${path.module}/../watchdog/install.sh"),
+      local.watchdog_env,
+    ]))
+    # Also re-run whenever the instance itself gets replaced - see the matching note on
+    # cert_sync's instance_id trigger above.
+    instance_id = hcloud_server.eu_vps.id
+  }
+
+  connection {
+    type        = "ssh"
+    host        = hcloud_server.eu_vps.ipv4_address
+    user        = "debian"
+    private_key = tls_private_key.tf_admin.private_key_openssh
+    timeout     = "2m"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../watchdog/ingress-watchdog.sh"
+    destination = "/tmp/ingress-watchdog.sh"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../watchdog/ingress-watchdog.service"
+    destination = "/tmp/ingress-watchdog.service"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../watchdog/ingress-watchdog.timer"
+    destination = "/tmp/ingress-watchdog.timer"
+  }
+
+  provisioner "file" {
+    content     = local.watchdog_env
+    destination = "/tmp/ingress-watchdog.env"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../watchdog/install.sh"
+    destination = "/tmp/ingress-watchdog-install.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo bash /tmp/ingress-watchdog-install.sh",
+      "rm -f /tmp/ingress-watchdog-install.sh",
+    ]
+  }
 }

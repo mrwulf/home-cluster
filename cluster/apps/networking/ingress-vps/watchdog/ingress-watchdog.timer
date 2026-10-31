@@ -1,0 +1,10 @@
+[Unit]
+Description=Check the edge VPS ingress path every minute
+
+[Timer]
+OnActiveSec=3min
+OnUnitActiveSec=60s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target
