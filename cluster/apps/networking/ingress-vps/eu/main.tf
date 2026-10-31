@@ -460,7 +460,7 @@ resource "null_resource" "ingress_watchdog" {
   connection {
     type        = "ssh"
     host        = hcloud_server.eu_vps.ipv4_address
-    user        = "debian"
+    user        = "root"
     private_key = tls_private_key.tf_admin.private_key_openssh
     timeout     = "2m"
   }
