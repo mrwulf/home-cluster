@@ -36,6 +36,16 @@ spec:
             "titleFormat": "Edge tier changed",
             "textFormat": "Number of healthy edge VPS nodes changed - check the Current Failover Tier panel",
             "step": "15s"
+          },
+          {
+            "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}" },
+            "enable": true,
+            "expr": "sum by (job, layer) (increase(ingress_watchdog_repairs_total{job=~\"ingress-vps-.*\"}[2m])) > 0",
+            "iconColor": "red",
+            "name": "Watchdog repair",
+            "titleFormat": "Watchdog restarted {{layer}} ({{job}})",
+            "textFormat": "The {{layer}} layer failed its checks, so the ingress watchdog restarted it.",
+            "step": "30s"
           }
         ]
       },

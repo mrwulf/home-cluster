@@ -41,6 +41,25 @@ spec:
           labels:
             severity: critical
 
+        - alert: IngressVPSWatchdogRepairing
+          annotations:
+            summary: "Ingress watchdog keeps restarting services"
+            description: "The ingress watchdog on {{ $labels.job }} restarted services {{ $value | humanize }} times in 30m, so its repairs are not holding. Check journalctl -t ingress-watchdog on the VPS."
+          expr: |
+            sum by (job) (increase(ingress_watchdog_repairs_total{job=~"ingress-vps-.*"}[30m])) >= 3
+          labels:
+            severity: warning
+
+        - alert: IngressVPSWatchdogStale
+          annotations:
+            summary: "Ingress watchdog is not running"
+            description: "The ingress watchdog on {{ $labels.job }} has not reported for over 5m while the VPS is scraped, so a stale NetBird session would go unrepaired."
+          expr: |
+            time() - ingress_watchdog_last_run_timestamp_seconds{job=~"ingress-vps-.*"} > 300
+          for: 10m
+          labels:
+            severity: warning
+
         - alert: EdgeNodeHighCPU
           annotations:
             summary: "Edge Ingress VPS high CPU load"

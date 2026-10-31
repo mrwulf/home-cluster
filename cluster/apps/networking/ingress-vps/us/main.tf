@@ -417,13 +417,15 @@ resource "null_resource" "home_ip_whitelist_sync" {
 
 # Install the ingress self-heal watchdog (shared script + units in ../watchdog/). Pushed here, not
 # via cloud-init, because editing user_data would replace the instance; deliberately not gated on
-# the healthcheck so it also lands on a box whose NetBird tunnel is already stale.
+# the healthcheck so it also lands on a box whose NetBird tunnel is already stale. install.sh also
+# turns on node-exporter's textfile collector so the watchdog's counters reach the cluster scrape.
 resource "null_resource" "ingress_watchdog" {
   triggers = {
     watchdog_hash = sha256(join("", [
       file("${path.module}/../watchdog/ingress-watchdog.sh"),
       file("${path.module}/../watchdog/ingress-watchdog.service"),
       file("${path.module}/../watchdog/ingress-watchdog.timer"),
+      file("${path.module}/../watchdog/install.sh"),
       local.watchdog_env,
     ]))
     # Also re-run whenever the instance itself gets replaced - see the matching note on
@@ -459,16 +461,15 @@ resource "null_resource" "ingress_watchdog" {
     destination = "/tmp/ingress-watchdog.env"
   }
 
+  provisioner "file" {
+    source      = "${path.module}/../watchdog/install.sh"
+    destination = "/tmp/ingress-watchdog-install.sh"
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "sudo install -o root -g root -m 0755 /tmp/ingress-watchdog.sh /usr/local/bin/ingress-watchdog",
-      "sudo install -o root -g root -m 0644 /tmp/ingress-watchdog.service /etc/systemd/system/ingress-watchdog.service",
-      "sudo install -o root -g root -m 0644 /tmp/ingress-watchdog.timer /etc/systemd/system/ingress-watchdog.timer",
-      "sudo install -o root -g root -m 0644 /tmp/ingress-watchdog.env /etc/default/ingress-watchdog",
-      "rm -f /tmp/ingress-watchdog.sh /tmp/ingress-watchdog.service /tmp/ingress-watchdog.timer /tmp/ingress-watchdog.env",
-      "sudo systemctl daemon-reload",
-      "sudo systemctl enable ingress-watchdog.timer",
-      "sudo systemctl restart ingress-watchdog.timer",
+      "sudo bash /tmp/ingress-watchdog-install.sh",
+      "rm -f /tmp/ingress-watchdog-install.sh",
     ]
   }
 }

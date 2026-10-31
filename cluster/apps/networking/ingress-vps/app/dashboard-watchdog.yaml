@@ -1,0 +1,371 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: ingress-vps-watchdog
+  namespace: networking
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  folder: networking
+  datasources:
+    - inputName: DS_PROMETHEUS
+      datasourceName: Prometheus
+  json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}"
+            },
+            "enable": true,
+            "iconColor": "red",
+            "name": "Watchdog repair",
+            "expr": "sum by (job, layer) (increase(ingress_watchdog_repairs_total{job=~\"ingress-vps-.*\"}[2m])) > 0",
+            "titleFormat": "Watchdog restarted {{layer}} ({{job}})",
+            "textFormat": "The {{layer}} layer failed its checks, so the ingress watchdog restarted it.",
+            "step": "30s"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}"
+            },
+            "enable": true,
+            "iconColor": "green",
+            "name": "Recovered after repair",
+            "expr": "sum by (job) (increase(ingress_watchdog_recoveries_total{job=~\"ingress-vps-.*\",repaired=\"true\"}[2m])) > 0",
+            "titleFormat": "Recovered after watchdog repair ({{job}})",
+            "textFormat": "All layers are passing again after the watchdog restarted something.",
+            "step": "30s"
+          }
+        ]
+      },
+      "editable": true,
+      "graphTooltip": 1,
+      "links": [],
+      "panels": [
+        {
+          "id": 1,
+          "type": "stat",
+          "title": "Repairs",
+          "description": "Service restarts the watchdog performed in the selected range. Zero means it never had to act.",
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 0,
+            "y": 0
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed",
+                "fixedColor": "orange"
+              },
+              "unit": "none"
+            }
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "textMode": "value",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}"
+              },
+              "expr": "sum by (job) (increase(ingress_watchdog_repairs_total{job=~\"ingress-vps-.*\"}[$__range]))",
+              "instant": true,
+              "legendFormat": "{{job}}"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "type": "stat",
+          "title": "Recovered after repair",
+          "description": "Unhealthy periods that ended after the watchdog restarted something. Compare with repairs: roughly equal means each restart fixed it.",
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 6,
+            "y": 0
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed",
+                "fixedColor": "green"
+              },
+              "unit": "none"
+            }
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "textMode": "value",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}"
+              },
+              "expr": "sum by (job) (increase(ingress_watchdog_recoveries_total{job=~\"ingress-vps-.*\",repaired=\"true\"}[$__range]))",
+              "instant": true,
+              "legendFormat": "{{job}}"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "type": "stat",
+          "title": "Self-recovered",
+          "description": "Unhealthy periods that ended without a restart (blips shorter than the debounce, or the fault cleared on its own). Not credit to the watchdog.",
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 12,
+            "y": 0
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed",
+                "fixedColor": "blue"
+              },
+              "unit": "none"
+            }
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "textMode": "value",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}"
+              },
+              "expr": "sum by (job) (increase(ingress_watchdog_recoveries_total{job=~\"ingress-vps-.*\",repaired=\"false\"}[$__range]))",
+              "instant": true,
+              "legendFormat": "{{job}}"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "type": "stat",
+          "title": "Time unhealthy",
+          "description": "Total time any layer was failing in the selected range, counted when each period ends.",
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 18,
+            "y": 0
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed",
+                "fixedColor": "red"
+              },
+              "unit": "s"
+            }
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "textMode": "value",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}"
+              },
+              "expr": "sum by (job) (increase(ingress_watchdog_unhealthy_seconds_total{job=~\"ingress-vps-.*\"}[$__range]))",
+              "instant": true,
+              "legendFormat": "{{job}}"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "type": "timeseries",
+          "title": "Layer health",
+          "description": "1 = passing. Layers below a failing one are not checked, so a series can stop while a lower layer is down.",
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 5
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}"
+              },
+              "expr": "ingress_watchdog_layer_healthy{job=~\"ingress-vps-.*\"}",
+              "legendFormat": "{{job}} / {{layer}}"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "type": "timeseries",
+          "title": "Repairs by layer",
+          "description": "Restarts per 5 minutes, by the layer that triggered them.",
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 13
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}"
+              },
+              "expr": "sum by (job, layer) (increase(ingress_watchdog_repairs_total{job=~\"ingress-vps-.*\"}[5m]))",
+              "legendFormat": "{{job}} / {{layer}}"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "type": "timeseries",
+          "title": "Failed checks by layer",
+          "description": "Failed checks per 5 minutes (one per minute while a layer is down), including ones the debounce ignored.",
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 21
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10
+              }
+            }
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS:-PBFA97CFB590B2093}"
+              },
+              "expr": "sum by (job, layer) (increase(ingress_watchdog_check_failures_total{job=~\"ingress-vps-.*\"}[5m]))",
+              "legendFormat": "{{job}} / {{layer}}"
+            }
+          ]
+        }
+      ],
+      "refresh": "30s",
+      "schemaVersion": 38,
+      "style": "dark",
+      "tags": [
+        "ingress",
+        "networking",
+        "vps",
+        "watchdog"
+      ],
+      "time": {
+        "from": "now-7d",
+        "to": "now"
+      },
+      "title": "Edge Ingress - Watchdog Repairs"
+    }

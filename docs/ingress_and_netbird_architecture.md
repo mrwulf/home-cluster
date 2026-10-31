@@ -343,7 +343,22 @@ a systemd timer that checks the path bottom-up and restarts only the lowest fail
 - **Delivery**: pushed over SSH by an OpenTofu provisioner, not through cloud-init, because
   editing `user_data` replaces the instance. It is not gated on the healthcheck, so it also lands
   on a box whose tunnel is already stale. It stays idle until cloud-init has finished.
-- **Logs**: `journalctl -t ingress-watchdog` on the VPS.
+- **Local log**: events (`unhealthy`, `check_failed`, `repair`, `recovered`) go to
+  `journalctl -t ingress-watchdog` and to `/var/log/ingress-watchdog.log` (rotated once at 1 MB).
+- **Cluster visibility**: counters are written as a node-exporter textfile that the existing
+  `VMStaticScrape` already collects over the VPS public IP, so they keep flowing while the NetBird
+  tunnel is down. They are not in Loki: the Vector pipeline only ingests in-cluster sources and the
+  VPSs have no route to it. Metrics are `ingress_watchdog_{layer_healthy,check_failures_total,repairs_total,recoveries_total,unhealthy_seconds_total,last_repair_timestamp_seconds,last_run_timestamp_seconds}`.
+  `recoveries_total{repaired="true"}` versus `repaired="false"` separates faults the watchdog fixed
+  from ones that cleared on their own, which is the number to judge whether it earns its keep.
+- **Grafana**: the "Edge Ingress - Watchdog Repairs" dashboard shows repairs, recoveries and layer
+  health. A "Watchdog repair" annotation marks every restart on it and on the VPS fleet dashboard,
+  and "Recovered after repair" marks the end of an incident. `IngressVPSWatchdogRepairing` fires on
+  3 or more repairs in 30 minutes (the fix is not holding) and `IngressVPSWatchdogStale` when the
+  watchdog stops reporting.
+- **Node-exporter patch**: the provisioner adds `--collector.textfile.directory` to the cloud-init
+  written `node-exporter.service` in place, because editing `user_data` would replace the instance.
+  A rebuilt VPS gets the unpatched unit and the next apply patches it again.
 
 ---
 
