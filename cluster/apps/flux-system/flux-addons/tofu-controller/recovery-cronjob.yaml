@@ -39,7 +39,7 @@ spec:
           containers:
             - name: recovery
               # renovate: depName=alpine/kubectl datasource=docker
-              image: alpine/kubectl:1.37.1
+              image: alpine/kubectl:1.37.2
               command: ["/bin/sh", "-c"]
               env:
                 # A legitimate plan+apply (even a VPS replacement) finishes well inside this
