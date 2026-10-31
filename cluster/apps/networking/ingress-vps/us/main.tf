@@ -117,6 +117,8 @@ data "http" "home_ip" {
 
 locals {
   home_ip = chomp(data.http.home_ip.response_body)
+  # Same probe hostname the cloud-init and the healthcheck below use; the watchdog hits it locally.
+  watchdog_env = "PROBE_HOST=vps-us.${var.secret_domain}\n"
   # renovate: datasource=docker depName=debian
   debian_version = "13.7"
 }
@@ -411,4 +413,62 @@ resource "null_resource" "home_ip_whitelist_sync" {
   depends_on = [
     data.http.vps_us_healthcheck
   ]
+}
+
+# Install the ingress self-heal watchdog (shared script + units in ../watchdog/). Pushed here, not
+# via cloud-init, because editing user_data would replace the instance; deliberately not gated on
+# the healthcheck so it also lands on a box whose NetBird tunnel is already stale.
+resource "null_resource" "ingress_watchdog" {
+  triggers = {
+    watchdog_hash = sha256(join("", [
+      file("${path.module}/../watchdog/ingress-watchdog.sh"),
+      file("${path.module}/../watchdog/ingress-watchdog.service"),
+      file("${path.module}/../watchdog/ingress-watchdog.timer"),
+      local.watchdog_env,
+    ]))
+    # Also re-run whenever the instance itself gets replaced - see the matching note on
+    # cert_sync's instance_id trigger above.
+    instance_id = ovh_cloud_project_instance.us_vps.id
+  }
+
+  connection {
+    type        = "ssh"
+    host        = local.ovh_us_ipv4
+    user        = "debian"
+    private_key = tls_private_key.tf_admin.private_key_openssh
+    timeout     = "2m"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../watchdog/ingress-watchdog.sh"
+    destination = "/tmp/ingress-watchdog.sh"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../watchdog/ingress-watchdog.service"
+    destination = "/tmp/ingress-watchdog.service"
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/../watchdog/ingress-watchdog.timer"
+    destination = "/tmp/ingress-watchdog.timer"
+  }
+
+  provisioner "file" {
+    content     = local.watchdog_env
+    destination = "/tmp/ingress-watchdog.env"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo install -o root -g root -m 0755 /tmp/ingress-watchdog.sh /usr/local/bin/ingress-watchdog",
+      "sudo install -o root -g root -m 0644 /tmp/ingress-watchdog.service /etc/systemd/system/ingress-watchdog.service",
+      "sudo install -o root -g root -m 0644 /tmp/ingress-watchdog.timer /etc/systemd/system/ingress-watchdog.timer",
+      "sudo install -o root -g root -m 0644 /tmp/ingress-watchdog.env /etc/default/ingress-watchdog",
+      "rm -f /tmp/ingress-watchdog.sh /tmp/ingress-watchdog.service /tmp/ingress-watchdog.timer /tmp/ingress-watchdog.env",
+      "sudo systemctl daemon-reload",
+      "sudo systemctl enable ingress-watchdog.timer",
+      "sudo systemctl restart ingress-watchdog.timer",
+    ]
+  }
 }

@@ -1,0 +1,9 @@
+[Unit]
+Description=Edge VPS ingress path self-heal
+After=docker.service netbird.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/default/ingress-watchdog
+ExecStart=/usr/local/bin/ingress-watchdog
+TimeoutStartSec=120

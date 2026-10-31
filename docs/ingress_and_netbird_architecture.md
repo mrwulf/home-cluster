@@ -294,6 +294,7 @@ Edge VPS Node
 ├── NetBird Client (wt0, 100.110.0.0/16, UDP 51822)
 ├── WireGuard Uplink (wg0 -> dynamic.${SECRET_DOMAIN}:51821)
 ├── CrowdSec LAPI & Container Engine
+├── ingress-watchdog (systemd timer, every 60s)
 ├── crowdsec-firewall-bouncer-nftables (Host packet filtering)
 └── Node Exporter (:9100)
 ```
@@ -319,6 +320,30 @@ Edge VPS Node
 - **Relay Invariant**: NetBird Relay containers require
   `NB_EXPOSED_ADDRESS=rel://${PROBE_HOSTNAME}:33073` and `NB_AUTH_SECRET` matching
   `Relay.Secret` in `management.json`.
+
+### 5.3 Ingress Watchdog (Self-Heal)
+
+A NetBird peer session can read `Connected` while no longer passing traffic (seen after the
+cluster's router pods were replaced shortly after a VPS rebuild), and nothing in NetBird recovers
+it. Each VPS therefore runs `ingress-watchdog` (`cluster/apps/networking/ingress-vps/watchdog/`),
+a systemd timer that checks the path bottom-up and restarts only the lowest failing layer:
+
+| Layer     | Healthy when                                               | Repair                                      |
+| --------- | ---------------------------------------------------------- | ------------------------------------------- |
+| `docker`  | `docker.service` active                                    | restart `docker`                            |
+| `wg`      | `wg0` handshake newer than 5 minutes                       | restart `wg-quick@wg0`, then `netbird`      |
+| `netbird` | `netbird status` shows Management and Signal `Connected`   | restart `netbird`                           |
+| `relay`   | `netbird-relay` active                                     | restart `netbird-relay`                     |
+| `traefik` | `traefik` active and `:443` accepting connections          | restart `traefik`                           |
+| `e2e`     | local Traefik -> tunnel -> cluster health responder is 418 | restart `netbird` (and `wg0` if it repeats) |
+
+- **Debounce and rate limit**: a layer must fail two consecutive checks before it is
+  restarted, and repairs wait at least 4 minutes, backing off to 24 minutes while the fault persists,
+  so a cluster outage (which fails `e2e` by itself) cannot become a restart loop.
+- **Delivery**: pushed over SSH by an OpenTofu provisioner, not through cloud-init, because
+  editing `user_data` replaces the instance. It is not gated on the healthcheck, so it also lands
+  on a box whose tunnel is already stale. It stays idle until cloud-init has finished.
+- **Logs**: `journalctl -t ingress-watchdog` on the VPS.
 
 ---
 
