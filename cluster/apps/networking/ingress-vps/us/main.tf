@@ -468,8 +468,9 @@ resource "null_resource" "ingress_watchdog" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo bash /tmp/ingress-watchdog-install.sh",
-      "rm -f /tmp/ingress-watchdog-install.sh",
+      # && so a failed install fails the provisioner (remote-exec does not stop on a failing line)
+      # and the resource is retried, instead of being recorded as installed.
+      "sudo bash /tmp/ingress-watchdog-install.sh && rm -f /tmp/ingress-watchdog-install.sh",
     ]
   }
 }

@@ -15,7 +15,7 @@ rm -f "$src.sh" "$src.service" "$src.timer" "$src.env"
 # would replace the instance. The host root is already mounted at /rootfs, so no new mount is
 # needed; a rebuilt VPS gets the unpatched unit again and this script patches it on first apply.
 mkdir -p /var/lib/node_exporter/textfile /var/lib/ingress-watchdog
-unit=/etc/systemd/system/node-exporter.service
+unit=${NODE_EXPORTER_UNIT:-/etc/systemd/system/node-exporter.service}
 if ! grep -q 'collector.textfile.directory' "$unit"; then
   sed -i 's|^\( *\)--web.listen-address=:9100$|\1--web.listen-address=:9100 \\\n\1--collector.textfile.directory=/rootfs/var/lib/node_exporter/textfile|' "$unit"
   grep -q 'collector.textfile.directory' "$unit" || { echo "failed to patch $unit" >&2; exit 1; }
@@ -23,6 +23,14 @@ if ! grep -q 'collector.textfile.directory' "$unit"; then
 fi
 
 systemctl daemon-reload
-[ "${restart_node_exporter:-0}" = 1 ] && systemctl restart node-exporter
+# Enable the watchdog first: on a fresh VPS this runs while cloud-init is still installing docker,
+# and nothing after the node-exporter step may be able to stop the timer from being enabled.
 systemctl enable ingress-watchdog.timer
 systemctl restart ingress-watchdog.timer
+
+# try-restart only acts if node-exporter is already running. During first boot it isn't (docker is
+# not installed yet) and cloud-init starts it later from the patched unit; a plain restart fails
+# there because the unit requires docker.service.
+if [ "${restart_node_exporter:-0}" = 1 ]; then
+  systemctl try-restart node-exporter || echo "node-exporter try-restart failed; it will pick up the patched unit on its next start" >&2
+fi
