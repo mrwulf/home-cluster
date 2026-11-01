@@ -20,6 +20,7 @@ LOG=${LOG:-/var/log/ingress-watchdog.log}
 LOG_MAX_BYTES=${LOG_MAX_BYTES:-1048576}
 PROM=${PROM:-/var/lib/node_exporter/textfile/ingress_watchdog.prom}
 BOOT_FINISHED=${BOOT_FINISHED:-/var/lib/cloud/instance/boot-finished}
+BOOT_GRACE=${BOOT_GRACE:-1800}
 LAYERS=(docker wg netbird relay traefik e2e)
 
 num() { cat "$1" 2>/dev/null || echo 0; }
@@ -35,8 +36,9 @@ event() {
   echo "$line" >>"$LOG"
 }
 
-# Never touch services cloud-init is still bringing up.
-[ -f "$BOOT_FINISHED" ] || exit 0
+# Never touch services cloud-init is still bringing up - unless it has been running so long that
+# it is wedged (its own waits are bounded to ~10 minutes), in which case repairing is the point.
+[ -f "$BOOT_FINISHED" ] || [ "$(cut -d. -f1 /proc/uptime)" -gt "$BOOT_GRACE" ] || exit 0
 mkdir -p "$STATE" "$DATA" "$(dirname "$LOG")" "$(dirname "$PROM")"
 [ "$(stat -c %s "$LOG" 2>/dev/null || echo 0)" -gt "$LOG_MAX_BYTES" ] && mv -f "$LOG" "$LOG.1"
 

@@ -340,9 +340,10 @@ a systemd timer that checks the path bottom-up and restarts only the lowest fail
 - **Debounce and rate limit**: a layer must fail two consecutive checks before it is
   restarted, and repairs wait at least 4 minutes, backing off to 24 minutes while the fault persists,
   so a cluster outage (which fails `e2e` by itself) cannot become a restart loop.
-- **Delivery**: pushed over SSH by an OpenTofu provisioner, not through cloud-init, because
-  editing `user_data` replaces the instance. It is not gated on the healthcheck, so it also lands
-  on a box whose tunnel is already stale. It stays idle until cloud-init has finished.
+- **Delivery**: installed by cloud-init. `write_files` lays the shared script and units down before any
+  `runcmd` step and the first `runcmd` step starts the timer, so the watchdog is present even if a later
+  step fails or hangs. It stays idle until cloud-init has finished, or for 30 minutes of uptime if
+  cloud-init is wedged. Changing the watchdog therefore replaces the VPSs, like any other cloud-init edit.
 - **Local log**: events (`unhealthy`, `check_failed`, `repair`, `recovered`) go to
   `journalctl -t ingress-watchdog` and to `/var/log/ingress-watchdog.log` (rotated once at 1 MB).
 - **Cluster visibility**: counters are written as a node-exporter textfile that the existing
@@ -356,9 +357,8 @@ a systemd timer that checks the path bottom-up and restarts only the lowest fail
   and "Recovered after repair" marks the end of an incident. `IngressVPSWatchdogRepairing` fires on
   3 or more repairs in 30 minutes (the fix is not holding) and `IngressVPSWatchdogStale` when the
   watchdog stops reporting.
-- **Node-exporter patch**: the provisioner adds `--collector.textfile.directory` to the cloud-init
-  written `node-exporter.service` in place, because editing `user_data` would replace the instance.
-  A rebuilt VPS gets the unpatched unit and the next apply patches it again.
+- **Textfile collector**: the cloud-init `node-exporter.service` passes
+  `--collector.textfile.directory` so node-exporter publishes the watchdog's counters.
 
 ---
 

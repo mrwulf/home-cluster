@@ -162,7 +162,8 @@ write_files:
         --path.procfs=/host/proc \
         --path.sysfs=/host/sys \
         --path.rootfs=/rootfs \
-        --web.listen-address=:9100
+        --web.listen-address=:9100 \
+        --collector.textfile.directory=/rootfs/var/lib/node_exporter/textfile
 
       [Install]
       WantedBy=multi-user.target
@@ -245,7 +246,37 @@ write_files:
       [Install]
       WantedBy=multi-user.target
 
+  # 13. Ingress watchdog (shared files in ../watchdog/, identical on both VPSs). Laid down by
+  # write_files, which runs before any runcmd step, so it exists even if a later step fails or hangs;
+  # runcmd step 0 starts it. It stays idle until cloud-init has finished.
+  - path: /usr/local/bin/ingress-watchdog
+    permissions: "0755"
+    encoding: gz+b64
+    content: ${WATCHDOG_SCRIPT_GZ_B64}
+
+  - path: /etc/systemd/system/ingress-watchdog.service
+    permissions: "0644"
+    encoding: gz+b64
+    content: ${WATCHDOG_SERVICE_GZ_B64}
+
+  - path: /etc/systemd/system/ingress-watchdog.timer
+    permissions: "0644"
+    encoding: gz+b64
+    content: ${WATCHDOG_TIMER_GZ_B64}
+
+  - path: /etc/default/ingress-watchdog
+    permissions: "0644"
+    content: |
+      PROBE_HOST=${PROBE_HOSTNAME}
+
 runcmd:
+  # 0. Start the ingress watchdog before anything slow or fallible. The textfile directory is what
+  # node-exporter (see its unit above) publishes the watchdog's counters from.
+  - |
+    mkdir -p /var/lib/node_exporter/textfile
+    systemctl daemon-reload
+    systemctl enable --now ingress-watchdog.timer
+
   # 1. Install Docker, WireGuard & systemd-resolved and link stub resolver
   - |
     export DEBIAN_FRONTEND=noninteractive
@@ -399,7 +430,11 @@ runcmd:
     curl -fsSL https://packagecloud.io/crowdsec/crowdsec/gpgkey | gpg --dearmor --yes -o /etc/apt/keyrings/crowdsec.gpg
     echo "deb [signed-by=/etc/apt/keyrings/crowdsec.gpg] https://packagecloud.io/crowdsec/crowdsec/debian/ bookworm main" > /etc/apt/sources.list.d/crowdsec_crowdsec.list
     apt-get update
-    apt-get install -y crowdsec-firewall-bouncer-nftables
+    # The package's postinst needs a local cscli to create its API key (CrowdSec runs in a
+    # container here), so on every install it exits non-zero and leaves the package half-configured,
+    # which makes later apt runs fail too. Tolerate that, set the key below, then finish with
+    # dpkg --configure -a.
+    apt-get install -y crowdsec-firewall-bouncer-nftables || true
 
     # Wait for CrowdSec container LAPI to be ready
     until docker exec crowdsec cscli bouncers list >/dev/null 2>&1; do sleep 2; done
@@ -407,6 +442,11 @@ runcmd:
     # Register bouncer with local container LAPI
     docker exec crowdsec cscli bouncers delete host-nftables || true
     BOUNCER_KEY=$(docker exec crowdsec cscli bouncers add host-nftables -o raw | tail -n 1)
-    sed -i "s/^api_key:.*/api_key: $${BOUNCER_KEY}/" /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+    # The key is random base64 and can contain "/", so "/" must not be the sed delimiter (it broke
+    # the bouncer config on roughly half of all builds).
+    sed -i "s|^api_key:.*|api_key: $${BOUNCER_KEY}|" /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
     sed -i "s|^api_url:.*|api_url: http://127.0.0.1:8080/|" /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml
+    dpkg --configure -a
     systemctl restart crowdsec-firewall-bouncer
+    # Fail loudly (cloud-init status: error) instead of leaving the edge without its bouncer.
+    systemctl is-active --quiet crowdsec-firewall-bouncer

@@ -117,8 +117,6 @@ data "http" "home_ip" {
 
 locals {
   home_ip = chomp(data.http.home_ip.response_body)
-  # Same probe hostname the cloud-init and the healthcheck below use; the watchdog hits it locally.
-  watchdog_env = "PROBE_HOST=vps-us.${var.secret_domain}\n"
   # renovate: datasource=docker depName=debian
   debian_version = "13.7"
 }
@@ -187,6 +185,9 @@ resource "terraform_data" "cloud_init_us" {
       NB_ADDR                      = "10.0.10.11"
       SSH_PUBLIC_KEY               = var.ssh_public_key
       TF_ADMIN_SSH_PUBLIC_KEY      = tls_private_key.tf_admin.public_key_openssh
+      WATCHDOG_SCRIPT_GZ_B64       = base64gzip(file("${path.module}/../watchdog/ingress-watchdog.sh"))
+      WATCHDOG_SERVICE_GZ_B64      = base64gzip(file("${path.module}/../watchdog/ingress-watchdog.service"))
+      WATCHDOG_TIMER_GZ_B64        = base64gzip(file("${path.module}/../watchdog/ingress-watchdog.timer"))
     })
   }
 }
@@ -413,63 +414,4 @@ resource "null_resource" "home_ip_whitelist_sync" {
   depends_on = [
     data.http.vps_us_healthcheck
   ]
-}
-
-# Install the ingress self-heal watchdog (shared script + units in ../watchdog/). Pushed here, not
-# via cloud-init, because editing user_data would replace the instance; deliberately not gated on
-# the healthcheck so it also lands on a box whose NetBird tunnel is already stale. install.sh also
-# turns on node-exporter's textfile collector so the watchdog's counters reach the cluster scrape.
-resource "null_resource" "ingress_watchdog" {
-  triggers = {
-    watchdog_hash = sha256(join("", [
-      file("${path.module}/../watchdog/ingress-watchdog.sh"),
-      file("${path.module}/../watchdog/ingress-watchdog.service"),
-      file("${path.module}/../watchdog/ingress-watchdog.timer"),
-      file("${path.module}/../watchdog/install.sh"),
-      local.watchdog_env,
-    ]))
-    # Also re-run whenever the instance itself gets replaced - see the matching note on
-    # cert_sync's instance_id trigger above.
-    instance_id = ovh_cloud_project_instance.us_vps.id
-  }
-
-  connection {
-    type        = "ssh"
-    host        = local.ovh_us_ipv4
-    user        = "debian"
-    private_key = tls_private_key.tf_admin.private_key_openssh
-    timeout     = "2m"
-  }
-
-  provisioner "file" {
-    source      = "${path.module}/../watchdog/ingress-watchdog.sh"
-    destination = "/tmp/ingress-watchdog.sh"
-  }
-
-  provisioner "file" {
-    source      = "${path.module}/../watchdog/ingress-watchdog.service"
-    destination = "/tmp/ingress-watchdog.service"
-  }
-
-  provisioner "file" {
-    source      = "${path.module}/../watchdog/ingress-watchdog.timer"
-    destination = "/tmp/ingress-watchdog.timer"
-  }
-
-  provisioner "file" {
-    content     = local.watchdog_env
-    destination = "/tmp/ingress-watchdog.env"
-  }
-
-  provisioner "file" {
-    source      = "${path.module}/../watchdog/install.sh"
-    destination = "/tmp/ingress-watchdog-install.sh"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo bash /tmp/ingress-watchdog-install.sh",
-      "rm -f /tmp/ingress-watchdog-install.sh",
-    ]
-  }
 }
