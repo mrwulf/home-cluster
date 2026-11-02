@@ -9,3 +9,4 @@ resources:
   - health-responder.yaml
   - dashboard.yaml
   - dashboard-watchdog.yaml
+  - audit

@@ -60,6 +60,27 @@ spec:
           labels:
             severity: warning
 
+        - alert: IngressVPSDuplicateInstances
+          annotations:
+            summary: "More than one cloud instance exists for an ingress VPS region"
+            description: "Region {{ $labels.region }} has {{ $value }} ingress-vps instances at the cloud provider; only the Tofu-tracked one should exist. An untracked duplicate shares the WireGuard identity and breaks the tunnel. Delete the instance that is not in the tfstate-default-ingress-vps-{{ $labels.region }} secret."
+          expr: |
+            ingress_vps_cloud_instances > 1
+          for: 10m
+          labels:
+            severity: critical
+
+        - alert: IngressVPSInstanceAuditStale
+          annotations:
+            summary: "Ingress VPS instance audit is not reporting"
+            description: "The ingress-vps-instance-audit CronJob has not pushed a successful count for over 20m, so duplicate instances would go unnoticed. Check its Job logs in the networking namespace."
+          expr: |
+            time() - ingress_vps_cloud_instances_last_success_timestamp_seconds > 1200
+            or absent(ingress_vps_cloud_instances_last_success_timestamp_seconds)
+          for: 10m
+          labels:
+            severity: warning
+
         - alert: EdgeNodeHighCPU
           annotations:
             summary: "Edge Ingress VPS high CPU load"
