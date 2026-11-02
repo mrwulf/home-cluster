@@ -339,11 +339,6 @@ a systemd timer that checks the path bottom-up and restarts only the lowest fail
 | `traefik` | `traefik` active and `:443` accepting connections          | restart `traefik`                           |
 | `e2e`     | local Traefik -> tunnel -> cluster health responder is 418 | restart `netbird` (and `wg0` if it repeats) |
 
-- **Management drops are soft**: the NetBird client retries Management/Signal disconnects itself
-  and existing tunnels keep carrying traffic, so while the end-to-end probe still passes the
-  `netbird` layer must fail 10 checks in a row before NetBird is restarted. If the probe fails as
-  well, the normal 2-check debounce applies. Every layer is checked on each run, so
-  `ingress_watchdog_layer_healthy` always has all six series.
 - **Debounce and rate limit**: a layer must fail two consecutive checks before it is
   restarted, and repairs wait at least 4 minutes, backing off to 24 minutes while the fault persists,
   so a cluster outage (which fails `e2e` by itself) cannot become a restart loop.
@@ -366,6 +361,17 @@ a systemd timer that checks the path bottom-up and restarts only the lowest fail
   watchdog stops reporting.
 - **Textfile collector**: the cloud-init `node-exporter.service` passes
   `--collector.textfile.directory` so node-exporter publishes the watchdog's counters.
+
+### Duplicate-instance audit
+
+An instance Tofu no longer tracks (for example leaked when a tf-runner pod is killed during a hung
+create) keeps running with the same WireGuard key and tunnel address as the real VPS, so the
+firewall's single peer endpoint flips between the two and the tunnel drops in alternating windows.
+The `ingress-vps-instance-audit` CronJob (`cluster/apps/networking/ingress-vps/app/audit/`) lists
+the OVH and Hetzner instances every 5 minutes, counts those named `ingress-vps-<region>*`, and pushes
+`ingress_vps_cloud_instances{region}` to VictoriaMetrics. `IngressVPSDuplicateInstances` fires when a
+region has more than one for 10 minutes; `IngressVPSInstanceAuditStale` fires when the audit stops
+reporting. Fix by deleting the instance that is not in `tfstate-default-ingress-vps-<region>`.
 
 ---
 

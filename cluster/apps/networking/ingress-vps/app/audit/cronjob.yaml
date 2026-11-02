@@ -1,0 +1,51 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ingress-vps-instance-audit
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: audit
+              # renovate: depName=python datasource=docker
+              image: docker.io/library/python:3.13.9-alpine3.22
+              command: ["python3", "-I", "/scripts/instance-audit.py"]
+              env:
+                - name: VM_IMPORT_URL
+                  value: http://vmsingle-stack.monitoring.svc.cluster.local:8428/api/v1/import/prometheus
+              envFrom:
+                - secretRef:
+                    name: ingress-vps-audit-secrets
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 128Mi
+              securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+                seccompProfile:
+                  type: RuntimeDefault
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+          volumes:
+            - name: scripts
+              configMap:
+                name: ingress-vps-instance-audit
