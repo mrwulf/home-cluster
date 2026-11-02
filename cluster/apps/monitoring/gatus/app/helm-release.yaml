@@ -12,13 +12,6 @@ spec:
   values:
     defaultPodOptions:
       automountServiceAccountToken: true
-      hostAliases:
-        - ip: "${VPS_US_PUBLIC_IP}"
-          hostnames:
-            - "vps-us.${SECRET_DOMAIN}"
-        - ip: "${VPS_EU_PUBLIC_IP}"
-          hostnames:
-            - "vps-eu.${SECRET_DOMAIN}"
     controllers:
       gatus:
         annotations:
