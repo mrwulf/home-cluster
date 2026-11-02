@@ -18,7 +18,7 @@ spec:
           containers:
             - name: audit
               # renovate: depName=python datasource=docker
-              image: docker.io/library/python:3.13.9-alpine3.22
+              image: docker.io/library/python:3.14.5-alpine3.22
               command: ["python3", "-I", "/scripts/instance-audit.py"]
               env:
                 - name: VM_IMPORT_URL
