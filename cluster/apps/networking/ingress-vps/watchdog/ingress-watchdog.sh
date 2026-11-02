@@ -2,7 +2,8 @@
 # Self-heal the edge VPS ingress path. Checks each layer bottom-up and restarts only the
 # lowest failing one, since a lower layer being broken makes every layer above it look broken:
 #   docker -> wg0 uplink -> NetBird -> NetBird relay -> Traefik -> end-to-end probe
-# Failures are debounced, and repairs are rate-limited with a growing backoff so a cluster
+# Every layer is checked on each run (so the health gauges never have gaps) and the lowest failing one
+# is repaired. Failures are debounced, and repairs are rate-limited with a growing backoff so a cluster
 # outage (which fails the end-to-end probe on its own) can't turn into a restart loop.
 #
 # Events go to the journal (`journalctl -t ingress-watchdog`) and to $LOG. Counters live in
@@ -12,6 +13,9 @@ set -u
 
 : "${PROBE_HOST:?PROBE_HOST must be set}"
 FAILS_BEFORE_ACTION=${FAILS_BEFORE_ACTION:-2}
+# NetBird Management/Signal drops are transient and the client retries them itself; they only matter
+# once they last. While the end-to-end probe still passes, wait this many checks before restarting.
+NETBIRD_SOFT_FAILS=${NETBIRD_SOFT_FAILS:-10}
 COOLDOWN=${COOLDOWN:-240}
 WG_STALE=${WG_STALE:-300}
 STATE=${STATE:-/run/ingress-watchdog}
@@ -47,7 +51,7 @@ declare -A result
 write_metrics() {
   local tmp="$PROM.$$" layer
   {
-    echo "# HELP ingress_watchdog_layer_healthy 1 if the layer passed its last check; layers below a failing one are not checked."
+    echo "# HELP ingress_watchdog_layer_healthy 1 if the layer passed its last check."
     echo "# TYPE ingress_watchdog_layer_healthy gauge"
     for layer in "${!result[@]}"; do
       echo "ingress_watchdog_layer_healthy{layer=\"$layer\"} ${result[$layer]}"
@@ -131,16 +135,18 @@ for layer in "${LAYERS[@]}"; do
     rm -f "$STATE/fail.$layer"
   else
     result[$layer]=0
-    failed=$layer
-    break
+    [ -z "$failed" ] && failed=$layer
   fi
 done
 
 now=$(date +%s)
 
 if [ -z "$failed" ]; then
-  if [ -e "$DATA/unhealthy-since" ]; then
-    duration=$((now - $(num "$DATA/unhealthy-since")))
+  since=$(num "$DATA/unhealthy-since")
+  # unhealthy-since is reset to 0, not deleted, so test its value (an existence test counted every
+  # healthy run as a recovery).
+  if [ "$since" -gt 0 ]; then
+    duration=$((now - since))
     bump unhealthy-seconds "$duration"
     if [ -e "$STATE/repairs" ]; then bump recoveries.repaired; else bump recoveries.self; fi
     event recovered "duration_s=$duration repairs=$(num "$STATE/repairs")"
@@ -156,10 +162,14 @@ if [ "$(num "$DATA/unhealthy-since")" -eq 0 ]; then
   event unhealthy "layer=$failed"
 fi
 
+needed=$FAILS_BEFORE_ACTION
+# A Management/Signal drop with a passing end-to-end probe is degraded, not down: traffic still flows.
+[ "$failed" = netbird ] && [ "${result[e2e]:-0}" = 1 ] && needed=$NETBIRD_SOFT_FAILS
+
 fails=$(($(num "$STATE/fail.$failed") + 1))
 echo "$fails" >"$STATE/fail.$failed"
-if [ "$fails" -lt "$FAILS_BEFORE_ACTION" ]; then
-  event check_failed "layer=$failed count=$fails/$FAILS_BEFORE_ACTION action=wait"
+if [ "$fails" -lt "$needed" ]; then
+  event check_failed "layer=$failed count=$fails/$needed action=wait"
   exit 0
 fi
 
