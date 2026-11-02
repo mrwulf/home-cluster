@@ -315,9 +315,10 @@ Edge VPS Node
   A records that the `ingress-vps` Tofu stacks keep pointed at the live VPS IPs. In-cluster pods
   resolve them through cluster DNS like any public name (checked from a pod: both return the
   public VPS IPs, and an unknown name under the domain returns NXDOMAIN).
-- **No pinned IPs**: `NetworkRouter/k8s` deliberately has no `hostAliases` for the VPSs. They were
-  tried earlier and removed: an IP in the pod spec replaces both router pods on every VPS rebuild,
-  right as the new VPS is trying to establish sessions with them, leaving stale NetBird sessions.
+- **No pinned IPs**: `NetworkRouter/k8s` and Gatus deliberately have no `hostAliases` for the
+  VPSs. An IP in a pod spec replaces the pods on every VPS rebuild; for the routers that happens right as
+  the new VPS is trying to establish sessions with them, leaving stale NetBird sessions. ddup is the
+  exception: it publishes the VPS IPs as the A records for `ingress-lb` and `fast-lb`, so it needs them.
 - **Relay Invariant**: NetBird Relay containers require
   `NB_EXPOSED_ADDRESS=rel://${PROBE_HOSTNAME}:33073` and `NB_AUTH_SECRET` matching
   `Relay.Secret` in `management.json`.
