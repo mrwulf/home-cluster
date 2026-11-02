@@ -309,14 +309,15 @@ Edge VPS Node
 - **Whitelists**: Whitelists home IPs, private RFC 1918 subnets, and NetBird
   CGNAT ranges (`100.64.0.0/10`).
 
-### 5.2 Split-Horizon DNS & VPS Relay Invariant
+### 5.2 VPS Name Resolution & Relay Invariant
 
-- **Split-Horizon Invariant**: Wildcard DNS (`*.${SECRET_DOMAIN}`) resolves to
-  `10.0.10.20` internally. In-cluster pods and LAN services cannot resolve
-  public VPS IPs via internal DNS.
-- **Remediation**: `NetworkRouter/k8s` configures declarative `hostAliases`
-  mapping `vps-eu.${SECRET_DOMAIN}` and `vps-us.${SECRET_DOMAIN}`
-  directly to their public IPs (`${VPS_EU_PUBLIC_IP}` and `${VPS_US_PUBLIC_IP}`).
+- **Resolution**: `vps-eu.${SECRET_DOMAIN}` and `vps-us.${SECRET_DOMAIN}` are public
+  A records that the `ingress-vps` Tofu stacks keep pointed at the live VPS IPs. In-cluster pods
+  resolve them through cluster DNS like any public name (checked from a pod: both return the
+  public VPS IPs, and an unknown name under the domain returns NXDOMAIN).
+- **No pinned IPs**: `NetworkRouter/k8s` deliberately has no `hostAliases` for the VPSs. They were
+  tried earlier and removed: an IP in the pod spec replaces both router pods on every VPS rebuild,
+  right as the new VPS is trying to establish sessions with them, leaving stale NetBird sessions.
 - **Relay Invariant**: NetBird Relay containers require
   `NB_EXPOSED_ADDRESS=rel://${PROBE_HOSTNAME}:33073` and `NB_AUTH_SECRET` matching
   `Relay.Secret` in `management.json`.

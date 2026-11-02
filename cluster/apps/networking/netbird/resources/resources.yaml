@@ -44,13 +44,10 @@ spec:
     replicas: 2
     podTemplate:
       spec:
-        hostAliases:
-          - ip: "${VPS_US_PUBLIC_IP}"
-            hostnames:
-              - "vps-us.${SECRET_DOMAIN}"
-          - ip: "${VPS_EU_PUBLIC_IP}"
-            hostnames:
-              - "vps-eu.${SECRET_DOMAIN}"
+        # No hostAliases for the VPS relays: they resolve through cluster DNS like any public name
+        # (the ingress-vps Tofu stacks keep vps-us/vps-eu.${SECRET_DOMAIN} pointed at the live IPs).
+        # Pinning the IPs here replaced both router pods on every VPS rebuild, which tore down the
+        # sessions the freshly built VPS was trying to establish with them.
         containers:
           - name: netbird
             # renovate: depName=ghcr.io/netbirdio/netbird datasource=docker
