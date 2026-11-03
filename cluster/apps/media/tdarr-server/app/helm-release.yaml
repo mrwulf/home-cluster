@@ -38,7 +38,7 @@ spec:
           main:
             image:
               repository: ghcr.io/haveagitgat/tdarr
-              tag: 3.05.00
+              tag: 3.06.00
             env:
               PUID: 568
               PGID: 568
