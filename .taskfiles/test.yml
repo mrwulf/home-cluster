@@ -10,6 +10,7 @@ tasks:
     cmds:
       - task: lint:all
       - task: flux:validate
+      - task: flate:all
 
   lint:all:
     desc: Run all linters
@@ -121,6 +122,47 @@ tasks:
       - echo "Checking Flux compatibility..."
       - flux check
     ignore_error: true
+
+  flate:all:
+    desc: Render every HelmRelease and Kustomization with flate (like CI)
+    cmds:
+      - task: flate:kustomization
+      - task: flate:helmrelease
+
+  flate:kustomization:
+    desc: Validate Kustomizations with flate (like CI)
+    cmds:
+      - |
+        set -e
+        echo "Validating Kustomizations with flate..."
+        TMP_PATH="$(mktemp -d)"
+        trap 'rm -rf "$TMP_PATH"' EXIT
+        cp -r "{{.PROJECT_DIR}}/cluster" "$TMP_PATH/cluster"
+        # CI can't fetch the private "other" GitRepository source, so it suspends that
+        # one Kustomization+GitRepository before testing — match that here (see
+        # .github/workflows/flate.yaml "Suspend private other resources").
+        if [ -d "$TMP_PATH/cluster/apps/other" ]; then
+          yq eval -i '.spec.suspend = true' "$TMP_PATH/cluster/apps/other/ks.yaml"
+          yq eval -i '.spec.suspend = true' "$TMP_PATH/cluster/apps/other/gitrepo.yaml"
+        fi
+        flate test ks --path "$TMP_PATH"
+    ignore_error: false
+
+  flate:helmrelease:
+    desc: Validate HelmReleases with flate (like CI)
+    cmds:
+      - |
+        set -e
+        echo "Validating HelmReleases with flate..."
+        TMP_PATH="$(mktemp -d)"
+        trap 'rm -rf "$TMP_PATH"' EXIT
+        cp -r "{{.PROJECT_DIR}}/cluster" "$TMP_PATH/cluster"
+        if [ -d "$TMP_PATH/cluster/apps/other" ]; then
+          yq eval -i '.spec.suspend = true' "$TMP_PATH/cluster/apps/other/ks.yaml"
+          yq eval -i '.spec.suspend = true' "$TMP_PATH/cluster/apps/other/gitrepo.yaml"
+        fi
+        flate test hr --path "$TMP_PATH"
+    ignore_error: false
 
   flux:diff:helmrelease:
     desc: Show diff for HelmRelease resources (like CI)

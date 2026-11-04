@@ -21,9 +21,12 @@ These apply to **every** change. Do not check anything in that violates them.
    mise x -- task test:all
    ```
 
-   This is `lint:all` (markdown, yaml, kubeconform, prettier/format) + `flux:validate`, which runs `flux build kustomization --dry-run` over each top-level kustomization (cluster-meta, cluster-apps) and then `flux check`.
-   Note: `flux:check` is `ignore_error: true` (it needs a live cluster), but `flux:build` fails the task, so `lint:all` and `flux:build` are the hard gate.
-   `flux-local` is only used by the separate `flux:diff:*` tasks (not part of `test:all`). CI runs the same task — keep it green.
+   This is `lint:all` (markdown, yaml, kubeconform, prettier/format) + `flux:validate` + `flate:all`.
+   `flux:validate` runs `flux build kustomization --dry-run` over each top-level kustomization (cluster-meta, cluster-apps) and then `flux check`.
+   `flate:all` fully renders every HelmRelease (Helm template + `postRenderers`) and Kustomization with [flate](https://github.com/home-operations/flate) — this is what actually catches a
+   `postRenderers` strategic-merge patch with no unique target (e.g. a missing `namespace:` on the patch metadata), which `flux build --dry-run` does not render far enough to catch.
+   Note: `flux:check` is `ignore_error: true` (it needs a live cluster), but `flux:build` and `flate:all` fail the task, so `lint:all`, `flux:build`, and `flate:all` are the hard gate.
+   `flux-local` is only used by the separate `flux:diff:*` tasks (not part of `test:all`). CI runs the same checks via `test:all` (lint + flux:validate) and a separate `flate.yaml` workflow — keep both green.
 
 2. **Every external artifact must be tracked by Renovate.** Charts, container images, GitHub-release tarballs, CRDs — all of it. If you add a dependency Renovate can't see, you've created drift.
    Make it trackable (see the Renovate section) and confirm it shows up on the **Renovate Dashboard** issue after the first run. Pin exact versions; never use `latest` for anything that ships to the cluster.
@@ -199,5 +202,6 @@ If it doesn't, it isn't being tracked — fix the source/annotation. Some Flux c
 
 - `mise x -- task test:all` — full suite (run before every commit).
 - `mise x -- task test:flux:validate` — render + validate Flux resources only.
+- `mise x -- task test:flate:all` — fully render every HelmRelease/Kustomization with flate, same as the CI `flate.yaml` workflow.
 - `mise x -- task test:lint:all` — linters only.
 - `mise x -- task test:flux:diff:all` — diff rendered manifests against the cluster.
