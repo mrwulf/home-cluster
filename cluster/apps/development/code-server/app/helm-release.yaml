@@ -57,7 +57,7 @@ spec:
                 cpu: 10m
                 memory: 640M
               limits:
-                memory: 8G
+                memory: 5Gi
 
           # Agent terminals (Codeman). Same image so it sees the same PVC and the
           # same uid; its own container so it gets its own memory limit and a
@@ -73,7 +73,7 @@ spec:
                 cpu: 10m
                 memory: 256M
               limits:
-                memory: 6G
+                memory: 5Gi
 
         pod:
           # The agents use kubeconfig/talosconfig from the PVC, not the pod's identity.

@@ -49,7 +49,7 @@ instance:
                   - name: manager
                     resources:
                       limits:
-                        memory: 4Gi
+                        memory: 1.5Gi
         target:
           kind: Deployment
           name: (kustomize-controller|helm-controller|source-controller)

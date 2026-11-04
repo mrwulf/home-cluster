@@ -56,7 +56,7 @@ spec:
                 cpu: 22m
                 memory: 1G
               limits:
-                memory: 4G
+                memory: 2560Mi
 
     service:
       main:

@@ -73,7 +73,7 @@ spec:
                 cpu: 100m
                 memory: 512M
               limits:
-                memory: 8G
+                memory: 2Gi
 
     service:
       main:

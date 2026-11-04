@@ -20,9 +20,9 @@ spec:
   resources:
     requests:
       cpu: 1000m
-      memory: 8Gi
+      memory: 5Gi
     limits:
-      memory: 8Gi
+      memory: 5Gi
   postgresql:
     parameters:
       auto_explain.log_min_duration: "10s"
