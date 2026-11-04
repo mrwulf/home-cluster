@@ -51,7 +51,7 @@ spec:
                 memory: 3Gi
               limits:
                 gpu.intel.com/i915: 1
-                memory: 12Gi
+                memory: 6Gi
         pod:
           securityContext:
             runAsUser: 568

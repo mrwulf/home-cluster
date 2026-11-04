@@ -47,7 +47,7 @@ spec:
                 cpu: 50m
                 memory: 1G
               limits:
-                memory: 2G
+                memory: 3Gi
 
     service:
       main:
