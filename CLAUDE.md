@@ -188,6 +188,9 @@ Config: [.github/renovate.json5](.github/renovate.json5) + [.github/renovate/](.
 
 - **flux** — tracks `OCIRepository`/`HelmRepository` chart versions (the `ref.tag` and `HelmRelease` chart versions). This is why charts go through a pinned source.
 - **helm-values** / **kubernetes** — track `image:` and `repository:`/`tag:` values inside HelmReleases and manifests (e.g. app-template `tag:`, raw `initContainers[].image`).
+- **helmfile** — tracks chart versions in `talos/*-helmfile.yaml` (the one-time, pre-Flux bootstrap installs of cilium and flux themselves).
+  Chart repo aliases used there (e.g. `cilium/cilium`) must be mirrored in `registryAliases` in [renovate.json5](.github/renovate.json5) — the
+  manager doesn't read a helmfile's own `repositories:` block for that.
 - **customManagers** — for anything else, annotate with a comment Renovate can parse:
 
   ```yaml
