@@ -5,3 +5,17 @@ resources:
   - bgp-config.yaml
   - kubernetes-api-service.yaml
   - route.yaml
+configMapGenerator:
+  - name: cilium-resources-values
+    # Explicit per-generator namespace (not a blanket kustomization-level
+    # `namespace:`, which would also stamp the cluster-scoped CiliumBGP*
+    # CRDs below with a namespace and break them): the HelmRelease below
+    # sets its own namespace explicitly, so without this the generated
+    # ConfigMap's namespace wouldn't match it and kustomize's nameReference
+    # fixup (see kustomizeconfig.yaml) would silently skip rewriting
+    # valuesFrom.name to the hash-suffixed ConfigMap name.
+    namespace: kube-system
+    files:
+      - resources-values.yaml
+configurations:
+  - kustomizeconfig.yaml
