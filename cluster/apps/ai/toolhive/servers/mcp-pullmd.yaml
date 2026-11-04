@@ -7,7 +7,7 @@ spec:
   groupRef:
     name: toolhive-servers
   # renovate: depName=aeternalabshq/pullmd datasource=docker
-  image: docker.io/aeternalabshq/pullmd:3.17.0@sha256:2523c79f3ea1ff2443179d27da35cbc4c96e3659c60577371dec7cd7d09114ae
+  image: docker.io/aeternalabshq/pullmd:3.18.0@sha256:0c85840758c3757db17e221e06a5a5298a14484d4cfb9873fd8870837f2d6723
   # pullmd speaks MCP natively over Streamable-HTTP - no stdio proxy needed
   transport: streamable-http
   mcpPort: 3000
