@@ -23,6 +23,12 @@ spec:
       localpv:
         image:
           registry: quay.io/
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
         basePath: &hostPath /var/mnt/extra/openebs/local
       hostpathClass:
         enabled: true

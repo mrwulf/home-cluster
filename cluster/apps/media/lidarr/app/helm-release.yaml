@@ -32,11 +32,23 @@ spec:
             envFrom:
               - secretRef:
                   name: lidarr-secret
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
         containers:
           app:
             image:
               repository: ghcr.io/home-operations/lidarr
               tag: 3.2.0.5144
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
             env:
               LIDARR__INSTANCE_NAME: Lidarr
               LIDARR__PORT: &port 8686

@@ -32,16 +32,38 @@ spec:
 
     victoria-metrics-operator:
       enabled: true
+      resources:
+        requests:
+          cpu: 20m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+      # Config-reloader sidecars: the operator applies these as both request and
+      # limit; the remove-cpu-limit policy strips the CPU limit at admission.
       env:
         - name: VM_VMALERTDEFAULT_CONFIGRELOADERCPU
-          value: "0"
+          value: 10m
+        - name: VM_VMALERTDEFAULT_CONFIGRELOADERMEMORY
+          value: 64Mi
         - name: VM_VMAGENTDEFAULT_CONFIGRELOADERCPU
-          value: "0"
+          value: 10m
+        - name: VM_VMAGENTDEFAULT_CONFIGRELOADERMEMORY
+          value: 64Mi
         - name: VM_VMALERTMANAGER_CONFIGRELOADERCPU
-          value: "0"
+          value: 10m
+        - name: VM_VMALERTMANAGER_CONFIGRELOADERMEMORY
+          value: 64Mi
       operator:
         disable_prometheus_converter: false
         enable_converter_ownership: true
+
+    syncJob:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
 
     defaultRules:
       create: true
@@ -255,8 +277,29 @@ spec:
     kubeProxy:
       enabled: false
 
+    grafana:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 512Mi
+        limits:
+          memory: 1536Mi
+      sidecar:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            memory: 256Mi
+
     kube-state-metrics:
       fullnameOverride: kube-state-metrics
+      resources:
+        requests:
+          cpu: 20m
+          memory: 256Mi
+        limits:
+          memory: 768Mi
       verticalPodAutoscaler:
         enabled: false
       vmScrape:
@@ -319,6 +362,12 @@ spec:
 
     prometheus-node-exporter:
       fullnameOverride: node-exporter
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 128Mi
       vmScrape:
         spec:
           endpoints:

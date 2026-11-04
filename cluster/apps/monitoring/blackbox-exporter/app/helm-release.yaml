@@ -18,6 +18,13 @@ spec:
     ingress:
       enabled: false
 
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        memory: 128Mi
+
     allowIcmp: true
     pspEnabled: false
     podSecurityContext:

@@ -15,17 +15,37 @@ spec:
   values:
     vpa:
       enabled: true
+      recommender:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 256Mi
+      admissionController:
+        resources:
+          requests:
+            cpu: 25m
+            memory: 96Mi
+          limits:
+            memory: 192Mi
+        certGen:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
     dashboard:
       replicaCount: 1
       ingress:
         enabled: false
-
-    resources:
-      limits:
-        memory: 32Mi
-      requests:
-        cpu: 25m
-        memory: 32Mi
+      resources:
+        requests:
+          cpu: 25m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
 
     controller:
       resources:

@@ -30,6 +30,12 @@ spec:
             envFrom:
               - secretRef:
                   name: openwebui
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
         containers:
           app:
             image:

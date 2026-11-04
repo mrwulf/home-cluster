@@ -25,5 +25,11 @@ spec:
     name: grafana-operator
   interval: 1h
   values:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 96Mi
+      limits:
+        memory: 256Mi
     serviceMonitor:
       enabled: true

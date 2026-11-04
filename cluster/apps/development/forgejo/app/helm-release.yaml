@@ -20,6 +20,19 @@ spec:
     image:
       repository: forgejo/forgejo
       tag: 15.0.2-rootless
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+    initContainers:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
     gitea:
       config:
         APP_NAME: "Forgejo Git Service"
@@ -119,3 +132,9 @@ spec:
                         envFrom:
                           - secretRef:
                               name: forgejo-db
+                        resources:
+                          requests:
+                            cpu: 10m
+                            memory: 32Mi
+                          limits:
+                            memory: 128Mi

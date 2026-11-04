@@ -17,6 +17,13 @@ spec:
       retries: 3
   values:
     enableDiscoveryDaemon: true
+    discover:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
     crds:
       enabled: true
     resources:

@@ -20,6 +20,13 @@ spec:
     replicaCount: 2
 
     timezone: ${TIMEZONE}
+
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        memory: 128Mi
     cronJobTimeZone: true
 
     initContainerResources:
@@ -45,3 +52,23 @@ spec:
                 matchLabels:
                   app.kubernetes.io/name: *app
               topologyKey: kubernetes.io/hostname
+  # The chart has no value for the cert-watcher sidecar's resources.
+  postRenderers:
+    - kustomize:
+        patches:
+          - patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: k8tz
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: k8tz-cert-watcher
+                        resources:
+                          requests:
+                            cpu: 10m
+                            memory: 64Mi
+                          limits:
+                            memory: 128Mi

@@ -37,6 +37,13 @@ spec:
   values:
     fullnameOverride: netbird-operator
     replicaCount: 1
+    operator:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
     managementURL: "http://netbird-management.networking.svc.cluster.local:8080"
     cluster:
       name: selfhosted

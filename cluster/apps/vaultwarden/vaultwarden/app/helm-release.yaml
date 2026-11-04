@@ -84,12 +84,14 @@ spec:
               BACKUP_ON_STARTUP: true
               GID: 0
               UID: 0
-            # resources:
-            #   requests:
-            #     cpu: 100m
-            #     memory: 256Mi
-            #   limits:
-            #     memory: 1Gi
+            # The tar+xz backup run peaks near 2Gi working set (14d), so the
+            # old 1Gi limit that was commented out here would have OOM'd it.
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 3Gi
 
     service:
       main:

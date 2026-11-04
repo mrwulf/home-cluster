@@ -79,5 +79,13 @@ spec:
     spec:
       containers:
         - name: mcp
+          # podTemplateSpec container entries don't inherit spec.resources (that sizes
+          # the proxy runner), so the server container's resources are set here.
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
           args:
             - serve
