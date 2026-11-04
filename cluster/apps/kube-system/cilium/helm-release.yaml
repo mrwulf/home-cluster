@@ -21,6 +21,34 @@ spec:
     #   id: "${CLUSTER_ID}"
     # policyEnforcementMode: "never"
     rollOutCiliumPods: true
+    # Agent: ~440Mi peak working set observed over 14d. Datapath survives an
+    # agent restart, but keep generous headroom since it's node-critical.
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        memory: 1536Mi
+    initResources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
+    certgen:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 128Mi
+    envoy:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
     localRedirectPolicy: true
     kubeProxyReplacement: true
     egressGateway:
@@ -57,6 +85,12 @@ spec:
     ipam:
       mode: "kubernetes"
     operator:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
       dashboards:
         enabled: true
         namespace: monitoring
@@ -98,6 +132,12 @@ spec:
       relay:
         enabled: true
         rollOutPods: true
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
         prometheus:
           serviceMonitor:
             enabled: true
@@ -106,6 +146,20 @@ spec:
         rollOutPods: true
         ingress:
           enabled: false
+        frontend:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+        backend:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
       dashboards:
         enabled: true
         namespace: monitoring
