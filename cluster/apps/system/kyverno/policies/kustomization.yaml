@@ -8,5 +8,6 @@ resources:
   - sync-certificates.yaml
   - sync-postgres-creds.yaml
   - remove-cpu-limit.yaml
+  - add-pod-gateway-sidecar-resources.yaml
   - sync-middlewares.yaml
   - sync-outline-minio-credentials.yaml

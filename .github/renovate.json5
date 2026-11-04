@@ -38,6 +38,15 @@
   kubernetes: {
     managerFilePatterns: ["/cluster/.+\\.ya?ml$/"],
   },
+  // talos/*-helmfile.yaml installs cilium and flux at cluster bootstrap, before
+  // Flux exists to manage anything - the default helmfile manager only matches
+  // literal helmfile.yaml, not our *-helmfile.yaml names.
+  helmfile: {
+    managerFilePatterns: ["/(^|/)talos/.+-helmfile\\.ya?ml$/"],
+    registryAliases: {
+      cilium: "https://helm.cilium.io",
+    },
+  },
   customManagers: [
     {
       customType: "regex",

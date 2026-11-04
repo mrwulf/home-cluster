@@ -5,6 +5,10 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
+  valuesFrom:
+    - kind: ConfigMap
+      name: cilium-resources-values
+      valuesKey: resources-values.yaml
   chart:
     spec:
       # renovate: registryUrl=https://helm.cilium.io

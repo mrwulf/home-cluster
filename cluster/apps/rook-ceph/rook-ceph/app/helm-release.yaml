@@ -18,12 +18,11 @@ spec:
   values:
     enableDiscoveryDaemon: true
     discover:
-      resources:
-        requests:
-          cpu: 10m
-          memory: 64Mi
-        limits:
-          memory: 128Mi
+      # The chart's deployment.yaml passes this straight to the operator's
+      # DISCOVER_DAEMON_RESOURCES env var via {{ . | quote }} (no toJson), so a
+      # nested YAML mapping here renders as Go's map[k:v] syntax, not valid JSON,
+      # and the operator silently ignores it. Must be a pre-formatted JSON string.
+      resources: '{"requests":{"cpu":"10m","memory":"64Mi"},"limits":{"memory":"128Mi"}}'
     crds:
       enabled: true
     resources:

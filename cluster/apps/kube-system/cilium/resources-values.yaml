@@ -1,0 +1,74 @@
+---
+# Single source of truth for cilium's own resource requests/limits.
+#
+# Two separate things consume cilium's Helm values and neither can read the
+# other's file:
+#   - talos/cilium-helmfile.yaml installs cilium at cluster bootstrap, before
+#     Flux (or any CRD it needs) exists, using ./helm-values.yaml.
+#   - This directory's HelmRelease manages cilium afterwards via Flux, with
+#     its own inline `values:` (it can't read an arbitrary repo file; the
+#     closest it has is reading a ConfigMap via `valuesFrom`).
+#
+# Both sides merge this file in (helmfile via a second `values:` entry, the
+# HelmRelease via the ConfigMap this directory's kustomization.yaml generates
+# from it + `valuesFrom` on the HelmRelease), so edit resource settings only
+# here, not in helm-values.yaml or helm-release.yaml's inline values.
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    memory: 1536Mi
+initResources:
+  requests:
+    cpu: 10m
+    memory: 64Mi
+  limits:
+    memory: 256Mi
+certgen:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 128Mi
+envoy:
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+operator:
+  resources:
+    requests:
+      cpu: 20m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+hubble:
+  relay:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
+  # ui is disabled at bootstrap (helm-values.yaml) and enabled under Flux
+  # (helm-release.yaml); harmless to set its resources here regardless -
+  # the chart only spawns these Deployments when ui.enabled is true.
+  ui:
+    frontend:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
+    backend:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi

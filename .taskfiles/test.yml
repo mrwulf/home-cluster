@@ -50,7 +50,7 @@ tasks:
         grep -v '\.sops\.yaml$' | \
         grep -v 'kustomizeconfig\.yaml$' | \
         grep -v '/values\.yaml$' | \
-        grep -v 'helm-values\.yaml$' | \
+        grep -v '\-values\.yaml$' | \
         grep -v '/config/.*\.\(yaml\|yml\)$' | \
         grep -v '/configs/.*\.\(yaml\|yml\)$' | \
         grep -v '/resources/.*\.\(yaml\|yml\)$' | \

@@ -16,7 +16,11 @@ releases:
     # chart: cilium
     chart: cilium/cilium
     version: 1.19.5
-    values: ["../cluster/apps/kube-system/cilium/helm-values.yaml"]
+    values:
+      - ../cluster/apps/kube-system/cilium/helm-values.yaml
+      # Resource requests/limits live only here - see the comment at the top
+      # of that file. Keep both entries; this one is bootstrap's half.
+      - ../cluster/apps/kube-system/cilium/resources-values.yaml
     # hooks:
     #   - events: ["postsync"]
     #     command: kubectl

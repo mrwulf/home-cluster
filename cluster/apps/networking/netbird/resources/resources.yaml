@@ -69,6 +69,26 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 512Mi
+          # The operator's own base pod template adds these two (an egress-forwarder
+          # sidecar and a resolv-conf init container); workloadOverride.podTemplate
+          # strategic-merges onto that base by container name, so naming them here
+          # with only `resources` adds just that field without touching anything
+          # else the operator sets (image, command, etc).
+          - name: kube-egress-forwarder
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+        initContainers:
+          - name: resolv-conf
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
 ---
 # ==============================================================================
 # Declarative Peer & User Groups (NBGroup)
