@@ -51,6 +51,12 @@ spec:
             envFrom:
               - secretRef:
                   name: *secret
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
         containers:
           app:
             image:
@@ -106,6 +112,12 @@ spec:
               - --branch=master
               - --wait=86400 # 1 day
               - --root=/add-ons
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
     service:
       app:
         controller: *app

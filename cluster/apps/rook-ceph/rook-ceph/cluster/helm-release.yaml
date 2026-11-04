@@ -102,6 +102,12 @@ spec:
           requests:
             cpu: "100m"
             memory: "100Mi"
+        prepareosd:
+          requests:
+            cpu: "50m"
+            memory: "256Mi"
+          limits:
+            memory: "1Gi"
         osd:
           requests:
             cpu: "1"

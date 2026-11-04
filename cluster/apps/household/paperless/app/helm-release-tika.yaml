@@ -18,6 +18,12 @@ spec:
             image:
               repository: apache/tika
               tag: 4.3.0-SNAPSHOT-full
+            resources:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                memory: 1536Mi
 
     service:
       main:

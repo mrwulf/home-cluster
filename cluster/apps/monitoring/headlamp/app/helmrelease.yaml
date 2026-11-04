@@ -11,6 +11,13 @@ spec:
   values:
     replicaCount: 1
 
+    resources:
+      requests:
+        cpu: 10m
+        memory: 96Mi
+      limits:
+        memory: 256Mi
+
     config:
       # Plugins are copied here by the init containers below (shared emptyDir).
       pluginsDir: /build/plugins
@@ -48,6 +55,12 @@ spec:
           - /bin/sh
           - -c
           - mkdir -p /build/plugins && cp -r /plugins/* /build/plugins/ && chown -R 100:101 /build
+        resources: &plugin-init-resources
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
         securityContext:
           runAsNonRoot: false
           privileged: false
@@ -63,6 +76,7 @@ spec:
           - /bin/sh
           - -c
           - cp -r /plugins/* /build/plugins/ && chown -R 100:101 /build
+        resources: *plugin-init-resources
         securityContext:
           runAsNonRoot: false
           privileged: false

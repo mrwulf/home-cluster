@@ -34,6 +34,12 @@ spec:
                   name: immich-configmap
               - secretRef:
                   name: immich-secret
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
         containers:
           main:
             image:

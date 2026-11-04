@@ -13,6 +13,12 @@ spec:
         name: deliveryhero-charts
       interval: 1h
   values:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 128Mi
     metrics:
       enabled: true
       serviceMonitor:

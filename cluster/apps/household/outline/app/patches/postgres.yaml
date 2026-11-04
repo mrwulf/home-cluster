@@ -40,3 +40,9 @@ spec:
             envFrom:
               - secretRef:
                   name: outline-secret
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi

@@ -33,5 +33,11 @@ spec:
   values:
     controller:
       replicaCount: 2
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 192Mi
       serviceMonitor:
         create: true

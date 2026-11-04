@@ -61,6 +61,12 @@ spec:
       enabled: false
     gateway:
       replicas: 0
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
     lokiCanary:
       enabled: false
     read:
@@ -70,10 +76,22 @@ spec:
     sidecar:
       image:
         repository: ghcr.io/kiwigrid/k8s-sidecar
+      resources:
+        requests:
+          cpu: 10m
+          memory: 96Mi
+        limits:
+          memory: 256Mi
       rules:
         searchNamespace: ALL
     singleBinary:
       replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 1536Mi
       persistence:
         enabled: true
         storageClass: ceph-block

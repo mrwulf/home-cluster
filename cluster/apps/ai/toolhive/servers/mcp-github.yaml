@@ -33,6 +33,14 @@ spec:
     spec:
       containers:
         - name: mcp
+          # podTemplateSpec container entries don't inherit spec.resources (that sizes
+          # the proxy runner), so the server container's resources are set here.
+          resources:
+            requests:
+              cpu: 20m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
           # renovate: depName=docker.io/node datasource=docker
           image: docker.io/node:26-alpine
           command:

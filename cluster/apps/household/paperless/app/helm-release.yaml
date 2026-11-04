@@ -32,10 +32,22 @@ spec:
             envFrom:
               - secretRef:
                   name: paperless-secret
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
           init-oidc:
             image:
               repository: alpine
               tag: 3.24.3
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
             command: ["/bin/sh", "-c"]
             args:
               - |
@@ -108,18 +120,13 @@ spec:
               startup:
                 enabled: false
 
-            # resources:
-            #   requests:
-            #     cpu: 25m
-            #     memory: 3Gi
-            #   limits:
-            #     memory: 7Gi
-            # resources:
-            #   requests:
-            #     cpu: 11m
-            #     memory: 1812M
-            #   limits:
-            #     memory: 1812M
+            # 14d peak ~1.3Gi; OCR/consume bursts need headroom.
+            resources:
+              requests:
+                cpu: 25m
+                memory: 1Gi
+              limits:
+                memory: 3Gi
 
     service:
       main:
