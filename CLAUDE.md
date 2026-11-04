@@ -37,6 +37,8 @@ These apply to **every** change. Do not check anything in that violates them.
    Docs must stay factual — describe what the repo actually does, not what it used to or might.
 
 6. **Never set CPU limits.** CPU limits can cause unnecessary throttling in Kubernetes. Always define CPU requests to guarantee resources, but avoid setting CPU limits.
+   The Kyverno policy [require-requests-limits](cluster/apps/system/kyverno/policies/audit-pod-resources.yaml) requires cpu+memory requests and a memory limit
+   on every container — **including init containers**, which are easy to miss since they only run briefly at pod startup.
 
 7. **Protect PII and local paths.** Never commit local filesystem paths, personal usernames, or any Personally Identifiable Information (PII).
    Since this repository is public, all local paths and personal metadata must be kept strictly out of committed code and documentation.
