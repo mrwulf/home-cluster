@@ -29,7 +29,7 @@ spec:
           main:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
-              tag: v3.3.5
+              tag: v3.3.6
             env:
               # Ports
               IMMICH_PORT: &port 3003
