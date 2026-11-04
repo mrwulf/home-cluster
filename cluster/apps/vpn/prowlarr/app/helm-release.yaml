@@ -39,7 +39,7 @@ spec:
           main:
             image:
               repository: ghcr.io/home-operations/prowlarr
-              tag: 3.0.0.5737@sha256:0225f58a7f4fe70812fd209cca97cec3630e136eebca8ee415311b5c11c5595c
+              tag: 3.0.0.5737@sha256:0954599432e16ccd86129f1eb8eb0247fd0d1591aab400f73e2010a1cda37be8
             env:
               PROWLARR__AUTH__APIKEY: "${PROWLARR_APIKEY}"
             resources:
