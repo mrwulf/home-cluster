@@ -6,9 +6,9 @@ metadata:
 spec:
   name: Karakeep
   pkceEnabled: true
-  launchUrl: https://karakeep.home.${SECRET_DOMAIN}/
+  launchUrl: https://keep.${SECRET_DOMAIN}/
   callbackUrls:
-    - https://karakeep.home.${SECRET_DOMAIN}/api/auth/callback/custom
+    - https://keep.${SECRET_DOMAIN}/api/auth/callback/custom
   allowedUserGroups:
     - name: users
       namespace: auth

@@ -47,7 +47,7 @@ spec:
               DISABLE_SIGNUPS: true
               MAX_ASSET_SIZE_MB: 50
               MEILI_ADDR: http://karakeep-meilisearch.household.svc.cluster.local:7700
-              NEXTAUTH_URL: https://karakeep.home.${SECRET_DOMAIN}
+              NEXTAUTH_URL: https://keep.${SECRET_DOMAIN}
               DISABLE_NEW_RELEASE_CHECK: true
               INFERENCE_IMAGE_MODEL: "llava"
               INFERENCE_TEXT_MODEL: "mistral"
@@ -145,17 +145,17 @@ spec:
         annotations:
           gatus.io/enabled: "true"
         parentRefs:
-          - name: internal-gateway
+          - name: external-gateway
             namespace: networking
         hostnames:
-          - "{{ .Release.Name }}.home.${SECRET_DOMAIN}"
+          - "keep.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef
                 extensionRef:
                   group: traefik.io
                   kind: Middleware
-                  name: rfc1918-ips
+                  name: traefik-middleware-chain-no-auth
             backendRefs:
               - identifier: app
                 port: http
