@@ -28,7 +28,7 @@ spec:
           00-chown-add-ons:
             image:
               repository: alpine
-              tag: 3.24.3
+              tag: 3.24.4
             command: ["chown", "${APP_UID}:${APP_GID}", "/add-ons"]
             securityContext:
               # Needs root + CAP_CHOWN, scoped to this one-shot step; the other containers stay non-root.
