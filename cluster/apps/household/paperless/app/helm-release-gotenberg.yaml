@@ -17,7 +17,7 @@ spec:
           main:
             image:
               repository: gotenberg/gotenberg
-              tag: 8
+              tag: 9
             resources:
               requests:
                 cpu: 10m
