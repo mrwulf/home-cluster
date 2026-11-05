@@ -41,7 +41,7 @@ spec:
           init-oidc:
             image:
               repository: alpine
-              tag: 3.24.3
+              tag: 3.24.4
             resources:
               requests:
                 cpu: 10m
