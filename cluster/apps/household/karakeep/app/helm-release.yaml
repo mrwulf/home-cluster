@@ -47,7 +47,7 @@ spec:
               DISABLE_SIGNUPS: true
               MAX_ASSET_SIZE_MB: 50
               MEILI_ADDR: http://karakeep-meilisearch.household.svc.cluster.local:7700
-              NEXTAUTH_URL: https://keep.${SECRET_DOMAIN}
+              NEXTAUTH_URL: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
               DISABLE_NEW_RELEASE_CHECK: true
               INFERENCE_IMAGE_MODEL: "llava"
               INFERENCE_TEXT_MODEL: "mistral"
@@ -148,7 +148,7 @@ spec:
           - name: external-gateway
             namespace: networking
         hostnames:
-          - "keep.${SECRET_DOMAIN}"
+          - "${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"
         rules:
           - filters:
               - type: ExtensionRef

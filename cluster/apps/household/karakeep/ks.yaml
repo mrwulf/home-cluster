@@ -25,6 +25,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_SUBDOMAIN: keep
       VOLSYNC_CAPACITY: 20Gi
       VOLSYNC_NFS_START_MINUTE: "41"
       VOLSYNC_B2_START_MINUTE: "06"
