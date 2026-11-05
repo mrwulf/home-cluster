@@ -111,7 +111,7 @@ spec:
           metrics:
             image:
               repository: docker.io/lusotycoon/apache-exporter
-              tag: v1.1.2
+              tag: v1.1.3
             args:
               - --scrape_uri=http://localhost:80/server-status?auto
             resources:
