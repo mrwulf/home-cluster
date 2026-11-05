@@ -13,6 +13,14 @@ spec:
   destroyResourcesOnDeletion: true
   path: ./cluster/apps/networking/ingress-vps/eu
   serviceAccountName: tf-runner
+  runnerPodTemplate:
+    spec:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
   sourceRef:
     kind: GitRepository
     name: tofu-infra-git
@@ -47,6 +55,14 @@ spec:
   destroyResourcesOnDeletion: true
   path: ./cluster/apps/networking/ingress-vps/us
   serviceAccountName: tf-runner
+  runnerPodTemplate:
+    spec:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
   sourceRef:
     kind: GitRepository
     name: tofu-infra-git
