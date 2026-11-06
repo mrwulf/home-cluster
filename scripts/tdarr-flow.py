@@ -128,6 +128,18 @@ module.exports = async (args) => {
       args.jobLog('HC subs: converting mov_text to srt');
     }
   }
+  // Some subtitle tracks can never be muxed into Matroska: WEBVTT often has no parseable codec
+  // params at all (ffprobe reports no codec_name for it), and EIA-608 closed captions decode fine
+  // but the Matroska muxer refuses to write them ("Subtitle codec ... is not supported" /
+  // "Function not implemented"). Both cases fail the whole job, so drop them rather than copy.
+  for (const s of cmd.streams) {
+    if (s.codec_type !== 'subtitle' || s.removed) continue;
+    const codec = String(s.codec_name || '').toLowerCase();
+    if (!codec || codec === 'eia_608') {
+      s.removed = true; cmd.shouldProcess = true;
+      args.jobLog('HC subs: dropping unmuxable subtitle track (' + (codec || 'unknown codec') + ')');
+    }
+  }
   return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
 };
 """
