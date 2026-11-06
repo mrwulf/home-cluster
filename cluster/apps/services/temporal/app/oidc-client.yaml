@@ -5,7 +5,12 @@ metadata:
   name: temporal
 spec:
   name: Temporal
-  pkceEnabled: true
+  # Deviation from this repo's PKCE-by-default convention: temporal-ui 2.58.0's
+  # OIDC client doesn't send a code_challenge (PKCE support is an open,
+  # unmerged PR - temporalio/ui#3492). It's a confidential client (holds a
+  # client secret), so disabling PKCE is the n8n-style exception, not a
+  # security gap for a public client.
+  pkceEnabled: false
   launchUrl: https://temporal.home.${SECRET_DOMAIN}/
   callbackUrls:
     - https://temporal.home.${SECRET_DOMAIN}/auth/sso/callback
