@@ -128,6 +128,18 @@ module.exports = async (args) => {
       args.jobLog('HC subs: converting mov_text to srt');
     }
   }
+  // Some subtitle tracks can never be muxed into Matroska: WEBVTT often has no parseable codec
+  // params at all (ffprobe reports no codec_name for it), and EIA-608 closed captions decode fine
+  // but the Matroska muxer refuses to write them ("Subtitle codec ... is not supported" /
+  // "Function not implemented"). Both cases fail the whole job, so drop them rather than copy.
+  for (const s of cmd.streams) {
+    if (s.codec_type !== 'subtitle' || s.removed) continue;
+    const codec = String(s.codec_name || '').toLowerCase();
+    if (!codec || codec === 'eia_608') {
+      s.removed = true; cmd.shouldProcess = true;
+      args.jobLog('HC subs: dropping unmuxable subtitle track (' + (codec || 'unknown codec') + ')');
+    }
+  }
   return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
 };
 """
@@ -333,6 +345,11 @@ def build(flow_id, name, arr):
     node("size", "customFunction", "Size check (at least 5% smaller)", {"code": SIZE}, 400, 1100)
     node("nosavings", "comment", "Not smaller: original kept", {}, 800, 1100)
     node("review", "requireReview", "Needs review (original untouched)", {}, 800, 1050)
+    # requireReview has no built-in terminal behaviour: without an outgoing edge, Tdarr's
+    # post-review bookkeeping pass finds no next plugin for the staged flow and reports
+    # the workDir file as un-replaced, turning a correct "needs review" into a false
+    # "Transcode error" a few seconds later. A no-op edge is enough to end it cleanly.
+    node("reviewend", "comment", "Review recorded (original untouched)", {}, 1200, 1050)
     node("unchanged", "customFunction", "Source unchanged since start?", {"code": UNCHANGED}, 400, 1150)
     node("replace", "replaceOriginalFile", "Replace original", x=400, y=1200)
     node("notify", "notifyRadarrOrSonarr", "Notify " + arr,
@@ -388,6 +405,7 @@ def build(flow_id, name, arr):
     edge("size", "nosavings", "3")
     edge("unchanged", "replace", "1")
     edge("unchanged", "review", "2")
+    edge("review", "reviewend")
     edge("replace", "notify")
     return {"_id": flow_id, "name": name, "description": "HEVC QSV, 720p cap, language strip, safety checks; notifies " + arr,
             "tags": "", "flowPlugins": nodes, "flowEdges": edges}
