@@ -1,1 +1,6 @@
-{ "runMkvpropedit": false }
+{
+  "runMkvpropedit": false,
+  "jobHistorySizeLimitGB": 3,
+  "autoPauseIfCacheFull": true,
+  "autoPauseIfCacheFullThreshold": 20
+}
