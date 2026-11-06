@@ -224,6 +224,24 @@ spec:
         clone:
           namespace: networking
           name: traefik-middleware-chain-pocket-id
+    - name: sync-chain-internal-no-auth-services
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              names:
+                - services
+      generate:
+        generateExisting: true
+        apiVersion: traefik.io/v1alpha1
+        kind: Middleware
+        name: traefik-middleware-chain-internal-no-auth
+        namespace: "{{request.object.metadata.name}}"
+        synchronize: true
+        clone:
+          namespace: networking
+          name: traefik-middleware-chain-internal-no-auth
     - name: sync-chain-pocket-id-rook-ceph
       match:
         any:
