@@ -333,6 +333,11 @@ def build(flow_id, name, arr):
     node("size", "customFunction", "Size check (at least 5% smaller)", {"code": SIZE}, 400, 1100)
     node("nosavings", "comment", "Not smaller: original kept", {}, 800, 1100)
     node("review", "requireReview", "Needs review (original untouched)", {}, 800, 1050)
+    # requireReview has no built-in terminal behaviour: without an outgoing edge, Tdarr's
+    # post-review bookkeeping pass finds no next plugin for the staged flow and reports
+    # the workDir file as un-replaced, turning a correct "needs review" into a false
+    # "Transcode error" a few seconds later. A no-op edge is enough to end it cleanly.
+    node("reviewend", "comment", "Review recorded (original untouched)", {}, 1200, 1050)
     node("unchanged", "customFunction", "Source unchanged since start?", {"code": UNCHANGED}, 400, 1150)
     node("replace", "replaceOriginalFile", "Replace original", x=400, y=1200)
     node("notify", "notifyRadarrOrSonarr", "Notify " + arr,
@@ -388,6 +393,7 @@ def build(flow_id, name, arr):
     edge("size", "nosavings", "3")
     edge("unchanged", "replace", "1")
     edge("unchanged", "review", "2")
+    edge("review", "reviewend")
     edge("replace", "notify")
     return {"_id": flow_id, "name": name, "description": "HEVC QSV, 720p cap, language strip, safety checks; notifies " + arr,
             "tags": "", "flowPlugins": nodes, "flowEdges": edges}

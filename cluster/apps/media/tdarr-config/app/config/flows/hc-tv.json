@@ -247,6 +247,18 @@
       "inputsDB": {}
     },
     {
+      "name": "Review recorded (original untouched)",
+      "sourceRepo": "Community",
+      "pluginName": "comment",
+      "version": "1.0.0",
+      "id": "reviewend",
+      "position": {
+        "x": 1200,
+        "y": 1050
+      },
+      "inputsDB": {}
+    },
+    {
       "name": "Source unchanged since start?",
       "sourceRepo": "Community",
       "pluginName": "customFunction",
@@ -699,11 +711,18 @@
       "id": "e35"
     },
     {
+      "source": "review",
+      "sourceHandle": "1",
+      "target": "reviewend",
+      "targetHandle": null,
+      "id": "e36"
+    },
+    {
       "source": "replace",
       "sourceHandle": "1",
       "target": "notify",
       "targetHandle": null,
-      "id": "e36"
+      "id": "e37"
     }
   ]
 }
