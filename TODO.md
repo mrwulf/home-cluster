@@ -9,43 +9,16 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
 ## Blocked on upstream
 
 - **Cloudflare Terraform provider pinned at `5.25.0`** (`cluster/apps/networking/ingress-vps/{eu,us}/.terraform.lock.hcl`).
-  `5.26.0` regresses `modified_on` planning on `cloudflare_dns_record` updates, causing
-  `Provider produced inconsistent result after apply` (other projects report it failing _every_
-  DNS record apply, not only out-of-band changes). The failover Workers that exposed it first
-  (they updated a record every minute) were removed on 2026-10-03, but that doesn't remove the bug:
-  any update to `vps_us`/`vps_eu` (a VPS IP change, for example) would hit it, so unpinning is
-  **not** safe yet. Checked 2026-10-03: upstream issue is still open, and `5.27.0` (released the same
-  day) has no change to the `dns_record` resource that addresses it.
-  Renovate is blocked from re-proposing `>= 5.26.0` via `allowedVersions` in `.github/renovate.json5`.
-  Upstream: [cloudflare/terraform-provider-cloudflare#7387](https://github.com/cloudflare/terraform-provider-cloudflare/issues/7387) — unpin once it's closed and a release notes the fix, then verify
-  with a plan-only run (`approvePlan` manual) and a harmless record update before trusting auto-apply.
-
-- **scrob pinned at `2.31.0`** (`cluster/apps/media/scrob/app/helm-release.yaml`).
-  `2.31.1` moved the image to Alpine, and its entrypoint's `ln -snf ... /etc/localtime` (under `set -e`)
-  fails with `File exists` over the file k8tz mounts there, so the pod exits 1 before the app starts.
-  Reproduced on the cluster 2026-10-20; `2.31.0` runs the same line fine. Renovate is blocked from
-  proposing exactly `2.31.1` via `allowedVersions` in `.github/renovate.json5`; a later release can still
-  be proposed, so check it before merging.
-  Upstream: [ellite/scrob#491](https://github.com/ellite/scrob/issues/491) — drop the Renovate rule once a
-  release notes the fix and a pod with the k8tz mount starts cleanly.
+  `5.26.0`/`5.27.0` regressed `modified_on` planning on `cloudflare_dns_record` updates, causing
+  `Provider produced inconsistent result after apply`. Checked 2026-11-06: upstream issue is
+  **closed** — fixed in `5.28.0` (confirmed by a reporter on the thread). `.github/renovate.json5`
+  now only excludes the two broken `5.26.x`/`5.27.x` versions, so Renovate can propose `5.28.0`+
+  directly. Still pinned at `5.25.0` pending that Renovate PR; when it lands, verify with a
+  plan-only run (`approvePlan` manual) and a harmless record update before trusting auto-apply,
+  then remove this entry.
+  Upstream: [cloudflare/terraform-provider-cloudflare#7387](https://github.com/cloudflare/terraform-provider-cloudflare/issues/7387) (closed 2026-10-14, fixed in [v5.28.0](https://github.com/cloudflare/terraform-provider-cloudflare/releases/tag/v5.28.0)).
 
 ## Needs a real fix (not upstream-blocked, just not done yet)
-
-- **No BMC/IPMI check yet for node3's 2026-09-24T19:46:41Z reboot.**
-  Confirmed a genuine full reboot via fresh Talos `Member`/`PlatformMetadata` resources, ruled out
-  a tuppr-triggered Talos upgrade (last one completed 121 days prior) and a fatal hardware error
-  (`CperHardwareErrorFatal` untouched since Feb 25). `talosctl dmesg`'s ring buffer only retains
-  ~36-48h and rotates on volume, not on reboot, so the actual boot-time kernel log was already
-  gone by the time this was investigated — inconclusive whether it was a clean power-cycle
-  (`NodeShutdown` leans this way) or a crash. Kernel-log shipping to Vector/Loki is now fixed and
-  fully rolled out across all 3 nodes (2026-09-26), so the _next_ reboot will be diagnosable from
-  Loki directly; this one still needs node3's BMC/IPMI SEL log checked directly, if it's still
-  retained there.
-  Found: 2026-09-26.
-
-- **Narrow the Cloudflare token the `ingress-vps` Tofu stacks use.** They read `CLOUDFLARE_APIKEY` from
-  `ingress-tunnel-secrets`, which is the Bitwarden `api-token-external-dns` field that external-dns also uses.
-  That token is broader than the stacks need; give them their own token scoped to the records they manage.
 
 - **Gatus keeps connections open forever, so its external checks stop following DNS.** Gatus v5.37.0
   builds its shared HTTP transport with `MaxIdleConns: 100` and no `IdleConnTimeout`, so every
@@ -65,4 +38,8 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   pod, or an upstream change to Gatus (a client option for idle timeout or disabling keep-alives).
   Related upstream issues with the same cause: #1824 and #856 (certificate checks showing an old cert).
   Filed upstream to close connections by default, with an explicit option to reuse them: TwiN/gatus#1857.
+  Checked 2026-11-06: still open, no maintainer response since 2026-10-16. Latest proposal in the
+  thread (from this repo's maintainer) is a bounded per-host connection-reuse count (default 3) instead
+  of always closing, with an offer to send a PR — no PR opened yet. The in-repo `Connection: close`
+  workaround above is the current fix; this entry stays open only for the upstream default.
   Found: 2026-10-14.

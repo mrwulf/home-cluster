@@ -166,21 +166,13 @@
       allowedVersions: "< 8",
     },
     {
-      // v5.26.0 regresses `modified_on` planning on cloudflare_dns_record updates,
-      // breaking apply with "Provider produced inconsistent result after apply"
-      // (reported to fail every DNS record apply, not only out-of-band changes).
-      // Still broken as of 5.27.0, see TODO.md before lifting.
-      // Unpin once fixed upstream: https://github.com/cloudflare/terraform-provider-cloudflare/issues/7387
+      // v5.26.0/5.27.0 regressed `modified_on` planning on cloudflare_dns_record updates,
+      // breaking apply with "Provider produced inconsistent result after apply". Fixed
+      // upstream in 5.28.0, see TODO.md before lifting further.
+      // https://github.com/cloudflare/terraform-provider-cloudflare/issues/7387
       matchDatasources: ["terraform-provider"],
       matchPackageNames: ["cloudflare/cloudflare"],
-      allowedVersions: "< 5.26.0",
-    },
-    {
-      // v2.31.1 (Alpine base) crashes at startup: its entrypoint's `ln -snf ... /etc/localtime`
-      // fails over the file k8tz mounts there. Stay off that exact version, see TODO.md.
-      matchDatasources: ["docker"],
-      matchPackageNames: ["docker.io/bellamy/scrob"],
-      allowedVersions: "!/^2\\.31\\.1$/",
+      allowedVersions: "!/^5\\.(26|27)\\.\\d+$/",
     },
   ],
 }
