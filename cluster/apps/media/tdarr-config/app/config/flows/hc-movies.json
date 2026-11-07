@@ -247,16 +247,18 @@
       "inputsDB": {}
     },
     {
-      "name": "Review recorded (original untouched)",
+      "name": "Review recorded (reset to original)",
       "sourceRepo": "Community",
-      "pluginName": "comment",
+      "pluginName": "setWorkingFile",
       "version": "1.0.0",
       "id": "reviewend",
       "position": {
         "x": 1200,
         "y": 1050
       },
-      "inputsDB": {}
+      "inputsDB": {
+        "source": "originalFile"
+      }
     },
     {
       "name": "Source unchanged since start?",

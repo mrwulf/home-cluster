@@ -345,11 +345,15 @@ def build(flow_id, name, arr):
     node("size", "customFunction", "Size check (at least 5% smaller)", {"code": SIZE}, 400, 1100)
     node("nosavings", "comment", "Not smaller: original kept", {}, 800, 1100)
     node("review", "requireReview", "Needs review (original untouched)", {}, 800, 1050)
-    # requireReview has no built-in terminal behaviour: without an outgoing edge, Tdarr's
-    # post-review bookkeeping pass finds no next plugin for the staged flow and reports
-    # the workDir file as un-replaced, turning a correct "needs review" into a false
-    # "Transcode error" a few seconds later. A no-op edge is enough to end it cleanly.
-    node("reviewend", "comment", "Review recorded (original untouched)", {}, 1200, 1050)
+    # requireReview has no built-in terminal behaviour: Tdarr's post-review bookkeeping pass
+    # walks forward from it looking for a next plugin, and whatever it finds must resolve the
+    # working file or Tdarr reports it as un-replaced ("Final working file is still in the
+    # transcode cache, not allowed"), turning a correct "needs review" into a false "Transcode
+    # error" a few seconds later. A plain comment node is a no-op passthrough: it leaves
+    # outputFileObj pointed at the ffmpeg output still sitting in the temp cache, so the crash
+    # just moves one hop later. setWorkingFile(source=originalFile) actually resets the working
+    # file to the original path, which is what ends the pass cleanly.
+    node("reviewend", "setWorkingFile", "Review recorded (reset to original)", {"source": "originalFile"}, 1200, 1050)
     node("unchanged", "customFunction", "Source unchanged since start?", {"code": UNCHANGED}, 400, 1150)
     node("replace", "replaceOriginalFile", "Replace original", x=400, y=1200)
     node("notify", "notifyRadarrOrSonarr", "Notify " + arr,
