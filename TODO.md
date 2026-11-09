@@ -29,6 +29,23 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   Upstream: [ellite/scrob#491](https://github.com/ellite/scrob/issues/491) — drop the Renovate rule once a
   release notes the fix and a pod with the k8tz mount starts cleanly.
 
+- **flate pinned at `0.6.5`** (`mise.toml`, `.github/workflows/flate.yaml`). `0.7.0` (released
+  2026-11-08) intentionally stopped filling SOPS-encrypted values it can't decrypt with a
+  placeholder during offline rendering — see
+  [home-operations/flate#1435](https://github.com/home-operations/flate/issues/1435) ("treat
+  SOPS-encrypted values as unreadable"). CI never had real decrypt access to begin with; it
+  relied on the old placeholder behavior to keep `${VAR}` substitutions non-empty. Without it,
+  every `cluster-secrets`-driven substitution renders empty, which cascaded into unrelated
+  `test:all`/`flate:all` failures on `auth/pocket-id` (hostname pattern), `mlm/wordpress` (null
+  route hostnames), and `monitoring/blackbox-exporter` (wrong value type) on every PR, regardless
+  of what the PR actually touched — first seen on PR #6033 on 2026-11-09, after `mise.toml` had
+  pinned flate to the literal string `latest` (itself a rule-2 violation this fix also corrects).
+  The intended upstream replacement is flate's new `--supply` flag to hand it dummy Secret/ConfigMap
+  values for keys it can't read; `.taskfiles/test.yml`'s `flate:kustomization`/`flate:helmrelease`
+  tasks (and the equivalent CI workflow step) don't do that yet. Unpin once that's wired up, or
+  once flate restores an opt-in placeholder mode.
+  Found: 2026-11-09.
+
 ## Needs a real fix (not upstream-blocked, just not done yet)
 
 - **No BMC/IPMI check yet for node3's 2026-09-24T19:46:41Z reboot.**
