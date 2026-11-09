@@ -5,6 +5,10 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
-  url: http://git.home.${SECRET_DOMAIN}/brandon/other.git
+  # In-cluster SSH (read-only deploy key), so the repo can be private. The host key in the secret
+  # was taken from this service; re-scan it if the Forgejo SSH host key is ever rotated.
+  url: ssh://git@forgejo-ssh.development.svc.cluster.local/brandon/other.git
+  secretRef:
+    name: other-git-auth
   ref:
     branch: main
