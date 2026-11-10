@@ -50,15 +50,13 @@ spec:
         maxUnavailable: 1
     service:
       enabled: true
-      type: LoadBalancer
-      loadBalancerIPs:
-        - "10.0.10.20"
-        - "10.0.10.11"
       annotations:
         io.cilium/lb-ipam-ips: "10.0.10.20,10.0.10.11"
-      externalTrafficPolicy: Local
-      ipFamilies:
-        - "IPv4"
+      spec:
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+        ipFamilies:
+          - "IPv4"
     log:
       format: json
       # level: DEBUG
