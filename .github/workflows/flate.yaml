@@ -65,7 +65,8 @@ jobs:
         with:
           cache: false
           tool_versions: |
-            github:home-operations/flate latest
+            # renovate: depName=home-operations/flate datasource=github-releases
+            github:home-operations/flate 0.6.5
 
       - name: Suspend private other resources
         run: |

@@ -52,5 +52,16 @@
       ],
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}git-refs{{/if}}",
     },
+    {
+      customType: "regex",
+      description: [
+        "Process the flate tool_versions pin in the Flate workflow (mirrors mise.toml's own pin)",
+      ],
+      managerFilePatterns: ["/(^|/)\\.github/workflows/flate\\.ya?ml$/"],
+      matchStrings: [
+        "# renovate: depName=(?<depName>\\S+)(?: datasource=(?<datasource>\\S+))?\\s*\\n\\s*github:home-operations/flate (?<currentValue>\\S+)",
+      ],
+      datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
+    },
   ],
 }
