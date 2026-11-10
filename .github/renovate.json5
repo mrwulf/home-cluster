@@ -182,5 +182,14 @@
       matchPackageNames: ["docker.io/bellamy/scrob"],
       allowedVersions: "!/^2\\.31\\.1$/",
     },
+    {
+      // 0.7.0 treats SOPS-encrypted values as unreadable (no more placeholder fill), and its
+      // HelmRelease test defaults into a "changed-only" render scope that silently skips almost
+      // every HelmRelease even without --base/--path-orig set. Stay on 0.6.5 until both are
+      // resolved upstream and --supply is wired in here, see TODO.md.
+      matchDatasources: ["github-releases"],
+      matchPackageNames: ["home-operations/flate"],
+      allowedVersions: "< 0.7.0",
+    },
   ],
 }

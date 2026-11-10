@@ -29,22 +29,35 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   Upstream: [ellite/scrob#491](https://github.com/ellite/scrob/issues/491) — drop the Renovate rule once a
   release notes the fix and a pod with the k8tz mount starts cleanly.
 
-- **flate pinned at `0.6.5`** (`mise.toml`, `.github/workflows/flate.yaml`). `0.7.0` (released
-  2026-11-08) intentionally stopped filling SOPS-encrypted values it can't decrypt with a
-  placeholder during offline rendering — see
-  [home-operations/flate#1435](https://github.com/home-operations/flate/issues/1435) ("treat
-  SOPS-encrypted values as unreadable"). CI never had real decrypt access to begin with; it
-  relied on the old placeholder behavior to keep `${VAR}` substitutions non-empty. Without it,
-  every `cluster-secrets`-driven substitution renders empty, which cascaded into unrelated
-  `test:all`/`flate:all` failures on `auth/pocket-id` (hostname pattern), `mlm/wordpress` (null
-  route hostnames), and `monitoring/blackbox-exporter` (wrong value type) on every PR, regardless
-  of what the PR actually touched — first seen on PR #6033 on 2026-11-09, after `mise.toml` had
-  pinned flate to the literal string `latest` (itself a rule-2 violation this fix also corrects).
-  The intended upstream replacement is flate's new `--supply` flag to hand it dummy Secret/ConfigMap
-  values for keys it can't read; `.taskfiles/test.yml`'s `flate:kustomization`/`flate:helmrelease`
-  tasks (and the equivalent CI workflow step) don't do that yet. Unpin once that's wired up, or
-  once flate restores an opt-in placeholder mode.
-  Found: 2026-11-09.
+- **flate pinned at `0.6.5`** (`mise.toml`). Renovate is blocked from proposing `>= 0.7.0` via
+  `allowedVersions` in `.github/renovate.json5` — it already tried once as PR #6043 the moment the
+  pin went from the literal string `latest` to an exact version, and that PR fails CI the same way
+  described below, so close it rather than merging. Two separate problems in `0.7.x`, found 2026-11-09:
+  1. `0.7.0` (released 2026-11-08) intentionally stopped filling SOPS-encrypted values it can't
+     decrypt with a placeholder during offline rendering — see
+     [home-operations/flate#1435](https://github.com/home-operations/flate/issues/1435) ("treat
+     SOPS-encrypted values as unreadable"). CI never had real decrypt access to begin with; it
+     relied on the old placeholder behavior to keep `${VAR}` substitutions non-empty. Without it,
+     every `cluster-secrets`-driven substitution renders empty, cascading into unrelated
+     `test:all`/`flate:all` failures on `auth/pocket-id` (hostname pattern), `mlm/wordpress` (null
+     route hostnames), and `monitoring/blackbox-exporter` (wrong value type) on every PR, regardless
+     of what the PR actually touched — first seen on PR #6033. The intended fix is flate's new
+     `--supply` flag, confirmed working locally for this case (and for `vps-us-output`/
+     `vps-eu-output`, which `cluster/apps/networking/ddup/ks.yaml` needs non-optionally and which
+     aren't SOPS at all — they're written by the `ingress-vps` OpenTofu stacks and never exist offline).
+  2. Separately, `flate test hr`/`build hr` (0.7.0 through at least 0.7.3) silently default into a
+     "changed-only" render scope — confirmed via debug logging (`orchestrator: changed-only keep set`)
+     and timing (a full run over ~130 HelmReleases completes in well under a second with a cold
+     cache) — even with neither `--base` nor `--path-orig` set, which per `--help` are the only
+     documented triggers for that mode. In this repo it narrows to just whatever's reachable from
+     `kube-system/cilium`'s `configMapGenerator`-fed `valuesFrom` (itself a third, unrelated 0.7.x
+     regression: that ConfigMap is plain in-repo content, not external, and resolved fine on
+     `0.6.5`). Net effect: `flate test hr` would stop actually rendering/schema-checking nearly
+     every HelmRelease in the repo, a much bigger coverage loss than either issue above, and no
+     flag was found to disable it. Needs a real upstream fix (or at least a documented escape
+     hatch) before `--supply` alone makes `0.7.x` safe to adopt here.
+     No upstream issues filed yet for either `0.7.x` problem.
+     Found: 2026-11-09.
 
 ## Needs a real fix (not upstream-blocked, just not done yet)
 
