@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-blocked-io
+  namespace: monitoring
+spec:
+  groups:
+    - name: node-blocked-io
+      rules:
+        # A process in D-state is blocked in the kernel on I/O (almost always a hung NFS
+        # read/write on a "hard" mount) and cannot be killed by any signal until that I/O
+        # returns. Left alone it can wedge a pod's graceful shutdown indefinitely, which in
+        # turn can block a volume detach/attach for everything scheduled behind it. Catching
+        # this within minutes (instead of discovering it hours or days later) is the only
+        # cheap mitigation that doesn't require changing every NFS mount to "soft".
+        - alert: NodeBlockedIO
+          annotations:
+            description: >-
+              {{ $value }} process(es) on {{ $labels.kubernetes_node | default $labels.instance }}
+              have been blocked in uninterruptible sleep (D-state) for over 10 minutes. This is
+              usually a hung NFS read/write that cannot be killed and will not clear on its own;
+              find the process (ps aux, state D) and the file it is stuck on, then reboot the
+              node (or the NFS server) to release it.
+            summary: A process is stuck in uninterruptible I/O
+          expr: node_procs_blocked > 0
+          for: 10m
+          labels:
+            severity: warning

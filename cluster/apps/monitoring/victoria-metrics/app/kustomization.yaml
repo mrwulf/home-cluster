@@ -6,5 +6,6 @@ resources:
   - route.yaml
   - secret.sops.yaml
   - oomkilled.yaml
+  - node-blocked-io.yaml
   - scrapeconfig-infra-exporters.yaml
   - etcd-rules.yaml
