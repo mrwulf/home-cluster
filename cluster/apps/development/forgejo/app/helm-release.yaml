@@ -18,7 +18,8 @@ spec:
       retries: 3
   values:
     image:
-      repository: code.forgejo.org/forgejo/forgejo
+      registry: code.forgejo.org
+      repository: forgejo/forgejo
       tag: 15.0.2-rootless
     resources:
       requests:
