@@ -1,0 +1,21 @@
+---
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: audiobookshelf
+spec:
+  name: Audiobookshelf
+  pkceEnabled: true
+  launchUrl: https://audiobookshelf.home.${SECRET_DOMAIN}/
+  callbackUrls:
+    - https://audiobookshelf.home.${SECRET_DOMAIN}/auth/openid/callback
+    - https://audiobookshelf.home.${SECRET_DOMAIN}/auth/openid/mobile-redirect
+    - audiobookshelf://oauth
+  allowedUserGroups:
+    - name: users
+      namespace: auth
+  secret:
+    name: audiobookshelf-oidc-credentials
+    keys:
+      clientID: OIDC_CLIENT_ID
+      clientSecret: OIDC_CLIENT_SECRET
