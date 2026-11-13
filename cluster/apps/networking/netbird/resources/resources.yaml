@@ -51,7 +51,7 @@ spec:
         containers:
           - name: netbird
             # renovate: depName=ghcr.io/netbirdio/netbird datasource=docker
-            image: ghcr.io/netbirdio/netbird:0.82.1
+            image: ghcr.io/netbirdio/netbird:0.83.1
             lifecycle:
               preStop:
                 exec:
