@@ -40,7 +40,7 @@ spec:
           app:
             image:
               repository: learnedmachine/speakr
-              tag: 0.10.19-alpha
+              tag: 0.10.22-alpha
             env:
               ENABLE_SSO: "true"
               SSO_PROVIDER_NAME: "Home PocketID"
