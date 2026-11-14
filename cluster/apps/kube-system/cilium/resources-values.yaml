@@ -17,8 +17,13 @@ resources:
   requests:
     cpu: 100m
     memory: 512Mi
+  # BPF maps are charged to the agent's memory cgroup and are preallocated at
+  # startup, so this must cover the whole map budget (bpf.mapDynamicSizeRatio
+  # x node RAM, ~7.5Gi on 94Gi nodes) plus the agent itself. Too low and the
+  # agent is OOM-killed creating maps on any node whose bpffs is empty (a
+  # reboot): "open IPv4 nat map: cannot allocate memory".
   limits:
-    memory: 1536Mi
+    memory: 10Gi
 initResources:
   requests:
     cpu: 10m
