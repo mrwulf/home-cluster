@@ -8,15 +8,15 @@ yq = "4.54.3"
 jq = "1.8.2"
 # Keep in sync with talosVersion in talos/talenv.yaml — an older client can't
 # decode config documents (e.g. BondConfig) introduced by a newer Talos release.
-talosctl = "1.14.5"
+talosctl = "1.14.6"
 
 # Testing tools
 flux2 = "2.10.0"
 kubeconform = "0.8.0"
-uv = "0.13.7"
+uv = "0.13.8"
 yamllint = "1.38.0"
 "npm:markdownlint-cli" = "0.50.0"
-"npm:prettier" = "3.10.0"
+"npm:prettier" = "3.10.1"
 pre-commit = "4.7.0"
 opentofu = "1.13.9"
 "github:home-operations/flate" = "0.6.5"
