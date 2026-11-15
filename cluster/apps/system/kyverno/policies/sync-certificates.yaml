@@ -1,6 +1,14 @@
----
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+# Migrated from the legacy kyverno.io/v1 ClusterPolicy to the CEL-based
+# policies.kyverno.io/v1 GeneratingPolicy type (Kyverno 3.10 blocks the Helm
+# upgrade while any legacy ClusterPolicy exists; see TODO.md and
+# https://kyverno.io/docs/guides/migration-to-cel/).
+#
+# matchConstraints.resourceNames below is the union of both original rules'
+# namespace lists; each generate entry below reproduces one original rule's
+# own, narrower list via an inline CEL membership check, so the per-secret
+# namespace targeting is unchanged.
+apiVersion: policies.kyverno.io/v1
+kind: GeneratingPolicy
 metadata:
   name: sync-certificates
   annotations:
@@ -16,60 +24,45 @@ metadata:
       new Namespaces when they are created. It will also push updates to
       the copied Secrets should the source Secret be changed.
 spec:
-  rules:
-    - name: sync-internal-certificate-secrets
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                # networking excluded (since that's the source)
-                - ai
-                - databases
-                - development
-                - flux-system
-                - household
-                - kube-system
-                - media
-                - monitoring
-                - other
-                - storage
-      generate:
-        generateExisting: true
-        apiVersion: v1
-        kind: Secret
-        name: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: "wildcard-internal-${SECRET_DOMAIN/./-}-tls"
-    - name: sync-external-certificate-secrets
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                # networking excluded (since that's the source)
-                - ai
-                - auth
-                - backups
-                - databases
-                - development
-                - flux-system
-                - household
-                - media
-                - other
-                - vaultwarden
-      generate:
-        generateExisting: true
-        apiVersion: v1
-        kind: Secret
-        name: "wildcard-${SECRET_DOMAIN/./-}-tls"
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: "wildcard-${SECRET_DOMAIN/./-}-tls"
+  evaluation:
+    generateExisting:
+      enabled: true
+    synchronize:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["namespaces"]
+        resourceNames:
+          # networking excluded (since that's the source)
+          - ai
+          - auth
+          - backups
+          - databases
+          - development
+          - flux-system
+          - household
+          - kube-system
+          - media
+          - monitoring
+          - other
+          - storage
+          - vaultwarden
+  variables:
+    - name: nsName
+      expression: object.metadata.name
+    - name: internalSource
+      expression: resource.Get("v1", "secrets", "networking", "wildcard-internal-${SECRET_DOMAIN/./-}-tls")
+    - name: externalSource
+      expression: resource.Get("v1", "secrets", "networking", "wildcard-${SECRET_DOMAIN/./-}-tls")
+  generate:
+    - expression: >-
+        ['ai','databases','development','flux-system','household','kube-system','media','monitoring','other','storage'].exists(n, n == variables.nsName)
+          ? generator.Apply(variables.nsName, [variables.internalSource])
+          : true
+    - expression: >-
+        ['ai','auth','backups','databases','development','flux-system','household','media','other','vaultwarden'].exists(n, n == variables.nsName)
+          ? generator.Apply(variables.nsName, [variables.externalSource])
+          : true

@@ -1,5 +1,9 @@
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+# Migrated from the legacy kyverno.io/v1 ClusterPolicy to the CEL-based
+# policies.kyverno.io/v1 ValidatingPolicy type (Kyverno 3.10 blocks the Helm
+# upgrade while any legacy ClusterPolicy exists; see TODO.md and
+# https://kyverno.io/docs/guides/migration-to-cel/).
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
 metadata:
   name: require-requests-limits
   annotations:
@@ -16,37 +20,35 @@ metadata:
       This policy validates that all containers have something specified for memory and CPU
       requests and memory limits.
 spec:
-  validationFailureAction: Audit
-  background: false
-  rules:
-    - name: validate-resources
-      match:
-        any:
-          - resources:
-              kinds:
-                - Pod
-      validate:
-        message: "CPU and memory resource requests and memory limits are required for containers."
-        pattern:
-          spec:
-            containers:
-              - resources:
-                  requests:
-                    memory: "?*"
-                    cpu: "?*"
-                  limits:
-                    memory: "?*"
-            =(initContainers):
-              - resources:
-                  requests:
-                    memory: "?*"
-                    cpu: "?*"
-                  limits:
-                    memory: "?*"
-            =(ephemeralContainers):
-              - resources:
-                  requests:
-                    memory: "?*"
-                    cpu: "?*"
-                  limits:
-                    memory: "?*"
+  validationActions:
+    - Audit
+  evaluation:
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  validations:
+    # Mirrors the legacy pattern exactly: cpu is required under requests for
+    # every container group, but intentionally NOT under limits (see
+    # CLAUDE.md rule 6 - never set CPU limits).
+    - message: "CPU and memory resource requests and memory limits are required for containers."
+      expression: >-
+        object.spec.containers.all(c,
+          has(c.resources) && has(c.resources.requests) &&
+          has(c.resources.requests.memory) && has(c.resources.requests.cpu) &&
+          has(c.resources.limits) && has(c.resources.limits.memory)
+        ) &&
+        (!has(object.spec.initContainers) || object.spec.initContainers.all(c,
+          has(c.resources) && has(c.resources.requests) &&
+          has(c.resources.requests.memory) && has(c.resources.requests.cpu) &&
+          has(c.resources.limits) && has(c.resources.limits.memory)
+        )) &&
+        (!has(object.spec.ephemeralContainers) || object.spec.ephemeralContainers.all(c,
+          has(c.resources) && has(c.resources.requests) &&
+          has(c.resources.requests.memory) && has(c.resources.requests.cpu) &&
+          has(c.resources.limits) && has(c.resources.limits.memory)
+        ))

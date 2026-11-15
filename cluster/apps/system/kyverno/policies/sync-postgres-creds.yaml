@@ -1,6 +1,18 @@
----
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+# Migrated from the legacy kyverno.io/v1 ClusterPolicy to the CEL-based
+# policies.kyverno.io/v1 GeneratingPolicy type (Kyverno 3.10 blocks the Helm
+# upgrade while any legacy ClusterPolicy exists; see TODO.md and
+# https://kyverno.io/docs/guides/migration-to-cel/).
+#
+# The legacy policy had 3 separate rules (auth/household/media, then
+# services, then a dead system rule) only because Kyverno rejected edits to
+# an existing generate rule, forcing each later namespace addition into a
+# new rule. That restriction is gone with the CEL engine, so this is one
+# generate entry covering the full namespace set. The dead `system` rule
+# (kyverno.io/v1 ClusterPolicy webhooks exclude Kyverno's own install
+# namespace, `system`, by default, so it could never fire) is dropped
+# rather than carried forward.
+apiVersion: policies.kyverno.io/v1
+kind: GeneratingPolicy
 metadata:
   name: sync-postgres-creds
   annotations:
@@ -16,67 +28,22 @@ metadata:
       new Namespaces when they are created. It will also push updates to
       the copied Secrets should the source Secret be changed.
 spec:
-  rules:
-    - name: sync-postgres-creds
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names: [auth, household, media] # databases ns excluded (since that's the source)
-      generate:
-        generateExisting: true
-        apiVersion: v1
-        kind: Secret
-        name: postgres-superuser
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: databases
-          name: postgres-superuser
-    # Separate rule rather than another entry in the list above: Kyverno rejects
-    # edits to an existing generate rule, only additions are accepted.
-    - name: sync-postgres-creds-services
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names: [services]
-      generate:
-        generateExisting: true
-        apiVersion: v1
-        kind: Secret
-        name: postgres-superuser
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: databases
-          name: postgres-superuser
-    # Dead rule, left in place on purpose: Kyverno's admission webhooks
-    # exclude the `system` namespace by default (it's where Kyverno itself
-    # runs), so this can never actually fire. ntfy (the app that needed it)
-    # pulls its postgres superuser creds from Bitwarden instead. Removing
-    # this rule is blocked - Kyverno treats any edit/removal of an existing
-    # generate rule as an immutable-field change and rejects it; only
-    # additions are accepted. Deleting+recreating the whole ClusterPolicy
-    # would be the only way to actually remove it, and risks cascading
-    # deletes of the postgres-superuser copies already synced into
-    # auth/household/media - not worth it for a no-op rule.
-    - name: sync-postgres-creds-system
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names: [system]
-      generate:
-        generateExisting: true
-        apiVersion: v1
-        kind: Secret
-        name: postgres-superuser
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: databases
-          name: postgres-superuser
+  evaluation:
+    generateExisting:
+      enabled: true
+    synchronize:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["namespaces"]
+        resourceNames: [auth, household, media, services] # databases ns excluded (since that's the source)
+  variables:
+    - name: nsName
+      expression: object.metadata.name
+    - name: source
+      expression: resource.Get("v1", "secrets", "databases", "postgres-superuser")
+  generate:
+    - expression: generator.Apply(variables.nsName, [variables.source])

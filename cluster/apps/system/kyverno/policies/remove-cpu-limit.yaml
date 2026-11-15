@@ -1,6 +1,14 @@
 ---
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+# Migrated from the legacy kyverno.io/v1 ClusterPolicy to the CEL-based
+# policies.kyverno.io/v1 MutatingPolicy type (Kyverno 3.10 blocks the Helm
+# upgrade while any legacy ClusterPolicy exists; see TODO.md and
+# https://kyverno.io/docs/guides/migration-to-cel/).
+#
+# `spec.autogen.podControllers` is left unset, which keeps this scoped to
+# Pod only (equivalent to the legacy `pod-policies.kyverno.io/autogen-
+# controllers: none` annotation, which has no CEL-type equivalent).
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
 metadata:
   name: remove-cpu-limit
   annotations:
@@ -10,33 +18,34 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       This policy removes CPU limits from all Pods.
-    pod-policies.kyverno.io/autogen-controllers: none
 spec:
-  rules:
-    - name: remove-containers-cpu-limits
-      match:
-        any:
-          - resources:
-              kinds: ["Pod"]
-      mutate:
-        foreach:
-          - list: "request.object.spec.containers"
-            patchesJson6902: |-
-              - path: /spec/containers/{{elementIndex}}/resources/limits/cpu
-                op: remove
-    - name: delete-initcontainers-cpu-limits
-      match:
-        any:
-          - resources:
-              kinds: ["Pod"]
-      preconditions:
-        all:
-          - key: "{{ request.object.spec.initContainers[] || `[]` | length(@) }}"
-            operator: GreaterThanOrEquals
-            value: 1
-      mutate:
-        foreach:
-          - list: "request.object.spec.initContainers"
-            patchesJson6902: |-
-              - path: /spec/initContainers/{{elementIndex}}/resources/limits/cpu
-                op: remove
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: >-
+          object.spec.containers.filter(c,
+            has(c.resources) && has(c.resources.limits) && has(c.resources.limits.cpu)
+          ).map(c,
+            JSONPatch{
+              op: "remove",
+              path: "/spec/containers/" + string(object.spec.containers.indexOf(c)) + "/resources/limits/cpu"
+            }
+          )
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: >-
+          !has(object.spec.initContainers) ? [] :
+          object.spec.initContainers.filter(c,
+            has(c.resources) && has(c.resources.limits) && has(c.resources.limits.cpu)
+          ).map(c,
+            JSONPatch{
+              op: "remove",
+              path: "/spec/initContainers/" + string(object.spec.initContainers.indexOf(c)) + "/resources/limits/cpu"
+            }
+          )
