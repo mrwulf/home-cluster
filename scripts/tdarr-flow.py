@@ -72,7 +72,20 @@ module.exports = async (args) => {
   args.variables.user.hcHw = hwOk ? '1' : '0';
   // Keyframe every ~5 s (hevc_qsv defaults to 250 frames: 10 s at 24 fps, which slows seeking and resume)
   const fr = String(v.avg_frame_rate || v.r_frame_rate || '').split('/');
-  const fps = Number(fr[0]) / (Number(fr[1]) || 1);
+  let fps = Number(fr[0]) / (Number(fr[1]) || 1);
+  // Some sources report no frame rate at all (both fields null/"0/0"): ffmpeg is then left to infer
+  // timing itself, which has been seen to write a container with exactly double the real duration.
+  // nb_frames/duration is the same number any correct rate would reduce to; use it as a last resort.
+  if (!(fps > 0 && fps < 121)) {
+    const nbf = Number(v.nb_frames) || 0;
+    const vdur = Number(v.duration) || Number((args.inputFileObj.ffProbeData || {}).format && args.inputFileObj.ffProbeData.format.duration) || 0;
+    if (nbf > 0 && vdur > 0) {
+      fps = nbf / vdur;
+      const ntsc = [24000, 30000, 60000].find((n) => Math.abs(fps - n / 1001) < 0.02);
+      args.variables.user.hcRate = ntsc ? ntsc + '/1001' : String(Math.round(fps * 1000) / 1000);
+      args.jobLog('HC rate: container reports no usable frame rate, pinning ' + args.variables.user.hcRate + ' computed from frame count/duration');
+    }
+  }
   args.variables.user.hcGop = String(Math.round((fps > 0 && fps < 121 ? fps : 24) * 5));
   // Some MP4s report a bogus container rate (240 fps) next to a sane average (23.97). hevc_qsv refuses
   // to open at 240 fps, so pin the output to the average rate (the usual NTSC fractions kept exact).
@@ -170,17 +183,25 @@ module.exports = async (args) => {
   for (const s of cmd.streams) {
     if (s.codec_type !== 'video' || s.removed) continue;
     if (s.disposition && s.disposition.attached_pic) continue;
-    // ffmpeg honours only ONE -vf, and the 10-bit step already added its own: merge, don't stack
-    const i = s.outputArgs.indexOf('-vf');
+    // A bare, unscoped -vf is ambiguous whenever a second video output stream exists (an
+    // attached-pic cover that LANG did not catch, e.g. one typed "video" rather than
+    // "attachment"): ffmpeg's CLI can bind it to the WRONG stream, including a copied one,
+    // which then fails outright ("Filtering and streamcopy cannot be used together"). Scope it
+    // to this stream's own output index. The 10-bit step (stock plugin) still adds its own bare
+    // -vf, so find and absorb that one by position too, not just our own scoped key.
+    const bare = s.outputArgs.indexOf('-vf');
+    const scoped = s.outputArgs.indexOf('-filter:{outputIndex}');
+    const i = scoped >= 0 ? scoped : bare;
     const prev = i >= 0 ? String(s.outputArgs[i + 1]) : '';
     if (hw) {
       const m = /format=([a-z0-9]+)/.exec(prev);
       if (i >= 0) s.outputArgs.splice(i, 2);
-      s.outputArgs.push('-vf', 'vpp_qsv=w=' + w + ':h=' + h + (m ? ':format=' + m[1] : ''));
+      s.outputArgs.push('-filter:{outputIndex}', 'vpp_qsv=w=' + w + ':h=' + h + (m ? ':format=' + m[1] : ''));
     } else if (i >= 0) {
+      s.outputArgs[i] = '-filter:{outputIndex}';
       s.outputArgs[i + 1] = 'scale=' + w + ':' + h + ':flags=lanczos,' + prev;
     } else {
-      s.outputArgs.push('-vf', 'scale=' + w + ':' + h + ':flags=lanczos');
+      s.outputArgs.push('-filter:{outputIndex}', 'scale=' + w + ':' + h + ':flags=lanczos');
     }
   }
   cmd.shouldProcess = true;
@@ -293,6 +314,65 @@ module.exports = async (args) => {
 """
 
 
+# Stall watchdog: the stock Execute step has no timeout, and a hung NFS read (hard mount, seen
+# live wedging a node for 15+ hours) cannot be killed by any signal once it is blocked in the
+# kernel. Kill ffmpeg if its output stops growing; the kill takes the normal error path, so the
+# retry gate re-runs it once with software decode, same as a real ffmpeg failure.
+STALL_MIN = 10
+WATCHDOG = r"""
+module.exports = async (args) => {
+  const fs = require('fs');
+  const file = args.inputFileObj._id;
+  const STALL_MS = __STALL__ * 60000, EVERY_MS = 30000;
+  const find = () => {
+    for (const pid of fs.readdirSync('/proc')) {
+      if (!/^\d+$/.test(pid)) continue;
+      try {
+        const c = fs.readFileSync('/proc/' + pid + '/cmdline', 'utf8').split('\0').filter(Boolean);
+        if (c[0].includes('ffmpeg') && c.includes('-y') && c.includes(file) && !c.includes('-ss')) return { pid: Number(pid), out: c[c.length - 1] };
+      } catch (e) {}
+    }
+    return null;
+  };
+  const t0 = Date.now();
+  let seen = false, last = -1, changed = Date.now();
+  const timer = setInterval(() => {
+    const p = find();
+    if (!p) { if (seen || Date.now() - t0 > 120000) clearInterval(timer); return; }
+    seen = true;
+    let sz = 0;
+    try { sz = fs.statSync(p.out).size; } catch (e) {}
+    if (sz !== last) { last = sz; changed = Date.now(); return; }
+    if (Date.now() - changed < STALL_MS) return;
+    try { fs.appendFileSync('/temp/hc/stalled.txt', new Date().toISOString() + ' ' + file + '\n'); } catch (e) {}
+    try { process.kill(p.pid, 'SIGKILL'); } catch (e) {}
+    clearInterval(timer);
+  }, EVERY_MS);
+  if (timer.unref) timer.unref();
+  args.jobLog('HC watchdog armed: kills ffmpeg if its output stops growing for __STALL__ minutes');
+  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
+};
+""".replace("__STALL__", str(STALL_MIN))
+
+# A duration mismatch isn't always a true failure: hardware decode can mis-handle a corrupt
+# packet or a source with no frame-rate metadata (both seen in the wild) and still exit 0 with
+# a wrong-length output. Give it one software-decode retry before giving up, same as a hard
+# ffmpeg failure gets via RETRY above - this node feeds the same retry chain (reset1/start2/...).
+DUR_RETRY = r"""
+module.exports = async (args) => {
+  const u = (args.variables.user = args.variables.user || {});
+  if (u.hcRetried === '1') {
+    args.jobLog('HC duration mismatch after the software retry too: needs review');
+    return { outputFileObj: args.inputFileObj, outputNumber: 2, variables: args.variables };
+  }
+  u.hcRetried = '1';
+  u.hcHw = '0';
+  args.jobLog('HC duration mismatch on the first (hardware) attempt: retrying once with software decode');
+  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
+};
+"""
+
+
 SIZE = r"""
 module.exports = async (args) => {
   const out = Number(args.inputFileObj.file_size) || 0;
@@ -340,11 +420,13 @@ def build(flow_id, name, arr):
     node("scale", "customFunction", "Scale to 720p + keyframe interval", {"code": SCALE}, 400, 700)
     node("probe", "customFunction", "Sample probe: would it shrink?", {"code": PROBE}, 400, 750)
     node("cont", "ffmpegCommandSetContainer", "MKV", {"container": "mkv", "forceConform": "false"}, 400, 800)
+    node("wd", "customFunction", "Stall watchdog", {"code": WATCHDOG}, 400, 850)
     node("exec", "ffmpegCommandExecute", "Run ffmpeg", x=400, y=900)
     node("dur", "compareFileDurationRatio", "Duration within 1%", {"greaterThan": "99", "lessThan": "101"}, 400, 1000)
     node("size", "customFunction", "Size check (at least 5% smaller)", {"code": SIZE}, 400, 1100)
     node("nosavings", "comment", "Not smaller: original kept", {}, 800, 1100)
     node("review", "requireReview", "Needs review (original untouched)", {}, 800, 1050)
+    node("durretry", "customFunction", "Duration mismatch: retry gate", {"code": DUR_RETRY}, 600, 1050)
     # requireReview has no built-in terminal behaviour: Tdarr's post-review bookkeeping pass
     # walks forward from it looking for a next plugin, and whatever it finds must resolve the
     # working file or Tdarr reports it as un-replaced ("Final working file is still in the
@@ -371,6 +453,7 @@ def build(flow_id, name, arr):
     node("ten2", "ffmpegCommand10BitVideo", "10-bit (retry)", x=1100, y=700)
     node("scale2", "customFunction", "Scale to 720p + keyframe interval (retry)", {"code": SCALE}, 1100, 800)
     node("cont2", "ffmpegCommandSetContainer", "MKV (retry)", {"container": "mkv", "forceConform": "false"}, 1100, 900)
+    node("wd2", "customFunction", "Stall watchdog (retry)", {"code": WATCHDOG}, 1100, 950)
     node("exec2", "ffmpegCommandExecute", "Run ffmpeg (retry)", x=1100, y=1000)
 
     edge("onerr", "gate")
@@ -383,7 +466,8 @@ def build(flow_id, name, arr):
     edge("enc2", "ten2")
     edge("ten2", "scale2")
     edge("scale2", "cont2")
-    edge("cont2", "exec2")
+    edge("cont2", "wd2")
+    edge("wd2", "exec2")
     edge("exec2", "dur")
 
     edge("in", "guard")
@@ -399,11 +483,14 @@ def build(flow_id, name, arr):
     edge("scale", "probe")
     edge("probe", "cont", "1")
     edge("probe", "skipnote", "3")
-    edge("cont", "exec")
+    edge("cont", "wd")
+    edge("wd", "exec")
     edge("exec", "dur")
     edge("dur", "size", "1")
-    edge("dur", "review", "2")
-    edge("dur", "review", "3")
+    edge("dur", "durretry", "2")
+    edge("dur", "durretry", "3")
+    edge("durretry", "start2", "1")
+    edge("durretry", "review", "2")
     edge("size", "unchanged", "1")
     edge("size", "review", "2")
     edge("size", "nosavings", "3")

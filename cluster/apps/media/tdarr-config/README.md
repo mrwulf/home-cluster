@@ -46,10 +46,21 @@ seconds). If the projection is not at least 10% smaller, the file is skipped and
 `no-savings.txt` without a full encode. The probe only runs on the hardware-decode path, and any trouble
 running it falls through to the real encode. Files whose container reports a bogus frame rate above 120
 fps (a 240 fps timebase next to a 24 fps average) are encoded with the output rate pinned to the
-average, since `hevc_qsv` refuses to open at 240 fps. Output under 5% of the original goes to review. Output
-that is not at least 5% smaller (already-compact sources can grow) keeps the original quietly, with no
-error, and the path is remembered in `/temp/hc/no-savings.txt` so it is never encoded or fed again. If the first attempt fails (filter or
-decode errors), the flow retries once with software decode and scaling before giving up. Immediately
+average, since `hevc_qsv` refuses to open at 240 fps. A source with no usable frame rate at all (both
+fields null, seen in the wild) gets the same rate pin, computed from frame count/duration instead -
+left unpinned, ffmpeg's own inference has been seen to write a container with exactly double the real
+duration. The scale filter is scoped to the encoded stream's own output index (`-filter:{outputIndex}`),
+not a bare `-vf`: an attached-pic cover LANG did not catch (typed "video" rather than "attachment")
+would otherwise give ffmpeg two video output streams and an unscoped filter can bind to the wrong one.
+A watchdog kills ffmpeg when its output file has not grown for 10 minutes (`STALL_MIN` in
+`scripts/tdarr-flow.py`; the stock Execute step has no timeout, and a hung NFS read cannot be killed by
+any signal once blocked in the kernel) - stalled paths are logged to `/temp/hc/stalled.txt`. Output
+under 5% of the original goes to review. Output that is not at least 5% smaller (already-compact
+sources can grow) keeps the original quietly, with no error, and the path is remembered in
+`/temp/hc/no-savings.txt` so it is never encoded or fed again. If the first attempt fails (filter or
+decode errors) or its duration does not match the source within 1% (a corrupt source packet or the
+missing-frame-rate case above can still exit 0 with a wrong-length output), the flow retries once with
+software decode and scaling before giving up. Immediately
 before replacing the original it checks the source is unchanged, so an arr upgrade mid-encode is never
 overwritten. Any other failed check goes to Tdarr's review queue with the original untouched.
 Radarr/Sonarr are told to rescan afterwards.
