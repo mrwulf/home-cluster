@@ -361,14 +361,18 @@ module.exports = async (args) => {
 DUR_RETRY = r"""
 module.exports = async (args) => {
   const u = (args.variables.user = args.variables.user || {});
+  // args.inputFileObj here is the FIRST attempt's own (wrong-duration) temp output, not the
+  // source - rebuild from args.originalLibraryFile, or the retry just re-encodes the already-bad
+  // intermediate file and reproduces the same result for free, proving nothing.
+  const src = args.originalLibraryFile || args.inputFileObj;
   if (u.hcRetried === '1') {
     args.jobLog('HC duration mismatch after the software retry too: needs review');
-    return { outputFileObj: args.inputFileObj, outputNumber: 2, variables: args.variables };
+    return { outputFileObj: src, outputNumber: 2, variables: args.variables };
   }
   u.hcRetried = '1';
   u.hcHw = '0';
   args.jobLog('HC duration mismatch on the first (hardware) attempt: retrying once with software decode');
-  return { outputFileObj: args.inputFileObj, outputNumber: 1, variables: args.variables };
+  return { outputFileObj: src, outputNumber: 1, variables: args.variables };
 };
 """
 
