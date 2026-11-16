@@ -1,6 +1,19 @@
----
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+# Migrated from the legacy kyverno.io/v1 ClusterPolicy to the CEL-based
+# policies.kyverno.io/v1 GeneratingPolicy type (Kyverno 3.10 blocks the Helm
+# upgrade while any legacy ClusterPolicy exists; see TODO.md and
+# https://kyverno.io/docs/guides/migration-to-cel/).
+#
+# The legacy policy had 12 rules, but 4 of its clone targets (rfc1918-ips,
+# traefik-middleware-chain-internal-no-auth, traefik-middleware-chain-
+# pocket-id x2) were split across 2-3 rules each purely because Kyverno
+# rejected edits to an existing generate rule, forcing each later namespace
+# addition (services, rook-ceph) into a brand new rule targeting the same
+# middleware. That restriction is gone with the CEL engine, so those are
+# merged back into one generate entry per distinct middleware (8 total,
+# matching the 8 distinct middlewares originally cloned), each with the
+# union of every namespace that rule set ever added.
+apiVersion: policies.kyverno.io/v1
+kind: GeneratingPolicy
 metadata:
   name: sync-middlewares
   annotations:
@@ -12,269 +25,91 @@ metadata:
       Copies Traefik Middleware resources from the networking namespace to other
       Namespaces when they are created, and keeps them synchronized.
 spec:
-  rules:
-    - name: sync-chain-no-auth
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - ai
-                - auth
-                - backups
-                - databases
-                - development
-                - flux-system
-                - household
-                - media
-                - mlm
-                - other
-                - vaultwarden
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: traefik-middleware-chain-no-auth
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: traefik-middleware-chain-no-auth
-    - name: sync-chain-direct
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - ai
-                - auth
-                - backups
-                - databases
-                - development
-                - flux-system
-                - household
-                - media
-                - other
-                - vaultwarden
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: traefik-middleware-chain-direct
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: traefik-middleware-chain-direct
-    - name: sync-chain-internal-no-auth-v2
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - ai
-                - auth
-                - backups
-                - databases
-                - development
-                - flux-system
-                - household
-                - media
-                - monitoring
-                - other
-                - vaultwarden
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: traefik-middleware-chain-internal-no-auth
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: traefik-middleware-chain-internal-no-auth
-    - name: sync-rfc1918-ips
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - ai
-                - auth
-                - backups
-                - databases
-                - development
-                - flux-system
-                - household
-                - kube-system
-                - media
-                - monitoring
-                - other
-                - rook-ceph
-                - vaultwarden
-                - vpn
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: rfc1918-ips
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: rfc1918-ips
-
-    - name: sync-buffering-large-upload
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - media
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: traefik-middleware-buffering-large-upload
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: traefik-middleware-buffering-large-upload
-
-    - name: sync-pocket-id-forward-auth
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - ai
-                - auth
-                - household
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: traefik-middleware-pocket-id-forward-auth
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: traefik-middleware-pocket-id-forward-auth
-    - name: sync-chain-pocket-id
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - ai
-                - auth
-                - household
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: traefik-middleware-chain-pocket-id
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: traefik-middleware-chain-pocket-id
-    # New namespaces get their own rules: Kyverno rejects edits to existing generate rules.
-    - name: sync-rfc1918-ips-services
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - services
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: rfc1918-ips
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: rfc1918-ips
-    - name: sync-chain-pocket-id-services
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - services
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: traefik-middleware-chain-pocket-id
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: traefik-middleware-chain-pocket-id
-    - name: sync-chain-internal-no-auth-services
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - services
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: traefik-middleware-chain-internal-no-auth
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: traefik-middleware-chain-internal-no-auth
-    - name: sync-chain-pocket-id-rook-ceph
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - rook-ceph
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: traefik-middleware-chain-pocket-id
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: traefik-middleware-chain-pocket-id
-    - name: sync-chain-cloudflare-pocket-id
-      match:
-        any:
-          - resources:
-              kinds:
-                - Namespace
-              names:
-                - auth
-      generate:
-        generateExisting: true
-        apiVersion: traefik.io/v1alpha1
-        kind: Middleware
-        name: traefik-middleware-chain-cloudflare-pocket-id
-        namespace: "{{request.object.metadata.name}}"
-        synchronize: true
-        clone:
-          namespace: networking
-          name: traefik-middleware-chain-cloudflare-pocket-id
+  evaluation:
+    generateExisting:
+      enabled: true
+    synchronize:
+      enabled: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["namespaces"]
+        resourceNames:
+          - ai
+          - auth
+          - backups
+          - databases
+          - development
+          - flux-system
+          - household
+          - kube-system
+          - media
+          - mlm
+          - monitoring
+          - other
+          - rook-ceph
+          - services
+          - vaultwarden
+          - vpn
+  variables:
+    - name: nsName
+      expression: object.metadata.name
+    - name: chainNoAuth
+      expression: resource.Get("traefik.io/v1alpha1", "middlewares", "networking", "traefik-middleware-chain-no-auth")
+    - name: chainDirect
+      expression: resource.Get("traefik.io/v1alpha1", "middlewares", "networking", "traefik-middleware-chain-direct")
+    - name: chainInternalNoAuth
+      expression: resource.Get("traefik.io/v1alpha1", "middlewares", "networking", "traefik-middleware-chain-internal-no-auth")
+    - name: rfc1918Ips
+      expression: resource.Get("traefik.io/v1alpha1", "middlewares", "networking", "rfc1918-ips")
+    - name: bufferingLargeUpload
+      expression: resource.Get("traefik.io/v1alpha1", "middlewares", "networking", "traefik-middleware-buffering-large-upload")
+    - name: pocketIdForwardAuth
+      expression: resource.Get("traefik.io/v1alpha1", "middlewares", "networking", "traefik-middleware-pocket-id-forward-auth")
+    - name: chainPocketId
+      expression: resource.Get("traefik.io/v1alpha1", "middlewares", "networking", "traefik-middleware-chain-pocket-id")
+    - name: chainCloudflarePocketId
+      expression: resource.Get("traefik.io/v1alpha1", "middlewares", "networking", "traefik-middleware-chain-cloudflare-pocket-id")
+  generate:
+    # was: sync-chain-no-auth
+    - expression: >-
+        ['ai','auth','backups','databases','development','flux-system','household','media','mlm','other','vaultwarden'].exists(n, n == variables.nsName)
+          ? generator.Apply(variables.nsName, [variables.chainNoAuth])
+          : true
+    # was: sync-chain-direct
+    - expression: >-
+        ['ai','auth','backups','databases','development','flux-system','household','media','other','vaultwarden'].exists(n, n == variables.nsName)
+          ? generator.Apply(variables.nsName, [variables.chainDirect])
+          : true
+    # was: sync-chain-internal-no-auth-v2 + sync-chain-internal-no-auth-services
+    - expression: >-
+        ['ai','auth','backups','databases','development','flux-system','household','media','monitoring','other','vaultwarden','services'].exists(n, n == variables.nsName)
+          ? generator.Apply(variables.nsName, [variables.chainInternalNoAuth])
+          : true
+    # was: sync-rfc1918-ips + sync-rfc1918-ips-services
+    - expression: >-
+        ['ai','auth','backups','databases','development','flux-system','household','kube-system','media','monitoring','other','rook-ceph','vaultwarden','vpn','services'].exists(n, n == variables.nsName)
+          ? generator.Apply(variables.nsName, [variables.rfc1918Ips])
+          : true
+    # was: sync-buffering-large-upload
+    - expression: >-
+        variables.nsName == 'media'
+          ? generator.Apply(variables.nsName, [variables.bufferingLargeUpload])
+          : true
+    # was: sync-pocket-id-forward-auth
+    - expression: >-
+        ['ai','auth','household'].exists(n, n == variables.nsName)
+          ? generator.Apply(variables.nsName, [variables.pocketIdForwardAuth])
+          : true
+    # was: sync-chain-pocket-id + sync-chain-pocket-id-services + sync-chain-pocket-id-rook-ceph
+    - expression: >-
+        ['ai','auth','household','rook-ceph','services'].exists(n, n == variables.nsName)
+          ? generator.Apply(variables.nsName, [variables.chainPocketId])
+          : true
+    # was: sync-chain-cloudflare-pocket-id
+    - expression: >-
+        variables.nsName == 'auth'
+          ? generator.Apply(variables.nsName, [variables.chainCloudflarePocketId])
+          : true

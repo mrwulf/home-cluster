@@ -1,6 +1,12 @@
----
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+# Migrated from the legacy kyverno.io/v1 ClusterPolicy to the CEL-based
+# policies.kyverno.io/v1 MutatingPolicy type (Kyverno 3.10 blocks the Helm
+# upgrade while any legacy ClusterPolicy exists; see TODO.md and
+# https://kyverno.io/docs/guides/migration-to-cel/).
+#
+# `spec.autogen.podControllers` is left unset (equivalent to the legacy
+# `pod-policies.kyverno.io/autogen-controllers: none` annotation).
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
 metadata:
   name: add-pod-gateway-sidecar-resources
   annotations:
@@ -15,60 +21,38 @@ metadata:
       chart value or CLI flag to size what it injects, so every routed pod otherwise
       runs it with no requests/limits. This policy adds them, by name, after
       pod-gateway's own webhook has run.
-    pod-policies.kyverno.io/autogen-controllers: none
 spec:
-  rules:
-    - name: add-gateway-sidecar-resources
-      match:
-        any:
-          - resources:
-              kinds: ["Pod"]
-      preconditions:
-        all:
-          - key: "{{ request.object.spec.containers[?name=='gateway-sidecar'] || `[]` | length(@) }}"
-            operator: GreaterThanOrEquals
-            value: 1
-      mutate:
-        foreach:
-          - list: "request.object.spec.containers"
-            preconditions:
-              all:
-                - key: "{{ element.name }}"
-                  operator: Equals
-                  value: "gateway-sidecar"
-            patchesJson6902: |-
-              - path: /spec/containers/{{elementIndex}}/resources
-                op: add
-                value:
-                  requests:
-                    cpu: 10m
-                    memory: 32Mi
-                  limits:
-                    memory: 128Mi
-    - name: add-gateway-init-resources
-      match:
-        any:
-          - resources:
-              kinds: ["Pod"]
-      preconditions:
-        all:
-          - key: "{{ request.object.spec.initContainers[?name=='gateway-init'] || `[]` | length(@) }}"
-            operator: GreaterThanOrEquals
-            value: 1
-      mutate:
-        foreach:
-          - list: "request.object.spec.initContainers"
-            preconditions:
-              all:
-                - key: "{{ element.name }}"
-                  operator: Equals
-                  value: "gateway-init"
-            patchesJson6902: |-
-              - path: /spec/initContainers/{{elementIndex}}/resources
-                op: add
-                value:
-                  requests:
-                    cpu: 10m
-                    memory: 16Mi
-                  limits:
-                    memory: 64Mi
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: >-
+          object.spec.containers.filter(c, c.name == "gateway-sidecar").map(c,
+            JSONPatch{
+              op: "add",
+              path: "/spec/containers/" + string(object.spec.containers.indexOf(c)) + "/resources",
+              value: {
+                "requests": {"cpu": "10m", "memory": "32Mi"},
+                "limits": {"memory": "128Mi"}
+              }
+            }
+          )
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: >-
+          !has(object.spec.initContainers) ? [] :
+          object.spec.initContainers.filter(c, c.name == "gateway-init").map(c,
+            JSONPatch{
+              op: "add",
+              path: "/spec/initContainers/" + string(object.spec.initContainers.indexOf(c)) + "/resources",
+              value: {
+                "requests": {"cpu": "10m", "memory": "16Mi"},
+                "limits": {"memory": "64Mi"}
+              }
+            }
+          )

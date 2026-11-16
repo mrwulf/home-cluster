@@ -1,5 +1,16 @@
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+# Migrated from the legacy kyverno.io/v1 ClusterPolicy to the CEL-based
+# policies.kyverno.io/v1 MutatingPolicy type (Kyverno 3.10 blocks the Helm
+# upgrade while any legacy ClusterPolicy exists; see TODO.md and
+# https://kyverno.io/docs/guides/migration-to-cel/).
+#
+# The legacy `patchStrategicMerge` used `+(key)` markers to only add the
+# anti-affinity block if it was entirely absent, never touching a Deployment
+# that already defines its own affinity. That "only if absent" guard is moved
+# into matchConditions below instead (ApplyConfiguration has no direct
+# equivalent to `+()`), which is equivalent: the policy simply doesn't run
+# again once the field exists.
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
 metadata:
   name: insert-pod-antiaffinity
   annotations:
@@ -12,35 +23,51 @@ metadata:
       sets a Pod anti-affinity configuration on Deployments which contain an `app` label if it is
       not already present.
 spec:
-  rules:
-    - name: insert-pod-antiaffinity
-      match:
-        any:
-          - resources:
-              kinds:
-                - Deployment
-      preconditions:
-        # This precondition selects Pods with the label `app` defined
-        all:
-          - key: "{{request.object.spec.template.metadata.labels.app || ''}}"
-            operator: NotEquals
-            value: ""
-      # Mutates the Deployment resource to add fields.
-      mutate:
-        patchStrategicMerge:
-          spec:
-            template:
-              spec:
-                # Add the `affinity`if not already specified.
-                +(affinity):
-                  +(podAntiAffinity):
-                    +(preferredDuringSchedulingIgnoredDuringExecution):
-                      - weight: 1
-                        podAffinityTerm:
-                          topologyKey: "kubernetes.io/hostname"
-                          labelSelector:
-                            matchExpressions:
-                              - key: app
-                                operator: In
-                                values:
-                                  - "{{request.object.spec.template.metadata.labels.app}}"
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["apps"]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["deployments"]
+  matchConditions:
+    - name: has-app-label
+      expression: >-
+        object.spec.template.metadata.?labels.app.orValue('') != ''
+    - name: no-existing-antiaffinity
+      expression: >-
+        !has(object.spec.template.spec.affinity) ||
+        !has(object.spec.template.spec.affinity.podAntiAffinity) ||
+        !has(object.spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution)
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >-
+          Object{
+            spec: Object.spec{
+              template: Object.spec.template{
+                spec: Object.spec.template.spec{
+                  affinity: Object.spec.template.spec.affinity{
+                    podAntiAffinity: Object.spec.template.spec.affinity.podAntiAffinity{
+                      preferredDuringSchedulingIgnoredDuringExecution: [
+                        Object.spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution{
+                          weight: 1,
+                          podAffinityTerm: Object.spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.podAffinityTerm{
+                            topologyKey: "kubernetes.io/hostname",
+                            labelSelector: Object.spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.podAffinityTerm.labelSelector{
+                              matchExpressions: [
+                                Object.spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.podAffinityTerm.labelSelector.matchExpressions{
+                                  key: "app",
+                                  operator: "In",
+                                  values: [object.spec.template.metadata.labels.app]
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
