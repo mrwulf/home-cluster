@@ -124,4 +124,12 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   that bootstrap, merge the PR, then confirm the HelmRelease reconciles to `Ready` and all 8 new
   policies show up (`kubectl get validatingpolicy,mutatingpolicy,generatingpolicy`) before
   considering this resolved.
+  The same PR also adds `install.crds: CreateReplace` / `upgrade.crds: CreateReplace` to the
+  HelmRelease (the repo's established pattern - see e.g. `traefik-internal`, `snapshot-controller`),
+  which the kyverno HelmRelease never had. That doesn't help the current stuck upgrade (the
+  pre-upgrade hook fails before any template, CRDs included, is ever rendered - the one-time
+  bootstrap above is still required), but it closes the gap that caused this bootstrap to be
+  needed in the first place: without it, helm-controller's default CRD policy never updates an
+  already-existing CRD on upgrade, so a future kyverno chart bump that changes one of these CRDs'
+  schemas would go stale exactly like tuppr's did this session.
   Found: 2026-11-15.
