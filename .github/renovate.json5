@@ -17,7 +17,9 @@
     "github>mrwulf/home-cluster//.github/renovate/sourceUrls.json5",
   ],
   enabled: true,
-  dependencyDashboardTitle: "Renovate Dashboard",
+  dependencyDashboard: {
+    title: "Renovate Dashboard",
+  },
   suppressNotifications: ["prIgnoreNotification"],
   commitBodyTable: true,
   rebaseWhen: "conflicted",
