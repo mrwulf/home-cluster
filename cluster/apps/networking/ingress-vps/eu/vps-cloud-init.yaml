@@ -158,7 +158,7 @@ write_files:
         -v /proc:/host/proc:ro \
         -v /sys:/host/sys:ro \
         -v /:/rootfs:ro \
-        docker.io/prom/node-exporter:v1.12.1 \
+        docker.io/prom/node-exporter:v1.13.1 \
         --path.procfs=/host/proc \
         --path.sysfs=/host/sys \
         --path.rootfs=/rootfs \
