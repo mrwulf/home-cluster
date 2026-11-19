@@ -26,7 +26,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       initContainers:
         - name: register-runner
-          image: code.forgejo.org/forgejo/runner:13.2.1
+          image: code.forgejo.org/forgejo/runner:13.2.2
           resources:
             requests:
               cpu: 10m
@@ -65,7 +65,7 @@ spec:
               subPath: config.yaml
       containers:
         - name: runner
-          image: code.forgejo.org/forgejo/runner:13.2.1
+          image: code.forgejo.org/forgejo/runner:13.2.2
           command:
             - forgejo-runner
             - daemon
