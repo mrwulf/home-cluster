@@ -58,6 +58,10 @@ spec:
               BLOBS_S3_ENDPOINT: "http://minio.databases.svc.cluster.local:9000"
               BLOBS_S3_REGION: us-east-1
               BLOBS_S3_FORCE_PATH_STYLE: "true"
+              # The self-hosted web app below: CORS origin, and the app a
+              # Spaces link opened in a browser offers.
+              HARBOR_WEB_ORIGINS: "https://spaces.home.${SECRET_DOMAIN}"
+              HARBOR_WEB_APP_URL: "https://spaces.home.${SECRET_DOMAIN}"
             envFrom:
               - secretRef:
                   name: rowboat
@@ -79,12 +83,56 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 768Mi
+      web:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              # Built by .github/workflows/rowboat-harbor-image.yaml from
+              # .github/rowboat-web (patched for a static OIDC client ID).
+              repository: ghcr.io/mrwulf/rowboat-web
+              tag: v1.0.9
+            env:
+              # Rendered into nginx's CSP and /config.js at start, so the
+              # domain stays out of the public image.
+              SERVER_URL: "https://rowboat.home.${SECRET_DOMAIN}"
+              SERVER_WS_URL: "wss://rowboat.home.${SECRET_DOMAIN}"
+              ISSUER_URL: "https://id.${SECRET_DOMAIN}"
+              OIDC_CLIENT_ID: rowboat-web
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 101
+              runAsGroup: 101
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+            probes:
+              liveness: &webprobe
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 8080
+              readiness: *webprobe
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
     service:
       app:
         controller: rowboat
         ports:
           http:
             port: 4272
+      web:
+        controller: web
+        ports:
+          http:
+            port: 8080
     route:
       app:
         enabled: true
@@ -106,4 +154,25 @@ spec:
                   name: rfc1918-ips
             backendRefs:
               - identifier: app
+                port: http
+      web:
+        enabled: true
+        annotations:
+          gatus.io/enabled: "true"
+        parentRefs:
+          - name: internal-gateway
+            namespace: networking
+        hostnames:
+          - "spaces.home.${SECRET_DOMAIN}"
+        rules:
+          # Forward-auth would break the app's own OIDC redirect; the app signs
+          # in with Pocket ID itself.
+          - filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: traefik.io
+                  kind: Middleware
+                  name: rfc1918-ips
+            backendRefs:
+              - identifier: web
                 port: http

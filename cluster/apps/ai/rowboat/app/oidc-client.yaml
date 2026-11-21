@@ -1,0 +1,19 @@
+---
+# Public PKCE client for the self-hosted Spaces web app. The client ID is fixed
+# (not generated) because the web build is patched to use it instead of DCR,
+# which Pocket ID lacks (see TODO.md). A client ID is public, so no Secret.
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: rowboat-web
+spec:
+  name: Rowboat Spaces
+  clientID: rowboat-web
+  isPublic: true
+  pkceEnabled: true
+  launchUrl: https://spaces.home.${SECRET_DOMAIN}/
+  callbackUrls:
+    - https://spaces.home.${SECRET_DOMAIN}/auth/callback
+  allowedUserGroups:
+    - name: users
+      namespace: auth

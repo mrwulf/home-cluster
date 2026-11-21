@@ -1,0 +1,27 @@
+# Rendered by the nginx image's envsubst at container start (only the variables
+# set in the environment are substituted; nginx's own $uri is left alone).
+server {
+  listen 8080;
+  root /usr/share/nginx/html;
+
+  # Upstream's policy (apps/x/apps/renderer/vercel.json) with connect-src
+  # pointing at this deployment's Harbor and sign-in server instead of Rowboat's.
+  add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ${SERVER_URL} ${SERVER_WS_URL} ${ISSUER_URL}; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" always;
+  add_header X-Content-Type-Options "nosniff" always;
+  add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+  add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+
+  location = /config.js {
+    default_type application/javascript;
+    return 200 "window.__ROWBOAT__={serverUrl:'${SERVER_URL}',clientId:'${OIDC_CLIENT_ID}'};";
+  }
+
+  location /assets/ {
+    expires 1y;
+    try_files $uri =404;
+  }
+
+  location / {
+    try_files $uri /web.html;
+  }
+}

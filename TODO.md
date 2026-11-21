@@ -67,6 +67,9 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
   support for a pre-registered client ID or CIMD, a DCR-capable IdP such as standalone GoTrue, or a
   patched client. Likely path: fork `rowboatlabs/rowboat` and implement the fix there (a
   pre-registered client ID, or CIMD, which Pocket ID does support), then upstream it. Harbor's image is built by `.github/workflows/rowboat-harbor-image.yaml`.
+  Workaround in place for the browser only: the self-hosted Spaces web app (`spaces.home.${SECRET_DOMAIN}`) is built
+  from the pinned release with `.github/rowboat-web/patch.mjs`, which swaps DCR for the fixed Pocket ID client
+  `rowboat-web`. The desktop app still can't sign in. Re-check the patch anchors on every Rowboat bump.
 
 ## Needs a real fix (not upstream-blocked, just not done yet)
 
