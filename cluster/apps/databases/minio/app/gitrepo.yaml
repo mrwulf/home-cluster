@@ -23,6 +23,12 @@ spec:
     !/cluster/apps/
     /cluster/apps/*
 
+    !/cluster/apps/ai/
+    /cluster/apps/ai/*
+    !/cluster/apps/ai/rowboat/
+    /cluster/apps/ai/rowboat/*
+    !/cluster/apps/ai/rowboat/minio-bucket/
+
     !/cluster/apps/household/
     /cluster/apps/household/*
     !/cluster/apps/household/outline/
