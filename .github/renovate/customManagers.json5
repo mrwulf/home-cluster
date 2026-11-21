@@ -63,5 +63,18 @@
       ],
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
     },
+    {
+      customType: "regex",
+      description: [
+        "Process the Rowboat release pin in the Harbor image build workflow",
+      ],
+      managerFilePatterns: [
+        "/(^|/)\\.github/workflows/rowboat-harbor-image\\.ya?ml$/",
+      ],
+      matchStrings: [
+        "# renovate: depName=(?<depName>\\S+)(?: datasource=(?<datasource>\\S+))?\\s*\\n\\s*ROWBOAT_VERSION: (?<currentValue>\\S+)",
+      ],
+      datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
+    },
   ],
 }

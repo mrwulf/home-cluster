@@ -12,6 +12,8 @@ resources:
   - ./open-webui/ks.yaml
   - ./openclaw/ks.yaml
   - ./paperless-ai/ks.yaml
+  - ./rowboat/ks.yaml
+  - ./rowboat/minio-bucket-ks.yaml
   - ./searxng/ks.yaml
   - ./speakr/ks.yaml
   - ./toolhive/ks.yaml

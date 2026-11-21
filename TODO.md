@@ -59,6 +59,15 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
      No upstream issues filed yet for either `0.7.x` problem.
      Found: 2026-11-09.
 
+- **Rowboat desktop client can't sign in to Harbor via Pocket ID** (`cluster/apps/ai/rowboat/`).
+  The client's self-hosted sign-in requires OAuth Dynamic Client Registration and has no field for a
+  pre-registered client ID. Pocket ID does not support DCR (upstream closed it in favour of CIMD, which
+  the client doesn't use either), so Harbor is deployed with `AUTH_ISSUER` pointing at Pocket ID but
+  the stock client can't complete sign-in. Checked 2026-11-21. Options when revisited: upstream client
+  support for a pre-registered client ID or CIMD, a DCR-capable IdP such as standalone GoTrue, or a
+  patched client. Likely path: fork `rowboatlabs/rowboat` and implement the fix there (a
+  pre-registered client ID, or CIMD, which Pocket ID does support), then upstream it. Harbor's image is built by `.github/workflows/rowboat-harbor-image.yaml`.
+
 ## Needs a real fix (not upstream-blocked, just not done yet)
 
 - **No BMC/IPMI check yet for node3's 2026-09-24T19:46:41Z reboot.**

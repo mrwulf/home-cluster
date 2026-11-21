@@ -11,3 +11,4 @@ resources:
   - add-pod-gateway-sidecar-resources.yaml
   - sync-middlewares.yaml
   - sync-outline-minio-credentials.yaml
+  - sync-rowboat-minio-credentials.yaml
