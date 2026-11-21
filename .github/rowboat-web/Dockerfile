@@ -11,6 +11,6 @@ WORKDIR /rowboat/apps/x/apps/renderer
 # Upstream's own Vercel install and build scripts (the web app's documented build).
 RUN sh scripts/vercel-install.sh && sh scripts/vercel-build.sh
 
-FROM nginxinc/nginx-unprivileged:1.29.8-alpine
+FROM nginxinc/nginx-unprivileged:1.31.7-alpine
 COPY --from=build /rowboat/apps/x/apps/renderer/dist-web /usr/share/nginx/html
 COPY --from=cfg default.conf.template /etc/nginx/templates/default.conf.template
