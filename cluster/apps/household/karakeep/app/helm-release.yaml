@@ -106,7 +106,7 @@ spec:
           app:
             image:
               repository: docker.io/getmeili/meilisearch
-              tag: v1.57.0
+              tag: v1.58.0
             env:
               MEILI_NO_ANALYTICS: true
               MEILI_UPGRADE_DB: true
