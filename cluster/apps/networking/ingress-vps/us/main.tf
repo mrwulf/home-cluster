@@ -118,7 +118,7 @@ data "http" "home_ip" {
 locals {
   home_ip = chomp(data.http.home_ip.response_body)
   # renovate: datasource=docker depName=debian
-  debian_version = "13.7"
+  debian_version = "13.8"
 }
 
 # Look up Cloudflare Zone details dynamically using domain name
