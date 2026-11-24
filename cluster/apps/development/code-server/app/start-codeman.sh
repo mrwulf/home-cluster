@@ -9,6 +9,13 @@ set -u
 # No braces around PATH here: Flux postBuild substitution would blank the braced form.
 export PATH="/home/coder/.local/bin:/home/coder/.local/share/mise/shims:$PATH"
 
+# Node on the PVC links libatomic, which the stock image lacks. The apt step in
+# setup-tools.sh only changes the main container's filesystem, so this container
+# installs its own copy at every start. Retry until apt succeeds.
+until ldconfig -p | grep -q 'libatomic\.so\.1'; do
+  sudo apt-get update && sudo apt-get install -y --no-install-recommends libatomic1 || sleep 10
+done
+
 until mise exec -- sh -c 'command -v codeman && command -v tmux' >/dev/null 2>&1; do
   echo "waiting for codeman and tmux; tmux comes from the dotfiles agents profile (see /home/coder/setup.log)"
   sleep 10
