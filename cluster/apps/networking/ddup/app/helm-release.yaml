@@ -31,7 +31,7 @@ spec:
             image:
               # Fork of github.com/ItalyPaleAle/ddup (reads secrets with upstream's !file tag)
               repository: ghcr.io/mrwulf/ddup
-              tag: 0.6.0-fork.31
+              tag: 0.8.1-fork.1
             env:
               DDUP_CONFIG: /etc/ddup/config.yaml
               # Prometheus pull via the OTel autoexport library (defaults to "none" and to localhost)
