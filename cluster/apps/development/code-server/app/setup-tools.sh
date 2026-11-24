@@ -1,7 +1,7 @@
 #!/bin/bash
 # Started by the main container's postStart hook through sudo. Root only does the
 # apt step, then the script runs again as coder so everything else (mise, node,
-# claude, codeman, dotfiles) lands on the PVC owned by coder. Under root, HOME is
+# codeman, dotfiles) lands on the PVC owned by coder. Under root, HOME is
 # /root and those installs would be lost at every pod restart.
 
 if [ "$(id -u)" = 0 ]; then
@@ -25,10 +25,6 @@ mise install
 echo "Installing Node.js..."
 mise use -g node@lts
 
-echo "Installing Claude Code..."
-# renovate: datasource=npm depName=@anthropic-ai/claude-code
-mise exec node -- npm install -g @anthropic-ai/claude-code@2.1.283
-
 echo "Installing Codeman..."
 # renovate: datasource=npm depName=aicodeman
 mise exec node -- npm install -g aicodeman@1.44.0
@@ -36,7 +32,7 @@ mise exec node -- npm install -g aicodeman@1.44.0
 echo "Aliasing code -> code-server for VS Code CLI compatibility..."
 ln -sf /usr/bin/code-server /home/coder/.local/bin/code
 
-# CLI versions (kubectl, talosctl, sops, age, jq, yq, flux2, ...) are owned by the
+# CLI versions (claude, kubectl, talosctl, sops, age, jq, yq, flux2, ...) are owned by the
 # dotfiles repo's agents profile (mise.agents.toml), not pinned here.
 # Neither the SSH key nor the clone URL is in this public repo: on first setup,
 # copy a key with access to Forgejo into /home/coder/.ssh and write the clone URL
