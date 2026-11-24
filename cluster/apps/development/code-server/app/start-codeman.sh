@@ -1,8 +1,8 @@
 #!/bin/bash
 # Entrypoint of the codeman sidecar. Everything it needs lives on the shared PVC:
-# setup-tools.sh in the main container installs mise, node, claude and codeman,
-# and the dotfiles agents profile (mise.agents.toml) provides tmux, kubectl and
-# talosctl. Until the SSH key and clone URL are in place that profile is missing,
+# setup-tools.sh in the main container installs mise, node and codeman,
+# and the dotfiles agents profile (mise.agents.toml) provides claude, tmux, kubectl
+# and talosctl. Until the SSH key and clone URL are in place that profile is missing,
 # so this waits instead of starting a Codeman that cannot create sessions.
 set -u
 
