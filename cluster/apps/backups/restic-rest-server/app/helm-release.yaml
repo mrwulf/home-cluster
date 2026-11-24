@@ -18,7 +18,7 @@ spec:
           main:
             image:
               repository: restic/rest-server
-              tag: "0.14.0"
+              tag: "0.15.0"
             env:
               DATA_DIRECTORY: /data
               PASSWORD_FILE: /secrets/.htpasswd
