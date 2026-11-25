@@ -8,6 +8,14 @@ Remove an entry once the underlying issue is resolved and the real fix is applie
 
 ## Blocked on upstream
 
+- **LifeOS agent runs an unmerged Rowboat worker** (`.github/lifeos-agent/`).
+  The image builds the fork `mrwulf/rowboat`, branch `claude-worker`: a Claude Code runtime on top of
+  [rowboat#1317](https://github.com/rowboatlabs/rowboat/pull/1317) (stacked on #1316). When #1317
+  merges, rebase onto `main` and point the upstream pin there; a deleted upstream branch stops
+  Renovate updating it. Check whether upstream shipped its own Claude adapter, and drop the fork once
+  a release carries one. The runtime has not been proposed upstream yet.
+  Checked 2026-11-25.
+
 - **Cloudflare Terraform provider pinned at `5.25.0`** (`cluster/apps/networking/ingress-vps/{eu,us}/.terraform.lock.hcl`).
   `5.26.0` regresses `modified_on` planning on `cloudflare_dns_record` updates, causing
   `Provider produced inconsistent result after apply` (other projects report it failing _every_

@@ -76,5 +76,44 @@
       ],
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
     },
+    {
+      customType: "regex",
+      description: [
+        "Process the pinned branch commit in the LifeOS agent image workflow",
+      ],
+      managerFilePatterns: [
+        "/(^|/)\\.github/workflows/lifeos-agent-image\\.ya?ml$/",
+      ],
+      matchStrings: [
+        "# renovate: datasource=git-refs depName=(?<depName>\\S+) branch=(?<currentValue>\\S+)\\s*\\n\\s*\\w+: (?<currentDigest>[a-f0-9]{40})",
+      ],
+      datasourceTemplate: "git-refs",
+    },
+    {
+      customType: "regex",
+      description: [
+        "Process the pinned tag commit in the LifeOS agent image workflow",
+      ],
+      managerFilePatterns: [
+        "/(^|/)\\.github/workflows/lifeos-agent-image\\.ya?ml$/",
+      ],
+      matchStrings: [
+        "# renovate: datasource=github-tags depName=(?<depName>\\S+) version=(?<currentValue>\\S+)\\s*\\n\\s*\\w+: (?<currentDigest>[a-f0-9]{40})",
+      ],
+      datasourceTemplate: "github-tags",
+    },
+    {
+      customType: "regex",
+      description: [
+        "Process the npm version pin in the LifeOS agent image workflow",
+      ],
+      managerFilePatterns: [
+        "/(^|/)\\.github/workflows/lifeos-agent-image\\.ya?ml$/",
+      ],
+      matchStrings: [
+        "# renovate: datasource=npm depName=(?<depName>\\S+)\\s*\\n\\s*\\w+_VERSION: (?<currentValue>\\S+)",
+      ],
+      datasourceTemplate: "npm",
+    },
   ],
 }
