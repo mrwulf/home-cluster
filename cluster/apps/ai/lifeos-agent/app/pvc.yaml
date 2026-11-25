@@ -1,0 +1,15 @@
+---
+# Claude Code sessions, the worker's thread state, the LifeOS install and the
+# vault clone. No VolSync backup: memory is pushed to the vault repository and
+# the rest is rebuilt on start, losing only conversation continuity.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lifeos-agent
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ceph-block
+  resources:
+    requests:
+      storage: 15Gi

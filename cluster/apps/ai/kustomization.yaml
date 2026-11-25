@@ -7,6 +7,7 @@ resources:
   - ./namespace.yaml
   # Flux-Kustomizations
   - ./chromadb/ks.yaml
+  - ./lifeos-agent/ks.yaml
   - ./odysseus/ks.yaml
   - ./ollama/ks.yaml
   - ./open-webui/ks.yaml
