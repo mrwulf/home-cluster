@@ -132,7 +132,26 @@ spec:
               - identifier: app
                 port: http
 
+    configMaps:
+      initdb:
+        data:
+          # postgres17 puts the pg_stat_statements views in every database's public
+          # schema, and TREK refuses a first start or a move into a schema that holds
+          # anything. The default search_path ("$user", public) picks this one instead.
+          # postgres-init runs this only when it creates the database.
+          trek.sql: |
+            CREATE SCHEMA trek AUTHORIZATION trek;
+
     persistence:
+      initdb:
+        type: configMap
+        identifier: initdb
+        advancedMounts:
+          trek:
+            init-db:
+              - path: /initdb/trek.sql
+                subPath: trek.sql
+                readOnly: true
       data:
         existingClaim: "${VOLSYNC_CLAIM}"
         advancedMounts:
