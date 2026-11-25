@@ -1,0 +1,136 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app lifeos-agent
+spec:
+  interval: 1h
+  # The first start downloads LifeOS's dependencies.
+  timeout: 20m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+      strategy: rollback
+  values:
+    controllers:
+      lifeos-agent:
+        # One process per agent key, and one writer for the volume.
+        replicas: 1
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          bootstrap:
+            image: &image # Built by .github/workflows/lifeos-agent-image.yaml.
+              repository: ghcr.io/mrwulf/lifeos-agent
+              tag: 0.1.2
+            command: ["lifeos-init"]
+            # The init container and the vault sync need Forgejo only; the
+            # Rowboat key and the Claude token go to the agent alone.
+            env: &vaultEnv
+              HOME: &home /data/home
+              LIFEOS_CONFIG_DIR: &lifeosDir /data/home/.config/LIFEOS
+              FORGEJO_URL: &forgejo "http://forgejo-http.development.svc.cluster.local:3000"
+              FORGEJO_USER: &forgejoUser
+                valueFrom:
+                  secretKeyRef:
+                    name: lifeos-agent
+                    key: FORGEJO_USER
+              FORGEJO_TOKEN: &forgejoToken
+                valueFrom:
+                  secretKeyRef:
+                    name: lifeos-agent
+                    key: FORGEJO_TOKEN
+              VAULT_REPO: &vaultRepo
+                valueFrom:
+                  secretKeyRef:
+                    name: lifeos-agent
+                    key: VAULT_REPO
+              GIT_AUTHOR_NAME: &gitName LifeOS Agent
+              GIT_COMMITTER_NAME: *gitName
+              GIT_AUTHOR_EMAIL: &gitEmail lifeos-agent@localhost
+              GIT_COMMITTER_EMAIL: *gitEmail
+            securityContext: &securityContext
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+            resources: &agentResources
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 3Gi
+        containers:
+          app:
+            image: *image
+            command: ["lifeos-agent"]
+            env:
+              HOME: *home
+              LIFEOS_CONFIG_DIR: *lifeosDir
+              FORGEJO_URL: *forgejo
+              FORGEJO_USER: *forgejoUser
+              FORGEJO_TOKEN: *forgejoToken
+              VAULT_REPO: *vaultRepo
+              GIT_AUTHOR_NAME: *gitName
+              GIT_COMMITTER_NAME: *gitName
+              GIT_AUTHOR_EMAIL: *gitEmail
+              GIT_COMMITTER_EMAIL: *gitEmail
+              ROWBOAT_URL: "http://rowboat-app.ai.svc.cluster.local:4272"
+              ROWBOAT_ADDRESS: "rowboat.home.${SECRET_DOMAIN}"
+              ROWBOAT_AGENT_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: lifeos-agent
+                    key: ROWBOAT_AGENT_KEY
+              # Subscription sign-in only: never add ANTHROPIC_API_KEY, which
+              # would bill per token.
+              CLAUDE_CODE_OAUTH_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: lifeos-agent
+                    key: CLAUDE_CODE_OAUTH_TOKEN
+              AGENT_MODEL: sonnet
+              AGENT_TURN_TIMEOUT_SECONDS: "1200"
+            securityContext: *securityContext
+            resources: *agentResources
+          vault-sync:
+            image: *image
+            command: ["lifeos-vault-sync"]
+            env: *vaultEnv
+            securityContext: *securityContext
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    persistence:
+      data:
+        existingClaim: *app
+        globalMounts:
+          - path: /data
+      # Clones the agent works in; whatever matters is pushed to Forgejo.
+      work:
+        type: emptyDir
+        globalMounts:
+          - path: /work

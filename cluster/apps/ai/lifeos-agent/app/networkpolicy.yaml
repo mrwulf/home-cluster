@@ -1,0 +1,55 @@
+---
+# The agent runs commands on request from people and other agents, so it reaches
+# only DNS, Rowboat, Forgejo and public HTTPS: nothing else in the cluster or on
+# the LAN.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: lifeos-agent
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: lifeos-agent
+  ingress:
+    # An empty rule denies all ingress.
+    - {}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: ai
+            k8s:app.kubernetes.io/name: rowboat
+            k8s:app.kubernetes.io/controller: rowboat
+      toPorts:
+        - ports:
+            - port: "4272"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: development
+            k8s:app.kubernetes.io/name: forgejo
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    - toCIDRSet:
+        - cidr: 0.0.0.0/0
+          except:
+            - 10.0.0.0/8
+            - 100.64.0.0/10
+            - 169.254.0.0/16
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
