@@ -2,7 +2,7 @@
 # apps/harbor of the Rowboat fork at the pinned worker commit. Named
 # contexts: `cfg` is this directory, `lifeos` a checkout of
 # danielmiessler/LifeOS (see .github/workflows/lifeos-agent-image.yaml).
-FROM node:24.22.3-bookworm-slim AS worker
+FROM node:26.13.1-bookworm-slim AS worker
 RUN corepack enable
 WORKDIR /harbor
 COPY . .
@@ -13,7 +13,7 @@ RUN pnpm install --frozen-lockfile \
 
 FROM oven/bun:1.4.4-slim AS bun
 
-FROM node:24.22.3-bookworm-slim
+FROM node:26.13.1-bookworm-slim
 ARG CLAUDE_CODE_VERSION
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates curl git jq procps python3 ripgrep \
