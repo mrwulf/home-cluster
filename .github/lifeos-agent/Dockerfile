@@ -11,7 +11,7 @@ RUN pnpm install --frozen-lockfile \
   && pnpm --filter @rowboat/worker typecheck \
   && pnpm --filter @rowboat/worker test
 
-FROM oven/bun:1.4.4-slim AS bun
+FROM oven/bun:1.4.5-slim AS bun
 
 FROM node:24.22.3-bookworm-slim
 ARG CLAUDE_CODE_VERSION
