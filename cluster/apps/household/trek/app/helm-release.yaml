@@ -14,6 +14,42 @@ spec:
       trek:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 18.7
+            env:
+              - name: INIT_POSTGRES_HOST
+                value: postgres17-rw.databases.svc.cluster.local
+              - name: INIT_POSTGRES_DBNAME
+                value: trek
+              - name: INIT_POSTGRES_SUPER_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: postgres-superuser
+                    key: username
+              - name: INIT_POSTGRES_SUPER_PASS
+                valueFrom:
+                  secretKeyRef:
+                    name: postgres-superuser
+                    key: password
+              - name: INIT_POSTGRES_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: trek-secret
+                    key: INIT_POSTGRES_USER
+              - name: INIT_POSTGRES_PASS
+                valueFrom:
+                  secretKeyRef:
+                    name: trek-secret
+                    key: INIT_POSTGRES_PASS
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
         containers:
           app:
             image:
