@@ -17,6 +17,15 @@
       ],
       minimumReleaseAge: "3 days",
     },
+    {
+      description: "LifeOS agent image: it runs third-party code with the agent's credentials, so releases soak a week",
+      matchFileNames: [
+        ".github/lifeos-agent/Dockerfile",
+        ".github/workflows/lifeos-agent-image.yaml",
+      ],
+      matchDatasources: ["docker", "npm"],
+      minimumReleaseAge: "7 days",
+    },
   ],
   // Open aged PRs right away with a pending renovate/stability-days check so they stay visible.
   // Only affects updates that have a minimumReleaseAge (these rules and cilium).
