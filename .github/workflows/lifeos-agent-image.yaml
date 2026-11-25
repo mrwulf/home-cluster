@@ -1,0 +1,96 @@
+---
+# The agent image: Rowboat's agent worker with a Claude Code runtime, from a
+# fork while upstream has no such runtime, plus Claude Code and LifeOS.
+name: LifeOS Agent Image
+
+on: # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/lifeos-agent-image.yaml
+      - .github/lifeos-agent/**
+  # Pull requests build and smoke-test the image without publishing it.
+  pull_request:
+    paths:
+      - .github/workflows/lifeos-agent-image.yaml
+      - .github/lifeos-agent/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  # What gets built: the fork's branch.
+  # renovate: datasource=git-refs depName=https://github.com/mrwulf/rowboat branch=claude-worker
+  ROWBOAT_WORKER_COMMIT: c35b85acc1d39cce482130c6ca1ffc5e8b27666e
+  # The upstream commit the fork must contain. A Renovate update here fails the
+  # build until the fork's branch is rebased onto it.
+  # renovate: datasource=git-refs depName=https://github.com/rowboatlabs/rowboat branch=ramnique/agent-worker
+  ROWBOAT_UPSTREAM_COMMIT: a63fa6c619a93e29a98785a0dcedfa46f887c132
+  # renovate: datasource=github-tags depName=danielmiessler/LifeOS version=v8.761.0
+  LIFEOS_COMMIT: fb9aef4640a73feae4c2e6483b26f58491ce2665
+  # renovate: datasource=npm depName=@anthropic-ai/claude-code
+  CLAUDE_CODE_VERSION: 2.1.327
+
+jobs:
+  build:
+    name: Build and push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo (build config)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: cfg
+          sparse-checkout: .github/lifeos-agent
+      - name: Checkout the Rowboat worker
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.repository_owner }}/rowboat
+          ref: ${{ env.ROWBOAT_WORKER_COMMIT }}
+          path: src
+          # The history the upstream check below walks.
+          fetch-depth: 0
+      - name: Check the fork contains the upstream commit
+        run: |
+          if ! git -C src merge-base --is-ancestor "$ROWBOAT_UPSTREAM_COMMIT" "$ROWBOAT_WORKER_COMMIT"; then
+            echo "::error::Rebase the fork's branch onto upstream $ROWBOAT_UPSTREAM_COMMIT, then update ROWBOAT_WORKER_COMMIT."
+            exit 1
+          fi
+      - name: Checkout LifeOS
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: danielmiessler/LifeOS
+          ref: ${{ env.LIFEOS_COMMIT }}
+          path: lifeos
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: src/apps/harbor
+          file: cfg/.github/lifeos-agent/Dockerfile
+          build-contexts: |
+            cfg=cfg/.github/lifeos-agent
+            lifeos=lifeos
+          build-args: CLAUDE_CODE_VERSION=${{ env.CLAUDE_CODE_VERSION }}
+          load: true
+          # A new tag per build: the cluster pins one, and Renovate offers the next.
+          tags: ghcr.io/${{ github.repository_owner }}/lifeos-agent:0.1.${{ github.run_number }}
+      - name: Smoke test
+        run: |
+          docker run --rm \
+            --volume "$PWD/cfg/.github/lifeos-agent/image/smoke-test.sh:/smoke-test.sh:ro" \
+            "ghcr.io/$GITHUB_REPOSITORY_OWNER/lifeos-agent:0.1.$GITHUB_RUN_NUMBER" \
+            bash /smoke-test.sh
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push
+        if: github.event_name != 'pull_request'
+        run: docker push "ghcr.io/$GITHUB_REPOSITORY_OWNER/lifeos-agent:0.1.$GITHUB_RUN_NUMBER"

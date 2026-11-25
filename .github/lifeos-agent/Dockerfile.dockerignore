@@ -1,0 +1,5 @@
+# Replaces upstream's apps/harbor/.dockerignore for this build: that one drops
+# the tests, which gate this image.
+node_modules
+packages/*/node_modules
+packages/*/dist
