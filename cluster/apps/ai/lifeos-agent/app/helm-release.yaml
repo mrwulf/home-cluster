@@ -32,7 +32,7 @@ spec:
           bootstrap:
             image: &image # Built by .github/workflows/lifeos-agent-image.yaml.
               repository: ghcr.io/mrwulf/lifeos-agent
-              tag: 0.1.11
+              tag: 0.1.13
             # Prepares the volume, then (re)registers the ToolHive gateway in
             # Claude Code's user config. Deliberately the whole gateway: see
             # networkpolicy.yaml.
