@@ -33,7 +33,17 @@ spec:
             image: &image # Built by .github/workflows/lifeos-agent-image.yaml.
               repository: ghcr.io/mrwulf/lifeos-agent
               tag: 0.1.2
-            command: ["lifeos-init"]
+            # Prepares the volume, then (re)registers the ToolHive gateway in
+            # Claude Code's user config. Deliberately the whole gateway: see
+            # networkpolicy.yaml.
+            command:
+              - bash
+              - -euc
+              - |
+                lifeos-init
+                claude mcp remove --scope user toolhive >/dev/null 2>&1 || true
+                claude mcp add --scope user --transport http toolhive \
+                  http://vmcp-toolhive-gateway.ai.svc.cluster.local:4483/mcp
             # The init container and the vault sync need Forgejo only; the
             # Rowboat key and the Claude token go to the agent alone.
             env: &vaultEnv
