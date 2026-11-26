@@ -16,7 +16,7 @@ FROM oven/bun:1.4.5-slim AS bun
 FROM node:24.22.3-bookworm-slim
 ARG CLAUDE_CODE_VERSION
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates curl git jq procps python3 ripgrep \
+  && apt-get install -y --no-install-recommends ca-certificates curl git jq procps python3 ripgrep tini \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
 RUN ln -s bun /usr/local/bin/bunx \

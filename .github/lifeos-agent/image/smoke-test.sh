@@ -13,6 +13,10 @@ git init --quiet --bare --initial-branch=main "$FORGEJO_URL/$VAULT_REPO.git"
 claude --version
 node /opt/rowboat-worker.cjs --help
 
+# The agent must start under tini, or hook processes pile up as zombies.
+tini --version
+grep -q '^exec tini -- node ' "$(command -v lifeos-agent)"
+
 lifeos-init
 lifeos-init
 test -f "$HOME/.claude/LIFEOS/LIFEOS_SYSTEM_PROMPT.md"
