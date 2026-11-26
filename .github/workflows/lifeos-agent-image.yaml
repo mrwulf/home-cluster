@@ -32,7 +32,7 @@ env:
   # renovate: datasource=github-tags depName=danielmiessler/LifeOS version=v8.761.0
   LIFEOS_COMMIT: fb9aef4640a73feae4c2e6483b26f58491ce2665
   # renovate: datasource=npm depName=@anthropic-ai/claude-code
-  CLAUDE_CODE_VERSION: 2.1.327
+  CLAUDE_CODE_VERSION: 2.1.332
 
 jobs:
   build:
