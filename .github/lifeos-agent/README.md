@@ -18,6 +18,9 @@ Rowboat Spaces on a Claude subscription.
   conflicting edit the agent's side is pushed to `agent-conflict`; merge that
   branch in Forgejo and syncing resumes.
 - **Persona:** the agent's instructions in the Rowboat UI arrive with each mention.
+- **Tools:** Rowboat's MCP server, and the whole
+  [ToolHive gateway](../../cluster/apps/ai/toolhive/README.md), which the init
+  container registers on each start.
 - **Image:** [`lifeos-agent-image.yaml`](../workflows/lifeos-agent-image.yaml)
   builds it and pushes a new `0.1.<run>` tag. The build runs the worker's tests,
   then [a smoke test](image/smoke-test.sh) in the built image. Pull requests do
@@ -55,6 +58,11 @@ must contain. When Renovate moves the upstream pin, the build fails until
   anyone who can invoke the agent can ask about them.
 - The agent runs with permission prompts off. Whoever can mention it can run
   commands in the pod, which holds its three tokens and can reach public HTTPS.
+- Through ToolHive, whoever can mention it can also control the cluster
+  (cluster-admin), Home Assistant and the other connected services. This is a
+  deliberate choice; to withdraw it, remove the gateway's egress rule and the
+  registration in the HelmRelease, then `claude mcp remove --scope user toolhive`
+  on the volume.
 - LifeOS's background services (Pulse and its jobs) are not installed.
 - LifeOS installs its JavaScript dependencies at first start and on upgrade;
   Renovate does not track those.

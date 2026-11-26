@@ -1,7 +1,11 @@
 ---
 # The agent runs commands on request from people and other agents, so it reaches
-# only DNS, Rowboat, Forgejo and public HTTPS: nothing else in the cluster or on
-# the LAN.
+# only DNS, Rowboat, Forgejo, the ToolHive gateway and public HTTPS: nothing else
+# directly in the cluster or on the LAN.
+#
+# ToolHive is a deliberate exception to least privilege (owner's decision,
+# 2026-11-26): the gateway asks for no login and its tools include cluster-admin
+# Kubernetes access, so whoever can mention the agent can control the cluster.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -32,6 +36,15 @@ spec:
       toPorts:
         - ports:
             - port: "4272"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: ai
+            k8s:app.kubernetes.io/name: virtualmcpserver
+            k8s:app.kubernetes.io/instance: toolhive-gateway
+      toPorts:
+        - ports:
+            - port: "4483"
               protocol: TCP
     - toEndpoints:
         - matchLabels:
