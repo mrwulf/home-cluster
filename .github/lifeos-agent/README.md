@@ -13,6 +13,9 @@ Rowboat Spaces on a Claude subscription.
   lives on the fork's `claude-worker` branch. It runs `claude --print`, one turn
   at a time, and resumes one session per thread. An idle agent makes no model
   calls.
+- **Presence:** while connected, the worker tells each of its spaces the agent is
+  here, so its profile and the member list show it as here, or away once the
+  worker is gone. It says nothing about whether the subscription has limit left.
 - **Memory:** `$LIFEOS_CONFIG_DIR/USER` is a clone of a Forgejo repository, synced
   by a sidecar every two minutes. Open it in Obsidian with the Git plugin. On a
   conflicting edit the agent's side is pushed to `agent-conflict`; merge that

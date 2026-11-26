@@ -24,7 +24,7 @@ permissions:
 env:
   # What gets built: the fork's branch.
   # renovate: datasource=git-refs depName=https://github.com/mrwulf/rowboat branch=claude-worker
-  ROWBOAT_WORKER_COMMIT: c35b85acc1d39cce482130c6ca1ffc5e8b27666e
+  ROWBOAT_WORKER_COMMIT: 4e06059b648771b57262c4ba87d0c01fc17937b7
   # The upstream commit the fork must contain. A Renovate update here fails the
   # build until the fork's branch is rebased onto it.
   # renovate: datasource=git-refs depName=https://github.com/rowboatlabs/rowboat branch=ramnique/agent-worker
