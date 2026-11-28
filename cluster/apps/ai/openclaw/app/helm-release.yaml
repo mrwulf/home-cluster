@@ -96,11 +96,9 @@ spec:
                     fs.writeFileSync(path, JSON.stringify(cfg, null, 2));
                   }
                 '
+                # Plugins must stay owned by the gateway uid: it hardlinks their files at load
+                # time, which the kernel refuses for files it cannot write.
                 chown -R 1000:1000 /home/node/.openclaw
-                if [ -d /home/node/.openclaw/extensions ]; then
-                  chown -R root:1000 /home/node/.openclaw/extensions
-                  chmod -R g+rX /home/node/.openclaw/extensions
-                fi
             env: *migrate-env
             envFrom: *migrate-envfrom
             securityContext:
