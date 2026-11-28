@@ -54,7 +54,7 @@ spec:
           app:
             image:
               repository: mauriceboe/trek
-              tag: 5.2.1
+              tag: 5.2.2
             env:
               NODE_ENV: production
               PORT: 3000
