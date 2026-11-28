@@ -18,7 +18,7 @@ spec:
         - alert: NodeBlockedIO
           annotations:
             description: >-
-              {{ $value }} process(es) on {{ $labels.kubernetes_node | default $labels.instance }}
+              {{ $value }} process(es) on {{ or $labels.kubernetes_node $labels.instance }}
               have been blocked in uninterruptible sleep (D-state) for over 10 minutes. This is
               usually a hung NFS read/write that cannot be killed and will not clear on its own;
               find the process (ps aux, state D) and the file it is stuck on, then reboot the
