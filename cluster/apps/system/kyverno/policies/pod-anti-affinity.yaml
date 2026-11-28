@@ -6,9 +6,13 @@
 # The legacy `patchStrategicMerge` used `+(key)` markers to only add the
 # anti-affinity block if it was entirely absent, never touching a Deployment
 # that already defines its own affinity. That "only if absent" guard is moved
-# into matchConditions below instead (ApplyConfiguration has no direct
-# equivalent to `+()`), which is equivalent: the policy simply doesn't run
-# again once the field exists.
+# into matchConditions below instead, which is equivalent: the policy simply
+# doesn't run again once the field exists.
+#
+# This has to be a JSONPatch: the preferred anti-affinity list is atomic in the
+# Deployment schema, so an ApplyConfiguration that sets it fails to evaluate and
+# the webhook rejects the whole CREATE/UPDATE. JSONPatch "add" needs the parent
+# object to exist, hence one branch per missing level.
 apiVersion: policies.kyverno.io/v1
 kind: MutatingPolicy
 metadata:
@@ -38,36 +42,40 @@ spec:
         !has(object.spec.template.spec.affinity) ||
         !has(object.spec.template.spec.affinity.podAntiAffinity) ||
         !has(object.spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution)
+  variables:
+    - name: preferred
+      expression: >-
+        [{
+          "weight": dyn(1),
+          "podAffinityTerm": dyn({
+            "topologyKey": dyn("kubernetes.io/hostname"),
+            "labelSelector": dyn({
+              "matchExpressions": [{
+                "key": dyn("app"),
+                "operator": dyn("In"),
+                "values": dyn([object.spec.template.metadata.labels.app])
+              }]
+            })
+          })
+        }]
   mutations:
-    - patchType: ApplyConfiguration
-      applyConfiguration:
+    - patchType: JSONPatch
+      jsonPatch:
         expression: >-
-          Object{
-            spec: Object.spec{
-              template: Object.spec.template{
-                spec: Object.spec.template.spec{
-                  affinity: Object.spec.template.spec.affinity{
-                    podAntiAffinity: Object.spec.template.spec.affinity.podAntiAffinity{
-                      preferredDuringSchedulingIgnoredDuringExecution: [
-                        Object.spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution{
-                          weight: 1,
-                          podAffinityTerm: Object.spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.podAffinityTerm{
-                            topologyKey: "kubernetes.io/hostname",
-                            labelSelector: Object.spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.podAffinityTerm.labelSelector{
-                              matchExpressions: [
-                                Object.spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.podAffinityTerm.labelSelector.matchExpressions{
-                                  key: "app",
-                                  operator: "In",
-                                  values: [object.spec.template.metadata.labels.app]
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          }
+          !has(object.spec.template.spec.affinity) ?
+            [JSONPatch{
+              op: "add",
+              path: "/spec/template/spec/affinity",
+              value: {"podAntiAffinity": {"preferredDuringSchedulingIgnoredDuringExecution": variables.preferred}}
+            }] :
+          !has(object.spec.template.spec.affinity.podAntiAffinity) ?
+            [JSONPatch{
+              op: "add",
+              path: "/spec/template/spec/affinity/podAntiAffinity",
+              value: {"preferredDuringSchedulingIgnoredDuringExecution": variables.preferred}
+            }] :
+            [JSONPatch{
+              op: "add",
+              path: "/spec/template/spec/affinity/podAntiAffinity/preferredDuringSchedulingIgnoredDuringExecution",
+              value: variables.preferred
+            }]
