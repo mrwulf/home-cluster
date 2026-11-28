@@ -3,7 +3,7 @@ clusterName: k8s
 # renovate: datasource=github-releases depName=siderolabs/talos
 talosVersion: v1.14.7
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-kubernetesVersion: v1.37.2
+kubernetesVersion: v1.37.3
 
 # Network References
 clusterEndpointIP: 10.0.10.200
