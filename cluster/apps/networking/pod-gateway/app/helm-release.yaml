@@ -51,7 +51,31 @@ spec:
       main:
         # Configure the main controller - this runs the VPN server
         initContainers:
+          # The server list built into the gluetun image goes stale as PIA moves its servers, and the VPN then
+          # never connects. This fetches the current list on every pod start; gluetun prefers it for being newer.
+          update-servers:
+            image:
+              # -- image repository
+              repository: &gluetunRepository ghcr.io/qdm12/gluetun
+              # -- image tag
+              tag: &gluetunTag v3.41.3@sha256:fa19cc76b2af13d57a8d3dc3066f2ada061b1c761b8aecf989b3877c0486e027
+            command:
+              - /bin/sh
+              - -c
+              # A failed fetch must not block the gateway: gluetun still has its built-in list.
+              # -minratio is below the 0.8 default so that PIA retiring servers doesn't reject the new list.
+              - >-
+                timeout 180 /gluetun-entrypoint update -enduser -providers "private internet access" -minratio 0.5
+                || echo "WARNING: server list update failed, using the built-in list" >&2
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
           routes:
+            # Its firewall rules block the HTTPS the update needs, so the update has to run first.
+            dependsOn: update-servers
             resources:
               requests:
                 cpu: 10m
@@ -70,10 +94,8 @@ spec:
             enabled: true
             dependsOn: main
             image:
-              # -- image repository
-              repository: ghcr.io/qdm12/gluetun
-              # -- image tag
-              tag: v3.41.3@sha256:fa19cc76b2af13d57a8d3dc3066f2ada061b1c761b8aecf989b3877c0486e027
+              repository: *gluetunRepository
+              tag: *gluetunTag
             env:
               - name: VPN_SERVICE_PROVIDER
                 value: "private internet access"
@@ -212,6 +234,15 @@ spec:
       # DNS_LOCAL_CIDRS: "local"
 
     persistence:
+      # Carries the fetched server list from the init container to gluetun.
+      gluetun-data:
+        type: emptyDir
+        advancedMounts:
+          main:
+            update-servers:
+              - path: /gluetun
+            gluetun:
+              - path: /gluetun
       port-forward:
         type: configMap
         name: pod-gateway-scripts
